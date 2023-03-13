@@ -1,6 +1,10 @@
 name: Publish turms plugins
 
-on: [ push, pull_request ]
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
 
 jobs:
   publish:
@@ -15,18 +19,11 @@ jobs:
           distribution: 'temurin'
           java-version: 17
 
-#      - name: Generate SHA
-#        run: echo ${{ github.sha }} > ReleaseSHA.txt
-
       - name: Build
         run: mvn clean package -Dmaven.test.skip=true -am -B -pl turms-plugins/turms-plugin-antispam,turms-plugins/turms-plugin-minio,turms-plugins/turms-plugin-rasa --no-transfer-progress
 
-#      - name: Move artifacts
-#        run: mv turms-plugins/**/target/*.jar log4j2-vulnerable-spring-app-`cat ReleaseSHA.txt`.jar
-
       - name: Release
         uses: softprops/action-gh-release@v1
-#        if: startsWith(github.ref, 'refs/tags/')
         with:
           # TODO: Use a fixed name until we start a general release
           name: v0.10.0-SNAPSHOT

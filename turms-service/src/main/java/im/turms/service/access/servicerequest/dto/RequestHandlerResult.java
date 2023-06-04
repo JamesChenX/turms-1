@@ -18,6 +18,7 @@
 package im.turms.service.access.servicerequest.dto;
 
 import java.util.Set;
+import jakarta.annotation.Nullable;
 
 import lombok.With;
 
@@ -31,26 +32,26 @@ import im.turms.server.common.infra.proto.ProtoFormatter;
  */
 @With
 public record RequestHandlerResult(
-        TurmsNotification.Data dataForRequester,
-        boolean forwardDataForRecipientsToOtherSenderOnlineDevices,
-        Set<Long> recipients,
-        TurmsRequest dataForRecipients,
         ResponseStatusCode code,
-        String reason
+        @Nullable TurmsNotification.Data dataForRequester,
+        boolean forwardDataForRecipientsToOtherRequesterOnlineSessions,
+        Set<Long> recipients,
+        @Nullable TurmsRequest dataForRecipients,
+        @Nullable String reason
 ) {
     @Override
     public String toString() {
         return "RequestHandlerResult["
-                + "dataForRequester="
+                + "code="
+                + code
+                + ", dataForRequester="
                 + ProtoFormatter.toLogString(dataForRequester)
-                + ", forwardDataForRecipientsToOtherSenderOnlineDevices="
-                + forwardDataForRecipientsToOtherSenderOnlineDevices
+                + ", forwardDataForRecipientsToOtherRequesterOnlineSessions="
+                + forwardDataForRecipientsToOtherRequesterOnlineSessions
                 + ", recipients="
                 + recipients
                 + ", dataForRecipients="
                 + ProtoFormatter.toLogString(dataForRecipients)
-                + ", code="
-                + code
                 + ", reason="
                 + reason
                 + ']';

@@ -60,7 +60,18 @@ import im.turms.server.common.access.client.dto.request.group.member.UpdateGroup
 import im.turms.server.common.infra.collection.CollectionUtil;
 import im.turms.server.common.infra.property.TurmsProperties;
 import im.turms.server.common.infra.property.TurmsPropertiesManager;
-import im.turms.server.common.infra.property.env.service.business.NotificationProperties;
+import im.turms.server.common.infra.property.env.service.business.notification.NotificationProperties;
+import im.turms.server.common.infra.property.env.service.business.notification.group.NotificationGroupBlockedUserAddedProperties;
+import im.turms.server.common.infra.property.env.service.business.notification.group.NotificationGroupBlockedUserRemovedProperties;
+import im.turms.server.common.infra.property.env.service.business.notification.group.NotificationGroupDeletedProperties;
+import im.turms.server.common.infra.property.env.service.business.notification.group.NotificationGroupInvitationAddedProperties;
+import im.turms.server.common.infra.property.env.service.business.notification.group.NotificationGroupInvitationRecalledProperties;
+import im.turms.server.common.infra.property.env.service.business.notification.group.NotificationGroupJoinRequestCreatedProperties;
+import im.turms.server.common.infra.property.env.service.business.notification.group.NotificationGroupJoinRequestRecalledProperties;
+import im.turms.server.common.infra.property.env.service.business.notification.group.NotificationGroupMemberAddedProperties;
+import im.turms.server.common.infra.property.env.service.business.notification.group.NotificationGroupMemberInfoUpdatedProperties;
+import im.turms.server.common.infra.property.env.service.business.notification.group.NotificationGroupMemberRemovedProperties;
+import im.turms.server.common.infra.property.env.service.business.notification.group.NotificationGroupUpdatedProperties;
 import im.turms.server.common.infra.recycler.Recyclable;
 import im.turms.server.common.infra.recycler.SetRecycler;
 import im.turms.service.access.servicerequest.dispatcher.ClientRequestHandler;
@@ -117,18 +128,49 @@ public class GroupServiceController extends BaseServiceController {
     private final GroupJoinRequestService groupJoinRequestService;
     private final GroupMemberService groupMemberService;
 
-    private boolean notifyInviteeAfterGroupInvitationRecalled;
-    private boolean notifyMembersAfterGroupDeleted;
-    private boolean notifyMembersAfterGroupUpdated;
-    private boolean notifyMembersAfterOtherMemberInfoUpdated;
-    private boolean notifyMemberAfterInfoUpdatedByOthers;
-    private boolean notifyOwnerAndManagersAfterReceivingJoinRequest;
-    private boolean notifyOwnerAndManagersAfterGroupJoinRequestRecalled;
-    private boolean notifyUserAfterBlockedByGroup;
-    private boolean notifyUserAfterUnblockedByGroup;
-    private boolean notifyUserAfterInvitedByGroup;
-    private boolean notifyUserAfterAddedToGroupByOthers;
-    private boolean notifyUserAfterRemovedFromGroupByOthers;
+    private boolean notifyRequesterOtherOnlineSessionsOfGroupDeleted;
+    private boolean notifyGroupMembersOfGroupDeleted;
+
+    private boolean notifyRequesterOtherOnlineSessionsOfGroupUpdated;
+    private boolean notifyGroupMembersOfGroupUpdated;
+
+    private boolean notifyRequesterOtherOnlineSessionsOfGroupMemberAdded;
+    private boolean notifyAddedGroupMemberOfGroupMemberAdded;
+    private boolean notifyOtherGroupMembersOfGroupMemberAdded;
+
+    private boolean notifyRequesterOtherOnlineSessionsOfGroupMemberRemoved;
+    private boolean notifyRemovedGroupMemberOfGroupMemberRemoved;
+    private boolean notifyOtherGroupMembersOfGroupMemberRemoved;
+
+    private boolean notifyRequesterOtherOnlineSessionsOfGroupMemberInfoUpdated;
+    private boolean notifyUpdatedGroupMemberOfGroupMemberInfoUpdated;
+    private boolean notifyOtherGroupMembersOfGroupMemberInfoUpdated;
+
+    private boolean notifyRequesterOtherOnlineSessionsOfGroupBlockedUserAdded;
+    private boolean notifyBlockedUserOfGroupBlockedUserAdded;
+    private boolean notifyGroupMembersOfGroupBlockedUserAdded;
+
+    private boolean notifyRequesterOtherOnlineSessionsOfGroupBlockedUserRemoved;
+    private boolean notifyUnblockedUserOfGroupBlockedUserRemoved;
+    private boolean notifyGroupMembersOfGroupBlockedUserRemoved;
+
+    private boolean notifyRequesterOtherOnlineSessionsOfGroupInvitationAdded;
+    private boolean notifyInviteeOfGroupInvitationAdded;
+    private boolean notifyGroupOwnerAndManagersOfGroupInvitationAdded;
+    private boolean notifyGroupMembersOfGroupInvitationAdded;
+
+    private boolean notifyRequesterOtherOnlineSessionsOfGroupInvitationRecalled;
+    private boolean notifyInviteeOfGroupInvitationRecalled;
+    private boolean notifyGroupOwnerAndManagersOfGroupInvitationRecalled;
+    private boolean notifyGroupMembersOfGroupInvitationRecalled;
+
+    private boolean notifyRequesterOtherOnlineSessionsOfGroupJoinRequestCreated;
+    private boolean notifyGroupOwnerAndManagersOfGroupJoinRequestCreated;
+    private boolean notifyGroupMembersOfGroupJoinRequestCreated;
+
+    private boolean notifyRequesterOtherOnlineSessionsOfGroupJoinRequestRecalled;
+    private boolean notifyGroupOwnerAndManagersOfGroupJoinRequestRecalled;
+    private boolean notifyGroupMembersOfGroupJoinRequestRecalled;
 
     public GroupServiceController(
             TurmsPropertiesManager propertiesManager,
@@ -151,26 +193,108 @@ public class GroupServiceController extends BaseServiceController {
     private void updateProperties(TurmsProperties properties) {
         NotificationProperties notificationProperties = properties.getService()
                 .getNotification();
-        notifyInviteeAfterGroupInvitationRecalled =
-                notificationProperties.isNotifyInviteeAfterGroupInvitationRecalled();
-        notifyMembersAfterGroupDeleted = notificationProperties.isNotifyMembersAfterGroupDeleted();
-        notifyMembersAfterGroupUpdated = notificationProperties.isNotifyMembersAfterGroupUpdated();
-        notifyMembersAfterOtherMemberInfoUpdated =
-                notificationProperties.isNotifyMembersAfterOtherMemberInfoUpdated();
-        notifyMemberAfterInfoUpdatedByOthers =
-                notificationProperties.isNotifyMemberAfterInfoUpdatedByOthers();
-        notifyOwnerAndManagersAfterReceivingJoinRequest =
-                notificationProperties.isNotifyOwnerAndManagersAfterReceivingJoinRequest();
-        notifyOwnerAndManagersAfterGroupJoinRequestRecalled =
-                notificationProperties.isNotifyOwnerAndManagersAfterGroupJoinRequestRecalled();
-        notifyUserAfterBlockedByGroup = notificationProperties.isNotifyUserAfterBlockedByGroup();
-        notifyUserAfterUnblockedByGroup =
-                notificationProperties.isNotifyUserAfterUnblockedByGroup();
-        notifyUserAfterInvitedByGroup = notificationProperties.isNotifyUserAfterInvitedByGroup();
-        notifyUserAfterAddedToGroupByOthers =
-                notificationProperties.isNotifyUserAfterAddedToGroupByOthers();
-        notifyUserAfterRemovedFromGroupByOthers =
-                notificationProperties.isNotifyUserAfterRemovedFromGroupByOthers();
+        NotificationGroupDeletedProperties notificationGroupDeletedProperties =
+                notificationProperties.getGroupDeleted();
+        notifyRequesterOtherOnlineSessionsOfGroupDeleted =
+                notificationGroupDeletedProperties.isNotifyRequesterOtherOnlineSessions();
+        notifyGroupMembersOfGroupDeleted =
+                notificationGroupDeletedProperties.isNotifyGroupMembers();
+
+        NotificationGroupUpdatedProperties notificationGroupUpdatedProperties =
+                notificationProperties.getGroupUpdated();
+        notifyRequesterOtherOnlineSessionsOfGroupUpdated =
+                notificationGroupUpdatedProperties.isNotifyRequesterOtherOnlineSessions();
+        notifyGroupMembersOfGroupUpdated =
+                notificationGroupUpdatedProperties.isNotifyGroupMembers();
+
+        NotificationGroupMemberAddedProperties notificationGroupMemberAddedProperties =
+                notificationProperties.getGroupMemberAdded();
+        notifyRequesterOtherOnlineSessionsOfGroupMemberAdded =
+                notificationGroupMemberAddedProperties.isNotifyRequesterOtherOnlineSessions();
+        notifyAddedGroupMemberOfGroupMemberAdded =
+                notificationGroupMemberAddedProperties.isNotifyAddedGroupMember();
+        notifyOtherGroupMembersOfGroupMemberAdded =
+                notificationGroupMemberAddedProperties.isNotifyOtherGroupMembers();
+
+        NotificationGroupMemberRemovedProperties notificationGroupMemberRemovedProperties =
+                notificationProperties.getGroupMemberRemoved();
+        notifyRequesterOtherOnlineSessionsOfGroupMemberRemoved =
+                notificationGroupMemberRemovedProperties.isNotifyRequesterOtherOnlineSessions();
+        notifyRemovedGroupMemberOfGroupMemberRemoved =
+                notificationGroupMemberRemovedProperties.isNotifyRemovedGroupMember();
+        notifyOtherGroupMembersOfGroupMemberRemoved =
+                notificationGroupMemberRemovedProperties.isNotifyOtherGroupMembers();
+
+        NotificationGroupMemberInfoUpdatedProperties notificationGroupMemberInfoUpdatedProperties =
+                notificationProperties.getGroupMemberInfoUpdated();
+        notifyRequesterOtherOnlineSessionsOfGroupMemberInfoUpdated =
+                notificationGroupMemberInfoUpdatedProperties.isNotifyRequesterOtherOnlineSessions();
+        notifyUpdatedGroupMemberOfGroupMemberInfoUpdated =
+                notificationGroupMemberInfoUpdatedProperties.isNotifyUpdatedGroupMember();
+        notifyOtherGroupMembersOfGroupMemberInfoUpdated =
+                notificationGroupMemberInfoUpdatedProperties.isNotifyOtherGroupMembers();
+
+        NotificationGroupBlockedUserAddedProperties notificationGroupBlockedUserAddedProperties =
+                notificationProperties.getGroupBlockedUserAdded();
+        notifyRequesterOtherOnlineSessionsOfGroupBlockedUserAdded =
+                notificationGroupBlockedUserAddedProperties.isNotifyRequesterOtherOnlineSessions();
+        notifyBlockedUserOfGroupBlockedUserAdded =
+                notificationGroupBlockedUserAddedProperties.isNotifyBlockedUser();
+        notifyGroupMembersOfGroupBlockedUserAdded =
+                notificationGroupBlockedUserAddedProperties.isNotifyGroupMembers();
+
+        NotificationGroupBlockedUserRemovedProperties notificationGroupBlockedUserRemovedProperties =
+                notificationProperties.getGroupBlockedUserRemoved();
+        notifyRequesterOtherOnlineSessionsOfGroupBlockedUserRemoved =
+                notificationGroupBlockedUserRemovedProperties
+                        .isNotifyRequesterOtherOnlineSessions();
+        notifyUnblockedUserOfGroupBlockedUserRemoved =
+                notificationGroupBlockedUserRemovedProperties.isNotifyUnblockedUser();
+        notifyGroupMembersOfGroupBlockedUserRemoved =
+                notificationGroupBlockedUserRemovedProperties.isNotifyGroupMembers();
+
+        NotificationGroupInvitationAddedProperties notificationGroupInvitationAddedProperties =
+                notificationProperties.getGroupInvitationAdded();
+        notifyRequesterOtherOnlineSessionsOfGroupInvitationAdded =
+                notificationGroupInvitationAddedProperties.isNotifyRequesterOtherOnlineSessions();
+        notifyInviteeOfGroupInvitationAdded =
+                notificationGroupInvitationAddedProperties.isNotifyInvitee();
+        notifyGroupOwnerAndManagersOfGroupInvitationAdded =
+                notificationGroupInvitationAddedProperties.isNotifyGroupOwnerAndManagers();
+        notifyGroupMembersOfGroupInvitationAdded =
+                notificationGroupInvitationAddedProperties.isNotifyGroupMembers();
+
+        NotificationGroupInvitationRecalledProperties notificationGroupInvitationRecalledProperties =
+                notificationProperties.getGroupInvitationRecalled();
+        notifyRequesterOtherOnlineSessionsOfGroupInvitationRecalled =
+                notificationGroupInvitationRecalledProperties
+                        .isNotifyRequesterOtherOnlineSessions();
+        notifyInviteeOfGroupInvitationRecalled =
+                notificationGroupInvitationRecalledProperties.isNotifyInvitee();
+        notifyGroupOwnerAndManagersOfGroupInvitationRecalled =
+                notificationGroupInvitationRecalledProperties.isNotifyGroupOwnerAndManagers();
+        notifyGroupMembersOfGroupInvitationRecalled =
+                notificationGroupInvitationRecalledProperties.isNotifyGroupMembers();
+
+        NotificationGroupJoinRequestCreatedProperties notificationGroupJoinRequestCreatedProperties =
+                notificationProperties.getGroupJoinRequestCreated();
+        notifyRequesterOtherOnlineSessionsOfGroupJoinRequestCreated =
+                notificationGroupJoinRequestCreatedProperties
+                        .isNotifyRequesterOtherOnlineSessions();
+        notifyGroupOwnerAndManagersOfGroupJoinRequestCreated =
+                notificationGroupJoinRequestCreatedProperties.isNotifyGroupOwnerAndManagers();
+        notifyGroupMembersOfGroupJoinRequestCreated =
+                notificationGroupJoinRequestCreatedProperties.isNotifyGroupMembers();
+
+        NotificationGroupJoinRequestRecalledProperties notificationGroupJoinRequestRecalledProperties =
+                notificationProperties.getGroupJoinRequestRecalled();
+        notifyRequesterOtherOnlineSessionsOfGroupJoinRequestRecalled =
+                notificationGroupJoinRequestRecalledProperties
+                        .isNotifyRequesterOtherOnlineSessions();
+        notifyGroupOwnerAndManagersOfGroupJoinRequestRecalled =
+                notificationGroupJoinRequestRecalledProperties.isNotifyGroupOwnerAndManagers();
+        notifyGroupMembersOfGroupJoinRequestRecalled =
+                notificationGroupJoinRequestRecalledProperties.isNotifyGroupMembers();
     }
 
     @ServiceRequestMapping(CREATE_GROUP_REQUEST)
@@ -206,7 +330,7 @@ public class GroupServiceController extends BaseServiceController {
                             null,
                             null,
                             null)
-                    .map(group -> RequestHandlerResultFactory.getByDataLong(group.getId()));
+                    .map(group -> RequestHandlerResultFactory.ofDataLong(group.getId()));
         };
     }
 
@@ -215,18 +339,20 @@ public class GroupServiceController extends BaseServiceController {
         return clientRequest -> {
             DeleteGroupRequest request = clientRequest.turmsRequest()
                     .getDeleteGroupRequest();
-            return groupService.authAndDeleteGroup(clientRequest.userId(), request.getGroupId())
-                    .then(Mono.defer(() -> {
-                        if (notifyMembersAfterGroupDeleted) {
-                            return groupMemberService
-                                    .queryGroupMemberIds(request.getGroupId(), false)
-                                    .map(memberIds -> memberIds.isEmpty()
-                                            ? RequestHandlerResultFactory.OK
-                                            : RequestHandlerResultFactory.get(memberIds,
-                                                    clientRequest.turmsRequest()));
+            return groupService
+                    .authAndDeleteGroup(notifyGroupMembersOfGroupDeleted,
+                            clientRequest.userId(),
+                            request.getGroupId())
+                    .map(memberIds -> {
+                        if (notifyGroupMembersOfGroupDeleted) {
+                            memberIds = CollectionUtil.remove(memberIds, clientRequest.userId());
+                            return RequestHandlerResultFactory
+                                    .of(true, memberIds, clientRequest.turmsRequest());
                         }
-                        return Mono.just(RequestHandlerResultFactory.OK);
-                    }));
+                        return RequestHandlerResultFactory.of(
+                                notifyRequesterOtherOnlineSessionsOfGroupDeleted,
+                                clientRequest.turmsRequest());
+                    });
         };
     }
 
@@ -249,7 +375,7 @@ public class GroupServiceController extends BaseServiceController {
                                     .build());
                         }
                         return RequestHandlerResultFactory
-                                .get(ClientMessagePool.getTurmsNotificationDataBuilder()
+                                .of(ClientMessagePool.getTurmsNotificationDataBuilder()
                                         .setGroupsWithVersion(
                                                 ClientMessagePool.getGroupsWithVersionBuilder()
                                                         .addAllGroups(groupProtos)
@@ -270,7 +396,7 @@ public class GroupServiceController extends BaseServiceController {
             return groupService
                     .queryJoinedGroupIdsWithVersion(clientRequest.userId(), lastUpdatedDate)
                     .map(idsWithVersion -> RequestHandlerResultFactory
-                            .get(ClientMessagePool.getTurmsNotificationDataBuilder()
+                            .of(ClientMessagePool.getTurmsNotificationDataBuilder()
                                     .setLongsWithVersion(idsWithVersion)
                                     .build()));
         };
@@ -287,7 +413,7 @@ public class GroupServiceController extends BaseServiceController {
             return groupService
                     .queryJoinedGroupsWithVersion(clientRequest.userId(), lastUpdatedDate)
                     .map(groupsWithVersion -> RequestHandlerResultFactory
-                            .get(ClientMessagePool.getTurmsNotificationDataBuilder()
+                            .of(ClientMessagePool.getTurmsNotificationDataBuilder()
                                     .setGroupsWithVersion(groupsWithVersion)
                                     .build()));
         };
@@ -342,14 +468,18 @@ public class GroupServiceController extends BaseServiceController {
                         .userId(), request.getGroupId(), successorId, quitAfterTransfer, null);
             }
             return updateMono.then(Mono.defer(() -> {
-                if (notifyMembersAfterGroupUpdated) {
+                if (notifyGroupMembersOfGroupUpdated) {
                     return groupMemberService.queryGroupMemberIds(request.getGroupId(), false)
-                            .map(memberIds -> memberIds.isEmpty()
-                                    ? RequestHandlerResultFactory.OK
-                                    : RequestHandlerResultFactory.get(memberIds,
-                                            clientRequest.turmsRequest()));
+                            .map(memberIds -> {
+                                memberIds =
+                                        CollectionUtil.remove(memberIds, clientRequest.userId());
+                                return RequestHandlerResultFactory
+                                        .of(true, memberIds, clientRequest.turmsRequest());
+                            });
                 }
-                return Mono.just(RequestHandlerResultFactory.OK);
+                return Mono.just(RequestHandlerResultFactory.of(
+                        notifyRequesterOtherOnlineSessionsOfGroupUpdated,
+                        clientRequest.turmsRequest()));
             }));
         };
     }
@@ -359,15 +489,32 @@ public class GroupServiceController extends BaseServiceController {
         return clientRequest -> {
             CreateGroupBlockedUserRequest request = clientRequest.turmsRequest()
                     .getCreateGroupBlockedUserRequest();
+            Long groupId = request.getGroupId();
+            Long userIdToBlock = request.getUserId();
             return groupBlocklistService
-                    .authAndBlockUser(clientRequest.userId(),
-                            request.getGroupId(),
-                            request.getUserId(),
-                            null)
-                    .then(Mono.fromCallable(() -> notifyUserAfterBlockedByGroup
-                            ? RequestHandlerResultFactory.get(request.getUserId(),
-                                    clientRequest.turmsRequest())
-                            : RequestHandlerResultFactory.OK));
+                    .authAndBlockUser(clientRequest.userId(), groupId, userIdToBlock, null)
+                    .then(Mono.defer(() -> {
+                        if (notifyGroupMembersOfGroupBlockedUserAdded) {
+                            return groupMemberService.queryGroupMemberIds(groupId, false)
+                                    .map(userIds -> {
+                                        userIds = CollectionUtil.remove(userIds,
+                                                clientRequest.userId());
+                                        if (notifyBlockedUserOfGroupBlockedUserAdded) {
+                                            userIds = CollectionUtil.add(userIds, userIdToBlock);
+                                        }
+                                        return RequestHandlerResultFactory
+                                                .of(true, userIds, clientRequest.turmsRequest());
+                                    });
+                        } else if (notifyBlockedUserOfGroupBlockedUserAdded) {
+                            return Mono.just(RequestHandlerResultFactory.of(
+                                    notifyRequesterOtherOnlineSessionsOfGroupBlockedUserAdded,
+                                    userIdToBlock,
+                                    clientRequest.turmsRequest()));
+                        }
+                        return Mono.just(RequestHandlerResultFactory.of(
+                                notifyRequesterOtherOnlineSessionsOfGroupBlockedUserAdded,
+                                clientRequest.turmsRequest()));
+                    }));
         };
     }
 
@@ -376,13 +523,36 @@ public class GroupServiceController extends BaseServiceController {
         return clientRequest -> {
             DeleteGroupBlockedUserRequest request = clientRequest.turmsRequest()
                     .getDeleteGroupBlockedUserRequest();
+            Long groupId = request.getGroupId();
+            Long userIdToUnblock = request.getUserId();
             return groupBlocklistService
-                    .unblockUser(clientRequest
-                            .userId(), request.getGroupId(), request.getUserId(), null, true)
-                    .then(Mono.fromCallable(() -> notifyUserAfterUnblockedByGroup
-                            ? RequestHandlerResultFactory.get(request.getUserId(),
-                                    clientRequest.turmsRequest())
-                            : RequestHandlerResultFactory.OK));
+                    .unblockUser(clientRequest.userId(), groupId, userIdToUnblock, null, true)
+                    .flatMap(wasBlocked -> {
+                        if (!wasBlocked) {
+                            return Mono.just(RequestHandlerResultFactory.OK);
+                        }
+                        if (notifyGroupMembersOfGroupBlockedUserRemoved) {
+                            return groupMemberService.queryGroupMemberIds(groupId, false)
+                                    .map(memberIds -> {
+                                        memberIds = CollectionUtil.remove(memberIds,
+                                                clientRequest.userId());
+                                        if (notifyUnblockedUserOfGroupBlockedUserRemoved) {
+                                            memberIds =
+                                                    CollectionUtil.add(memberIds, userIdToUnblock);
+                                        }
+                                        return RequestHandlerResultFactory
+                                                .of(true, memberIds, clientRequest.turmsRequest());
+                                    });
+                        } else if (notifyUnblockedUserOfGroupBlockedUserRemoved) {
+                            return Mono.just(RequestHandlerResultFactory.of(
+                                    notifyRequesterOtherOnlineSessionsOfGroupBlockedUserRemoved,
+                                    userIdToUnblock,
+                                    clientRequest.turmsRequest()));
+                        }
+                        return Mono.just(RequestHandlerResultFactory.of(
+                                notifyRequesterOtherOnlineSessionsOfGroupBlockedUserRemoved,
+                                clientRequest.turmsRequest()));
+                    });
         };
     }
 
@@ -397,7 +567,7 @@ public class GroupServiceController extends BaseServiceController {
             return groupBlocklistService
                     .queryGroupBlockedUserIdsWithVersion(request.getGroupId(), lastUpdatedDate)
                     .map(idsWithVersion -> RequestHandlerResultFactory
-                            .get(ClientMessagePool.getTurmsNotificationDataBuilder()
+                            .of(ClientMessagePool.getTurmsNotificationDataBuilder()
                                     .setLongsWithVersion(idsWithVersion)
                                     .build()));
         };
@@ -414,7 +584,7 @@ public class GroupServiceController extends BaseServiceController {
             return groupBlocklistService
                     .queryGroupBlockedUserInfosWithVersion(request.getGroupId(), lastUpdatedDate)
                     .map(userInfos -> RequestHandlerResultFactory
-                            .get(ClientMessagePool.getTurmsNotificationDataBuilder()
+                            .of(ClientMessagePool.getTurmsNotificationDataBuilder()
                                     .setUserInfosWithVersion(userInfos)
                                     .build()));
         };
@@ -435,7 +605,7 @@ public class GroupServiceController extends BaseServiceController {
             return groupQuestionService
                     .checkGroupQuestionAnswerAndJoin(clientRequest.userId(), idAndAnswerPairs)
                     .map(answerResult -> RequestHandlerResultFactory
-                            .get(ClientMessagePool.getTurmsNotificationDataBuilder()
+                            .of(ClientMessagePool.getTurmsNotificationDataBuilder()
                                     .setGroupJoinQuestionAnswerResult(answerResult)
                                     .build()));
         };
@@ -446,16 +616,56 @@ public class GroupServiceController extends BaseServiceController {
         return clientRequest -> {
             CreateGroupInvitationRequest request = clientRequest.turmsRequest()
                     .getCreateGroupInvitationRequest();
+            Long groupId = request.getGroupId();
+            Long inviteeId = request.getInviteeId();
             return groupInvitationService
-                    .authAndCreateGroupInvitation(request.getGroupId(),
+                    .authAndCreateGroupInvitation(groupId,
                             clientRequest.userId(),
-                            request.getInviteeId(),
+                            inviteeId,
                             request.getContent())
-                    .map(invitation -> notifyUserAfterInvitedByGroup
-                            ? RequestHandlerResultFactory.getByDataLong(invitation.getId(),
-                                    request.getInviteeId(),
-                                    clientRequest.turmsRequest())
-                            : RequestHandlerResultFactory.OK);
+                    .flatMap(invitation -> {
+                        if (notifyGroupMembersOfGroupInvitationAdded) {
+                            return groupMemberService.queryGroupMemberIds(groupId, false)
+                                    .map(userIds -> {
+                                        userIds = CollectionUtil.remove(userIds,
+                                                clientRequest.userId());
+                                        if (notifyInviteeOfGroupInvitationAdded) {
+                                            userIds = CollectionUtil.add(userIds, inviteeId);
+                                        }
+                                        return RequestHandlerResultFactory.ofDataLong(
+                                                invitation.getId(),
+                                                true,
+                                                userIds,
+                                                clientRequest.turmsRequest());
+                                    });
+                        } else if (notifyGroupOwnerAndManagersOfGroupInvitationAdded) {
+                            Recyclable<Set<Long>> recyclableSet = SetRecycler.obtain();
+                            return groupMemberService.queryGroupManagersAndOwnerId(groupId)
+                                    .collect(Collectors.toCollection(recyclableSet::getValue))
+                                    .map(userIds -> {
+                                        userIds = CollectionUtil.remove(userIds,
+                                                clientRequest.userId());
+                                        if (notifyInviteeOfGroupInvitationAdded) {
+                                            userIds = CollectionUtil.add(userIds, inviteeId);
+                                        }
+                                        return RequestHandlerResultFactory.ofDataLong(
+                                                invitation.getId(),
+                                                true,
+                                                userIds,
+                                                clientRequest.turmsRequest());
+                                    })
+                                    .doFinally(signalType -> recyclableSet.recycle());
+                        } else if (notifyInviteeOfGroupInvitationAdded) {
+                            return Mono.just(RequestHandlerResultFactory.ofDataLong(
+                                    invitation.getId(),
+                                    notifyRequesterOtherOnlineSessionsOfGroupInvitationAdded,
+                                    inviteeId,
+                                    clientRequest.turmsRequest()));
+                        }
+                        return Mono.just(RequestHandlerResultFactory.ofDataLong(invitation.getId(),
+                                notifyRequesterOtherOnlineSessionsOfGroupInvitationAdded,
+                                clientRequest.turmsRequest()));
+                    });
         };
     }
 
@@ -464,26 +674,38 @@ public class GroupServiceController extends BaseServiceController {
         return clientRequest -> {
             CreateGroupJoinRequestRequest request = clientRequest.turmsRequest()
                     .getCreateGroupJoinRequestRequest();
+            Long groupId = request.getGroupId();
             return groupJoinRequestService
                     .authAndCreateGroupJoinRequest(clientRequest.userId(),
-                            request.getGroupId(),
+                            groupId,
                             request.getContent())
                     .flatMap(joinRequest -> {
-                        if (notifyOwnerAndManagersAfterReceivingJoinRequest) {
+                        if (notifyGroupMembersOfGroupJoinRequestCreated) {
+                            return groupMemberService.queryGroupMemberIds(groupId, false)
+                                    .map(memberIds -> RequestHandlerResultFactory.ofDataLong(
+                                            joinRequest.getId(),
+                                            notifyRequesterOtherOnlineSessionsOfGroupJoinRequestCreated,
+                                            memberIds,
+                                            clientRequest.turmsRequest()));
+                        } else if (notifyGroupOwnerAndManagersOfGroupJoinRequestCreated) {
                             Recyclable<Set<Long>> recyclableSet = SetRecycler.obtain();
-                            return groupMemberService
-                                    .queryGroupManagersAndOwnerId(request.getGroupId())
+                            return groupMemberService.queryGroupManagersAndOwnerId(groupId)
                                     .collect(Collectors.toCollection(recyclableSet::getValue))
                                     .map(recipientIds -> recipientIds.isEmpty()
-                                            ? RequestHandlerResultFactory.OK
-                                            : RequestHandlerResultFactory.getByDataLong(
+                                            ? RequestHandlerResultFactory.ofDataLong(
                                                     joinRequest.getId(),
+                                                    notifyRequesterOtherOnlineSessionsOfGroupInvitationRecalled,
+                                                    clientRequest.turmsRequest())
+                                            : RequestHandlerResultFactory.ofDataLong(
+                                                    joinRequest.getId(),
+                                                    notifyRequesterOtherOnlineSessionsOfGroupInvitationRecalled,
                                                     CollectionUtil.newSet(recipientIds),
-                                                    false,
                                                     clientRequest.turmsRequest()))
                                     .doFinally(signalType -> recyclableSet.recycle());
                         }
-                        return Mono.just(RequestHandlerResultFactory.OK);
+                        return Mono.just(RequestHandlerResultFactory.ofDataLong(joinRequest.getId(),
+                                notifyRequesterOtherOnlineSessionsOfGroupInvitationRecalled,
+                                clientRequest.turmsRequest()));
                     });
         };
     }
@@ -509,7 +731,7 @@ public class GroupServiceController extends BaseServiceController {
                         for (var question : questionList) {
                             questionIds.add(question.getId());
                         }
-                        return RequestHandlerResultFactory.getByDataLongs(questionIds);
+                        return RequestHandlerResultFactory.ofDataLongs(questionIds);
                     });
         };
     }
@@ -519,14 +741,49 @@ public class GroupServiceController extends BaseServiceController {
         return clientRequest -> {
             DeleteGroupInvitationRequest request = clientRequest.turmsRequest()
                     .getDeleteGroupInvitationRequest();
-            return groupInvitationService.queryInviteeIdByInvitationId(request.getInvitationId())
-                    .flatMap(inviteeId -> groupInvitationService
-                            .authAndRecallPendingGroupInvitation(clientRequest.userId(),
-                                    request.getInvitationId())
-                            .then(Mono.fromCallable(() -> notifyInviteeAfterGroupInvitationRecalled
-                                    ? RequestHandlerResultFactory.get(inviteeId,
-                                            clientRequest.turmsRequest())
-                                    : RequestHandlerResultFactory.OK)));
+            return groupInvitationService
+                    .authAndRecallPendingGroupInvitation(clientRequest.userId(),
+                            request.getInvitationId())
+                    .flatMap(invitation -> {
+                        if (notifyGroupMembersOfGroupInvitationRecalled) {
+                            return groupMemberService
+                                    .queryGroupMemberIds(invitation.getGroupId(), false)
+                                    .map(userIds -> {
+                                        userIds = CollectionUtil.remove(userIds,
+                                                clientRequest.userId());
+                                        if (notifyInviteeOfGroupInvitationRecalled) {
+                                            userIds = CollectionUtil.add(userIds,
+                                                    invitation.getInviteeId());
+                                        }
+                                        return RequestHandlerResultFactory
+                                                .of(true, userIds, clientRequest.turmsRequest());
+                                    });
+                        } else if (notifyGroupOwnerAndManagersOfGroupInvitationRecalled) {
+                            Recyclable<Set<Long>> recyclableSet = SetRecycler.obtain();
+                            return groupMemberService
+                                    .queryGroupManagersAndOwnerId(invitation.getGroupId())
+                                    .collect(Collectors.toCollection(recyclableSet::getValue))
+                                    .map(userIds -> {
+                                        userIds = CollectionUtil.remove(userIds,
+                                                clientRequest.userId());
+                                        if (notifyInviteeOfGroupInvitationRecalled) {
+                                            userIds = CollectionUtil.add(userIds,
+                                                    invitation.getInviteeId());
+                                        }
+                                        return RequestHandlerResultFactory
+                                                .of(true, userIds, clientRequest.turmsRequest());
+                                    })
+                                    .doFinally(signalType -> recyclableSet.recycle());
+                        } else if (notifyInviteeOfGroupInvitationRecalled) {
+                            return Mono.just(RequestHandlerResultFactory.of(
+                                    notifyRequesterOtherOnlineSessionsOfGroupInvitationRecalled,
+                                    invitation.getInviteeId(),
+                                    clientRequest.turmsRequest()));
+                        }
+                        return Mono.just(RequestHandlerResultFactory.of(
+                                notifyRequesterOtherOnlineSessionsOfGroupInvitationRecalled,
+                                clientRequest.turmsRequest()));
+                    });
         };
     }
 
@@ -538,25 +795,31 @@ public class GroupServiceController extends BaseServiceController {
             return groupJoinRequestService
                     .authAndRecallPendingGroupJoinRequest(clientRequest.userId(),
                             request.getRequestId())
-                    .then(Mono.defer(() -> {
-                        if (notifyOwnerAndManagersAfterGroupJoinRequestRecalled) {
-                            return groupJoinRequestService.queryGroupId(request.getRequestId())
-                                    .flatMap(groupId -> {
-                                        Recyclable<Set<Long>> recyclableSet = SetRecycler.obtain();
-                                        return groupMemberService
-                                                .queryGroupManagersAndOwnerId(groupId)
-                                                .collect(Collectors
-                                                        .toCollection(recyclableSet::getValue))
-                                                .map(ids -> ids.isEmpty()
-                                                        ? RequestHandlerResultFactory.OK
-                                                        : RequestHandlerResultFactory.get(
-                                                                CollectionUtil.newSet(ids),
-                                                                clientRequest.turmsRequest()))
-                                                .doFinally(signalType -> recyclableSet.recycle());
-                                    });
+                    .flatMap(joinRequest -> {
+                        if (notifyGroupMembersOfGroupJoinRequestRecalled) {
+                            Recyclable<Set<Long>> recyclableSet = SetRecycler.obtain();
+                            return groupMemberService
+                                    .queryGroupMemberIds(joinRequest.getGroupId(), false)
+                                    .map(userIds -> RequestHandlerResultFactory.of(
+                                            notifyRequesterOtherOnlineSessionsOfGroupJoinRequestRecalled,
+                                            userIds,
+                                            clientRequest.turmsRequest()))
+                                    .doFinally(signalType -> recyclableSet.recycle());
+                        } else if (notifyGroupOwnerAndManagersOfGroupJoinRequestRecalled) {
+                            Recyclable<Set<Long>> recyclableSet = SetRecycler.obtain();
+                            return groupMemberService
+                                    .queryGroupManagersAndOwnerId(joinRequest.getGroupId())
+                                    .collect(Collectors.toCollection(recyclableSet::getValue))
+                                    .map(userIds -> RequestHandlerResultFactory.of(
+                                            notifyRequesterOtherOnlineSessionsOfGroupJoinRequestRecalled,
+                                            userIds,
+                                            clientRequest.turmsRequest()))
+                                    .doFinally(signalType -> recyclableSet.recycle());
                         }
-                        return Mono.just(RequestHandlerResultFactory.OK);
-                    }));
+                        return Mono.just(RequestHandlerResultFactory.of(
+                                notifyRequesterOtherOnlineSessionsOfGroupJoinRequestRecalled,
+                                clientRequest.turmsRequest()));
+                    });
         };
     }
 
@@ -590,7 +853,7 @@ public class GroupServiceController extends BaseServiceController {
                                 request.hasAreSentByMe() && request.getAreSentByMe(),
                                 lastUpdatedDate)
                         .map(groupInvitationsWithVersion -> RequestHandlerResultFactory
-                                .get(ClientMessagePool.getTurmsNotificationDataBuilder()
+                                .of(ClientMessagePool.getTurmsNotificationDataBuilder()
                                         .setGroupInvitationsWithVersion(groupInvitationsWithVersion)
                                         .build()));
             }
@@ -599,7 +862,7 @@ public class GroupServiceController extends BaseServiceController {
                             groupId,
                             lastUpdatedDate)
                     .map(groupInvitationsWithVersion -> RequestHandlerResultFactory
-                            .get(ClientMessagePool.getTurmsNotificationDataBuilder()
+                            .of(ClientMessagePool.getTurmsNotificationDataBuilder()
                                     .setGroupInvitationsWithVersion(groupInvitationsWithVersion)
                                     .build()));
         };
@@ -621,7 +884,7 @@ public class GroupServiceController extends BaseServiceController {
                             groupId,
                             lastUpdatedDate)
                     .map(groupJoinRequestsWithVersion -> RequestHandlerResultFactory
-                            .get(ClientMessagePool.getTurmsNotificationDataBuilder()
+                            .of(ClientMessagePool.getTurmsNotificationDataBuilder()
                                     .setGroupJoinRequestsWithVersion(groupJoinRequestsWithVersion)
                                     .build()));
         };
@@ -641,7 +904,7 @@ public class GroupServiceController extends BaseServiceController {
                             request.getWithAnswers(),
                             lastUpdatedDate)
                     .map(groupJoinQuestionsWithVersion -> RequestHandlerResultFactory
-                            .get(ClientMessagePool.getTurmsNotificationDataBuilder()
+                            .of(ClientMessagePool.getTurmsNotificationDataBuilder()
                                     .setGroupJoinQuestionsWithVersion(groupJoinQuestionsWithVersion)
                                     .build()));
         };
@@ -681,9 +944,10 @@ public class GroupServiceController extends BaseServiceController {
                     ? new Date(request.getMuteEndDate())
                     : null;
             Set<Long> userIds = CollectionUtil.toSet(request.getUserIdsList());
+            Long groupId = request.getGroupId();
             return groupMemberService
                     .authAndAddGroupMembers(clientRequest.userId(),
-                            request.getGroupId(),
+                            groupId,
                             userIds,
                             request.hasRole()
                                     ? request.getRole()
@@ -691,9 +955,28 @@ public class GroupServiceController extends BaseServiceController {
                             name,
                             muteEndDate,
                             null)
-                    .map(member -> member != null && notifyUserAfterAddedToGroupByOthers
-                            ? RequestHandlerResultFactory.get(userIds, clientRequest.turmsRequest())
-                            : RequestHandlerResultFactory.OK);
+                    .flatMap(newMembers -> {
+                        if (notifyOtherGroupMembersOfGroupMemberAdded) {
+                            return groupMemberService.queryGroupMemberIds(groupId, false)
+                                    .map(memberIds -> {
+                                        memberIds = CollectionUtil.remove(memberIds,
+                                                clientRequest.userId());
+                                        if (!notifyAddedGroupMemberOfGroupMemberAdded) {
+                                            memberIds.removeAll(userIds);
+                                        }
+                                        return RequestHandlerResultFactory
+                                                .of(true, memberIds, clientRequest.turmsRequest());
+                                    });
+                        } else if (notifyAddedGroupMemberOfGroupMemberAdded) {
+                            return Mono.just(RequestHandlerResultFactory.of(
+                                    notifyRequesterOtherOnlineSessionsOfGroupMemberAdded,
+                                    userIds,
+                                    clientRequest.turmsRequest()));
+                        }
+                        return Mono.just(RequestHandlerResultFactory.of(
+                                notifyRequesterOtherOnlineSessionsOfGroupMemberAdded,
+                                clientRequest.turmsRequest()));
+                    });
         };
     }
 
@@ -710,22 +993,38 @@ public class GroupServiceController extends BaseServiceController {
                     : null;
             Set<Long> memberIdsToDelete = CollectionUtil.toSet(request.getMemberIdsList());
             Long requesterId = clientRequest.userId();
+            Long groupId = request.getGroupId();
             return groupMemberService
                     .authAndDeleteGroupMembers(requesterId,
-                            request.getGroupId(),
+                            groupId,
                             memberIdsToDelete,
                             successorId,
                             quitAfterTransfer)
-                    .map(deletedUserIds -> {
-                        if (!notifyUserAfterRemovedFromGroupByOthers
-                                || deletedUserIds.isEmpty()
-                                || (deletedUserIds.size() == 1
-                                        && deletedUserIds.contains(requesterId))) {
-                            return RequestHandlerResultFactory.OK;
+                    .flatMap(deletedUserIds -> {
+                        if (deletedUserIds.isEmpty()) {
+                            // Notify nobody because nothing has happened
+                            return Mono.just(RequestHandlerResultFactory.OK);
                         }
-                        deletedUserIds.remove(requesterId);
-                        return RequestHandlerResultFactory.get(deletedUserIds,
-                                clientRequest.turmsRequest());
+                        if (notifyOtherGroupMembersOfGroupMemberRemoved) {
+                            return groupMemberService.queryGroupMemberIds(groupId, false)
+                                    .map(memberIds -> {
+                                        memberIds = CollectionUtil.remove(memberIds,
+                                                clientRequest.userId());
+                                        if (notifyRemovedGroupMemberOfGroupMemberRemoved) {
+                                            memberIds.addAll(deletedUserIds);
+                                        }
+                                        return RequestHandlerResultFactory
+                                                .of(true, memberIds, clientRequest.turmsRequest());
+                                    });
+                        } else if (notifyRemovedGroupMemberOfGroupMemberRemoved) {
+                            return Mono.just(RequestHandlerResultFactory.of(
+                                    notifyRequesterOtherOnlineSessionsOfGroupMemberRemoved,
+                                    deletedUserIds,
+                                    clientRequest.turmsRequest()));
+                        }
+                        return Mono.just(RequestHandlerResultFactory.of(
+                                notifyRequesterOtherOnlineSessionsOfGroupMemberRemoved,
+                                clientRequest.turmsRequest()));
                     });
         };
     }
@@ -749,7 +1048,7 @@ public class GroupServiceController extends BaseServiceController {
                                 memberIds,
                                 withStatus)
                         .map(groupMembersWithVersion -> RequestHandlerResultFactory
-                                .get(ClientMessagePool.getTurmsNotificationDataBuilder()
+                                .of(ClientMessagePool.getTurmsNotificationDataBuilder()
                                         .setGroupMembersWithVersion(groupMembersWithVersion)
                                         .build()));
             }
@@ -759,7 +1058,7 @@ public class GroupServiceController extends BaseServiceController {
                             lastUpdatedDate,
                             withStatus)
                     .map(groupMembersWithVersion -> RequestHandlerResultFactory
-                            .get(ClientMessagePool.getTurmsNotificationDataBuilder()
+                            .of(ClientMessagePool.getTurmsNotificationDataBuilder()
                                     .setGroupMembersWithVersion(groupMembersWithVersion)
                                     .build()));
         };
@@ -779,23 +1078,32 @@ public class GroupServiceController extends BaseServiceController {
             Date muteEndDate = request.hasMuteEndDate()
                     ? new Date(request.getMuteEndDate())
                     : null;
-            return groupMemberService.authAndUpdateGroupMember(clientRequest
-                    .userId(), request.getGroupId(), request.getMemberId(), name, role, muteEndDate)
+            Long groupId = request.getGroupId();
+            Long updatedMemberId = request.getMemberId();
+            return groupMemberService
+                    .authAndUpdateGroupMember(clientRequest
+                            .userId(), groupId, updatedMemberId, name, role, muteEndDate)
                     .then(Mono.defer(() -> {
-                        if (notifyMembersAfterOtherMemberInfoUpdated) {
-                            return groupMemberService
-                                    .queryGroupMemberIds(request.getGroupId(), true)
-                                    .map(groupMemberIds -> groupMemberIds.isEmpty()
-                                            ? RequestHandlerResultFactory.OK
-                                            : RequestHandlerResultFactory.get(groupMemberIds,
-                                                    clientRequest.turmsRequest()));
-                        } else if (!clientRequest.userId()
-                                .equals(request.getMemberId())
-                                && notifyMemberAfterInfoUpdatedByOthers) {
-                            return Mono.just(RequestHandlerResultFactory.get(clientRequest.userId(),
+                        if (notifyOtherGroupMembersOfGroupMemberInfoUpdated) {
+                            return groupMemberService.queryGroupMemberIds(groupId, false)
+                                    .map(memberIds -> {
+                                        memberIds = CollectionUtil.remove(memberIds,
+                                                clientRequest.userId());
+                                        if (!notifyUpdatedGroupMemberOfGroupMemberInfoUpdated) {
+                                            memberIds.remove(updatedMemberId);
+                                        }
+                                        return RequestHandlerResultFactory
+                                                .of(true, memberIds, clientRequest.turmsRequest());
+                                    });
+                        } else if (notifyUpdatedGroupMemberOfGroupMemberInfoUpdated) {
+                            return Mono.just(RequestHandlerResultFactory.of(
+                                    notifyRequesterOtherOnlineSessionsOfGroupMemberInfoUpdated,
+                                    updatedMemberId,
                                     clientRequest.turmsRequest()));
                         }
-                        return Mono.just(RequestHandlerResultFactory.OK);
+                        return Mono.just(RequestHandlerResultFactory.of(
+                                notifyRequesterOtherOnlineSessionsOfGroupMemberInfoUpdated,
+                                clientRequest.turmsRequest()));
                     }));
         };
     }

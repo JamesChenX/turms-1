@@ -44,17 +44,17 @@ public final class ServiceResponseFactory {
     private ServiceResponseFactory() {
     }
 
-    public static ServiceResponse get(@NotNull ResponseStatusCode statusCode) {
+    public static ServiceResponse of(@NotNull ResponseStatusCode statusCode) {
         return POOL.get(statusCode);
     }
 
-    public static ServiceResponse get(@NotNull ResponseStatusCode statusCode, String message) {
+    public static ServiceResponse of(@NotNull ResponseStatusCode statusCode, String message) {
         return message == null
                 ? POOL.get(statusCode)
                 : new ServiceResponse(null, statusCode, message);
     }
 
-    public static ServiceResponse get(
+    public static ServiceResponse of(
             @Nullable TurmsNotification.Data data,
             @NotNull ResponseStatusCode statusCode,
             @Nullable String message) {

@@ -373,7 +373,10 @@ public class UserFriendRequestService extends ExpirableEntityService<UserFriendR
         return userFriendRequestRepository.findRequesterAndRecipient(requestId);
     }
 
-    public Mono<Void> authAndHandleFriendRequest(
+    /**
+     * @return The friend request requester ID
+     */
+    public Mono<Long> authAndHandleFriendRequest(
             @NotNull Long friendRequestId,
             @NotNull Long requesterId,
             @NotNull @ValidResponseAction ResponseAction action,
@@ -392,7 +395,7 @@ public class UserFriendRequestService extends ExpirableEntityService<UserFriendR
                 return Mono.error(ResponseException
                         .get(ResponseStatusCode.REQUESTER_NOT_FRIEND_REQUEST_RECIPIENT));
             }
-            return switch (action) {
+            Mono<?> result = switch (action) {
                 case ACCEPT -> userFriendRequestRepository
                         .inTransaction(session -> updatePendingFriendRequestStatus(friendRequestId,
                                 RequestStatus.ACCEPTED,
@@ -412,8 +415,8 @@ public class UserFriendRequestService extends ExpirableEntityService<UserFriendR
                 default -> Mono.error(ResponseException.get(ResponseStatusCode.ILLEGAL_ARGUMENT,
                         "The response action must not be UNRECOGNIZED"));
             };
-        })
-                .then();
+            return result.thenReturn(request.getRequesterId());
+        });
     }
 
     public Mono<UserFriendRequestsWithVersion> queryFriendRequestsWithVersion(

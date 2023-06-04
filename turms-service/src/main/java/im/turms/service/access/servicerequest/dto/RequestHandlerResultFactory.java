@@ -45,102 +45,141 @@ public final class RequestHandlerResultFactory {
         Set<Long> recipients = Collections.emptySet();
         for (ResponseStatusCode code : ResponseStatusCode.VALUES) {
             RequestHandlerResult result =
-                    new RequestHandlerResult(null, false, recipients, null, code, null);
+                    new RequestHandlerResult(code, null, false, recipients, null, null);
             POOL.put(code, result);
         }
     }
 
-    public static final RequestHandlerResult OK = get(ResponseStatusCode.OK);
+    public static final RequestHandlerResult OK = of(ResponseStatusCode.OK);
 
-    public static final RequestHandlerResult NO_CONTENT = get(ResponseStatusCode.NO_CONTENT);
+    public static final RequestHandlerResult NO_CONTENT = of(ResponseStatusCode.NO_CONTENT);
 
-    public static RequestHandlerResult get(@NotNull ResponseStatusCode code) {
+    public static RequestHandlerResult of(@NotNull ResponseStatusCode code) {
         return POOL.get(code);
     }
 
-    public static RequestHandlerResult get(
+    public static RequestHandlerResult of(
             @NotNull ResponseStatusCode code,
             @Nullable String reason) {
         if (reason == null) {
             return POOL.get(code);
         }
-        return new RequestHandlerResult(null, false, Collections.emptySet(), null, code, reason);
+        return new RequestHandlerResult(code, null, false, Collections.emptySet(), null, reason);
     }
 
-    public static RequestHandlerResult get(@NotNull TurmsNotification.Data dataForRequester) {
+    public static RequestHandlerResult of(@NotNull TurmsNotification.Data dataForRequester) {
         return new RequestHandlerResult(
+                ResponseStatusCode.OK,
                 dataForRequester,
                 false,
                 Collections.emptySet(),
                 null,
-                ResponseStatusCode.OK,
                 null);
     }
 
-    public static RequestHandlerResult get(
+    public static RequestHandlerResult of(
+            boolean forwardDataForRecipientsToOtherRequesterOnlineSessions,
+            @NotNull TurmsRequest dataForRecipient) {
+        return new RequestHandlerResult(
+                ResponseStatusCode.OK,
+                null,
+                forwardDataForRecipientsToOtherRequesterOnlineSessions,
+                Collections.emptySet(),
+                dataForRecipient,
+                null);
+    }
+
+    public static RequestHandlerResult of(
+            boolean forwardDataForRecipientsToOtherRequesterOnlineSessions,
             @NotNull Long recipientId,
             @NotNull TurmsRequest dataForRecipient) {
         return new RequestHandlerResult(
+                ResponseStatusCode.OK,
+                null,
+                forwardDataForRecipientsToOtherRequesterOnlineSessions,
+                Collections.singleton(recipientId),
+                dataForRecipient,
+                null);
+    }
+
+    public static RequestHandlerResult of(
+            @NotNull Long recipientId,
+            @NotNull TurmsRequest dataForRecipient) {
+        return new RequestHandlerResult(
+                ResponseStatusCode.OK,
                 null,
                 false,
                 Collections.singleton(recipientId),
                 dataForRecipient,
-                ResponseStatusCode.OK,
                 null);
     }
 
-    public static RequestHandlerResult get(
+    public static RequestHandlerResult of(
             @NotEmpty Set<Long> recipientIds,
             @NotNull TurmsRequest dataForRecipient) {
         return new RequestHandlerResult(
+                ResponseStatusCode.OK,
                 null,
                 false,
                 recipientIds,
                 dataForRecipient,
-                ResponseStatusCode.OK,
                 null);
     }
 
-    public static RequestHandlerResult get(
+    public static RequestHandlerResult of(
+            boolean forwardDataForRecipientsToOtherRequesterOnlineSessions,
             @NotEmpty Set<Long> recipientIds,
-            @NotNull TurmsRequest dataForRecipient,
-            boolean forwardDataForRecipientsToOtherSenderOnlineDevices) {
+            @NotNull TurmsRequest dataForRecipient) {
         return new RequestHandlerResult(
+                ResponseStatusCode.OK,
                 null,
-                forwardDataForRecipientsToOtherSenderOnlineDevices,
+                forwardDataForRecipientsToOtherRequesterOnlineSessions,
                 recipientIds,
                 dataForRecipient,
-                ResponseStatusCode.OK,
                 null);
     }
 
-    public static RequestHandlerResult get(
+    public static RequestHandlerResult of(
+            @NotNull ResponseStatusCode code,
             @NotNull Long recipientId,
-            @NotNull TurmsRequest dataForRecipient,
-            @NotNull ResponseStatusCode code) {
+            @NotNull TurmsRequest dataForRecipient) {
         return new RequestHandlerResult(
-                null,
-                false,
-                Collections.singleton(recipientId),
-                dataForRecipient,
                 code,
+                null,
+                false,
+                Collections.singleton(recipientId),
+                dataForRecipient,
                 null);
     }
 
-    public static RequestHandlerResult getByDataLong(@NotNull Long value) {
+    public static RequestHandlerResult of(
+            @NotNull ResponseStatusCode code,
+            boolean forwardDataForRecipientsToOtherRequesterOnlineSessions,
+            @NotNull Long recipientId,
+            @NotNull TurmsRequest dataForRecipient) {
+        return new RequestHandlerResult(
+                code,
+                null,
+                forwardDataForRecipientsToOtherRequesterOnlineSessions,
+                Collections.singleton(recipientId),
+                dataForRecipient,
+                null);
+    }
+
+    public static RequestHandlerResult ofDataLong(@NotNull Long value) {
         TurmsNotification.Data data = ClientMessagePool.getTurmsNotificationDataBuilder()
                 .setLong(value)
                 .build();
         return new RequestHandlerResult(
+                ResponseStatusCode.OK,
                 data,
                 false,
                 Collections.emptySet(),
                 null,
-                ResponseStatusCode.OK,
                 null);
     }
 
-    public static RequestHandlerResult getByDataLong(
+    public static RequestHandlerResult ofDataLong(
             @NotNull Long value,
             @NotNull Long recipientId,
             @NotNull TurmsRequest dataForRecipient) {
@@ -148,42 +187,77 @@ public final class RequestHandlerResultFactory {
                 .setLong(value)
                 .build();
         return new RequestHandlerResult(
+                ResponseStatusCode.OK,
                 data,
                 false,
                 Collections.singleton(recipientId),
                 dataForRecipient,
-                ResponseStatusCode.OK,
                 null);
     }
 
-    public static RequestHandlerResult getByDataLong(
+    public static RequestHandlerResult ofDataLong(
             @NotNull Long value,
+            boolean forwardDataForRecipientsToOtherRequesterOnlineSessions,
+            @NotNull Long recipientId,
+            @NotNull TurmsRequest dataForRecipient) {
+        TurmsNotification.Data data = ClientMessagePool.getTurmsNotificationDataBuilder()
+                .setLong(value)
+                .build();
+        return new RequestHandlerResult(
+                ResponseStatusCode.OK,
+                data,
+                forwardDataForRecipientsToOtherRequesterOnlineSessions,
+                Collections.singleton(recipientId),
+                dataForRecipient,
+                null);
+    }
+
+    public static RequestHandlerResult ofDataLong(
+            @NotNull Long value,
+            boolean forwardDataForRecipientsToOtherRequesterOnlineSessions,
+            @NotNull TurmsRequest dataForRecipient) {
+        TurmsNotification.Data data = ClientMessagePool.getTurmsNotificationDataBuilder()
+                .setLong(value)
+                .build();
+        return new RequestHandlerResult(
+                ResponseStatusCode.OK,
+                data,
+                forwardDataForRecipientsToOtherRequesterOnlineSessions,
+                Collections.emptySet(),
+                forwardDataForRecipientsToOtherRequesterOnlineSessions
+                        ? dataForRecipient
+                        : null,
+                null);
+    }
+
+    public static RequestHandlerResult ofDataLong(
+            @NotNull Long value,
+            boolean forwardDataForRecipientsToOtherRequesterOnlineSessions,
             @NotEmpty Set<Long> recipients,
-            boolean forwardDataForRecipientsToOtherSenderOnlineDevices,
             TurmsRequest dataForRecipients) {
         TurmsNotification.Data data = ClientMessagePool.getTurmsNotificationDataBuilder()
                 .setLong(value)
                 .build();
         return new RequestHandlerResult(
+                ResponseStatusCode.OK,
                 data,
-                forwardDataForRecipientsToOtherSenderOnlineDevices,
+                forwardDataForRecipientsToOtherRequesterOnlineSessions,
                 recipients,
                 dataForRecipients,
-                ResponseStatusCode.OK,
                 null);
     }
 
-    public static RequestHandlerResult getByDataLongs(@NotNull Collection<Long> values) {
+    public static RequestHandlerResult ofDataLongs(@NotNull Collection<Long> values) {
         TurmsNotification.Data data = ClientMessagePool.getTurmsNotificationDataBuilder()
                 .setLongsWithVersion(ClientMessagePool.getLongsWithVersionBuilder()
                         .addAllLongs(values))
                 .build();
         return new RequestHandlerResult(
+                ResponseStatusCode.OK,
                 data,
                 false,
                 Collections.emptySet(),
                 null,
-                ResponseStatusCode.OK,
                 null);
     }
 

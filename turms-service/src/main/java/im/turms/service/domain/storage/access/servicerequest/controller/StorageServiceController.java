@@ -101,7 +101,7 @@ public class StorageServiceController extends BaseServiceController {
             return storageService
                     .queryResourceUploadInfo(clientRequest
                             .userId(), resourceType, resourceIdNum, name, mediaType, extra)
-                    .map(info -> RequestHandlerResultFactory.get(ClientMessagePool
+                    .map(info -> RequestHandlerResultFactory.of(ClientMessagePool
                             .getTurmsNotificationDataBuilder()
                             .setStringsWithVersion(ClientMessagePool.getStringsWithVersionBuilder()
                                     .addAllStrings(ProtoModelConvertor.toList(info)))
@@ -125,7 +125,7 @@ public class StorageServiceController extends BaseServiceController {
             return storageService
                     .queryResourceDownloadInfo(clientRequest
                             .userId(), resourceType, resourceIdNum, resourceIdStr, extra)
-                    .map(info -> RequestHandlerResultFactory.get(ClientMessagePool
+                    .map(info -> RequestHandlerResultFactory.of(ClientMessagePool
                             .getTurmsNotificationDataBuilder()
                             .setStringsWithVersion(ClientMessagePool.getStringsWithVersionBuilder()
                                     .addAllStrings(ProtoModelConvertor.toList(info))
@@ -233,7 +233,7 @@ public class StorageServiceController extends BaseServiceController {
                             creationDateRange);
                 }
             }
-            return result.map(infos -> RequestHandlerResultFactory.get(ClientMessagePool
+            return result.map(infos -> RequestHandlerResultFactory.of(ClientMessagePool
                     .getTurmsNotificationDataBuilder()
                     .setStorageResourceInfos(ClientMessagePool.getStorageResourceInfosBuilder()
                             .addAllInfos(CollectionUtil.transformAsList(infos,

@@ -51,6 +51,10 @@ import im.turms.server.common.infra.collection.CollectorUtil;
 import im.turms.server.common.infra.lang.Pair;
 import im.turms.server.common.infra.property.TurmsProperties;
 import im.turms.server.common.infra.property.TurmsPropertiesManager;
+import im.turms.server.common.infra.property.env.service.business.notification.NotificationProperties;
+import im.turms.server.common.infra.property.env.service.business.notification.group.NotificationGroupMemberOnlineStatusUpdatedProperties;
+import im.turms.server.common.infra.property.env.service.business.notification.user.NotificationUserInfoUpdatedProperties;
+import im.turms.server.common.infra.property.env.service.business.notification.user.NotificationUserOnlineStatusUpdatedProperties;
 import im.turms.server.common.infra.reactor.PublisherPool;
 import im.turms.server.common.infra.recycler.ListRecycler;
 import im.turms.server.common.infra.recycler.Recyclable;
@@ -86,9 +90,13 @@ public class UserServiceController extends BaseServiceController {
     private final SessionService sessionService;
     private final GroupMemberService groupMemberService;
 
-    private boolean notifyMembersAfterOtherMemberOnlineStatusUpdated;
-    private boolean notifyRelatedUsersAfterOtherRelatedUserOnlineStatusUpdated;
-    private boolean notifyRelatedUsersAfterOtherRelatedUserInfoUpdated;
+    private boolean notifyRequesterOtherOnlineSessionsOfUserInfoUpdated;
+    private boolean notifyNonBlockedRelatedUsersOfUserInfoUpdated;
+
+    private boolean notifyRequesterOtherOnlineSessionsOfUserOnlineStatusUpdated;
+    private boolean notifyNonBlockedRelatedUsersOfUserOnlineStatusUpdated;
+    private boolean notifyGroupMembersOfMemberOnlineStatusUpdated;
+
     private boolean respondOfflineIfInvisible;
 
     public UserServiceController(
@@ -112,15 +120,29 @@ public class UserServiceController extends BaseServiceController {
     }
 
     private void updateProperties(TurmsProperties properties) {
-        notifyMembersAfterOtherMemberOnlineStatusUpdated = properties.getService()
-                .getNotification()
-                .isNotifyMembersAfterOtherMemberOnlineStatusUpdated();
-        notifyRelatedUsersAfterOtherRelatedUserOnlineStatusUpdated = properties.getService()
-                .getNotification()
-                .isNotifyRelatedUsersAfterOtherRelatedUserOnlineStatusUpdated();
-        notifyRelatedUsersAfterOtherRelatedUserInfoUpdated = properties.getService()
-                .getNotification()
-                .isNotifyRelatedUsersAfterOtherRelatedUserInfoUpdated();
+        NotificationProperties notificationProperties = properties.getService()
+                .getNotification();
+
+        NotificationUserInfoUpdatedProperties notificationUserInfoUpdatedProperties =
+                notificationProperties.getUserInfoUpdated();
+        notifyRequesterOtherOnlineSessionsOfUserInfoUpdated =
+                notificationUserInfoUpdatedProperties.isNotifyRequesterOtherOnlineSessions();
+        notifyNonBlockedRelatedUsersOfUserInfoUpdated =
+                notificationUserInfoUpdatedProperties.isNotifyNonBlockedRelatedUsers();
+
+        NotificationUserOnlineStatusUpdatedProperties notificationUserOnlineStatusUpdatedProperties =
+                notificationProperties.getUserOnlineStatusUpdated();
+        notifyRequesterOtherOnlineSessionsOfUserOnlineStatusUpdated =
+                notificationUserOnlineStatusUpdatedProperties
+                        .isNotifyRequesterOtherOnlineSessions();
+        notifyNonBlockedRelatedUsersOfUserOnlineStatusUpdated =
+                notificationUserOnlineStatusUpdatedProperties.isNotifyNonBlockedRelatedUsers();
+
+        NotificationGroupMemberOnlineStatusUpdatedProperties notificationGroupMemberOnlineStatusUpdatedProperties =
+                notificationProperties.getGroupMemberOnlineStatusUpdated();
+        notifyGroupMembersOfMemberOnlineStatusUpdated =
+                notificationGroupMemberOnlineStatusUpdatedProperties.isNotifyGroupMembers();
+
         respondOfflineIfInvisible = properties.getService()
                 .getUser()
                 .isRespondOfflineIfInvisible();
@@ -146,7 +168,7 @@ public class UserServiceController extends BaseServiceController {
                                             .build());
                         }
                         return RequestHandlerResultFactory
-                                .get(ClientMessagePool.getTurmsNotificationDataBuilder()
+                                .of(ClientMessagePool.getTurmsNotificationDataBuilder()
                                         .setUserInfosWithVersion(
                                                 userInfosWithVersionBuilder.build())
                                         .build());
@@ -185,7 +207,7 @@ public class UserServiceController extends BaseServiceController {
                                     ProtoModelConvertor.nearbyUser2proto(nearbyUser));
                         }
                         return RequestHandlerResultFactory
-                                .get(ClientMessagePool.getTurmsNotificationDataBuilder()
+                                .of(ClientMessagePool.getTurmsNotificationDataBuilder()
                                         .setNearbyUsers(builder.build())
                                         .build());
                     });
@@ -220,7 +242,7 @@ public class UserServiceController extends BaseServiceController {
                                             respondOfflineIfInvisible));
                         }
                         return RequestHandlerResultFactory
-                                .get(ClientMessagePool.getTurmsNotificationDataBuilder()
+                                .of(ClientMessagePool.getTurmsNotificationDataBuilder()
                                         .setUserOnlineStatuses(statusesBuilder)
                                         .build());
                     });
@@ -243,9 +265,9 @@ public class UserServiceController extends BaseServiceController {
     }
 
     /**
-     * Do not notify the user status change to somebodies like her/his related users. The client
-     * itself should query whether there is any user status changes according to your own business
-     * scenarios.
+     * Do not notify the user status change to the related users and members of joined groups
+     * because the client itself should query whether there are any user status changes, according
+     * to their own business scenarios.
      */
     @ServiceRequestMapping(UPDATE_USER_ONLINE_STATUS_REQUEST)
     public ClientRequestHandler handleUpdateUserOnlineStatusRequest() {
@@ -254,9 +276,8 @@ public class UserServiceController extends BaseServiceController {
                     .getUpdateUserOnlineStatusRequest();
             UserStatus userStatus = request.getUserStatus();
             if (userStatus == UserStatus.UNRECOGNIZED) {
-                return Mono
-                        .just(RequestHandlerResultFactory.get(ResponseStatusCode.ILLEGAL_ARGUMENT,
-                                "The user status must not be UNRECOGNIZED"));
+                return Mono.just(RequestHandlerResultFactory.of(ResponseStatusCode.ILLEGAL_ARGUMENT,
+                        "The user status must not be UNRECOGNIZED"));
             }
             Mono<Boolean> updateMono;
             if (userStatus == UserStatus.OFFLINE) {
@@ -270,10 +291,13 @@ public class UserServiceController extends BaseServiceController {
                 updateMono = userStatusService
                         .updateOnlineUserStatusIfPresent(clientRequest.userId(), userStatus);
             }
-            boolean notifyMembers = notifyMembersAfterOtherMemberOnlineStatusUpdated;
-            boolean notifyRelatedUser = notifyRelatedUsersAfterOtherRelatedUserOnlineStatusUpdated;
-            if (!notifyMembers && !notifyRelatedUser) {
-                return updateMono.thenReturn(RequestHandlerResultFactory.OK);
+            boolean notifyMembers = notifyGroupMembersOfMemberOnlineStatusUpdated;
+            boolean notifyNonBlockedRelatedUser =
+                    notifyNonBlockedRelatedUsersOfUserOnlineStatusUpdated;
+            if (!notifyMembers && !notifyNonBlockedRelatedUser) {
+                return updateMono.thenReturn(RequestHandlerResultFactory.of(
+                        notifyRequesterOtherOnlineSessionsOfUserOnlineStatusUpdated,
+                        clientRequest.turmsRequest()));
             }
             Mono<Set<Long>> queryMemberIds = notifyMembers
                     ? groupMemberService
@@ -282,7 +306,7 @@ public class UserServiceController extends BaseServiceController {
             Mono<List<Long>> queryRelatedUserIds;
 
             Recyclable<List<Long>> recyclableList;
-            if (notifyRelatedUser) {
+            if (notifyNonBlockedRelatedUser) {
                 recyclableList = ListRecycler.obtain();
                 queryRelatedUserIds = userRelationshipService
                         .queryRelatedUserIds(Set.of(clientRequest.userId()), false)
@@ -295,8 +319,12 @@ public class UserServiceController extends BaseServiceController {
                     .map(results -> {
                         Set<Long> recipients = CollectionUtil.add(results.getT1(), results.getT2());
                         return recipients.isEmpty()
-                                ? RequestHandlerResultFactory.OK
-                                : RequestHandlerResultFactory.get(recipients,
+                                ? RequestHandlerResultFactory.of(
+                                        notifyRequesterOtherOnlineSessionsOfUserOnlineStatusUpdated,
+                                        clientRequest.turmsRequest())
+                                : RequestHandlerResultFactory.of(
+                                        notifyRequesterOtherOnlineSessionsOfUserOnlineStatusUpdated,
+                                        recipients,
                                         clientRequest.turmsRequest());
                     })
                     .doFinally(signalType -> {
@@ -336,19 +364,24 @@ public class UserServiceController extends BaseServiceController {
                             null,
                             null)
                     .then(Mono.defer(() -> {
-                        if (notifyRelatedUsersAfterOtherRelatedUserInfoUpdated) {
+                        if (notifyNonBlockedRelatedUsersOfUserInfoUpdated) {
                             Recyclable<List<Long>> recyclableList = ListRecycler.obtain();
                             return userRelationshipService
                                     .queryRelatedUserIds(Set.of(clientRequest.userId()), false)
                                     .collect(Collectors.toCollection(recyclableList::getValue))
                                     .map(relatedUserIds -> relatedUserIds.isEmpty()
-                                            ? RequestHandlerResultFactory.OK
-                                            : RequestHandlerResultFactory.get(
+                                            ? RequestHandlerResultFactory.of(
+                                                    notifyRequesterOtherOnlineSessionsOfUserInfoUpdated,
+                                                    clientRequest.turmsRequest())
+                                            : RequestHandlerResultFactory.of(
+                                                    notifyRequesterOtherOnlineSessionsOfUserInfoUpdated,
                                                     CollectionUtil.newSet(relatedUserIds),
                                                     clientRequest.turmsRequest()))
                                     .doFinally(signalType -> recyclableList.recycle());
                         }
-                        return Mono.just(RequestHandlerResultFactory.OK);
+                        return Mono.just(RequestHandlerResultFactory.of(
+                                notifyRequesterOtherOnlineSessionsOfUserInfoUpdated,
+                                clientRequest.turmsRequest()));
                     }));
         };
     }

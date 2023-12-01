@@ -1,0 +1,21 @@
+dynamic getFontSize(dynamic sizeValue) {
+  if (sizeValue is String &&
+      ['small', 'normal', 'large', 'huge'].contains(sizeValue)) {
+    return sizeValue;
+  }
+
+  if (sizeValue is double) {
+    return sizeValue;
+  }
+
+  if (sizeValue is int) {
+    return sizeValue.toDouble();
+  }
+
+  assert(sizeValue is String);
+  final fontSize = double.tryParse(sizeValue as String);
+  if (fontSize == null) {
+    throw ArgumentError('Invalid size $sizeValue');
+  }
+  return fontSize;
+}

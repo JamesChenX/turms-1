@@ -1,0 +1,4 @@
+enum SettingActionOnClose {
+  minimizeToTray,
+  exit,
+}

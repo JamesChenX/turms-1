@@ -1,10 +1,12 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:turms_chat_demo/ui/pages/home_page/settings_page/settings_pane.dart';
+import 'package:turms_chat_demo/ui/pages/home_page/settings_page/sub_navigation_rail.dart';
 
-import '../../../components/t_title_bar.dart';
+import '../../../components/components.dart';
 import '../../../themes/theme_config.dart';
 import 'settings_page_controller.dart';
-import 'settings_pane.dart';
-import 'sub_navigation_rail.dart';
 
 class SettingsPageView extends StatelessWidget {
   const SettingsPageView(this.settingsPageController);
@@ -16,23 +18,25 @@ class SettingsPageView extends StatelessWidget {
         width: ThemeConfig.dialogWidthMedium,
         height: ThemeConfig.dialogHeightMedium,
         // color: ThemeConfig.homePageBackgroundColor,
-        child: Stack(
+        child: Row(
           children: [
-            Row(
-              children: [
-                SubNavigationRail(onTabSelected: (index, tab) {
-                  settingsPageController.selectTab(index, tab);
-                }),
-                const Expanded(
-                  child: SettingsPane(),
-                ),
-              ],
+            SubNavigationRail(onTabSelected: settingsPageController.selectTab),
+            const Expanded(
+              child: Column(
+                children: [
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: TTitleBar(
+                      backgroundColor: ThemeConfig.homePageBackgroundColor,
+                      displayCloseOnly: true,
+                      popOnCloseTapped: true,
+                      usePositioned: false,
+                    ),
+                  ),
+                  Expanded(child: SettingsPane()),
+                ],
+              ),
             ),
-            const TTitleBar(
-              backgroundColor: ThemeConfig.homePageBackgroundColor,
-              displayCloseOnly: true,
-              popOnCloseTapped: true,
-            )
           ],
         ),
       );

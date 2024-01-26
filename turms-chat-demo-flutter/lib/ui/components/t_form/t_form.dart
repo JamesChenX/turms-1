@@ -14,6 +14,7 @@ class TForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: formData.groups.indexed.expand((item) {
           final (index, group) = item;
@@ -21,17 +22,18 @@ class TForm extends StatelessWidget {
           if (index > 0) {
             children.add(const Padding(
               padding: EdgeInsets.symmetric(vertical: 16),
+              // child: SizedBox.shrink(),
               child: THorizontalDivider(),
             ));
           }
           children.add(Text(group.title,
               key: group.titleKey, style: const TextStyle(fontSize: 16)));
-          group.fields.indexed.expand<Widget>(
-            (element) {
-              final (index, field) = element;
-              return _buildFormField(index, field);
-            },
-          ).forEach(children.add);
+          for (final element in group.fields.indexed) {
+            final (index, field) = element;
+            for (final widget in _buildFormField(index, field)) {
+              children.add(widget);
+            }
+          }
           return children;
         }).toList(),
       );
@@ -41,14 +43,14 @@ class TForm extends StatelessWidget {
     widgets.add(const SizedBox(
       height: 8,
     ));
-    final List<Widget> list = switch (field) {
-      TFormFieldCheckbox() => [
+    final list = switch (field) {
+      TFormFieldCheckbox() => <Widget>[
           TSimpleCheckbox(
               onChanged: field.onChanged,
               value: field.value,
               label: field.label)
         ],
-      TFormFieldRadioGroup() => [
+      TFormFieldRadioGroup() => <Widget>[
           Wrap(
             direction: Axis.vertical,
             spacing: 8,
@@ -75,7 +77,7 @@ class TForm extends StatelessWidget {
             ],
           ),
         ],
-      TFormFieldShortcutTextField() => [
+      TFormFieldShortcutTextField() => <Widget>[
           Row(mainAxisSize: MainAxisSize.min, children: [
             Text(field.label),
             const SizedBox(
@@ -90,7 +92,7 @@ class TForm extends StatelessWidget {
             )
           ])
         ],
-      TFormFieldSelect() => [
+      TFormFieldSelect() => <Widget>[
           Row(mainAxisSize: MainAxisSize.min, children: [
             Text(field.label),
             const SizedBox(
@@ -110,7 +112,7 @@ class TForm extends StatelessWidget {
             )
           ])
         ],
-      _ => []
+      _ => <Widget>[]
     };
     widgets.addAll(list);
     return widgets;

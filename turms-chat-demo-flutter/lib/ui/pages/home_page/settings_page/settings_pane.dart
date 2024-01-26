@@ -36,14 +36,11 @@ class _SettingsPaneState extends ConsumerState<SettingsPane> {
   bool _checkForUpdatesAutomatically = true;
 
   @override
-  Widget build(BuildContext context) => Align(
-        alignment: Alignment.topLeft,
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-            child: TForm(
-              formData: TFormData(groups: _buildFormGroups(context)),
-            ),
+  Widget build(BuildContext context) => SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
+          child: TForm(
+            formData: TFormData(groups: _buildFormGroups(context)),
           ),
         ),
       );

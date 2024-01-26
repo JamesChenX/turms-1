@@ -15,10 +15,12 @@ class TTitleBar extends ConsumerStatefulWidget {
       {super.key,
       this.displayCloseOnly = false,
       this.popOnCloseTapped = false,
+      this.usePositioned = true,
       required this.backgroundColor});
 
   final bool displayCloseOnly;
   final bool popOnCloseTapped;
+  final bool usePositioned;
   final Color backgroundColor;
 
   @override
@@ -39,7 +41,9 @@ class _TTitleBarState extends ConsumerState<TTitleBar> {
             buildMaximizeButton(localizations),
             buildCloseButton(context, localizations),
           ]);
-    return Positioned(top: 0, right: 0, child: child);
+    return widget.usePositioned
+        ? Positioned(top: 0, right: 0, child: child)
+        : child;
   }
 
   TIconButton buildSetAlwaysOnTopButton(AppLocalizations localizations) =>

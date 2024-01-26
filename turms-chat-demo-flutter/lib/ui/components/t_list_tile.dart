@@ -15,6 +15,7 @@ class TListTile extends StatefulWidget {
           ThemeConfig.conversationFocusedBackgroundColor,
       this.hoveredBackgroundColor =
           ThemeConfig.conversationHoveredBackgroundColor,
+      this.mouseCursor = SystemMouseCursors.basic,
       this.onTap,
       required this.child})
       : super(key: key);
@@ -25,6 +26,7 @@ class TListTile extends StatefulWidget {
   final Color backgroundColor;
   final Color focusedBackgroundColor;
   final Color hoveredBackgroundColor;
+  final MouseCursor mouseCursor;
   final GestureTapCallback? onTap;
   final Widget child;
 
@@ -37,6 +39,7 @@ class _TListTileState extends State<TListTile> {
 
   @override
   Widget build(BuildContext context) => MouseRegion(
+      cursor: widget.mouseCursor,
       onEnter: (_) => setState(() => isHovered = true),
       onExit: (_) => setState(() => isHovered = false),
       child: GestureDetector(

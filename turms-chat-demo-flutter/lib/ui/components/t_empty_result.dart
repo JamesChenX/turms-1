@@ -50,7 +50,7 @@ class TEmptyResult extends ConsumerWidget {
           const SizedBox(height: 16),
           Text(appLocalizations.noResultsFound,
               style: const TextStyle(
-                  fontSize: 18, color: ThemeConfig.secondaryTextColor)),
+                  fontSize: 18, color: ThemeConfig.textColorSecondary)),
           const SizedBox(height: 32),
         ],
       ),

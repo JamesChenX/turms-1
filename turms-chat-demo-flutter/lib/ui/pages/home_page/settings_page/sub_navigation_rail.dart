@@ -39,7 +39,7 @@ class _SubNavigationRailState extends ConsumerState<SubNavigationRail> {
                     textAlign: TextAlign.start,
                     appLocalizations.settings,
                     style: const TextStyle(
-                        fontSize: 16, color: ThemeConfig.secondaryTextColor)),
+                        fontSize: 16, color: ThemeConfig.textColorSecondary)),
               ),
               TTabs(
                   tabs: [

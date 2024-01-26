@@ -163,7 +163,7 @@ class CreateGroupPageView extends StatelessWidget {
                     right: 8,
                     child: TIconButton(
                       iconData: Symbols.close_rounded,
-                      iconColor: ThemeConfig.secondaryTextColor,
+                      iconColor: ThemeConfig.textColorSecondary,
                       iconSize: 16,
                       addContainer: false,
                       onTap: () {

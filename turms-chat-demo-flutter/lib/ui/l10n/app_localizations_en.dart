@@ -14,6 +14,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get actionOnClose => 'Action on Close';
 
   @override
+  String get actions => 'Actions';
+
+  @override
+  String get downloadStart => 'Start';
+
+  @override
+  String get downloadPause => 'Pause';
+
+  @override
+  String get downloadCancel => 'Cancel';
+
+  @override
+  String get openFolder => 'Open Folder';
+
+  @override
   String get addContact => 'Add Contact';
 
   @override
@@ -171,6 +186,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pleaseEnterUserId => 'Please enter user ID';
+
+  @override
+  String get progress => 'Progress';
 
   @override
   String get rememberMe => 'Remember Me';

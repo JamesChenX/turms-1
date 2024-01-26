@@ -56,7 +56,7 @@ class _TCheckboxState extends State<TCheckbox> {
             ),
             Text(widget.text,
                 style: const TextStyle(
-                    color: ThemeConfig.secondaryTextColor, fontSize: 16))
+                    color: ThemeConfig.textColorSecondary, fontSize: 16))
           ]),
         ));
   }

@@ -14,6 +14,21 @@ class AppLocalizationsZh extends AppLocalizations {
   String get actionOnClose => '关闭时的动作';
 
   @override
+  String get actions => '操作';
+
+  @override
+  String get downloadStart => '开始下载';
+
+  @override
+  String get downloadPause => '暂停下载';
+
+  @override
+  String get downloadCancel => '取消下载';
+
+  @override
+  String get openFolder => '打开文件夹';
+
+  @override
   String get addContact => '添加联系人';
 
   @override
@@ -171,6 +186,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get pleaseEnterUserId => '请输入用户ID';
+
+  @override
+  String get progress => '进度';
 
   @override
   String get rememberMe => '记住我';

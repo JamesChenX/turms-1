@@ -49,7 +49,7 @@ class LoginFormView extends StatelessWidget {
                     // hide length counter
                     counterText: '',
                     prefixIcon: const Icon(Symbols.person_outline_rounded,
-                        color: ThemeConfig.secondaryTextColor),
+                        color: ThemeConfig.textColorSecondary),
                     isCollapsed: true,
                     contentPadding: EdgeInsets.symmetric(vertical: 16),
                     enabledBorder: const UnderlineInputBorder(
@@ -84,7 +84,7 @@ class LoginFormView extends StatelessWidget {
                     helperText: ' ',
                     // contentPadding: EdgeInsets.only(bottom: 8),
                     prefixIcon: const Icon(Symbols.lock_outline_rounded,
-                        color: ThemeConfig.secondaryTextColor),
+                        color: ThemeConfig.textColorSecondary),
                     isCollapsed: true,
                     contentPadding: const EdgeInsets.symmetric(vertical: 16),
                     enabledBorder: const UnderlineInputBorder(

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 import '../../themes/theme_config.dart';
@@ -76,14 +78,19 @@ class _TTextButtonState extends State<TTextButton> {
             child: child,
             visible: false,
           ),
-          const Positioned.fill(
-              child: Center(
-            child: SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(
-                color: Colors.white,
-              ),
+          Positioned.fill(child: Center(
+            child: LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {
+                final size =
+                    min(constraints.maxWidth, constraints.maxHeight) * 0.8;
+                return SizedBox(
+                  width: size,
+                  height: size,
+                  child: const CircularProgressIndicator(
+                    color: Colors.white,
+                  ),
+                );
+              },
             ),
           ))
         ],

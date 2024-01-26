@@ -97,6 +97,7 @@ class _UserProfilePopupState extends ConsumerState<UserProfilePopup> {
         contact: UserContact.fromUser(loggedInUser, Int64(-1)));
     conversations.add(newConversation);
     ref.read(selectedConversationViewModel.notifier).state = newConversation;
+    // Scrollable.ensureVisible(context);
     setState(() {});
   }
 }

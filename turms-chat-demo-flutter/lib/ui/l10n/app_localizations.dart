@@ -111,6 +111,36 @@ abstract class AppLocalizations {
   /// **'Action on Close'**
   String get actionOnClose;
 
+  /// No description provided for @actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Actions'**
+  String get actions;
+
+  /// No description provided for @downloadStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get downloadStart;
+
+  /// No description provided for @downloadPause.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get downloadPause;
+
+  /// No description provided for @downloadCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get downloadCancel;
+
+  /// No description provided for @openFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Folder'**
+  String get openFolder;
+
   /// No description provided for @addContact.
   ///
   /// In en, this message translates to:
@@ -428,6 +458,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please enter user ID'**
   String get pleaseEnterUserId;
+
+  /// No description provided for @progress.
+  ///
+  /// In en, this message translates to:
+  /// **'Progress'**
+  String get progress;
 
   /// No description provided for @rememberMe.
   ///

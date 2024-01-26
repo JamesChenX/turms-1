@@ -69,8 +69,8 @@ class ThemeConfig {
   static const dialogHeightMedium = 470.0;
 
   static const borderDefaultColor = gray5;
-  static const textColor = Color(0xE0000000);
-  static const secondaryTextColor = Color(0xA6000000);
+  static const textColorPrimary = Color(0xE0000000);
+  static const textColorSecondary = Color(0xA6000000);
   static const checkboxColor = gray6;
   static const titleBarColor = gray9;
 
@@ -79,7 +79,7 @@ class ThemeConfig {
   static const paddingV16H8 = EdgeInsets.symmetric(vertical: 16, horizontal: 8);
   static const paddingH8 = EdgeInsets.symmetric(horizontal: 8);
 
-  static const textStyleSecondary = TextStyle(color: secondaryTextColor);
+  static const textStyleSecondary = TextStyle(color: textColorSecondary);
 
   static const homePageHeaderHeight = 60.0;
   static const homePageBackgroundColor = Color.fromARGB(255, 245, 245, 245);

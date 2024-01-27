@@ -3,12 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:turms_chat_demo/domain/user/models/friend_request.dart';
 import 'package:turms_chat_demo/ui/l10n/app_localizations.dart';
 
-import '../../../../components/t_avatar/t_avatar.dart';
-import '../../../../components/t_button/t_text_button.dart';
 import '../../../../components/t_horizontal_divider.dart';
 import '../../../../components/t_window_control_zone.dart';
 import '../../../../l10n/view_models/date_format_view_models.dart';
 import '../../../../themes/theme_config.dart';
+import 'friend_request_tile.dart';
 import 'friend_requests_page_controller.dart';
 
 class FriendRequestsPageView extends ConsumerWidget {
@@ -19,7 +18,7 @@ class FriendRequestsPageView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) => Stack(
         children: [
-          _buildProfile(ref),
+          _buildFriendRequestGroups(ref),
           TWindowControlZone(
             toggleMaximizeOnDoubleTap: true,
             child: SizedBox(
@@ -30,7 +29,7 @@ class FriendRequestsPageView extends ConsumerWidget {
         ],
       );
 
-  Padding _buildProfile(WidgetRef ref) {
+  Padding _buildFriendRequestGroups(WidgetRef ref) {
     final now = DateTime.now();
     final appLocalizations = friendRequestsPageController.appLocalizations;
     return Padding(
@@ -80,54 +79,20 @@ class FriendRequestsPageView extends ConsumerWidget {
         const SizedBox(height: 12),
         ...friendRequests.indexed.expand((item) {
           final (requestIndex, friendRequest) = item;
-          // TODO: use real data
-          const senderName = 'test';
           return [
             if (requestIndex > 0) const SizedBox(height: 16),
-            _buildFriendRequestTile(
-                senderName, friendRequest.message, appLocalizations)
+            FriendRequestTile(
+              key: Key(friendRequest.id.toString()),
+              friendRequest: friendRequest,
+              onAccept: () async {
+                await friendRequestsPageController.acceptFriendRequest(
+                    friendRequest,
+                );
+              }, onStartConversation: () {
+
+            },
+            )
           ];
         })
       ];
-
-  Row _buildFriendRequestTile(String senderName, String message,
-          AppLocalizations appLocalizations) =>
-      Row(
-        children: [
-          TAvatar(name: senderName),
-          const SizedBox(
-            width: 16,
-          ),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  senderName,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
-                  message,
-                  style: ThemeConfig.textStyleSecondary,
-                  strutStyle: StrutStyle.fromTextStyle(
-                      ThemeConfig.textStyleSecondary,
-                      forceStrutHeight: true),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  // style: TextStyle(),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 16),
-          TTextButton(
-            padding: ThemeConfig.paddingV4H8,
-            text: appLocalizations.accept,
-            onTap: () {},
-          ),
-          const SizedBox(width: 8),
-        ],
-      );
 }

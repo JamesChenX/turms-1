@@ -17,12 +17,12 @@ class TTextButton extends StatefulWidget {
       this.border,
       this.borderHovered,
       this.isLoading = false,
-      required this.onTap})
+      this.onTap})
       : padding = padding ?? ThemeConfig.paddingV8H16;
 
   factory TTextButton.outlined(
           {required String text,
-          required VoidCallback onTap,
+          VoidCallback? onTap,
           double? width,
           EdgeInsets? padding}) =>
       TTextButton(
@@ -48,7 +48,7 @@ class TTextButton extends StatefulWidget {
   final BoxBorder? borderHovered;
   final bool isLoading;
 
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   @override
   State<StatefulWidget> createState() => _TTextButtonState();
@@ -117,7 +117,7 @@ class _TTextButtonState extends State<TTextButton> {
         cursor: SystemMouseCursors.click,
         onEnter: (_) => setState(() => _isHovered = true),
         onExit: (_) => setState(() => _isHovered = false),
-        child: widget.isLoading
+        child: widget.isLoading || widget.onTap == null
             ? child
             : GestureDetector(
                 onTap: widget.onTap,

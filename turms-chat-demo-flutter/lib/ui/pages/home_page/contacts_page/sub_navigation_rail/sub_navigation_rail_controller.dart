@@ -40,7 +40,7 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
 
   @override
   Widget build(BuildContext context) {
-    appLocalizations = ref.read(appLocalizationsViewModel);
+    appLocalizations = ref.watch(appLocalizationsViewModel);
     contacts = ref.watch(contactsViewModel);
     selectedContact = ref.watch(selectedContactViewModel);
     return SubNavigationRailView(this);

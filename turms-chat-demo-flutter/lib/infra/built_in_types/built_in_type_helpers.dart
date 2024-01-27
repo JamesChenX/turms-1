@@ -53,4 +53,11 @@ extension ListExtensions<T> on List<T> {
       this[index2] = tmp1;
     }
   }
+
+  void replace(T oldElement, T newElement) {
+    final index = indexWhere((element) => element == oldElement);
+    if (index != -1) {
+      this[index] = newElement;
+    }
+  }
 }

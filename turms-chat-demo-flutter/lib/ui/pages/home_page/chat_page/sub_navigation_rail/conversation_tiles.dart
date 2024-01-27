@@ -37,6 +37,7 @@ class _ConversationTilesState extends State<ConversationTiles> {
         final selectedConversationId =
             subNavigationRailController.selectedConversation?.id;
         return ConversationTile(
+          key: Key(conversation.id),
           conversation: conversation,
           focused: selectedConversationId == conversation.id,
           onTap: () {

@@ -38,85 +38,83 @@ class TForm extends StatelessWidget {
         }).toList(),
       );
 
-  List<Widget> _buildFormField(int index, TFormField field) {
-    final widgets = <Widget>[];
-    widgets.add(const SizedBox(
-      height: 8,
-    ));
-    final list = switch (field) {
-      TFormFieldCheckbox() => <Widget>[
-          TSimpleCheckbox(
-              onChanged: field.onChanged,
-              value: field.value,
-              label: field.label)
-        ],
-      TFormFieldRadioGroup() => <Widget>[
-          Wrap(
-            direction: Axis.vertical,
-            spacing: 8,
-            children: [
-              Text(field.label),
-              Wrap(
-                  direction: Axis.vertical,
-                  spacing: 8,
-                  // crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    for (final radio in field.radios)
-                      TRadio(
-                        value: radio.value,
-                        groupValue: field.groupValue,
-                        label: radio.label,
-                        onChanged: (value) {
-                          // TODO: Wait for "declaration-site variance"
-                          // https://github.com/dart-lang/language/issues/524
-                          (radio as dynamic)?.onChanged?.call(value);
-                          (field as dynamic)?.onChanged?.call(value);
-                        },
-                      )
-                  ])
-            ],
-          ),
-        ],
-      TFormFieldShortcutTextField() => <Widget>[
-          Row(mainAxisSize: MainAxisSize.min, children: [
-            Text(field.label),
-            const SizedBox(
-              width: 16,
-            ),
-            SizedBox(
-              width: 180,
-              child: TShortcutTextField(
-                initialKeys: field.initialKeys,
-                onShortcutChanged: field.onShortcutChanged,
-              ),
-            )
-          ])
-        ],
-      TFormFieldSelect() => <Widget>[
-          Row(mainAxisSize: MainAxisSize.min, children: [
-            Text(field.label),
-            const SizedBox(
-              width: 16,
-            ),
-            SizedBox(
-              width: 180,
-              child: TDropdownMenu(
+  List<Widget> _buildFormField(int index, TFormField field) =>
+      <Widget>[
+        const SizedBox(
+          height: 8,
+        )
+      ] +
+      switch (field) {
+        TFormFieldCheckbox() => <Widget>[
+            TSimpleCheckbox(
+                onChanged: field.onChanged,
                 value: field.value,
-                entries: field.entries,
-                onSelected: (TDropdownMenuEntry item) {
-                  // TODO: Wait for "declaration-site variance"
-                  // https://github.com/dart-lang/language/issues/524
-                  (field as dynamic).onSelected.call(item.value);
-                },
+                label: field.label)
+          ],
+        TFormFieldRadioGroup() => <Widget>[
+            Wrap(
+              direction: Axis.vertical,
+              spacing: 8,
+              children: [
+                Text(field.label),
+                Wrap(
+                    direction: Axis.vertical,
+                    spacing: 8,
+                    // crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      for (final radio in field.radios)
+                        TRadio(
+                          value: radio.value,
+                          groupValue: field.groupValue,
+                          label: radio.label,
+                          onChanged: (value) {
+                            // TODO: Wait for "declaration-site variance"
+                            // https://github.com/dart-lang/language/issues/524
+                            (radio as dynamic)?.onChanged?.call(value);
+                            (field as dynamic)?.onChanged?.call(value);
+                          },
+                        )
+                    ])
+              ],
+            ),
+          ],
+        TFormFieldShortcutTextField() => <Widget>[
+            Row(mainAxisSize: MainAxisSize.min, children: [
+              Text(field.label),
+              const SizedBox(
+                width: 16,
               ),
-            )
-          ])
-        ],
-      _ => <Widget>[]
-    };
-    widgets.addAll(list);
-    return widgets;
-  }
+              SizedBox(
+                width: 180,
+                child: TShortcutTextField(
+                  initialKeys: field.initialKeys,
+                  onShortcutChanged: field.onShortcutChanged,
+                ),
+              )
+            ])
+          ],
+        TFormFieldSelect() => <Widget>[
+            Row(mainAxisSize: MainAxisSize.min, children: [
+              Text(field.label),
+              const SizedBox(
+                width: 16,
+              ),
+              SizedBox(
+                width: 180,
+                child: TDropdownMenu(
+                  value: field.value,
+                  entries: field.entries,
+                  onSelected: (TDropdownMenuEntry item) {
+                    // TODO: Wait for "declaration-site variance"
+                    // https://github.com/dart-lang/language/issues/524
+                    (field as dynamic).onSelected.call(item.value);
+                  },
+                ),
+              )
+            ])
+          ],
+        _ => <Widget>[]
+      };
 }
 
 class TFormData {

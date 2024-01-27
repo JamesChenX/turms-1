@@ -48,7 +48,7 @@ class _TTitleBarState extends ConsumerState<TTitleBar> {
 
   TIconButton buildSetAlwaysOnTopButton(AppLocalizations localizations) =>
       TIconButton(
-          size: const Size(36, 28),
+          size: ThemeConfig.titleBarSize,
           color: _isAlwaysOnTop
               ? widget.backgroundColor.darken()
               : widget.backgroundColor,
@@ -68,7 +68,7 @@ class _TTitleBarState extends ConsumerState<TTitleBar> {
 
   TIconButton buildMinimizeButton(AppLocalizations localizations) =>
       TIconButton(
-          size: const Size(36, 28),
+          size: ThemeConfig.titleBarSize,
           color: widget.backgroundColor,
           hoverColor: const Color.fromARGB(255, 226, 226, 226),
           iconData: Symbols.horizontal_rule,
@@ -80,7 +80,7 @@ class _TTitleBarState extends ConsumerState<TTitleBar> {
   TIconButton buildMaximizeButton(AppLocalizations localizations) {
     final isWindowMaximized = ref.watch(isWindowMaximizedViewModel);
     return TIconButton(
-      size: const Size(36, 28),
+      size: ThemeConfig.titleBarSize,
       color: widget.backgroundColor,
       hoverColor: const Color.fromARGB(255, 226, 226, 226),
       iconData: isWindowMaximized ? Symbols.stack : Symbols.crop_square_rounded,
@@ -102,7 +102,7 @@ class _TTitleBarState extends ConsumerState<TTitleBar> {
   TIconButton buildCloseButton(
           BuildContext context, AppLocalizations localizations) =>
       TIconButton(
-        size: const Size(36, 28),
+        size: ThemeConfig.titleBarSize,
         color: widget.backgroundColor,
         hoverColor: Colors.red,
         iconData: Symbols.close,

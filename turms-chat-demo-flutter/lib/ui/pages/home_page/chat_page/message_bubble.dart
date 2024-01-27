@@ -5,8 +5,8 @@ import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../../domain/message/message_delivery_status.dart';
 import '../../../../domain/user/models/user.dart';
-import '../../../components/t_avatar/t_avatar.dart';
 import '../../../themes/theme_config.dart';
+import '../shared_components/user_profile_popup.dart';
 import 'message.dart';
 
 class MessageBubble extends StatefulWidget {
@@ -54,7 +54,8 @@ class _MessageBubbleState extends State<MessageBubble> {
             : Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TAvatar(name: user.name, image: user.image),
+                  // TAvatar(name: user.name, image: user.image),
+                  UserProfilePopup(user: user),
                   const SizedBox(
                     width: 8,
                   ),
@@ -97,9 +98,9 @@ class _MessageBubbleState extends State<MessageBubble> {
         const SizedBox(
           width: 8,
         ),
-        TAvatar(
-          name: user.name,
-          image: user.image,
+        UserProfilePopup(
+          user: user,
+          position: UserProfilePopupPosition.bottomLeft,
         )
       ],
     );

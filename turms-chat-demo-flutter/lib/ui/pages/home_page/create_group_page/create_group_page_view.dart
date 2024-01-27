@@ -97,6 +97,7 @@ class CreateGroupPageView extends StatelessWidget {
       itemBuilder: (BuildContext context, int index) {
         final userContact = userContacts[index];
         return TListTile(
+          key: Key(userContact.id),
           backgroundColor: Colors.white,
           padding: ThemeConfig.paddingH8,
           height: 40,
@@ -136,41 +137,34 @@ class CreateGroupPageView extends StatelessWidget {
         itemBuilder: (BuildContext context, int index) {
           final userContact = selectedUserContacts[index];
           return TListTile(
+            key: Key(userContact.id),
             backgroundColor: Colors.white,
             padding: ThemeConfig.paddingH8,
             height: 40,
-            child: Stack(
+            child: Row(
               children: [
-                Row(
-                  children: [
-                    TAvatar(
-                      name: userContact.name,
-                      size: TAvatarSize.small,
-                    ),
-                    const SizedBox(width: 8),
-                    Flexible(
-                      child: Text(
-                        userContact.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
+                TAvatar(
+                  name: userContact.name,
+                  size: TAvatarSize.small,
                 ),
-                Positioned(
-                    top: 0,
-                    bottom: 0,
-                    right: 8,
-                    child: TIconButton(
-                      iconData: Symbols.close_rounded,
-                      iconColor: ThemeConfig.textColorSecondary,
-                      iconSize: 16,
-                      addContainer: false,
-                      onTap: () {
-                        createGroupPageController.onContactSelectedChanged(
-                            userContact, false);
-                      },
-                    ))
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    userContact.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                TIconButton(
+                  iconData: Symbols.close_rounded,
+                  iconColor: ThemeConfig.textColorSecondary,
+                  iconSize: 16,
+                  addContainer: false,
+                  onTap: () {
+                    createGroupPageController.onContactSelectedChanged(
+                        userContact, false);
+                  },
+                )
               ],
             ),
           );

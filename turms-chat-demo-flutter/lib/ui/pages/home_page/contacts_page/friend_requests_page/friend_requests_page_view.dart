@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:turms_chat_demo/domain/user/models/friend_request.dart';
+import 'package:turms_chat_demo/ui/l10n/app_localizations.dart';
 
 import '../../../../components/t_avatar/t_avatar.dart';
 import '../../../../components/t_button/t_text_button.dart';
@@ -18,10 +20,10 @@ class FriendRequestsPageView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) => Stack(
         children: [
           _buildProfile(ref),
-          const TWindowControlZone(
+          TWindowControlZone(
             toggleMaximizeOnDoubleTap: true,
             child: SizedBox(
-              height: ThemeConfig.homePageHeaderHeight,
+              height: ThemeConfig.titleBarSize.height,
               width: double.infinity,
             ),
           ),
@@ -32,84 +34,100 @@ class FriendRequestsPageView extends ConsumerWidget {
     final now = DateTime.now();
     final appLocalizations = friendRequestsPageController.appLocalizations;
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 64, horizontal: 32),
+      padding: EdgeInsets.only(
+          top: ThemeConfig.titleBarSize.height + 8,
+          bottom: 16,
+          left: 16,
+          // Used to avoid the scrollbar aligning to the right exactly.
+          right: 16),
       child: Align(
         alignment: Alignment.topCenter,
         // TODO: load lazily
         child: ListView(
+          // Prevent the scrollbar from overlapping children.
+          padding: const EdgeInsets.only(right: 24),
           children: friendRequestsPageController
               .creationDateToFriendRequests.entries.indexed
               .expand((item) {
             final (entryIndex, creationDateAndFriendRequests) = item;
             final creationDate = creationDateAndFriendRequests.key;
-            Widget creationDateWidget;
-            if (DateUtils.isSameDay(creationDate, now)) {
-              creationDateWidget = Text(appLocalizations.today);
-            } else if (creationDate.year == now.year) {
-              creationDateWidget =
-                  Text(ref.watch(dateFormatViewModel_Md).format(creationDate));
-            } else {
-              creationDateWidget =
-                  Text(ref.watch(dateFormatViewModel_yMd).format(creationDate));
-            }
             final friendRequests = creationDateAndFriendRequests.value;
-            // TODO: use real data
-            const senderName = 'test';
-            return [
-              if (entryIndex > 0) const SizedBox(height: 16),
-              creationDateWidget,
-              const SizedBox(height: 8),
-              THorizontalDivider(),
-              const SizedBox(height: 12),
-              ...friendRequests.indexed.expand((item) {
-                final (requestIndex, friendRequest) = item;
-                return [
-                  if (requestIndex > 0) const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      TAvatar(name: senderName),
-                      const SizedBox(
-                        width: 16,
-                      ),
-                      Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              senderName,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            Text(
-                              'my message. ' * ((requestIndex + 1) * 3),
-                              style: ThemeConfig.textStyleSecondary,
-                              strutStyle: StrutStyle.fromTextStyle(
-                                  ThemeConfig.textStyleSecondary,
-                                  forceStrutHeight: true),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              // style: TextStyle(),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      TTextButton(
-                        padding: ThemeConfig.paddingV4H8,
-                        text: appLocalizations.accept,
-                        onTap: () {},
-                      ),
-                      // Prevent the scrollbar from overlapping the button
-                      const SizedBox(width: 24),
-                    ],
-                  )
-                ];
-              })
-            ];
+            return _buildFriendRequestGroupInSameDay(entryIndex, creationDate,
+                now, appLocalizations, ref, friendRequests);
           }).toList(),
         ),
       ),
     );
   }
+
+  List<Widget> _buildFriendRequestGroupInSameDay(
+          int entryIndex,
+          DateTime creationDate,
+          DateTime now,
+          AppLocalizations appLocalizations,
+          WidgetRef ref,
+          List<FriendRequest> friendRequests) =>
+      [
+        if (entryIndex > 0) const SizedBox(height: 16),
+        if (DateUtils.isSameDay(creationDate, now))
+          Text(appLocalizations.today)
+        else if (creationDate.year == now.year)
+          Text(ref.watch(dateFormatViewModel_Md).format(creationDate))
+        else
+          Text(ref.watch(dateFormatViewModel_yMd).format(creationDate)),
+        const SizedBox(height: 8),
+        const THorizontalDivider(),
+        const SizedBox(height: 12),
+        ...friendRequests.indexed.expand((item) {
+          final (requestIndex, friendRequest) = item;
+          // TODO: use real data
+          const senderName = 'test';
+          return [
+            if (requestIndex > 0) const SizedBox(height: 16),
+            _buildFriendRequestTile(
+                senderName, friendRequest.message, appLocalizations)
+          ];
+        })
+      ];
+
+  Row _buildFriendRequestTile(String senderName, String message,
+          AppLocalizations appLocalizations) =>
+      Row(
+        children: [
+          TAvatar(name: senderName),
+          const SizedBox(
+            width: 16,
+          ),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  senderName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  message,
+                  style: ThemeConfig.textStyleSecondary,
+                  strutStyle: StrutStyle.fromTextStyle(
+                      ThemeConfig.textStyleSecondary,
+                      forceStrutHeight: true),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  // style: TextStyle(),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 16),
+          TTextButton(
+            padding: ThemeConfig.paddingV4H8,
+            text: appLocalizations.accept,
+            onTap: () {},
+          ),
+          const SizedBox(width: 8),
+        ],
+      );
 }

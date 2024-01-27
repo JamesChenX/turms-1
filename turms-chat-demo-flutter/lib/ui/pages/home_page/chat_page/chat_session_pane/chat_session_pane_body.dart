@@ -96,7 +96,7 @@ class _ChatSessionPaneBodyState extends ConsumerState<ChatSessionPaneBody> {
               .firstWhere((element) => element.userId == message.senderId);
         }
         return MessageBubble(
-          key: UniqueKey(),
+          key: UniqueKey(), // TODO: use message ID
           user: user,
           message: message,
         );

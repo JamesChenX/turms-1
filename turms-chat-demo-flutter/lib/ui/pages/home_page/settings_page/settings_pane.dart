@@ -20,13 +20,17 @@ import 'setting_form_field_groups.dart';
 import 'setting_locale.dart';
 
 class SettingsPane extends ConsumerStatefulWidget {
-  const SettingsPane({super.key});
+  const SettingsPane(
+      {super.key, required this.onSettingFormFieldGroupScrolled});
+
+  final void Function(int index) onSettingFormFieldGroupScrolled;
 
   @override
   ConsumerState<SettingsPane> createState() => _SettingsPaneState();
 }
 
 class _SettingsPaneState extends ConsumerState<SettingsPane> {
+  GlobalKey _scrollViewKey = GlobalKey();
   SettingActionOnClose _actionOnClose = SettingActionOnClose.minimizeToTray;
 
   bool _newMessageNotification = true;
@@ -37,6 +41,7 @@ class _SettingsPaneState extends ConsumerState<SettingsPane> {
 
   @override
   Widget build(BuildContext context) => SingleChildScrollView(
+        key: _scrollViewKey,
         child: Padding(
           padding: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
           child: TForm(

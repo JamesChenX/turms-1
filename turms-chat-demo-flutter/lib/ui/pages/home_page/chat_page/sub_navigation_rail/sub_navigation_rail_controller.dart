@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -104,11 +105,16 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
     while (true) {
       conversationIndexForUpdating = random.nextInt(conversationCount);
       conversation = conversations[conversationIndexForUpdating];
+      final now = DateTime.now();
       if (conversation is PrivateConversation) {
         final contactId = conversation.contact.userId;
         if (contactId != loggedInUser.userId) {
-          conversation.messages.add(ChatMessage(contactId, false, message,
-              DateTime.now(), MessageDeliveryStatus.delivered));
+          conversation.messages.add(ChatMessage(
+              contactId,
+              false,
+              message,
+              now,
+              MessageDeliveryStatus.delivered));
           onMessageReceived(message, conversation, conversations,
               conversationIndexForUpdating);
           return;
@@ -118,8 +124,8 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
         final memberIds = conversation.contact.memberIds;
         final senderId =
             memberIds.firstWhere((memberId) => memberId != loggedInUser.userId);
-        conversation.messages.add(ChatMessage(senderId, false, message,
-            DateTime.now(), MessageDeliveryStatus.delivered));
+        conversation.messages.add(ChatMessage(
+            senderId, false, message, now, MessageDeliveryStatus.delivered));
         onMessageReceived(
             message, conversation, conversations, conversationIndexForUpdating);
         break;

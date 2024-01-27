@@ -79,7 +79,10 @@ class ThemeConfig {
   static const paddingV16H8 = EdgeInsets.symmetric(vertical: 16, horizontal: 8);
   static const paddingH8 = EdgeInsets.symmetric(horizontal: 8);
 
+  // static const unit = 2.0;
   static const textStyleSecondary = TextStyle(color: textColorSecondary);
+
+  static const titleBarSize = Size(36, 28);
 
   static const homePageHeaderHeight = 60.0;
   static const homePageBackgroundColor = Color.fromARGB(255, 245, 245, 245);

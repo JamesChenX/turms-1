@@ -24,4 +24,9 @@ class SettingsPageController extends State<SettingsPage> {
     }
     setState(() {});
   }
+
+  void selectTabWithoutScroll(int index) {
+    selectedTabIndex = index;
+    setState(() {});
+  }
 }

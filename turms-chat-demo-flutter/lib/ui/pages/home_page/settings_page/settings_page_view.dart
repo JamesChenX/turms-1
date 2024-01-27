@@ -21,10 +21,10 @@ class SettingsPageView extends StatelessWidget {
         child: Row(
           children: [
             SubNavigationRail(onTabSelected: settingsPageController.selectTab),
-            const Expanded(
+            Expanded(
               child: Column(
                 children: [
-                  Align(
+                  const Align(
                     alignment: Alignment.topRight,
                     child: TTitleBar(
                       backgroundColor: ThemeConfig.homePageBackgroundColor,
@@ -33,7 +33,11 @@ class SettingsPageView extends StatelessWidget {
                       usePositioned: false,
                     ),
                   ),
-                  Expanded(child: SettingsPane()),
+                  Expanded(
+                      child: SettingsPane(
+                    onSettingFormFieldGroupScrolled:
+                        settingsPageController.selectTabWithoutScroll,
+                  )),
                 ],
               ),
             ),

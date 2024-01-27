@@ -29,7 +29,7 @@ class ContactProfilePageView extends ConsumerWidget {
     }
     if (selectedContact is SystemContact &&
         selectedContact.type == SystemContactType.friendRequest) {
-      return FriendRequestsPage();
+      return const FriendRequestsPage();
     }
     final intro = selectedContact.intro;
     return Stack(

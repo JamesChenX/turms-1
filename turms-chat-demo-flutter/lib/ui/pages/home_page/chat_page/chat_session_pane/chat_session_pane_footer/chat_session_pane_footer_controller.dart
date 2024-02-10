@@ -2,8 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_quill/flutter_quill.dart';
-import 'package:flutter_quill/quill_delta.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:super_clipboard/super_clipboard.dart';
 import 'package:super_drag_and_drop/super_drag_and_drop.dart';
@@ -12,6 +10,7 @@ import '../../../../../../domain/conversation/models/conversation.dart';
 import '../../../../../../domain/message/message_delivery_status.dart';
 import '../../../../../../domain/user/view_models/logged_in_user_info_view_model.dart';
 import '../../../../../../infra/built_in_types/built_in_type_helpers.dart';
+import '../../../../../components/t_editor/t_editor.dart';
 import '../../../../../components/t_popup/t_popup.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../l10n/view_models/app_localizations_view_model.dart';
@@ -25,7 +24,7 @@ class ChatSessionPaneFooterController
   final List<DataReaderFile> localFiles = [];
   bool dragging = false;
 
-  late QuillController editorController;
+  late EmojiTextEditingController editorController;
   late FocusNode editorFocusNode;
 
   late TPopupController stickerPickerPopupController;
@@ -36,21 +35,16 @@ class ChatSessionPaneFooterController
   @override
   void initState() {
     super.initState();
-    final doc = Document();
-    editorController = QuillController(
-      document: doc,
-      selection: const TextSelection.collapsed(offset: 0),
-    );
+    editorController = EmojiTextEditingController();
     editorFocusNode = FocusNode();
-
     stickerPickerPopupController = TPopupController();
   }
 
   @override
   void dispose() {
+    super.dispose();
     editorController.dispose();
     editorFocusNode.dispose();
-    super.dispose();
   }
 
   @override
@@ -62,18 +56,17 @@ class ChatSessionPaneFooterController
       SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
         if (currentConversation != null) {
           final previousDraft = currentConversation.draft;
-          final draft = getEditorText();
+          final draft = getEditorDocument();
           if (draft != (previousDraft ?? '')) {
             currentConversation.draft = draft;
             selectedConversationViewModelRef.notifyListeners();
           }
         }
         final currentDraft = newConversation?.draft;
-        if (currentDraft?.isNotBlank ?? false) {
-          editorController.document =
-              Document.fromDelta(Delta()..insert(currentDraft!));
+        if (currentDraft?.isBlank ?? true) {
+          editorController.text = '';
         } else {
-          editorController.document = Document();
+          editorController.text = currentDraft!;
         }
         setState(() {});
       });
@@ -82,7 +75,7 @@ class ChatSessionPaneFooterController
     return ChatSessionPaneFooterView(this);
   }
 
-  String getEditorText() => editorController.document.toPlainText().trim();
+  String getEditorDocument() => editorController.text.trim();
 
   bool tryAddNewFile(List<DataReaderFile> newFiles) {
     var hasNewFile = false;
@@ -133,30 +126,34 @@ class ChatSessionPaneFooterController
   }
 
   void insertEmoji(String emoji) {
-    // _textFieldController.text =
-    //     _textFieldController.text + emoji;
     final selection = editorController.selection;
     final start = selection.start;
     final end = selection.end;
-    final delta = end - start;
-    if (delta > 0) {
-      editorController.document.delete(start, delta);
+    final text = editorController.text;
+    String prefix;
+    if (end >= text.length) {
+      prefix = text + emoji;
+      editorController.text = prefix;
+    } else {
+      prefix = text.substring(0, start) + emoji;
+      editorController.text = prefix + text.substring(end);
     }
-    editorController.document.insert(start, BlockEmbed('emoji', emoji));
-    editorController.moveCursorToPosition(start + 1);
-    // Request focus from sticker picker
+    editorController.selection = TextSelection.collapsed(offset: prefix.length);
+
     editorFocusNode.requestFocus();
     stickerPickerPopupController.hidePopover();
     setState(() {});
   }
 
   void sendMessage() {
-    final plainText = getEditorText();
+    final document = getEditorDocument();
     ref.read(selectedConversationViewModel.notifier).state!.messages.add(
-        ChatMessage(ref.read(loggedInUserViewModel)!.userId, true, plainText,
+        ChatMessage(ref.read(loggedInUserViewModel)!.userId, true, document,
             DateTime.now(), MessageDeliveryStatus.delivering));
     selectedConversationViewModelRef.notifyListeners();
-    editorController.document = Document();
+
+    editorController.text = '';
+    setState(() {});
     // TODO: send
   }
 

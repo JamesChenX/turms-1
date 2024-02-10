@@ -1,10 +1,10 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_quill/flutter_quill.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:super_drag_and_drop/super_drag_and_drop.dart';
 
 import '../../../../../components/t_button/t_icon_button.dart';
+import '../../../../../components/t_editor/t_editor.dart';
 import '../../../../../components/t_popup/t_popup.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../themes/theme_config.dart';
@@ -51,35 +51,33 @@ class ChatSessionPaneFooterView extends StatelessWidget {
       Column(
         children: [
           Expanded(
-              child: ColoredBox(
-            color: ThemeConfig.homePageBackgroundColor,
-            // child: SuperEditor(
-            //   editor: chatPageFooterController.editor,
-            //   document: chatPageFooterController.editorDoc,
-            //   composer: chatPageFooterController.editorDocComposer,
-            //   autofocus: true,
-            //   focusNode: chatPageFooterController.editorFocusNode,
-            //   scrollController: chatPageFooterController.editorScrollController,
-            //   documentLayoutKey: chatPageFooterController.editorDocLayoutKey,
-            // ),
-            child: QuillEditor.basic(
+            child: ColoredBox(
+              color: ThemeConfig.homePageBackgroundColor,
+              child: TEditor(
+                controller: chatPageFooterController.editorController,
+                autofocus: true,
                 focusNode: chatPageFooterController.editorFocusNode,
-                configurations: QuillEditorConfigurations(
-                  floatingCursorDisabled: true,
-                  embedBuilders: [
-                    // ...FlutterQuillEmbeds.defaultEditorBuilders(),
-                    EmojiEmbedBuilder(),
-                  ],
-                  onImagePaste: (imageFile) {
-                    // tryAddNewFile([imageFile]);
-                    return Future.value();
-                  },
-                  customStyles: DefaultStyles.getInstance(context),
-                  minHeight: 2000,
-                  expands: true,
-                  controller: chatPageFooterController.editorController,
-                )),
-          )),
+              ),
+            ),
+          ),
+          //   child: QuillEditor.basic(
+          //       focusNode: chatPageFooterController.editorFocusNode,
+          //       configurations: QuillEditorConfigurations(
+          //         floatingCursorDisabled: true,
+          //         embedBuilders: [
+          //           // ...FlutterQuillEmbeds.defaultEditorBuilders(),
+          //           EmojiEmbedBuilder(),
+          //         ],
+          //         onImagePaste: (imageFile) {
+          //           // tryAddNewFile([imageFile]);
+          //           return Future.value();
+          //         },
+          //         customStyles: DefaultStyles.getInstance(context),
+          //         minHeight: 2000,
+          //         expands: true,
+          //         controller: chatPageFooterController.editorController,
+          //       )),
+          // )),
           if (chatPageFooterController.localFiles.isNotEmpty)
             Align(
               alignment: Alignment.topLeft,

@@ -19,9 +19,6 @@ import 'app.dart';
 import 'app_view.dart';
 
 class AppController extends ConsumerState<App> with WindowListener {
-  // Used to avoiding unnecessary rebuilds and preserve children's states
-  // across multiple builds when minimizing and maximizing.
-  final homePageKey = GlobalKey();
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey();
 
   late AppTheme appTheme;

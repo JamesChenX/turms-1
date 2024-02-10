@@ -36,9 +36,9 @@ final class TrayUtils {
 }
 
 class _TrayListener extends TrayListener {
-  final void Function(MenuItem menuItem) onTrayMenuItemTap;
 
   _TrayListener({required this.onTrayMenuItemTap});
+  final void Function(MenuItem menuItem) onTrayMenuItemTap;
 
   @override
   Future<void> onTrayIconMouseDown() async {

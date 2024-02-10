@@ -1,21 +1,22 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_quill/flutter_quill.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../../domain/message/message_delivery_status.dart';
 import '../../../../domain/user/models/user.dart';
+import '../../../components/t_editor/t_editor.dart';
 import '../../../themes/theme_config.dart';
 import '../shared_components/user_profile_popup.dart';
 import 'message.dart';
 
 class MessageBubble extends StatefulWidget {
-  const MessageBubble({
+  MessageBubble({
     Key? key,
     required this.user,
     required this.message,
     this.onLongPress,
   }) : super(key: key);
+
   final User user;
   final ChatMessage message;
   final void Function(BuildContext, Offset)? onLongPress;
@@ -25,16 +26,12 @@ class MessageBubble extends StatefulWidget {
 }
 
 class _MessageBubbleState extends State<MessageBubble> {
-  late QuillController _controller;
+  late EmojiTextEditingController _controller;
 
   @override
   void initState() {
     super.initState();
-    final doc = Document()..insert(0, widget.message.text);
-    _controller = QuillController(
-      document: doc,
-      selection: const TextSelection.collapsed(offset: 0),
-    );
+    _controller = EmojiTextEditingController(text: widget.message.text);
   }
 
   @override
@@ -121,19 +118,27 @@ class _MessageBubbleState extends State<MessageBubble> {
           borderRadius: ThemeConfig.borderRadius4,
         ),
         child: IntrinsicWidth(
-          child: QuillEditor.basic(
-              configurations: QuillEditorConfigurations(
+          child: TEditor(
             controller: _controller,
-            customStyles: DefaultStyles.getInstance(context),
-            onTapOutside: (event, focusNode) {
-              _controller.updateSelection(
-                  const TextSelection.collapsed(offset: 0), ChangeSource.local);
-              focusNode.unfocus();
-            },
-            showCursor: false,
+            contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 4),
             readOnly: true,
-            scrollable: false,
-          )),
+            // onTapOutside: (event) {
+            //
+            // },
+          ),
+          // child: QuillEditor.basic(
+          //     configurations: QuillEditorConfigurations(
+          //   controller: _controller,
+          //   customStyles: DefaultStyles.getInstance(context),
+          //   onTapOutside: (event, focusNode) {
+          //     _controller.updateSelection(
+          //         const TextSelection.collapsed(offset: 0), ChangeSource.local);
+          //     focusNode.unfocus();
+          //   },
+          //   showCursor: false,
+          //   readOnly: true,
+          //   scrollable: false,
+          // )),
         ),
       ));
 }

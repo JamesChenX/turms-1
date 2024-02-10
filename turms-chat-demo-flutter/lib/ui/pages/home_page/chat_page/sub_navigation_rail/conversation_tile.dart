@@ -134,7 +134,7 @@ class _ConversationTileState extends ConsumerState<ConversationTile> {
             ),
           Flexible(
               child: Text(
-            draft == null ? (lastMessage?.text ?? '') : draft,
+            draft ?? lastMessage?.text ?? '',
             style: const TextStyle(color: ThemeConfig.gray7, fontSize: 14),
             strutStyle: const StrutStyle(fontSize: 14, forceStrutHeight: true),
             overflow: TextOverflow.ellipsis,

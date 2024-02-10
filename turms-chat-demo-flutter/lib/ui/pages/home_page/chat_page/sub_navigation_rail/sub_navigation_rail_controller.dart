@@ -110,11 +110,7 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
         final contactId = conversation.contact.userId;
         if (contactId != loggedInUser.userId) {
           conversation.messages.add(ChatMessage(
-              contactId,
-              false,
-              message,
-              now,
-              MessageDeliveryStatus.delivered));
+              contactId, false, message, now, MessageDeliveryStatus.delivered));
           onMessageReceived(message, conversation, conversations,
               conversationIndexForUpdating);
           return;

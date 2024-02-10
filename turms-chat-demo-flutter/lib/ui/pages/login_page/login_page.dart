@@ -10,30 +10,32 @@ class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
 
   @override
-  Widget build(BuildContext context) => Material(
-          child: Stack(children: [
-        const TWindowControlZone(toggleMaximizeOnDoubleTap: false),
-        const TTitleBar(displayCloseOnly: true, backgroundColor: Colors.white),
-        Padding(
-          padding:
-              const EdgeInsets.only(left: 36, right: 36, top: 36, bottom: 16),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-                color: Colors.white, borderRadius: BorderRadius.circular(20)),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                SvgPicture.asset(
-                  width: 320,
-                  Assets.images.logo,
-                ),
-                const SizedBox(
-                  height: 32,
-                ),
-                const LoginForm(),
-              ],
+  Widget build(BuildContext context) => Stack(children: [
+        ColoredBox(
+          color: Colors.white,
+          child: Padding(
+            padding:
+                const EdgeInsets.only(left: 36, right: 36, top: 36, bottom: 16),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                  color: Colors.white, borderRadius: BorderRadius.circular(20)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SvgPicture.asset(
+                    width: 320,
+                    Assets.images.logo,
+                  ),
+                  const SizedBox(
+                    height: 32,
+                  ),
+                  const LoginForm(),
+                ],
+              ),
             ),
           ),
-        )
-      ]));
+        ),
+        const TWindowControlZone(toggleMaximizeOnDoubleTap: false),
+        const TTitleBar(displayCloseOnly: true, backgroundColor: Colors.white),
+      ]);
 }

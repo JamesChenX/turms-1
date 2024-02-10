@@ -12,7 +12,6 @@ class Debouncer {
     VoidCallback callback,
   ) {
     if (duration == Duration.zero) {
-      // Call immediately
       callback();
       cancel(key);
     } else {

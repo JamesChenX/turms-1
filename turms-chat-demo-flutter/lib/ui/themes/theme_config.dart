@@ -1,6 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../infra/ui/color_extensions.dart';
+import '../../infra/ui/text_extensions.dart';
 
 // String getFontFamily() {
 //   final String? fontFamily;
@@ -19,6 +21,25 @@ import '../../infra/ui/color_extensions.dart';
 
 class ThemeConfig {
   ThemeConfig._();
+
+  static final emojiFontFamily = switch (defaultTargetPlatform) {
+    TargetPlatform.iOS || TargetPlatform.macOS => 'Apple Color Emoji',
+    TargetPlatform.android ||
+    TargetPlatform.fuchsia ||
+    TargetPlatform.linux =>
+      'Noto Color Emoji',
+    TargetPlatform.windows => 'Segoe UI Emoji'
+  };
+
+  static const emojiFontFamilyFallback = [
+    'Apple Color Emoji',
+    'Segoe UI Emoji',
+    'Segoe UI Symbol',
+    'Noto Color Emoji',
+    'Noto Color Emoji Compat',
+    'Android Emoji',
+    'EmojiSymbols'
+  ];
 
   static const borderRadius4 = BorderRadius.all(Radius.circular(4));
   static const borderRadius8 = BorderRadius.all(Radius.circular(8));
@@ -121,6 +142,7 @@ class ThemeConfig {
       //   // )
       // ),
       fontFamily: 'Microsoft YaHei',
+      fontFamilyFallback: emojiFontFamilyFallback,
       textSelectionTheme:
           const TextSelectionThemeData(cursorColor: Colors.black),
       inputDecorationTheme: const InputDecorationTheme(
@@ -135,15 +157,17 @@ class ThemeConfig {
       // textTheme: GoogleFonts.robotoTextTheme(Theme.of(context).textTheme),
       );
 
-  static final darkTheme = ThemeData(
-    useMaterial3: true,
-    // splashFactory: NoSplash.splashFactory,
-    brightness: Brightness.dark,
-    scaffoldBackgroundColor: darkBG,
-    colorScheme: ColorScheme.fromSwatch().copyWith(
-      secondary: darkAccent,
-      background: darkBG,
-      brightness: Brightness.dark,
-    ),
-  );
+  // todo
+  static final darkTheme = lightTheme;
+// static final darkTheme = ThemeData(
+//   useMaterial3: true,
+//   // splashFactory: NoSplash.splashFactory,
+//   brightness: Brightness.dark,
+//   scaffoldBackgroundColor: darkBG,
+//   colorScheme: ColorScheme.fromSwatch().copyWith(
+//     secondary: darkAccent,
+//     background: darkBG,
+//     brightness: Brightness.dark,
+//   ),
+// );
 }

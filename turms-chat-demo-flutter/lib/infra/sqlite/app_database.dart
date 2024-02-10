@@ -1,4 +1,6 @@
 import 'package:drift/drift.dart';
+import 'package:drift_dev/api/migrations.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../domain/app/tables/app_setting_table.dart';
 import '../../domain/user/tables/user_login_info_table.dart';
@@ -13,6 +15,16 @@ class AppDatabase extends _$AppDatabase {
 
   @override
   int get schemaVersion => 1;
+
+  @override
+  MigrationStrategy get migration =>
+      MigrationStrategy(
+          beforeOpen: (details) async {
+            if (kDebugMode) {
+              await validateDatabaseSchema();
+            }
+          }
+      );
 }
 
 final appDatabase = AppDatabase(DatabaseUtils.createDatabase(

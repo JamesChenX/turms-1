@@ -24,10 +24,13 @@ class ChatSessionPane extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedConversation = ref.watch(selectedConversationViewModel);
     if (selectedConversation == null) {
-      return const TWindowControlZone(
-          toggleMaximizeOnDoubleTap: true, child: TEmpty());
+      return const ColoredBox(
+        color: ThemeConfig.homePageBackgroundColor,
+        child: TWindowControlZone(
+            toggleMaximizeOnDoubleTap: true, child: TEmpty()),
+      );
     }
-    return Container(
+    return ColoredBox(
       color: ThemeConfig.homePageBackgroundColor,
       child: Column(
         children: [
@@ -58,7 +61,7 @@ class ChatSessionPane extends ConsumerWidget {
                     },
                     child: TDrawer(
                         controller: drawerController,
-                        child: ChatSessionDetailsPage())),
+                        child: const ChatSessionDetailsPage())),
               ],
             ),
           ),

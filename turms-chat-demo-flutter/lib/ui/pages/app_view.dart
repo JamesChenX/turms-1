@@ -14,37 +14,36 @@ class AppView extends StatelessWidget {
   final AppController appController;
 
   @override
-  Widget build(BuildContext context) => MaterialApp(
-    locale: appController.appTheme.locale,
-      debugShowCheckedModeBanner: false,
-      navigatorKey: appController.navigatorKey,
-      themeMode: appController.appTheme.themeMode,
-      theme: ThemeConfig.lightTheme,
-      // darkTheme: ThemeConfig.darkTheme,
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ],
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: GlobalKeyboardListener(
-        onKeyEvent: appController.onKeyEvent,
-        child: appController.isWindowMaximized
-            ? _buildPage()
-            : ClipRRect(
+  Widget build(BuildContext context) =>
+      MaterialApp(
+          locale: appController.appTheme.locale,
+          debugShowCheckedModeBanner: false,
+          navigatorKey: appController.navigatorKey,
+          themeMode: appController.appTheme.themeMode,
+          theme: ThemeConfig.lightTheme,
+          darkTheme: ThemeConfig.darkTheme,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Material(
+            child: GlobalKeyboardListener(
+              onKeyEvent: appController.onKeyEvent,
+              child: appController.shouldDisplayLoginPage
+              ? const ClipRRect(
                 borderRadius: ThemeConfig.borderRadius8,
-                child: _buildPage(),
+                child: LoginPage(),
+              )
+              :
+              ClipRRect(
+                clipBehavior: appController.isWindowMaximized
+                    ? Clip.antiAlias
+                    : Clip.none,
+                borderRadius: ThemeConfig.borderRadius8,
+                child: const HomePage(),
               ),
-      ));
-
-  Widget _buildPage() {
-    if (appController.shouldDisplayLoginPage) {
-      return const LoginPage();
-    } else {
-      return _buildHomePage();
-    }
-  }
-
-  Material _buildHomePage() =>
-      Material(key: appController.homePageKey, child: const HomePage());
+            ),
+          ));
 }

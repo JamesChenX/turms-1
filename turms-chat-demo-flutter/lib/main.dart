@@ -37,7 +37,7 @@ Future<void> main() async {
         // TODO: Send error logs to servers
       }
     });
-  } else {
+  } else if (kDebugMode) {
     debugInvertOversizedImages = true;
     // only uncomment when needed because it effects the performance.
     // FocusManager.instance.addListener(() {
@@ -57,9 +57,8 @@ Future<void> main() async {
   await AppConfig.load();
 
   if (kDebugMode) {
-    logger
-      ..d('The application directory: ${AppConfig.appDir}')
-      ..d('The application package info: ${AppConfig.packageInfo}');
+    logger..d('The application directory: ${AppConfig.appDir}')..d(
+        'The application package info: ${AppConfig.packageInfo}');
   }
 
   final container = ProviderContainer();
@@ -67,11 +66,15 @@ Future<void> main() async {
   await initForDesktopPlatforms(container);
 
   final appSettings = await appSettingsRepository.selectAll();
-  container.read(appSettingsViewModel.notifier).state =
+  container
+      .read(appSettingsViewModel.notifier)
+      .state =
       AppSettings.fromTableData(appSettings);
 
   final userLoginInfos = await userLoginInfoRepository.selectUserLoginInfos();
-  container.read(userLoginInfosViewModel.notifier).state = userLoginInfos;
+  container
+      .read(userLoginInfosViewModel.notifier)
+      .state = userLoginInfos;
 
   // Note that we need to setup window before painting,
   // otherwise UI will jitter.
@@ -80,15 +83,19 @@ Future<void> main() async {
       size: AppConfig.defaultWindowSizeBeforeLogin,
       backgroundColor: Colors.transparent,
       title: AppConfig.title);
-  runApp(UncontrolledProviderScope(container: container, child: App()));
+  runApp(UncontrolledProviderScope(container: container, child: const App()));
 }
 
 Future<void> initForDesktopPlatforms(ProviderContainer container) async {
   await WindowUtils.ensureInitialized();
   WindowUtils.addListener(WindowEventListener(onMaximize: () {
-    container.read(isWindowMaximizedViewModel.notifier).state = true;
+    container
+        .read(isWindowMaximizedViewModel.notifier)
+        .state = true;
   }, onUnmaximize: () {
-    container.read(isWindowMaximizedViewModel.notifier).state = false;
+    container
+        .read(isWindowMaximizedViewModel.notifier)
+        .state = false;
   }));
   try {
     await TrayUtils.initTray(

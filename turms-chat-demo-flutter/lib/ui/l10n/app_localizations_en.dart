@@ -77,7 +77,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get darkTheme => 'Dark';
 
   @override
-  String get draft => 'Draft';
+  String get draft => 'draft';
 
   @override
   String get dropFilesHere => 'Drop files here';

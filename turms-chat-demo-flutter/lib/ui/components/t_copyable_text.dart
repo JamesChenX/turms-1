@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../infra/built_in_types/built_in_type_helpers.dart';
+
 class TCopyableText extends StatelessWidget {
   const TCopyableText({
+    super.key,
+    required this.text,
     required this.child,
   });
 
+  final String text;
   final Text child;
 
   @override
   Widget build(BuildContext context) {
     final value = child.data;
-    if (value?.isEmpty ?? true) {
+    if (value?.isBlank ?? true) {
       return child;
     }
     return GestureDetector(

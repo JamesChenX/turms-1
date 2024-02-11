@@ -7,7 +7,8 @@ import '../../infra/animation/animation_utils.dart';
 import '../../infra/animation/dismissed_status_change_type.dart';
 
 // Modified:
-// * Disappear instead of keep displaying when hovering.
+// * Disappear instead of keeping displaying when hovering.
+
 class _ExclusiveMouseRegion extends MouseRegion {
   const _ExclusiveMouseRegion({
     super.onEnter,

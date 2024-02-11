@@ -240,7 +240,7 @@ abstract class AppLocalizations {
   /// No description provided for @draft.
   ///
   /// In en, this message translates to:
-  /// **'Draft'**
+  /// **'draft'**
   String get draft;
 
   /// No description provided for @dropFilesHere.

@@ -34,10 +34,12 @@ class _ChatSessionPaneHeaderState extends ConsumerState<ChatSessionPaneHeader> {
                 padding: const EdgeInsets.only(
                   left: 28,
                 ),
-                child: Text(
-                  ref.watch(selectedConversationViewModel)?.name ?? '',
-                  style: const TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.w500),
+                child: SelectionArea(
+                  child: Text(
+                    ref.watch(selectedConversationViewModel)?.name ?? '',
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.w500),
+                  ),
                 ),
               ),
               Column(

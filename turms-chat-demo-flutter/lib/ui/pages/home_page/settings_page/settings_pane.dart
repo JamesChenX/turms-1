@@ -191,25 +191,27 @@ class _SettingsPaneState extends ConsumerState<SettingsPane> {
                 TDropdownMenuEntry(label: 'English', value: SettingLocale.en),
                 TDropdownMenuEntry(label: '简体中文', value: SettingLocale.zhCn),
               ],
-              onSelected: (SettingLocale value) {
-                switch (value) {
-                  case SettingLocale.system:
-                    ref.read(useSystemLocaleViewModel.notifier).state = true;
-                    ref.read(appLocalizationsViewModel.notifier).state =
-                        lookupAppLocalizations(
-                            WidgetsBinding.instance.platformDispatcher.locale);
-                    break;
-                  case SettingLocale.en:
-                    ref.read(useSystemLocaleViewModel.notifier).state = false;
-                    ref.read(appLocalizationsViewModel.notifier).state =
-                        lookupAppLocalizations(Locale(value.name));
-                    break;
-                  case SettingLocale.zhCn:
-                    ref.read(useSystemLocaleViewModel.notifier).state = false;
-                    ref.read(appLocalizationsViewModel.notifier).state =
-                        lookupAppLocalizations(Locale(value.name));
-                    break;
+              onSelected: (SettingLocale value) async {
+                final Locale locale;
+                if (value case SettingLocale.system) {
+                  ref.read(useSystemLocaleViewModel.notifier).state = true;
+                  locale = WidgetsBinding.instance.platformDispatcher.locale;
+                  await userSettingsRepository.delete(
+                    ref.read(loggedInUserViewModel)!.userId,
+                    UserSettingIds.locale,
+                  );
+                } else {
+                  ref.read(useSystemLocaleViewModel.notifier).state = false;
+                  locale = Locale(value.name);
+                  await userSettingsRepository.upsert(
+                      ref.read(loggedInUserViewModel)!.userId,
+                      UserSettingIds.locale,
+                      locale.languageCode);
                 }
+                ref.read(appLocalizationsViewModel.notifier).state =
+                    lookupAppLocalizations(locale);
+                ref.read(userSettingsViewModel.notifier).state!.locale = locale;
+                userSettingsViewModelRef.notifyListeners();
               },
             ),
             TFormFieldSelect(
@@ -227,14 +229,14 @@ class _SettingsPaneState extends ConsumerState<SettingsPane> {
               onSelected: (ThemeMode value) async {
                 final previousTheme =
                     ref.read(userSettingsViewModel.notifier).state?.theme;
-                final themeStr = value.name;
-                if (previousTheme != themeStr) {
+                final themeName = value.name;
+                if (previousTheme != themeName) {
                   await userSettingsRepository.upsert(
                       ref.read(loggedInUserViewModel)!.userId,
                       UserSettingIds.theme,
-                      themeStr);
+                      themeName);
                   ref.read(userSettingsViewModel.notifier).state!.theme =
-                      themeStr;
+                      themeName;
                   userSettingsViewModelRef.notifyListeners();
                 }
               },

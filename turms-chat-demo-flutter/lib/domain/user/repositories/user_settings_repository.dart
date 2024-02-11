@@ -22,6 +22,13 @@ class UserSettingsRepository {
             value: Constant(settingValue), lastModifiedDate: Constant(now))));
   }
 
+  Future<int> delete(Int64 userId, String settingId) async {
+    final database = createUserDatabaseIfNotExists(userId);
+    final delete = database.delete(database.userSettingTable)
+      ..where((t) => t.id.equals(settingId));
+    return delete.go();
+  }
+
   Future<List<UserSettingTableData>> selectAll(Int64 userId) {
     final database = createUserDatabaseIfNotExists(userId);
     return database.select(database.userSettingTable).get();

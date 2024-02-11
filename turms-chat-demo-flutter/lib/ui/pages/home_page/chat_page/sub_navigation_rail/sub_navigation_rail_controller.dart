@@ -27,6 +27,7 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
 
   late AppLocalizations appLocalizations;
   late List<Conversation> conversations;
+  Map<String, BuildContext> conversationIdToContext = {};
   Conversation? selectedConversation;
   bool isConversationsInitialized = false;
   bool isConversationsLoading = false;
@@ -55,7 +56,16 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
   Widget build(BuildContext context) {
     appLocalizations = ref.read(appLocalizationsViewModel);
     conversations = ref.watch(conversationsViewModel);
+    final previousSelectedConversationId = selectedConversation?.id;
     selectedConversation = ref.watch(selectedConversationViewModel);
+    final conversationId = selectedConversation?.id;
+    if (conversationId != null &&
+        previousSelectedConversationId != conversationId) {
+      final context = conversationIdToContext[conversationId];
+      if (context != null) {
+        Scrollable.ensureVisible(context);
+      }
+    }
     return SubNavigationRailView(this);
   }
 

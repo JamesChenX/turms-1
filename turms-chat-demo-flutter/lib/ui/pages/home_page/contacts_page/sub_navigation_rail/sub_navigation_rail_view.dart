@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 import '../../../../../domain/user/models/contact.dart';
 import '../../../../../domain/user/models/system_contact.dart';
@@ -57,11 +58,12 @@ class SubNavigationRailView extends StatelessWidget {
     final widgets = [
       SystemContact(
           type: SystemContactType.friendRequest,
-          name: appLocalizations.friendRequests),
+          name: appLocalizations.friendRequests,
+          icon: Symbols.person_add_rounded),
       SystemContact(
-        type: SystemContactType.fileTransfer,
-        name: appLocalizations.fileTransfer,
-      ),
+          type: SystemContactType.fileTransfer,
+          name: appLocalizations.fileTransfer,
+          icon: Symbols.drive_file_move_rounded),
     ]
         .map<Widget>((contact) => ContactTile(
             contact: contact,

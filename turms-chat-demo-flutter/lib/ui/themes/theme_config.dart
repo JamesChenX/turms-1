@@ -41,6 +41,7 @@ class ThemeConfig {
     'EmojiSymbols'
   ];
 
+  static const borderRadius0 = BorderRadius.zero;
   static const borderRadius4 = BorderRadius.all(Radius.circular(4));
   static const borderRadius8 = BorderRadius.all(Radius.circular(8));
 
@@ -78,6 +79,7 @@ class ThemeConfig {
   static const darkAccent = Colors.lightBlue;
   static const lightBG = Color(0xfffFfFff);
   static const darkBG = Color(0xff121212);
+  static const colorDisabled = Colors.black38;
 
   // static Color error = Colors.red.shade200;
   static const focusedError = Colors.red;
@@ -102,6 +104,7 @@ class ThemeConfig {
 
   // static const unit = 2.0;
   static const textStyleSecondary = TextStyle(color: textColorSecondary);
+  static const textStyleHighlight = TextStyle(color: Colors.red);
 
   static const titleBarSize = Size(36, 28);
 

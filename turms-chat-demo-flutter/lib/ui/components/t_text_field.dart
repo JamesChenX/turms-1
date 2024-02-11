@@ -122,6 +122,7 @@ class _TTextFieldState extends ConsumerState<TTextField> {
                     onTap: () {
                       controller!.clear();
                       hasText = false;
+                      widget.transformValue?.call('');
                       setState(() {});
                     },
                   )

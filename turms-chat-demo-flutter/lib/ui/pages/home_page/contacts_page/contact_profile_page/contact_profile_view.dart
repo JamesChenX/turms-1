@@ -60,6 +60,7 @@ class ContactProfilePageView extends ConsumerWidget {
                     TAvatar(
                       name: selectedContact.name,
                       image: selectedContact.image,
+                      icon: selectedContact.icon,
                       size: TAvatarSize.large,
                     ),
                     const SizedBox(

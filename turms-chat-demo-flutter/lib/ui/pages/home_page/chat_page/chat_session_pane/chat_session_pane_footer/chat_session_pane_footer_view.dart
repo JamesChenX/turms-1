@@ -57,6 +57,7 @@ class ChatSessionPaneFooterView extends StatelessWidget {
                 controller: chatPageFooterController.editorController,
                 autofocus: true,
                 focusNode: chatPageFooterController.editorFocusNode,
+                contentPadding: const EdgeInsets.only(top: 8),
               ),
             ),
           ),

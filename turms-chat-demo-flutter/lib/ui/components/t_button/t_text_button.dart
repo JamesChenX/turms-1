@@ -17,6 +17,7 @@ class TTextButton extends StatefulWidget {
       this.border,
       this.borderHovered,
       this.isLoading = false,
+      this.disabled = false,
       this.onTap})
       : padding = padding ?? ThemeConfig.paddingV8H16;
 
@@ -47,6 +48,7 @@ class TTextButton extends StatefulWidget {
   final BoxBorder? border;
   final BoxBorder? borderHovered;
   final bool isLoading;
+  final bool disabled;
 
   final VoidCallback? onTap;
 
@@ -99,12 +101,14 @@ class _TTextButtonState extends State<TTextButton> {
     child = AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         decoration: BoxDecoration(
-          color: widget.isLoading
-              ? widget.backgroundColor.withOpacity(0.5)
-              : _isHovered
-                  ? (widget.backgroundColorHovered ??
-                      widget.backgroundColor.withOpacity(0.8))
-                  : widget.backgroundColor,
+          color: widget.disabled
+              ? ThemeConfig.colorDisabled
+              : widget.isLoading
+                  ? widget.backgroundColor.withOpacity(0.5)
+                  : _isHovered
+                      ? (widget.backgroundColorHovered ??
+                          widget.backgroundColor.withOpacity(0.8))
+                      : widget.backgroundColor,
           borderRadius: ThemeConfig.borderRadius4,
           border: _isHovered
               ? (widget.borderHovered ?? widget.border)
@@ -114,14 +118,22 @@ class _TTextButtonState extends State<TTextButton> {
         width: widget.width,
         child: child);
     return MouseRegion(
-        cursor: SystemMouseCursors.click,
-        onEnter: (_) => setState(() => _isHovered = true),
-        onExit: (_) => setState(() => _isHovered = false),
-        child: widget.isLoading || widget.onTap == null
-            ? child
-            : GestureDetector(
-                onTap: widget.onTap,
-                child: child,
-              ));
+        cursor: widget.disabled
+            ? SystemMouseCursors.forbidden
+            : SystemMouseCursors.click,
+        onEnter: (_) {
+          setState(() => _isHovered = true);
+        },
+        onExit: (_) {
+          setState(() => _isHovered = false);
+        },
+        child: GestureDetector(
+          onTap: () {
+            if (!widget.disabled && !widget.isLoading) {
+              widget.onTap?.call();
+            }
+          },
+          child: child,
+        ));
   }
 }

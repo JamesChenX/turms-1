@@ -71,7 +71,10 @@ class _UserProfilePopupState extends ConsumerState<UserProfilePopup> {
       offset: widget.position == UserProfilePopupPosition.bottomRight
           ? const Offset(-5, -5)
           : const Offset(5, -5),
-      target: TAvatar(name: user.name, image: user.image),
+      target: TAvatar(
+        name: user.name,
+        image: user.image,
+      ),
       follower: Material(
         child: SizedBox(
           height: 200,

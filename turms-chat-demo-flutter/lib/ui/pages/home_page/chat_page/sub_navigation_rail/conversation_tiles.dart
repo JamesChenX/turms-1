@@ -6,20 +6,14 @@ import '../../../../../domain/user/models/user_contact.dart';
 import 'conversation_tile.dart';
 import 'sub_navigation_rail_controller.dart';
 
-class ConversationTiles extends StatefulWidget {
+class ConversationTiles extends StatelessWidget {
   const ConversationTiles({Key? key, required this.subNavigationRailController})
       : super(key: key);
 
   final SubNavigationRailController subNavigationRailController;
 
   @override
-  State<ConversationTiles> createState() => _ConversationTilesState();
-}
-
-class _ConversationTilesState extends State<ConversationTiles> {
-  @override
   Widget build(BuildContext context) {
-    final subNavigationRailController = widget.subNavigationRailController;
     final conversations = subNavigationRailController.conversations;
     return ListView.builder(
       padding: EdgeInsets.zero,
@@ -36,6 +30,8 @@ class _ConversationTilesState extends State<ConversationTiles> {
         final conversation = conversations[index];
         final selectedConversationId =
             subNavigationRailController.selectedConversation?.id;
+        subNavigationRailController.conversationIdToContext[conversation.id] =
+            context;
         return ConversationTile(
           key: Key(conversation.id),
           conversation: conversation,

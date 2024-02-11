@@ -7,12 +7,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '../../domain/user/view_models/logged_in_user_info_view_model.dart';
+import '../../domain/user/view_models/user_settings_view_model.dart';
 import '../../domain/window/view_models/window_maximized_view_model.dart';
 import '../../infra/app/app_config.dart';
 import '../../infra/window/window_utils.dart';
 import '../components/t_dialog.dart';
 import '../l10n/app_localizations.dart';
 import '../l10n/view_models/app_localizations_view_model.dart';
+import '../l10n/view_models/use_system_locale_view_model.dart';
 import '../themes/app_theme.dart';
 import '../themes/app_theme_view_model.dart';
 import 'app.dart';
@@ -32,12 +34,7 @@ class AppController extends ConsumerState<App> with WindowListener {
   void initState() {
     super.initState();
     windowManager.addListener(this);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(appLocalizationsViewModel.notifier).state =
-          lookupAppLocalizations(
-              WidgetsBinding.instance.platformDispatcher.locale);
-      WindowUtils.show();
-    });
+    WindowUtils.show();
   }
 
   @override
@@ -113,5 +110,19 @@ class AppController extends ConsumerState<App> with WindowListener {
       }
     }
     return hasRouteRemoved;
+  }
+
+  Locale? resolveLocale(
+      List<Locale>? locales, Iterable<Locale> supportedLocales) {
+    final locale = ref.read(userSettingsViewModel)?.locale;
+    if (locale != null) {
+      return locale;
+    }
+    final useSystemLocale = ref.read(useSystemLocaleViewModel);
+    if (useSystemLocale) {
+      return WidgetsBinding.instance.platformDispatcher.locale;
+    }
+    final localeName = ref.read(appLocalizationsViewModel).localeName;
+    return Locale(localeName);
   }
 }

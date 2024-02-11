@@ -45,7 +45,7 @@ class _ConversationTileState extends ConsumerState<ConversationTile> {
       hoveredBackgroundColor: ThemeConfig.conversationHoveredBackgroundColor,
       padding:
           // use more right padding to reserve space for scrollbar
-          // TODO: adpat the padding to not hide part of text (e.g. contact name).
+          // TODO: adapt the padding to not hide part of text (e.g. contact name).
           const EdgeInsets.only(left: 10, right: 14, top: 12, bottom: 12),
       child: Row(mainAxisSize: MainAxisSize.min, children: [
         _buildAvatar(conversation),

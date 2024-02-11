@@ -17,6 +17,7 @@ import '../../../../domain/user/view_models/user_settings_view_model.dart';
 import '../../../../infra/sqlite/app_database.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../l10n/view_models/app_localizations_view_model.dart';
+import '../../../l10n/view_models/use_system_locale_view_model.dart';
 import 'login_form.dart';
 import 'login_form_view.dart';
 
@@ -66,6 +67,12 @@ class LoginFormController extends ConsumerState<LoginForm> {
         await userSettingsRepository.selectAll(userId);
     final userSettings = UserSettings.fromTableData(userSettingsTableData);
     ref.read(userSettingsViewModel.notifier).state = userSettings;
+    final locale = userSettings.locale;
+    if (locale != null) {
+      ref.read(useSystemLocaleViewModel.notifier).state = false;
+      ref.read(appLocalizationsViewModel.notifier).state =
+          lookupAppLocalizations(locale);
+    }
 
     // set status for logged in user
     ref.read(loggedInUserViewModel.notifier).state =

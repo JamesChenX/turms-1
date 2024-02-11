@@ -19,6 +19,7 @@ class CreateGroupPageController extends ConsumerState<CreateGroupPage> {
   final List<UserContact> selectedUserContacts = [];
 
   bool isCreating = false;
+  String searchText = '';
 
   @override
   Widget build(BuildContext context) {
@@ -52,5 +53,10 @@ class CreateGroupPageController extends ConsumerState<CreateGroupPage> {
         setState(() {});
       }
     }
+  }
+
+  void updateSearchText(String value) {
+    searchText = value.toLowerCase();
+    setState(() {});
   }
 }

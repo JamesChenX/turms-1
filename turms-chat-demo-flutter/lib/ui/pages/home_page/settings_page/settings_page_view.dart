@@ -17,7 +17,6 @@ class SettingsPageView extends StatelessWidget {
   Widget build(BuildContext context) => SizedBox(
         width: ThemeConfig.dialogWidthMedium,
         height: ThemeConfig.dialogHeightMedium,
-        // color: ThemeConfig.homePageBackgroundColor,
         child: Row(
           children: [
             SubNavigationRail(onTabSelected: settingsPageController.selectTab),

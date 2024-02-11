@@ -8,12 +8,14 @@ abstract class Contact {
     this.intro = '',
     this.imageUrl,
     this.imageBytes,
+    this.icon,
   });
 
   final String name;
   final String intro;
   final String? imageUrl;
   final Uint8List? imageBytes;
+  final IconData? icon;
 
   ImageProvider? _cachedImage;
 

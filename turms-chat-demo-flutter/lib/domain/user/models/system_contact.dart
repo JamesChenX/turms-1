@@ -6,7 +6,8 @@ class SystemContact extends Contact {
       required super.name,
       super.intro,
       super.imageUrl,
-      super.imageBytes})
+      super.imageBytes,
+      super.icon})
       : id = 'system:$type';
 
   @override

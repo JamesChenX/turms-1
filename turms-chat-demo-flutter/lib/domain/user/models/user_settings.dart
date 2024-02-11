@@ -24,6 +24,10 @@ class UserSettings {
     return Locale(locale);
   }
 
+  set locale(Locale? value) {
+    _idToSetting[UserSettingIds.locale] = value?.languageCode;
+  }
+
   String? get theme => _idToSetting[UserSettingIds.theme];
 
   set theme(String? value) {

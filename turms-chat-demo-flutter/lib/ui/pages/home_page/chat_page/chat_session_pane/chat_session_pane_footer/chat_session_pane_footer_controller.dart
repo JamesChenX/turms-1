@@ -68,6 +68,7 @@ class ChatSessionPaneFooterController
         } else {
           editorController.text = currentDraft!;
         }
+        editorFocusNode.requestFocus();
         setState(() {});
       });
       conversation = newConversation;
@@ -131,12 +132,16 @@ class ChatSessionPaneFooterController
     final end = selection.end;
     final text = editorController.text;
     String prefix;
-    if (end >= text.length) {
+    if (start < 0) {
       prefix = text + emoji;
       editorController.text = prefix;
     } else {
-      prefix = text.substring(0, start) + emoji;
-      editorController.text = prefix + text.substring(end);
+      prefix = start == 0 ? emoji : text.substring(0, start) + emoji;
+      if (end >= text.length) {
+        editorController.text = prefix;
+      } else {
+        editorController.text = prefix + text.substring(end);
+      }
     }
     editorController.selection = TextSelection.collapsed(offset: prefix.length);
 

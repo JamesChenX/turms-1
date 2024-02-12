@@ -15,35 +15,38 @@ class AppView extends StatelessWidget {
   final AppController appController;
 
   @override
-  Widget build(BuildContext context) => MaterialApp(
-      locale: appController.appTheme.locale,
-      debugShowCheckedModeBanner: false,
-      navigatorKey: appController.navigatorKey,
-      themeMode: appController.appTheme.themeMode,
-      theme: ThemeConfig.lightTheme,
-      darkTheme: ThemeConfig.darkTheme,
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ],
-      supportedLocales: AppLocalizations.supportedLocales,
-      localeListResolutionCallback: appController.resolveLocale,
-      home: Material(
-        child: GlobalKeyboardListener(
-          onKeyEvent: appController.onKeyEvent,
-          child: appController.shouldDisplayLoginPage
-              ? const ClipRRect(
-                  borderRadius: ThemeConfig.borderRadius8,
-                  child: LoginPage(),
-                )
-              : ClipRRect(
-                  borderRadius: appController.isWindowMaximized
-                      ? ThemeConfig.borderRadius0
-                      : ThemeConfig.borderRadius8,
-                  child: const HomePage(),
-                ),
-        ),
-      ));
+  Widget build(BuildContext context) {
+    final appTheme = appController.appTheme;
+    return MaterialApp(
+        locale: appTheme.locale,
+        debugShowCheckedModeBanner: false,
+        navigatorKey: appController.navigatorKey,
+        themeMode: appTheme.themeMode,
+        theme: ThemeConfig.getLightTheme(fontFamily: appTheme.fontFamily),
+        darkTheme: ThemeConfig.getDarkTheme(fontFamily: appTheme.fontFamily),
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        localeListResolutionCallback: appController.resolveLocale,
+        home: Material(
+          child: GlobalKeyboardListener(
+            onKeyEvent: appController.onKeyEvent,
+            child: appController.shouldDisplayLoginPage
+                ? const ClipRRect(
+                    borderRadius: ThemeConfig.borderRadius8,
+                    child: LoginPage(),
+                  )
+                : ClipRRect(
+                    borderRadius: appController.isWindowMaximized
+                        ? ThemeConfig.borderRadius0
+                        : ThemeConfig.borderRadius8,
+                    child: const HomePage(),
+                  ),
+          ),
+        ));
+  }
 }

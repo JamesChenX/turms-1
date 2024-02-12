@@ -146,7 +146,7 @@ class ChatSessionPaneFooterController
     editorController.selection = TextSelection.collapsed(offset: prefix.length);
 
     editorFocusNode.requestFocus();
-    stickerPickerPopupController.hidePopover();
+    stickerPickerPopupController.hidePopover?.call();
     setState(() {});
   }
 

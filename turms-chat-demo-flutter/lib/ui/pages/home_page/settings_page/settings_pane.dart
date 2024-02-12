@@ -30,7 +30,7 @@ class SettingsPane extends ConsumerStatefulWidget {
 }
 
 class _SettingsPaneState extends ConsumerState<SettingsPane> {
-  GlobalKey _scrollViewKey = GlobalKey();
+  final GlobalKey _scrollViewKey = GlobalKey();
   SettingActionOnClose _actionOnClose = SettingActionOnClose.minimizeToTray;
 
   bool _newMessageNotification = true;

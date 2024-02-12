@@ -4,21 +4,6 @@ import 'package:flutter/material.dart';
 import '../../infra/ui/color_extensions.dart';
 import '../../infra/ui/text_extensions.dart';
 
-// String getFontFamily() {
-//   final String? fontFamily;
-//   if (Platform.isWindows) {
-//     fontFamily = switch (LocaleSettings.currentLocale) {
-//       AppLocale.ja => 'Yu Gothic UI',
-//       AppLocale.ko => 'Malgun Gothic',
-//       AppLocale.zhCn => 'Microsoft YaHei UI',
-//       AppLocale.zhHk || AppLocale.zhTw => 'Microsoft JhengHei UI',
-//       _ => 'Segoe UI Variable Display',
-//     };
-//   } else {
-//     fontFamily = null;
-//   }
-// }
-
 class ThemeConfig {
   ThemeConfig._();
 
@@ -125,52 +110,40 @@ class ThemeConfig {
     ),
   ];
 
-  static final lightTheme = ThemeData(
+  static ThemeData getLightTheme({String? fontFamily}) => ThemeData(
       useMaterial3: true,
       // splashFactory: NoSplash.splashFactory,
       primaryColor: primary,
       unselectedWidgetColor: borderDefaultColor,
-      // listTileTheme: const ListTileThemeData(
-      //   horizontalTitleGap: 4,
-      // ),
       colorScheme: ColorScheme.fromSwatch().copyWith(
         secondary: lightAccent,
         background: lightBG,
         brightness: Brightness.light,
       ),
-      // textTheme: TextTheme(
-      //   co
-      //   // labelMedium: TextStyle(
-      //   //   color:
-      //   // )
-      // ),
-      fontFamily: 'Microsoft YaHei',
+      fontFamily: fontFamily,
       fontFamilyFallback: emojiFontFamilyFallback,
       textSelectionTheme:
           const TextSelectionThemeData(cursorColor: Colors.black),
       inputDecorationTheme: const InputDecorationTheme(
           contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          border: InputBorder.none)
-      // # TODO: text anti-aliasing:
-      // https://github.com/flutter/flutter/issues/53308
-      // https://github.com/flutter/flutter/issues/63043
-      // https://github.com/flutter/flutter/issues/67034
-      //
-      // fontFamily: "Microsoft YaHei"
-      // textTheme: GoogleFonts.robotoTextTheme(Theme.of(context).textTheme),
-      );
+          border: InputBorder.none));
 
   // todo
-  static final darkTheme = lightTheme;
-// static final darkTheme = ThemeData(
-//   useMaterial3: true,
-//   // splashFactory: NoSplash.splashFactory,
-//   brightness: Brightness.dark,
-//   scaffoldBackgroundColor: darkBG,
-//   colorScheme: ColorScheme.fromSwatch().copyWith(
-//     secondary: darkAccent,
-//     background: darkBG,
-//     brightness: Brightness.dark,
-//   ),
-// );
+  static ThemeData getDarkTheme({String? fontFamily}) => ThemeData(
+      useMaterial3: true,
+      // splashFactory: NoSplash.splashFactory,
+      primaryColor: primary,
+      unselectedWidgetColor: borderDefaultColor,
+      colorScheme: ColorScheme.fromSwatch().copyWith(
+        secondary: lightAccent,
+        background: lightBG,
+        brightness: Brightness.light,
+      ),
+      fontFamily: fontFamily,
+      fontFamilyFallback: emojiFontFamilyFallback,
+      textSelectionTheme:
+          const TextSelectionThemeData(cursorColor: Colors.black),
+      inputDecorationTheme: const InputDecorationTheme(
+          contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          border: InputBorder.none));
 }

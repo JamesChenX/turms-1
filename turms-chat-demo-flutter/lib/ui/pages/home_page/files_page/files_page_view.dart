@@ -7,6 +7,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../../../fixtures/files.dart';
 import '../../../../infra/units/file_size_extensions.dart';
 import '../../../components/components.dart';
+import '../../../components/t_date_range_picker/t_date_range_picker.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../l10n/view_models/date_format_view_models.dart';
 import '../../../themes/theme_config.dart';
@@ -49,31 +50,32 @@ class FilesPageView extends ConsumerWidget {
                   const SizedBox(
                     width: 16,
                   ),
-                  IconButton(
-                    icon: const Icon(Symbols.date_range_rounded),
-                    onPressed: () {
-                      final now = DateTime.now();
-                      // TODO: use our own date range picker
-                      showDateRangePicker(
-                          initialEntryMode: DatePickerEntryMode.calendarOnly,
-                          context: context,
-                          firstDate: DateTime(now.year - 3),
-                          lastDate: now,
-                          initialDateRange: DateTimeRange(
-                            start: now.subtract(const Duration(days: 7)),
-                            end: now,
-                          ),
-                          builder: (context, child) => Center(
-                                child: ConstrainedBox(
-                                  constraints: const BoxConstraints(
-                                    maxWidth: 400.0,
-                                    maxHeight: 500.0,
-                                  ),
-                                  child: child,
-                                ),
-                              ));
-                    },
-                  )
+                  TDateRangePicker(),
+                  // IconButton(
+                  //   icon: const Icon(Symbols.date_range_rounded),
+                  //   onPressed: () {
+                  //     final now = DateTime.now();
+                  //     // TODO: use our own date range picker
+                  //     showDateRangePicker(
+                  //         initialEntryMode: DatePickerEntryMode.calendarOnly,
+                  //         context: context,
+                  //         firstDate: DateTime(now.year - 3),
+                  //         lastDate: now,
+                  //         initialDateRange: DateTimeRange(
+                  //           start: now.subtract(const Duration(days: 7)),
+                  //           end: now,
+                  //         ),
+                  //         builder: (context, child) => Center(
+                  //               child: ConstrainedBox(
+                  //                 constraints: const BoxConstraints(
+                  //                   maxWidth: 400.0,
+                  //                   maxHeight: 500.0,
+                  //                 ),
+                  //                 child: child,
+                  //               ),
+                  //             ));
+                  //   },
+                  // )
                 ],
               ),
             ),

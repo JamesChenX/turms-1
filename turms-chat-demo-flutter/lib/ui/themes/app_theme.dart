@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 class AppTheme {
@@ -5,6 +7,21 @@ class AppTheme {
 
   /// if null, follow system settings.
   final Locale? locale;
+
+  String? get fontFamily {
+    if (!Platform.isWindows) {
+      return null;
+    }
+    // Used to fix the text rendering problem
+    // mentioned in https://github.com/flutter/flutter/issues/63043.
+    return switch (locale?.languageCode) {
+      'ja' => 'Yu Gothic UI',
+      'ko' => 'Malgun Gothic',
+      'zh' || 'zh_CN' => 'Microsoft YaHei UI',
+      'zh_HK' || 'zh_TW' => 'Microsoft JhengHei UI',
+      _ => null
+    };
+  }
 
   final ThemeMode themeMode;
 }

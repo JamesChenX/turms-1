@@ -76,7 +76,7 @@ class _TDropdownMenuState<T> extends ConsumerState<TDropdownMenu<T>> {
                     behavior: HitTestBehavior.translucent,
                     onTap: () {
                       widget.onSelected(entry);
-                      _popupController.hidePopover();
+                      _popupController.hidePopover?.call();
                     },
                     child: Row(
                       children: [

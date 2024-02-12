@@ -107,7 +107,7 @@ class _UserProfilePopupState extends ConsumerState<UserProfilePopup> {
 
   void startConversation(User user) {
     // 1. Hide the popup
-    popupController.hidePopover();
+    popupController.hidePopover?.call();
     // 2. Switch to the chat page
     ref.read(homePageTabViewModel.notifier).state = HomePageTab.chat;
     // 3. Check if the conversation already selected

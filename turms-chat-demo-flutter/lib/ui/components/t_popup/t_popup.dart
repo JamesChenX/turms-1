@@ -45,6 +45,9 @@ class _TPopupState extends State<TPopup> {
 
   @override
   void dispose() {
+    final controller = widget._controller;
+    controller?.showPopover = null;
+    controller?.hidePopover = null;
     _removeOverlayEntry();
     super.dispose();
   }
@@ -61,6 +64,17 @@ class _TPopupState extends State<TPopup> {
           child: widget.target,
         ),
       ));
+
+  @override
+  void didUpdateWidget(TPopup oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget._controller != widget._controller) {
+      oldWidget._controller?.showPopover = null;
+      oldWidget._controller?.hidePopover = null;
+    }
+    widget._controller?.showPopover = _showOverlay;
+    widget._controller?.hidePopover = _hideOverlay;
+  }
 
   void _toggleOverlay() {
     if (_visible) {
@@ -161,6 +175,6 @@ class _TPopupState extends State<TPopup> {
 }
 
 class TPopupController {
-  late void Function() showPopover;
-  late void Function() hidePopover;
+  void Function()? showPopover;
+  void Function()? hidePopover;
 }

@@ -11,6 +11,7 @@ class TTextField extends ConsumerStatefulWidget {
       {super.key,
       this.textEditingController,
       this.autofocus = false,
+      this.focusNode,
       this.mouseCursor,
       this.hintText,
       this.prefixIcon,
@@ -30,6 +31,7 @@ class TTextField extends ConsumerStatefulWidget {
 
   final TextEditingController? textEditingController;
   final bool autofocus;
+  final FocusNode? focusNode;
   final SystemMouseCursor? mouseCursor;
   final String? hintText;
   final Widget? prefixIcon;
@@ -76,6 +78,7 @@ class _TTextFieldState extends ConsumerState<TTextField> {
     return TextField(
       controller: controller,
       autofocus: widget.autofocus,
+      focusNode: widget.focusNode,
       mouseCursor: widget.mouseCursor,
       showCursor: widget.showCursor,
       readOnly: widget.readOnly,

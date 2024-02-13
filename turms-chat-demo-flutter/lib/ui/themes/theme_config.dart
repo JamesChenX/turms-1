@@ -87,6 +87,8 @@ class ThemeConfig {
   static const paddingV16H8 = EdgeInsets.symmetric(vertical: 16, horizontal: 8);
   static const paddingH8 = EdgeInsets.symmetric(horizontal: 8);
 
+  static const colorChatSessionPaneSeparator = Color.fromARGB(255, 231, 231, 231);
+
   // static const unit = 2.0;
   static const textStyleSecondary = TextStyle(color: textColorSecondary);
   static const textStyleHighlight = TextStyle(color: Colors.red);

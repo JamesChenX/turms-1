@@ -35,10 +35,6 @@ class ChatSessionPaneFooterView extends StatelessWidget {
             onPerformDrop: chatPageFooterController.onPerformDrop,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: const BoxDecoration(
-                  border: Border(
-                      top: BorderSide(
-                          color: Color.fromARGB(255, 231, 231, 231)))),
               child: _buildEditor(context, appLocalizations),
             )),
         _buildDropZoneMask(appLocalizations)

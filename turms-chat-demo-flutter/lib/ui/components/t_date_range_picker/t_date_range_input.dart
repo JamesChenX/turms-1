@@ -2,71 +2,89 @@ part of 't_date_range_picker.dart';
 
 enum _TDateRangeInputFocus { none, start, end }
 
-class _TDateRangeInput extends StatefulWidget {
-  const _TDateRangeInput({Key? key, required this.onFocusChanged})
+class _TDateRangeInput extends ConsumerStatefulWidget {
+  const _TDateRangeInput(
+      {Key? key,
+      this.startDate,
+      this.endDate,
+      required this.startDateFocus,
+      required this.endDateFocus})
       : super(key: key);
 
-  final ValueChanged<_TDateRangeInputFocus> onFocusChanged;
+  final DateTime? startDate;
+  final DateTime? endDate;
+  final FocusNode startDateFocus;
+  final FocusNode endDateFocus;
 
   @override
-  State<_TDateRangeInput> createState() => _TDateRangeInputState();
+  ConsumerState<_TDateRangeInput> createState() => _TDateRangeInputState();
 }
 
-class _TDateRangeInputState extends State<_TDateRangeInput> {
-  _TDateRangeInputFocus _focus = _TDateRangeInputFocus.none;
-  late FocusNode _startDateInputFocusNode;
-  late FocusNode _endDateInputFocusNode;
+class _TDateRangeInputState extends ConsumerState<_TDateRangeInput> {
+  late TextEditingController _startDateInputController;
+  late TextEditingController _endDateInputController;
 
   @override
   void initState() {
     super.initState();
-    _startDateInputFocusNode = FocusNode()
-      ..addListener(() {
-        if (_startDateInputFocusNode.hasFocus) {
-          _focus = _TDateRangeInputFocus.start;
-        } else if (_focus == _TDateRangeInputFocus.start) {
-          _focus = _TDateRangeInputFocus.none;
-        }
-        widget.onFocusChanged(_focus);
-      });
-    _endDateInputFocusNode = FocusNode()
-      ..addListener(() {
-        if (_endDateInputFocusNode.hasFocus) {
-          _focus = _TDateRangeInputFocus.end;
-        } else if (_focus == _TDateRangeInputFocus.end) {
-          _focus = _TDateRangeInputFocus.none;
-        }
-        widget.onFocusChanged(_focus);
-      });
+
+    _startDateInputController = TextEditingController();
+    _endDateInputController = TextEditingController();
   }
 
   @override
   void dispose() {
-    _startDateInputFocusNode.dispose();
-    _endDateInputFocusNode.dispose();
+    _startDateInputController.dispose();
+    _endDateInputController.dispose();
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) => Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(
-            width: 96,
-            child: TTextField(
-              focusNode: _startDateInputFocusNode,
-            ),
+  Widget build(BuildContext context) {
+    final startDate = widget.startDate;
+    final endDate = widget.endDate;
+    if (startDate != null) {
+      _startDateInputController.text =
+          ref.read(dateFormatViewModel_yMd).format(startDate);
+    }
+    if (endDate != null) {
+      _endDateInputController.text =
+          ref.read(dateFormatViewModel_yMd).format(endDate);
+    }
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(
+          width: 96,
+          child: TTextField(
+            textEditingController: _startDateInputController,
+            focusNode: widget.startDateFocus,
+            readOnly: true,
+            showCursor: false,
+            onTapOutside: onTapOutside,
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 4),
-            child: Icon(Symbols.arrow_forward_rounded, size: 16),
+        ),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 4),
+          child: Icon(Symbols.arrow_forward_rounded, size: 16),
+        ),
+        SizedBox(
+          width: 96,
+          child: TTextField(
+            textEditingController: _endDateInputController,
+            focusNode: widget.endDateFocus,
+            readOnly: true,
+            showCursor: false,
+            onTapOutside: onTapOutside,
           ),
-          SizedBox(
-            width: 96,
-            child: TTextField(
-              focusNode: _endDateInputFocusNode,
-            ),
-          ),
-        ],
-      );
+        ),
+      ],
+    );
+  }
+
+  void onTapOutside(_) {
+    // it will unfocus by default,
+    // we don't want to unfocus here,
+    // so do nothing.
+  }
 }

@@ -31,57 +31,43 @@ class FilesPageView extends ConsumerWidget {
   }
 
   Widget _buildQueryFilters(
-          BuildContext context, AppLocalizations appLocalizations) =>
-      ColoredBox(
+          BuildContext context, AppLocalizations appLocalizations) {
+    final now = DateTime.now();
+    return ColoredBox(
         color: ThemeConfig.homePageBackgroundColor,
         child: ConstrainedBox(
           constraints: const BoxConstraints.tightFor(
               height: ThemeConfig.homePageHeaderHeight),
           child: Stack(children: [
             const TWindowControlZone(toggleMaximizeOnDoubleTap: true),
-            Padding(
-              padding: ThemeConfig.paddingV8H16,
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: 200,
-                    child: TSearchBar(hintText: appLocalizations.fileName),
-                  ),
-                  const SizedBox(
-                    width: 16,
-                  ),
-                  TDateRangePicker(),
-                  // IconButton(
-                  //   icon: const Icon(Symbols.date_range_rounded),
-                  //   onPressed: () {
-                  //     final now = DateTime.now();
-                  //     // TODO: use our own date range picker
-                  //     showDateRangePicker(
-                  //         initialEntryMode: DatePickerEntryMode.calendarOnly,
-                  //         context: context,
-                  //         firstDate: DateTime(now.year - 3),
-                  //         lastDate: now,
-                  //         initialDateRange: DateTimeRange(
-                  //           start: now.subtract(const Duration(days: 7)),
-                  //           end: now,
-                  //         ),
-                  //         builder: (context, child) => Center(
-                  //               child: ConstrainedBox(
-                  //                 constraints: const BoxConstraints(
-                  //                   maxWidth: 400.0,
-                  //                   maxHeight: 500.0,
-                  //                 ),
-                  //                 child: child,
-                  //               ),
-                  //             ));
-                  //   },
-                  // )
-                ],
+            Center(
+              child: Padding(
+                padding: ThemeConfig.paddingV8H16,
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 200,
+                      child: TSearchBar(hintText: appLocalizations.fileName),
+                    ),
+                    const SizedBox(
+                      width: 16,
+                    ),
+                    TDateRangePicker(
+                      firstDate: DateTime(now.year - 3),
+                      lastDate: now,
+                      initialDateRange: DateTimeRange(
+                        start: now.subtract(const Duration(days: 7)),
+                        end: now,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ]),
         ),
       );
+  }
 
   Widget _buildTable(
       BuildContext context, AppLocalizations appLocalizations, WidgetRef ref) {

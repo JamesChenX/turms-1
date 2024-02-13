@@ -40,25 +40,27 @@ class _FriendRequestTileState extends ConsumerState<FriendRequestTile> {
           width: 16,
         ),
         Expanded(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                senderName,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              Text(
-                message,
-                style: ThemeConfig.textStyleSecondary,
-                strutStyle: StrutStyle.fromTextStyle(
-                    ThemeConfig.textStyleSecondary,
-                    forceStrutHeight: true),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
+          child: SelectionArea(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  senderName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  message,
+                  style: ThemeConfig.textStyleSecondary,
+                  strutStyle: StrutStyle.fromTextStyle(
+                      ThemeConfig.textStyleSecondary,
+                      forceStrutHeight: true),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
           ),
         ),
         const SizedBox(width: 16),

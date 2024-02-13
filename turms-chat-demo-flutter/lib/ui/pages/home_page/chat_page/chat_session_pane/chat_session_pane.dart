@@ -1,8 +1,12 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../components/components.dart';
 import '../../../../components/t_drawer/t_drawer.dart';
 import '../../../../components/t_empty.dart';
 import '../../../../components/t_window_control_zone.dart';
@@ -48,10 +52,20 @@ class ChatSessionPane extends ConsumerWidget {
                 Column(
                   children: [
                     Expanded(child: ChatSessionPaneBody(selectedConversation)),
-                    ConstrainedBox(
-                      constraints: const BoxConstraints.tightFor(height: 240),
-                      child: const ChatSessionPaneFooter(),
-                    )
+                    _ChatSessionPaneFooter(),
+                    // Listener(
+                    //   child: MouseRegion(
+                    //     cursor: SystemMouseCursors.move,
+                    //     child: Container(
+                    //       color: Colors.red,
+                    //       height: 8,
+                    //     ),
+                    //   ),
+                    // ),
+                    // ConstrainedBox(
+                    //   constraints: const BoxConstraints.tightFor(height: 240),
+                    //   child: const ChatSessionPaneFooter(),
+                    // )
                   ],
                 ),
                 TapRegion(
@@ -69,4 +83,52 @@ class ChatSessionPane extends ConsumerWidget {
       ),
     );
   }
+}
+
+class _ChatSessionPaneFooter extends StatefulWidget {
+  const _ChatSessionPaneFooter({super.key});
+
+  @override
+  State<_ChatSessionPaneFooter> createState() => _ChatSessionPaneFooterState();
+}
+
+class _ChatSessionPaneFooterState extends State<_ChatSessionPaneFooter> {
+  double pointerDownDy = 0;
+  double height = 240;
+  double baseHeight = 0;
+
+  @override
+  Widget build(BuildContext context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Listener(
+            onPointerDown: (PointerDownEvent event) {
+              baseHeight = height;
+              pointerDownDy = event.position.dy;
+            },
+            onPointerMove: (event) {
+              final delta = pointerDownDy - event.position.dy;
+              final newHeight =
+                  (baseHeight + delta).clamp(130, 500).roundToDouble();
+              if (newHeight != height) {
+                height = newHeight;
+                setState(() {});
+              }
+            },
+            child: MouseRegion(
+              cursor: SystemMouseCursors.move,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: THorizontalDivider(
+                  color: ThemeConfig.colorChatSessionPaneSeparator,
+                ),
+              ),
+            ),
+          ),
+          ConstrainedBox(
+            constraints: BoxConstraints.tightFor(height: height),
+            child: const ChatSessionPaneFooter(),
+          )
+        ],
+      );
 }

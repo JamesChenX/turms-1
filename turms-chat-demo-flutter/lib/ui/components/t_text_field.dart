@@ -24,7 +24,8 @@ class TTextField extends ConsumerStatefulWidget {
       this.expands = false,
       TextAlignVertical? textAlignVertical,
       this.transformValue,
-      this.onSubmitted})
+      this.onSubmitted,
+      this.onTapOutside})
       : assert(!showDeleteButtonIfHasText || suffixIcon == null),
         textAlignVertical = textAlignVertical ??
             (expands ? TextAlignVertical.top : TextAlignVertical.center);
@@ -45,6 +46,7 @@ class TTextField extends ConsumerStatefulWidget {
   final TextAlignVertical textAlignVertical;
   final String Function(String value)? transformValue;
   final ValueChanged<String>? onSubmitted;
+  final ValueChanged<PointerDownEvent>? onTapOutside;
 
   @override
   ConsumerState<TTextField> createState() => _TTextFieldState();
@@ -102,6 +104,7 @@ class _TTextFieldState extends ConsumerState<TTextField> {
         setState(() {});
       },
       onSubmitted: widget.onSubmitted,
+      onTapOutside: widget.onTapOutside,
       style: const TextStyle(
           fontSize: 14,
           // cursor height

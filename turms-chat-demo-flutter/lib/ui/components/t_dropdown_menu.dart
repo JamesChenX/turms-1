@@ -59,7 +59,7 @@ class _TDropdownMenuState<T> extends ConsumerState<TDropdownMenu<T>> {
         ),
       ),
       follower: Material(
-        child: Container(
+        child: DecoratedBox(
           decoration: const BoxDecoration(
               color: Colors.white,
               borderRadius: ThemeConfig.borderRadius4,

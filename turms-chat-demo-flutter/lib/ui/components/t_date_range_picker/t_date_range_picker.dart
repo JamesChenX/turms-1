@@ -58,39 +58,54 @@ class _TDateRangePickerState extends State<TDateRangePicker> {
 
   @override
   Widget build(BuildContext context) => TPopup(
-      controller: widget._popupController,
-      targetAnchor: Alignment.bottomCenter,
-      followerAnchor: Alignment.topCenter,
-      offset: const Offset(0, 4),
-      target: TapRegion(
-        groupId: groupId,
-        onTapOutside: (_) {
+        controller: widget._popupController,
+        targetAnchor: Alignment.bottomCenter,
+        followerAnchor: Alignment.topCenter,
+        offset: const Offset(0, 4),
+        target: TapRegion(
+          groupId: groupId,
+          child: _TDateRangeInput(
+            startDate: selectedStartDate,
+            startDateFocusNode: startDateFocusNode,
+            endDate: selectedEndDate,
+            endDateFocusNode: endDateFocusNode,
+          ),
+        ),
+        follower: TapRegion(
+          groupId: groupId,
+          child: _TDateRangePickerPanel(
+            availableStartDate: widget.firstDate,
+            availableEndDate: widget.lastDate,
+            initialDateRange: widget.initialDateRange,
+            onDateChanged: (DateTime value) {
+              if (startDateFocusNode.hasFocus) {
+                selectedStartDate = value;
+                if (selectedEndDate != null &&
+                    value.isAfter(selectedEndDate!)) {
+                  selectedEndDate = null;
+                  endDateFocusNode.requestFocus();
+                } else {
+                  widget._popupController.hidePopover?.call();
+                }
+              } else {
+                selectedEndDate = value;
+                if (selectedStartDate != null &&
+                    value.isBefore(selectedStartDate!)) {
+                  selectedStartDate = null;
+                  startDateFocusNode.requestFocus();
+                } else {
+                  widget._popupController.hidePopover?.call();
+                }
+              }
+              setState(() {});
+            },
+          ),
+        ),
+        onDismissed: () {
           startDateFocusNode.unfocus();
           endDateFocusNode.unfocus();
         },
-        child: _TDateRangeInput(
-          startDate: selectedStartDate,
-          startDateFocusNode: startDateFocusNode,
-          endDate: selectedEndDate,
-          endDateFocusNode: endDateFocusNode,
-        ),
-      ),
-      follower: TapRegion(
-        groupId: groupId,
-        child: _TDateRangePickerPanel(
-          firstDate: widget.firstDate,
-          lastDate: widget.lastDate,
-          initialDateRange: widget.initialDateRange,
-          onDateChanged: (DateTime value) {
-            if (startDateFocusNode.hasFocus) {
-              selectedStartDate = value;
-            } else {
-              selectedEndDate = value;
-            }
-            setState(() {});
-          },
-        ),
-      ));
+      );
 
   void _onFocusChanged() {
     if (startDateFocusNode.hasFocus || endDateFocusNode.hasFocus) {

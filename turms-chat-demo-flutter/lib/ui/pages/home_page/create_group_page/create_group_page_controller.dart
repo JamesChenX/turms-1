@@ -56,7 +56,7 @@ class CreateGroupPageController extends ConsumerState<CreateGroupPage> {
   }
 
   void updateSearchText(String value) {
-    searchText = value.toLowerCase();
+    searchText = value.toLowerCase().trim();
     setState(() {});
   }
 }

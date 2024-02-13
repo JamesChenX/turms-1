@@ -12,7 +12,8 @@ class TPopup extends StatefulWidget {
       this.followerAnchor = Alignment.topLeft,
       this.offset = Offset.zero,
       TPopupController? controller,
-      this.constrainFollowerWithTargetWidth = false})
+      this.constrainFollowerWithTargetWidth = false,
+      this.onDismissed})
       : _controller = controller;
 
   final Widget target;
@@ -25,6 +26,7 @@ class TPopup extends StatefulWidget {
   final bool constrainFollowerWithTargetWidth;
 
   final TPopupController? _controller;
+  final VoidCallback? onDismissed;
 
   @override
   State createState() => _TPopupState(_controller);
@@ -138,7 +140,10 @@ class _TPopupState extends State<TPopup> {
                                   child: widget.follower,
                                 )
                               : widget.follower,
-                          onDismissed: _removeOverlayEntry,
+                          onDismissed: () {
+                            _removeOverlayEntry();
+                            widget.onDismissed?.call();
+                          },
                           controller: _followerController,
                         ),
                       ),

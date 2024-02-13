@@ -79,6 +79,7 @@ class ThemeConfig {
   static const borderDefaultColor = gray5;
   static const textColorPrimary = Color(0xE0000000);
   static const textColorSecondary = Color(0xA6000000);
+  static const textColorDisabled = Colors.black26;
   static const checkboxColor = gray6;
   static const titleBarColor = gray9;
 
@@ -87,7 +88,8 @@ class ThemeConfig {
   static const paddingV16H8 = EdgeInsets.symmetric(vertical: 16, horizontal: 8);
   static const paddingH8 = EdgeInsets.symmetric(horizontal: 8);
 
-  static const colorChatSessionPaneSeparator = Color.fromARGB(255, 231, 231, 231);
+  static const colorChatSessionPaneSeparator =
+      Color.fromARGB(255, 231, 231, 231);
 
   // static const unit = 2.0;
   static const textStyleSecondary = TextStyle(color: textColorSecondary);

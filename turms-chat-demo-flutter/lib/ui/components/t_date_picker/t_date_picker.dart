@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 
+import '../../../infra/datetime/datetime_utils.dart';
 import '../../l10n/view_models/app_localizations_view_model.dart';
 import '../components.dart';
 import 't_date_cell.dart';
@@ -11,6 +12,10 @@ class TDatePicker extends ConsumerWidget {
   const TDatePicker(
       {Key? key,
       required this.calendarDate,
+      this.availableStartDate,
+      this.availableEndDate,
+      this.selectedStartDate,
+      this.selectedEndDate,
       this.showPrevButtons = true,
       this.showNextButtons = true,
       this.onCalendarDateChanged,
@@ -18,6 +23,10 @@ class TDatePicker extends ConsumerWidget {
       : super(key: key);
 
   final DateTime calendarDate;
+  final DateTime? availableStartDate;
+  final DateTime? availableEndDate;
+  final DateTime? selectedStartDate;
+  final DateTime? selectedEndDate;
   final bool showPrevButtons;
   final bool showNextButtons;
   final ValueChanged<DateTime>? onCalendarDateChanged;
@@ -25,20 +34,18 @@ class TDatePicker extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    const itemCount = DateTime.daysPerWeek * 7;
     final localeName = ref.watch(appLocalizationsViewModel).localeName;
     final dateSymbols = DateFormat.EEEE(localeName).dateSymbols;
     final weekdays = dateSymbols.NARROWWEEKDAYS;
     final dateStr = DateFormat.yM(localeName).format(calendarDate);
-    final thisMonthDays =
-        DateUtils.getDaysInMonth(calendarDate.year, calendarDate.month);
-    final thisMonthFirstDay =
-        DateTime(calendarDate.year, calendarDate.month, 1);
+    final thisMonthFirstDay = DateTime(calendarDate.year, calendarDate.month);
+    final mostRecentWeekday = DateTimeUtils.getMostRecentWeekday(
+        thisMonthFirstDay, dateSymbols.FIRSTDAYOFWEEK + 1);
     return Column(
       children: [
         _buildTitle(dateStr),
         const THorizontalDivider(),
-        _buildBody(weekdays, thisMonthFirstDay, thisMonthDays)
+        _buildBody(weekdays, mostRecentWeekday)
       ],
     );
   }
@@ -96,37 +103,75 @@ class TDatePicker extends ConsumerWidget {
         ]),
       );
 
-  Expanded _buildBody(
-      List<String> weekdays, DateTime thisMonthFirstDay, int thisMonthDays) {
+  Expanded _buildBody(List<String> weekdays, DateTime firstDay) {
     final now = DateTime.now();
+    final children = <Widget>[
+      for (final weekday in weekdays)
+        Center(
+          child: Text(
+            weekday,
+          ),
+        ),
+    ];
+    DateTime date;
+    final localAvailableStartDate = availableStartDate;
+    final localAvailableEndDate = availableEndDate;
+    for (var i = 0; i < DateTime.daysPerWeek * 6; i++) {
+      date = DateTime(firstDay.year, firstDay.month, firstDay.day + i);
+      children.add(TDateCell(
+        date: date,
+        isToday: DateUtils.isSameDay(date, now),
+        selectRangePosition: _getSelectRangePosition(
+            date, localAvailableStartDate, localAvailableEndDate),
+        disableRangePosition: _getDisableRangePosition(
+            date, localAvailableStartDate, localAvailableEndDate),
+        onTap: (DateTime value) {
+          onDateChanged?.call(value);
+        },
+      ));
+    }
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: GridView.count(
           crossAxisCount: DateTime.daysPerWeek,
-          children: [
-            for (final weekday in weekdays)
-              Center(
-                child: Text(
-                  weekday,
-                ),
-              ),
-            for (var i = 0; i < thisMonthFirstDay.weekday; i++)
-              const SizedBox.shrink(),
-            for (var i = 1,
-                    date = DateTime(
-                        thisMonthFirstDay.year, thisMonthFirstDay.month, i);
-                i <= thisMonthDays;
-                i++,
-                date = DateTime(
-                    thisMonthFirstDay.year, thisMonthFirstDay.month, i))
-              TDateCell(date: date, isToday: DateUtils.isSameDay(date, now),
-                onTap: (DateTime value) {
-                  onDateChanged?.call(value);
-                },),
-          ],
+          children: children,
         ),
       ),
     );
+  }
+
+  RangePosition _getSelectRangePosition(
+      DateTime date, DateTime? availableStartDate, DateTime? availableEndDate) {
+    if (DateUtils.isSameDay(date, availableStartDate)) {
+      return RangePosition.start;
+    }
+    if (DateUtils.isSameDay(date, availableEndDate)) {
+      return RangePosition.end;
+    }
+    return DateTimeUtils.isBetween(date, availableStartDate, availableEndDate)
+        ? RangePosition.middle
+        : RangePosition.none;
+  }
+
+  RangePosition _getDisableRangePosition(
+      DateTime date, DateTime? availableStartDate, DateTime? availableEndDate) {
+    if (availableStartDate != null) {
+      if (DateUtils.isSameDay(
+          date, availableStartDate.subtract(const Duration(days: 1)))) {
+        return RangePosition.end;
+      } else if (date.isBefore(availableStartDate)) {
+        return RangePosition.middle;
+      }
+    }
+    if (availableEndDate != null) {
+      if (DateUtils.isSameDay(
+          date, availableEndDate.add(const Duration(days: 1)))) {
+        return RangePosition.start;
+      } else if (date.isAfter(availableEndDate)) {
+        return RangePosition.middle;
+      }
+    }
+    return RangePosition.none;
   }
 }

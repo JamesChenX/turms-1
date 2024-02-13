@@ -43,14 +43,12 @@ class _TDateRangeInputState extends ConsumerState<_TDateRangeInput> {
   Widget build(BuildContext context) {
     final startDate = widget.startDate;
     final endDate = widget.endDate;
-    if (startDate != null) {
-      _startDateInputController.text =
-          ref.read(dateFormatViewModel_yMd).format(startDate);
-    }
-    if (endDate != null) {
-      _endDateInputController.text =
-          ref.read(dateFormatViewModel_yMd).format(endDate);
-    }
+    _startDateInputController.text = startDate == null
+        ? ''
+        : ref.read(dateFormatViewModel_yMd).format(startDate);
+    _endDateInputController.text = endDate == null
+        ? ''
+        : ref.read(dateFormatViewModel_yMd).format(endDate);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [

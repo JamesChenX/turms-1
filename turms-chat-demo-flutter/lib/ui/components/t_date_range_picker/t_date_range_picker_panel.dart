@@ -3,14 +3,14 @@ part of 't_date_range_picker.dart';
 class _TDateRangePickerPanel extends StatefulWidget {
   const _TDateRangePickerPanel(
       {Key? key,
-      required this.firstDate,
-      required this.lastDate,
+      required this.availableStartDate,
+      required this.availableEndDate,
       required this.initialDateRange,
       required this.onDateChanged})
       : super(key: key);
 
-  final DateTime firstDate;
-  final DateTime lastDate;
+  final DateTime availableStartDate;
+  final DateTime availableEndDate;
   final DateTimeRange initialDateRange;
   final ValueChanged<DateTime> onDateChanged;
 
@@ -47,6 +47,10 @@ class _TDateRangePickerPanelState extends State<_TDateRangePickerPanel> {
                 Expanded(
                     child: TDatePicker(
                   calendarDate: calenderDate,
+                  availableStartDate: widget.availableStartDate,
+                  availableEndDate: widget.availableEndDate,
+                  selectedStartDate: selectedStartDate,
+                  selectedEndDate: selectedEndDate,
                   showNextButtons: false,
                   onCalendarDateChanged: (value) =>
                       setState(() => calenderDate = value),
@@ -55,6 +59,10 @@ class _TDateRangePickerPanelState extends State<_TDateRangePickerPanel> {
                 Expanded(
                     child: TDatePicker(
                   calendarDate: DateUtils.addMonthsToMonthDate(calenderDate, 1),
+                      availableStartDate: widget.availableStartDate,
+                      availableEndDate: widget.availableEndDate,
+                  selectedStartDate: selectedStartDate,
+                  selectedEndDate: selectedEndDate,
                   showPrevButtons: false,
                   onCalendarDateChanged: (value) => setState(() =>
                       calenderDate = DateTime(value.year, value.month - 1)),

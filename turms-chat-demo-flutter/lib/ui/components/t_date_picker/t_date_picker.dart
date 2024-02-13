@@ -3,16 +3,25 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 
-import '../../../infra/datetime/datetime_utils.dart';
 import '../../l10n/view_models/app_localizations_view_model.dart';
 import '../components.dart';
-import '../t_button/t_icon_button.dart';
 import 't_date_cell.dart';
 
 class TDatePicker extends ConsumerWidget {
-  const TDatePicker({Key? key, required this.date}) : super(key: key);
+  const TDatePicker(
+      {Key? key,
+      required this.calendarDate,
+      this.showPrevButtons = true,
+      this.showNextButtons = true,
+      this.onCalendarDateChanged,
+      this.onDateChanged})
+      : super(key: key);
 
-  final DateTime date;
+  final DateTime calendarDate;
+  final bool showPrevButtons;
+  final bool showNextButtons;
+  final ValueChanged<DateTime>? onCalendarDateChanged;
+  final ValueChanged<DateTime>? onDateChanged;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -20,11 +29,11 @@ class TDatePicker extends ConsumerWidget {
     final localeName = ref.watch(appLocalizationsViewModel).localeName;
     final dateSymbols = DateFormat.EEEE(localeName).dateSymbols;
     final weekdays = dateSymbols.NARROWWEEKDAYS;
-    final dateStr = DateFormat.yM(localeName).format(date);
-    final thisMonthDays = DateUtils.getDaysInMonth(date.year, date.month);
-    final thisMonthFirstDay = DateTime(date.year, date.month, 1);
-    DateTimeUtils.getFirstDateOfTheWeek(
-        date); // DateFormat.yMMMEd().dateSymbols.
+    final dateStr = DateFormat.yM(localeName).format(calendarDate);
+    final thisMonthDays =
+        DateUtils.getDaysInMonth(calendarDate.year, calendarDate.month);
+    final thisMonthFirstDay =
+        DateTime(calendarDate.year, calendarDate.month, 1);
     return Column(
       children: [
         _buildTitle(dateStr),
@@ -37,16 +46,26 @@ class TDatePicker extends ConsumerWidget {
   Widget _buildTitle(String dateStr) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
         child: Row(children: [
-          const TIconButton(
+          if (showPrevButtons)
+            TIconButton(
               iconData: Symbols.keyboard_double_arrow_left_rounded,
               iconColor: Colors.black45,
               iconHoverColor: Colors.black,
-              addContainer: false),
-          const TIconButton(
+              addContainer: false,
+              onTap: () => onCalendarDateChanged?.call(
+                DateTime(calendarDate.year - 1, calendarDate.month),
+              ),
+            ),
+          if (showPrevButtons)
+            TIconButton(
               iconData: Symbols.keyboard_arrow_left_rounded,
               iconColor: Colors.black45,
               iconHoverColor: Colors.black,
-              addContainer: false),
+              addContainer: false,
+              onTap: () => onCalendarDateChanged?.call(
+                DateTime(calendarDate.year, calendarDate.month - 1),
+              ),
+            ),
           Expanded(
             child: Text(
               dateStr,
@@ -54,16 +73,26 @@ class TDatePicker extends ConsumerWidget {
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
-          const TIconButton(
+          if (showNextButtons)
+            TIconButton(
               iconData: Symbols.keyboard_arrow_right_rounded,
               iconColor: Colors.black45,
               iconHoverColor: Colors.black,
-              addContainer: false),
-          const TIconButton(
+              addContainer: false,
+              onTap: () => onCalendarDateChanged?.call(
+                DateTime(calendarDate.year, calendarDate.month + 1),
+              ),
+            ),
+          if (showNextButtons)
+            TIconButton(
               iconData: Symbols.keyboard_double_arrow_right_rounded,
               iconColor: Colors.black45,
               iconHoverColor: Colors.black,
-              addContainer: false),
+              addContainer: false,
+              onTap: () => onCalendarDateChanged?.call(
+                DateTime(calendarDate.year + 1, calendarDate.month),
+              ),
+            ),
         ]),
       );
 
@@ -91,7 +120,10 @@ class TDatePicker extends ConsumerWidget {
                 i++,
                 date = DateTime(
                     thisMonthFirstDay.year, thisMonthFirstDay.month, i))
-              TDateCell(date: date, isToday: DateUtils.isSameDay(date, now)),
+              TDateCell(date: date, isToday: DateUtils.isSameDay(date, now),
+                onTap: (DateTime value) {
+                  onDateChanged?.call(value);
+                },),
           ],
         ),
       ),

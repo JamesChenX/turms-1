@@ -7,14 +7,14 @@ class _TDateRangeInput extends ConsumerStatefulWidget {
       {Key? key,
       this.startDate,
       this.endDate,
-      required this.startDateFocus,
-      required this.endDateFocus})
+      required this.startDateFocusNode,
+      required this.endDateFocusNode})
       : super(key: key);
 
   final DateTime? startDate;
   final DateTime? endDate;
-  final FocusNode startDateFocus;
-  final FocusNode endDateFocus;
+  final FocusNode startDateFocusNode;
+  final FocusNode endDateFocusNode;
 
   @override
   ConsumerState<_TDateRangeInput> createState() => _TDateRangeInputState();
@@ -58,7 +58,7 @@ class _TDateRangeInputState extends ConsumerState<_TDateRangeInput> {
           width: 96,
           child: TTextField(
             textEditingController: _startDateInputController,
-            focusNode: widget.startDateFocus,
+            focusNode: widget.startDateFocusNode,
             readOnly: true,
             showCursor: false,
             onTapOutside: onTapOutside,
@@ -72,7 +72,7 @@ class _TDateRangeInputState extends ConsumerState<_TDateRangeInput> {
           width: 96,
           child: TTextField(
             textEditingController: _endDateInputController,
-            focusNode: widget.endDateFocus,
+            focusNode: widget.endDateFocusNode,
             readOnly: true,
             showCursor: false,
             onTapOutside: onTapOutside,

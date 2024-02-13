@@ -31,11 +31,11 @@ class TDateRangePicker extends StatefulWidget {
   State<TDateRangePicker> createState() => _TDateRangePickerState();
 }
 
-final groupId = 'test123';
+const groupId = 'dateRangePicker';
 
 class _TDateRangePickerState extends State<TDateRangePicker> {
-  late FocusNode startDateFocus;
-  late FocusNode endDateFocus;
+  late FocusNode startDateFocusNode;
+  late FocusNode endDateFocusNode;
 
   DateTime? selectedStartDate;
   DateTime? selectedEndDate;
@@ -43,16 +43,16 @@ class _TDateRangePickerState extends State<TDateRangePicker> {
   @override
   void initState() {
     super.initState();
-    startDateFocus = FocusNode()..addListener(_onFocusChanged);
-    endDateFocus = FocusNode()..addListener(_onFocusChanged);
+    startDateFocusNode = FocusNode()..addListener(_onFocusChanged);
+    endDateFocusNode = FocusNode()..addListener(_onFocusChanged);
     selectedStartDate = widget.initialDateRange.start;
     selectedEndDate = widget.initialDateRange.end;
   }
 
   @override
   void dispose() {
-    startDateFocus.dispose();
-    endDateFocus.dispose();
+    startDateFocusNode.dispose();
+    endDateFocusNode.dispose();
     super.dispose();
   }
 
@@ -65,14 +65,14 @@ class _TDateRangePickerState extends State<TDateRangePicker> {
       target: TapRegion(
         groupId: groupId,
         onTapOutside: (_) {
-          startDateFocus.unfocus();
-          endDateFocus.unfocus();
+          startDateFocusNode.unfocus();
+          endDateFocusNode.unfocus();
         },
         child: _TDateRangeInput(
           startDate: selectedStartDate,
-          startDateFocus: startDateFocus,
-          endDateFocus: endDateFocus,
+          startDateFocusNode: startDateFocusNode,
           endDate: selectedEndDate,
+          endDateFocusNode: endDateFocusNode,
         ),
       ),
       follower: TapRegion(
@@ -81,11 +81,19 @@ class _TDateRangePickerState extends State<TDateRangePicker> {
           firstDate: widget.firstDate,
           lastDate: widget.lastDate,
           initialDateRange: widget.initialDateRange,
+          onDateChanged: (DateTime value) {
+            if (startDateFocusNode.hasFocus) {
+              selectedStartDate = value;
+            } else {
+              selectedEndDate = value;
+            }
+            setState(() {});
+          },
         ),
       ));
 
   void _onFocusChanged() {
-    if (startDateFocus.hasFocus || endDateFocus.hasFocus) {
+    if (startDateFocusNode.hasFocus || endDateFocusNode.hasFocus) {
       widget._popupController.showPopover?.call();
     } else {
       widget._popupController.hidePopover?.call();

@@ -6,13 +6,14 @@ import '../../themes/theme_config.dart';
 import '../components.dart';
 
 class TDateCell extends ConsumerStatefulWidget {
-  TDateCell({Key? key, required this.date, required this.isToday})
+  TDateCell({Key? key, required this.date, required this.isToday, required this.onTap})
       : day = date.day.toString(),
         super(key: key);
 
   final DateTime date;
   final String day;
   final bool isToday;
+  final ValueChanged<DateTime> onTap;
 
   @override
   ConsumerState<TDateCell> createState() => _TDateCellState();
@@ -37,24 +38,29 @@ class _TDateCellState extends ConsumerState<TDateCell> {
         child: TTooltip(
           message: ref.watch(dateFormatViewModel_yMd).format(widget.date),
           waitDuration: const Duration(milliseconds: 1000),
-          child: UnconstrainedBox(
-            child: SizedBox(
-              width: 24,
-              height: 24,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                    border: widget.isToday
-                        ? Border.all(color: ThemeConfig.primary)
-                        : null,
-                    borderRadius: ThemeConfig.borderRadius4,
-                    color:
-                        isHovered ? ThemeConfig.primary : Colors.transparent),
-                child: Center(
-                    child: Text(widget.day,
-                        style: TextStyle(
-                            color: isHovered
-                                ? Colors.white
-                                : ThemeConfig.textColorPrimary))),
+          child: GestureDetector(
+            onTap: () {
+              widget.onTap(widget.date);
+            },
+            child: UnconstrainedBox(
+              child: SizedBox(
+                width: 24,
+                height: 24,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                      border: widget.isToday
+                          ? Border.all(color: ThemeConfig.primary)
+                          : null,
+                      borderRadius: ThemeConfig.borderRadius4,
+                      color:
+                          isHovered ? ThemeConfig.primary : Colors.transparent),
+                  child: Center(
+                      child: Text(widget.day,
+                          style: TextStyle(
+                              color: isHovered
+                                  ? Colors.white
+                                  : ThemeConfig.textColorPrimary))),
+                ),
               ),
             ),
           ),

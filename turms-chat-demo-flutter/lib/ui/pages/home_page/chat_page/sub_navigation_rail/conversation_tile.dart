@@ -18,10 +18,17 @@ class ConversationTile extends ConsumerStatefulWidget {
   const ConversationTile(
       {super.key,
       required this.conversation,
+      required this.nameTextSpans,
+      required this.messageTextSpans,
+      required this.isSearchMode,
       this.focused = false,
       required this.onTap});
 
   final Conversation conversation;
+  final List<TextSpan> nameTextSpans;
+  final List<TextSpan> messageTextSpans;
+  final bool isSearchMode;
+
   final bool focused;
 
   final GestureTapCallback onTap;
@@ -36,7 +43,6 @@ class _ConversationTileState extends ConsumerState<ConversationTile> {
   @override
   Widget build(BuildContext context) {
     final appLocalizations = ref.watch(appLocalizationsViewModel);
-    final conversation = widget.conversation;
     return TListTile(
       onTap: widget.onTap,
       focused: widget.focused,
@@ -48,7 +54,7 @@ class _ConversationTileState extends ConsumerState<ConversationTile> {
           // TODO: adapt the padding to not hide part of text (e.g. contact name).
           const EdgeInsets.only(left: 10, right: 14, top: 12, bottom: 12),
       child: Row(mainAxisSize: MainAxisSize.min, children: [
-        _buildAvatar(conversation),
+        _buildAvatar(),
         const SizedBox(
           width: 10,
         ),
@@ -57,26 +63,28 @@ class _ConversationTileState extends ConsumerState<ConversationTile> {
     );
   }
 
-  Stack _buildAvatar(Conversation conversation) =>
-      Stack(clipBehavior: Clip.none, children: [
-        TAvatar(
-          name: conversation.name,
-          image: conversation.image,
-        ),
-        if (conversation.unreadMessageCount > 0)
-          Positioned(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints.tightFor(
-                  width: diameter, height: diameter),
-              child: const DecoratedBox(
-                decoration:
-                    BoxDecoration(color: Colors.orange, shape: BoxShape.circle),
-              ),
+  Stack _buildAvatar() {
+    final conversation = widget.conversation;
+    return Stack(clipBehavior: Clip.none, children: [
+      TAvatar(
+        name: conversation.name,
+        image: conversation.image,
+      ),
+      if (conversation.unreadMessageCount > 0)
+        Positioned(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints.tightFor(
+                width: diameter, height: diameter),
+            child: const DecoratedBox(
+              decoration:
+                  BoxDecoration(color: Colors.orange, shape: BoxShape.circle),
             ),
-            right: rightOffset,
-            top: topOffset,
-          )
-      ]);
+          ),
+          right: rightOffset,
+          top: topOffset,
+        )
+    ]);
+  }
 
   Column _buildConversation(
       AppLocalizations localizations, BuildContext context) {
@@ -94,8 +102,8 @@ class _ConversationTileState extends ConsumerState<ConversationTile> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Flexible(
-                  child: Text(
-                conversation.name,
+                  child: Text.rich(
+                TextSpan(children: widget.nameTextSpans),
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
                 softWrap: false,
@@ -104,7 +112,7 @@ class _ConversationTileState extends ConsumerState<ConversationTile> {
                 width: 12,
               ),
               Text(
-                lastMessage == null
+                lastMessage == null || widget.isSearchMode
                     ? ''
                     : dateFormat.format(lastMessage.timestamp),
                 style: const TextStyle(color: ThemeConfig.gray7, fontSize: 14),
@@ -121,26 +129,35 @@ class _ConversationTileState extends ConsumerState<ConversationTile> {
           ChatMessage? lastMessage) =>
       Row(
         children: [
-          if (draft != null)
-            // todo: textspan
-            Text(
-              '[${localizations.draft}]',
-              style: const TextStyle(color: ThemeConfig.gray7, fontSize: 14),
-              strutStyle:
-                  const StrutStyle(fontSize: 14, forceStrutHeight: true),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-              softWrap: false,
-            ),
           Flexible(
-              child: Text(
-            draft ?? lastMessage?.text ?? '',
-            style: const TextStyle(color: ThemeConfig.gray7, fontSize: 14),
-            strutStyle: const StrutStyle(fontSize: 14, forceStrutHeight: true),
-            overflow: TextOverflow.ellipsis,
-            maxLines: 1,
-            softWrap: false,
-          ))
+            child: widget.isSearchMode
+                ? Text.rich(
+                    TextSpan(children: widget.messageTextSpans),
+                    style:
+                        const TextStyle(color: ThemeConfig.gray7, fontSize: 14),
+                    strutStyle:
+                        const StrutStyle(fontSize: 14, forceStrutHeight: true),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    softWrap: false,
+                  )
+                : Text.rich(
+                    TextSpan(children: [
+                      if (draft != null)
+                        TextSpan(
+                            text: '[${localizations.draft}]',
+                            style: ThemeConfig.textStyleHighlight),
+                      TextSpan(text: draft ?? lastMessage?.text ?? ''),
+                    ]),
+                    style:
+                        const TextStyle(color: ThemeConfig.gray7, fontSize: 14),
+                    strutStyle:
+                        const StrutStyle(fontSize: 14, forceStrutHeight: true),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    softWrap: false,
+                  ),
+          ),
         ],
       );
 }

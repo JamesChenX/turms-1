@@ -16,10 +16,14 @@ class TDatePicker extends ConsumerWidget {
       this.availableEndDate,
       this.selectedStartDate,
       this.selectedEndDate,
+      this.hoveredStartDate,
+      this.hoveredEndDate,
       this.showPrevButtons = true,
       this.showNextButtons = true,
       this.onCalendarDateChanged,
-      this.onDateChanged})
+      this.onDateChanged,
+      this.onMouseRegionEntered,
+      this.onMouseRegionExited})
       : super(key: key);
 
   final DateTime calendarDate;
@@ -27,10 +31,15 @@ class TDatePicker extends ConsumerWidget {
   final DateTime? availableEndDate;
   final DateTime? selectedStartDate;
   final DateTime? selectedEndDate;
+  final DateTime? hoveredStartDate;
+  final DateTime? hoveredEndDate;
   final bool showPrevButtons;
   final bool showNextButtons;
+
   final ValueChanged<DateTime>? onCalendarDateChanged;
   final ValueChanged<DateTime>? onDateChanged;
+  final ValueChanged<DateTime>? onMouseRegionEntered;
+  final ValueChanged<DateTime>? onMouseRegionExited;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -116,18 +125,24 @@ class TDatePicker extends ConsumerWidget {
     DateTime date;
     final localAvailableStartDate = availableStartDate;
     final localAvailableEndDate = availableEndDate;
+    final startDate = hoveredStartDate ?? selectedStartDate;
+    final endDate = hoveredEndDate ?? selectedEndDate;
     for (var i = 0; i < DateTime.daysPerWeek * 6; i++) {
       date = DateTime(firstDay.year, firstDay.month, firstDay.day + i);
       children.add(TDateCell(
         date: date,
         isToday: DateUtils.isSameDay(date, now),
-        selectRangePosition: _getSelectRangePosition(
-            date, localAvailableStartDate, localAvailableEndDate),
+        inCurrentCalendarMonth: DateUtils.isSameMonth(date, calendarDate),
+        selectRangePosition: _getSelectRangePosition(date, startDate, endDate),
+        // hoverRangePosition: _getSelectRangePosition(
+        //     date, localHoveredStartDate, localHoveredEndDate),
         disableRangePosition: _getDisableRangePosition(
             date, localAvailableStartDate, localAvailableEndDate),
         onTap: (DateTime value) {
           onDateChanged?.call(value);
         },
+        onMouseRegionEntered: onMouseRegionEntered,
+        onMouseRegionExited: onMouseRegionExited,
       ));
     }
     return Expanded(
@@ -142,14 +157,14 @@ class TDatePicker extends ConsumerWidget {
   }
 
   RangePosition _getSelectRangePosition(
-      DateTime date, DateTime? availableStartDate, DateTime? availableEndDate) {
-    if (DateUtils.isSameDay(date, availableStartDate)) {
+      DateTime date, DateTime? startDate, DateTime? endDate) {
+    if (DateUtils.isSameDay(date, startDate)) {
       return RangePosition.start;
     }
-    if (DateUtils.isSameDay(date, availableEndDate)) {
+    if (DateUtils.isSameDay(date, endDate)) {
       return RangePosition.end;
     }
-    return DateTimeUtils.isBetween(date, availableStartDate, availableEndDate)
+    return DateTimeUtils.isBetween(date, startDate, endDate)
         ? RangePosition.middle
         : RangePosition.none;
   }

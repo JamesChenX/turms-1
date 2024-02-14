@@ -41,17 +41,17 @@ class CreateGroupPageController extends ConsumerState<CreateGroupPage> {
     close();
   }
 
-  void onContactSelectedChanged(UserContact userContact, bool selected) {
-    if (selected) {
-      if (selectedUserContactIds.add(userContact.userId)) {
-        selectedUserContacts.add(userContact);
-        setState(() {});
-      }
-    } else {
-      if (selectedUserContactIds.remove(userContact.userId)) {
-        selectedUserContacts.remove(userContact);
-        setState(() {});
-      }
+  void addSelectedContact(UserContact userContact) {
+    if (selectedUserContactIds.add(userContact.userId)) {
+      selectedUserContacts.add(userContact);
+      setState(() {});
+    }
+  }
+
+  void removeSelectedContact(UserContact userContact) {
+    if (selectedUserContactIds.remove(userContact.userId)) {
+      selectedUserContacts.remove(userContact);
+      setState(() {});
     }
   }
 

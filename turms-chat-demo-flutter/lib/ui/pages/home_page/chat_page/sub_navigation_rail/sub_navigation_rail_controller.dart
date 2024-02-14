@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -31,6 +30,8 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
   Conversation? selectedConversation;
   bool isConversationsInitialized = false;
   bool isConversationsLoading = false;
+
+  String searchText = '';
 
   @override
   void initState() {
@@ -161,5 +162,10 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
       }
     });
     conversationsViewModelRef.notifyListeners();
+  }
+
+  void updateSearchText(String value) {
+    searchText = value.toLowerCase().trim();
+    setState(() {});
   }
 }

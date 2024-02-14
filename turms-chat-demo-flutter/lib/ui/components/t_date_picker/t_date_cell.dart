@@ -17,18 +17,27 @@ class TDateCell extends ConsumerStatefulWidget {
       {Key? key,
       required this.date,
       required this.isToday,
+      required this.inCurrentCalendarMonth,
       required this.selectRangePosition,
+      // required this.hoverRangePosition,
       required this.disableRangePosition,
-      required this.onTap})
+      required this.onTap,
+      this.onMouseRegionEntered,
+      this.onMouseRegionExited})
       : day = date.day.toString(),
         super(key: key);
 
   final DateTime date;
   final String day;
   final bool isToday;
+  final bool inCurrentCalendarMonth;
   final RangePosition selectRangePosition;
+
+  // final RangePosition hoverRangePosition;
   final RangePosition disableRangePosition;
   final ValueChanged<DateTime> onTap;
+  final ValueChanged<DateTime>? onMouseRegionEntered;
+  final ValueChanged<DateTime>? onMouseRegionExited;
 
   @override
   ConsumerState<TDateCell> createState() => _TDateCellState();
@@ -80,35 +89,66 @@ class _TDateCellState extends ConsumerState<TDateCell> {
           ),
         ],
       );
-    } else {
+    } else if (!widget.inCurrentCalendarMonth) {
       child = Row(
         children: [
           Expanded(
             child: SizedBox(
               height: 24,
-              // width: switch (widget.selectRangePosition) {
-              //   RangePosition.middle => null,
-              //   RangePosition.start => 24,
-              //   RangePosition.end => 24,
-              //   RangePosition.none => null,
-              // },
               child: DecoratedBox(
-                decoration: BoxDecoration(
-                    color: switch (widget.selectRangePosition) {
-                      RangePosition.middle =>
-                        const Color.fromARGB(255, 230, 244, 255),
-                      RangePosition.start => null,
-                      RangePosition.end => null,
-                      RangePosition.none => null,
-                    },
-                    borderRadius: switch (widget.selectRangePosition) {
-                      RangePosition.middle => null,
-                      RangePosition.start =>
-                        const BorderRadius.horizontal(left: Radius.circular(4)),
-                      RangePosition.end => const BorderRadius.horizontal(
-                          right: Radius.circular(4)),
-                      RangePosition.none => null,
-                    }),
+                decoration: const BoxDecoration(),
+                child: UnconstrainedBox(
+                  child: SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            borderRadius: ThemeConfig.borderRadius4,
+                            color: isHovered
+                                ? const Color.fromARGB(255, 245, 245, 245)
+                                : null,
+                          ),
+                          child: Center(
+                              child: Text(
+                            widget.day,
+                            style: TextStyle(
+                              color: Colors.black26,
+                            ),
+                          )))),
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    } else {
+      const colorSelectionRangeMiddle = Color.fromARGB(255, 230, 244, 255);
+      child = Row(
+        children: [
+          Expanded(
+            child: SizedBox(
+              height: 24,
+              child: DecoratedBox(
+                decoration: switch (widget.selectRangePosition) {
+                  RangePosition.none => const BoxDecoration(),
+                  RangePosition.middle => const BoxDecoration(
+                      color: colorSelectionRangeMiddle,
+                    ),
+                  RangePosition.start => const BoxDecoration(
+                      gradient: LinearGradient(
+                        stops: [0.5, 0.5],
+                        colors: [Colors.transparent, colorSelectionRangeMiddle],
+                      ),
+                      borderRadius:
+                          BorderRadius.horizontal(left: Radius.circular(4))),
+                  RangePosition.end => const BoxDecoration(
+                      gradient: LinearGradient(
+                        stops: [0.5, 0.5],
+                        colors: [colorSelectionRangeMiddle, Colors.transparent],
+                      ),
+                      borderRadius:
+                          BorderRadius.horizontal(right: Radius.circular(4)))
+                },
                 child: UnconstrainedBox(
                   child: SizedBox(
                     width: 24,
@@ -124,7 +164,7 @@ class _TDateCellState extends ConsumerState<TDateCell> {
                               left: Radius.circular(4)),
                           RangePosition.end => const BorderRadius.horizontal(
                               right: Radius.circular(4)),
-                          RangePosition.none => null,
+                          RangePosition.none => ThemeConfig.borderRadius4,
                         },
                         color: isHovered
                             ? ThemeConfig.primary
@@ -164,6 +204,9 @@ class _TDateCellState extends ConsumerState<TDateCell> {
           setState(() {
             isHovered = true;
           });
+          if (widget.inCurrentCalendarMonth) {
+            widget.onMouseRegionEntered?.call(widget.date);
+          }
         }
       },
       onExit: (event) {
@@ -171,6 +214,9 @@ class _TDateCellState extends ConsumerState<TDateCell> {
           setState(() {
             isHovered = false;
           });
+          if (widget.inCurrentCalendarMonth) {
+            widget.onMouseRegionExited?.call(widget.date);
+          }
         }
       },
       child: GestureDetector(

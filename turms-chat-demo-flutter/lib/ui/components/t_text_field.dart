@@ -22,6 +22,7 @@ class TTextField extends ConsumerStatefulWidget {
       this.enableInteractiveSelection,
       this.maxLength,
       this.expands = false,
+      this.style,
       TextAlignVertical? textAlignVertical,
       this.transformValue,
       this.onSubmitted,
@@ -44,6 +45,7 @@ class TTextField extends ConsumerStatefulWidget {
   final int? maxLength;
   final bool expands;
   final TextAlignVertical textAlignVertical;
+  final TextStyle? style;
   final String Function(String value)? transformValue;
   final ValueChanged<String>? onSubmitted;
   final ValueChanged<PointerDownEvent>? onTapOutside;
@@ -105,7 +107,7 @@ class _TTextFieldState extends ConsumerState<TTextField> {
       },
       onSubmitted: widget.onSubmitted,
       onTapOutside: widget.onTapOutside,
-      style: const TextStyle(
+      style: widget.style ?? const TextStyle(
           fontSize: 14,
           // cursor height
           height: 1.2),

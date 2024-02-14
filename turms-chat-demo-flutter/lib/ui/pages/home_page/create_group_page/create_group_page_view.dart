@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:quiver/collection.dart';
 
 import '../../../../domain/user/models/user_contact.dart';
 import '../../../../infra/built_in_types/built_in_type_helpers.dart';
-import '../../../../infra/task/debouncer.dart';
 import '../../../../infra/ui/text_utils.dart';
 import '../../../components/components.dart';
 import '../../../l10n/app_localizations.dart';
@@ -19,14 +17,13 @@ class CreateGroupPageView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appLocalizations = createGroupPageController.appLocalizations;
-    final userContacts = createGroupPageController.userContacts;
     return SizedBox(
       width: ThemeConfig.dialogWidthMedium,
       height: ThemeConfig.dialogHeightMedium,
       child: Stack(
         children: [
           Positioned.fill(
-            child: _buildBody(appLocalizations, userContacts),
+            child: _buildBody(appLocalizations),
           ),
           const TTitleBar(
             backgroundColor: ThemeConfig.homePageBackgroundColor,
@@ -38,9 +35,7 @@ class CreateGroupPageView extends StatelessWidget {
     );
   }
 
-  Widget _buildBody(
-          AppLocalizations appLocalizations, List<UserContact> userContacts) =>
-      Padding(
+  Widget _buildBody(AppLocalizations appLocalizations) => Padding(
         padding: ThemeConfig.paddingV8H16,
         child: Column(children: [
           Text(appLocalizations.createGroup),
@@ -82,7 +77,7 @@ class CreateGroupPageView extends StatelessWidget {
                   Expanded(
                     child: Row(
                       children: [
-                        Expanded(child: _buildContacts(userContacts)),
+                        Expanded(child: _buildContacts()),
                         const TVerticalDivider(),
                         Expanded(
                             child: _buildSelectedContacts(appLocalizations))
@@ -100,9 +95,9 @@ class CreateGroupPageView extends StatelessWidget {
         ]),
       );
 
-  ListView _buildContacts(List<UserContact> userContacts) {
-    final selectedUserContacts =
-        userContacts.expand<(UserContact, List<TextSpan>)>((contact) {
+  ListView _buildContacts() {
+    final matchedUserContacts = createGroupPageController.userContacts
+        .expand<(UserContact, List<TextSpan>)>((contact) {
       final searchText = createGroupPageController.searchText;
       final spans = TextUtils.splitText(
           text: contact.name,
@@ -115,9 +110,9 @@ class CreateGroupPageView extends StatelessWidget {
     }).toList();
 
     return ListView.builder(
-        itemCount: selectedUserContacts.length,
+        itemCount: matchedUserContacts.length,
         itemBuilder: (BuildContext context, int index) {
-          final (userContact, spans) = selectedUserContacts[index];
+          final (userContact, spans) = matchedUserContacts[index];
           return TListTile(
             key: Key(userContact.id),
             backgroundColor: Colors.white,
@@ -129,8 +124,11 @@ class CreateGroupPageView extends StatelessWidget {
                     value: createGroupPageController.selectedUserContactIds
                         .contains(userContact.userId),
                     onChanged: (value) {
-                      createGroupPageController.onContactSelectedChanged(
-                          userContact, value);
+                      if (value) {
+                        createGroupPageController.addSelectedContact(userContact);
+                      } else {
+                        createGroupPageController.removeSelectedContact(userContact);
+                      }
                     }),
                 const SizedBox(
                   width: 8,
@@ -188,8 +186,8 @@ class CreateGroupPageView extends StatelessWidget {
                   iconSize: 16,
                   addContainer: false,
                   onTap: () {
-                    createGroupPageController.onContactSelectedChanged(
-                        userContact, false);
+                    createGroupPageController.removeSelectedContact(
+                        userContact);
                   },
                 )
               ],

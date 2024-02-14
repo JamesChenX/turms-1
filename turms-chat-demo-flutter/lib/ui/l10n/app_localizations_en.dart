@@ -17,18 +17,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get actions => 'Actions';
 
   @override
-  String get downloadStart => 'Start';
-
-  @override
-  String get downloadPause => 'Pause';
-
-  @override
-  String get downloadCancel => 'Cancel';
-
-  @override
-  String get openFolder => 'Open Folder';
-
-  @override
   String get addContact => 'Add Contact';
 
   @override
@@ -77,7 +65,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get darkTheme => 'Dark';
 
   @override
-  String get draft => 'draft';
+  String get downloadCancel => 'Cancel';
+
+  @override
+  String get downloadPause => 'Pause';
+
+  @override
+  String get downloadStart => 'Start';
+
+  @override
+  String get draft => 'Draft';
 
   @override
   String get dropFilesHere => 'Drop files here';
@@ -179,6 +176,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get openAboutDialog => 'Open About Dialog';
 
   @override
+  String get openFolder => 'Open Folder';
+
+  @override
   String get openSettingsDialog => 'Open Settings Dialog';
 
   @override
@@ -189,6 +189,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get progress => 'Progress';
+
+  @override
+  String relatedMessages(Object count) {
+    return '$count related messages';
+  }
 
   @override
   String get rememberMe => 'Remember Me';

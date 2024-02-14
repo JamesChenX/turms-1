@@ -1,18 +1,20 @@
 part of 't_date_range_picker.dart';
 
-enum _TDateRangeInputFocus { none, start, end }
-
 class _TDateRangeInput extends ConsumerStatefulWidget {
   const _TDateRangeInput(
       {Key? key,
       this.startDate,
       this.endDate,
+      this.previewStartDate,
+      this.previewEndDate,
       required this.startDateFocusNode,
       required this.endDateFocusNode})
       : super(key: key);
 
   final DateTime? startDate;
   final DateTime? endDate;
+  final DateTime? previewStartDate;
+  final DateTime? previewEndDate;
   final FocusNode startDateFocusNode;
   final FocusNode endDateFocusNode;
 
@@ -41,8 +43,23 @@ class _TDateRangeInputState extends ConsumerState<_TDateRangeInput> {
 
   @override
   Widget build(BuildContext context) {
-    final startDate = widget.startDate;
-    final endDate = widget.endDate;
+    final previewStartDate = widget.previewStartDate;
+    final previewEndDate = widget.previewEndDate;
+    final usePreviewStartDate = previewStartDate != null;
+    final usePreviewEndDate = previewEndDate != null;
+    final DateTime? startDate;
+    if (usePreviewStartDate) {
+      startDate = previewStartDate;
+    } else {
+      startDate = widget.startDate;
+    }
+    final DateTime? endDate;
+    if (usePreviewEndDate) {
+      endDate = previewEndDate;
+    } else {
+      endDate = widget.endDate;
+    }
+
     _startDateInputController.text = startDate == null
         ? ''
         : ref.read(dateFormatViewModel_yMd).format(startDate);
@@ -59,6 +76,8 @@ class _TDateRangeInputState extends ConsumerState<_TDateRangeInput> {
             focusNode: widget.startDateFocusNode,
             readOnly: true,
             showCursor: false,
+            style:
+                TextStyle(color: ThemeConfig.textColorSecondary, height: 1.2),
             onTapOutside: onTapOutside,
           ),
         ),
@@ -73,6 +92,8 @@ class _TDateRangeInputState extends ConsumerState<_TDateRangeInput> {
             focusNode: widget.endDateFocusNode,
             readOnly: true,
             showCursor: false,
+            style:
+                TextStyle(color: ThemeConfig.textColorSecondary, height: 1.2),
             onTapOutside: onTapOutside,
           ),
         ),

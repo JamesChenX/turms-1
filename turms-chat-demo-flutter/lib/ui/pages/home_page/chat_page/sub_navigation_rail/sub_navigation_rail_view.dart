@@ -47,6 +47,10 @@ class SubNavigationRailView extends StatelessWidget {
             Expanded(
               child: TSearchBar(
                 hintText: appLocalizations.search,
+                transformValue: (value) {
+                  subNavigationRailController.updateSearchText(value);
+                  return value;
+                },
               ),
             ),
             const SizedBox(
@@ -87,11 +91,6 @@ class SubNavigationRailView extends StatelessWidget {
   }
 
   Widget _buildConversationTiles(BuildContext context) => Expanded(
-      child: MediaQuery.removePadding(
-          context: context,
-          removeTop: true,
-          removeLeft: true,
-          removeRight: true,
-          child: ConversationTiles(
-              subNavigationRailController: subNavigationRailController)));
+      child: ConversationTiles(
+          subNavigationRailController: subNavigationRailController));
 }

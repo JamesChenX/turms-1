@@ -17,18 +17,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get actions => '操作';
 
   @override
-  String get downloadStart => '开始下载';
-
-  @override
-  String get downloadPause => '暂停下载';
-
-  @override
-  String get downloadCancel => '取消下载';
-
-  @override
-  String get openFolder => '打开文件夹';
-
-  @override
   String get addContact => '添加联系人';
 
   @override
@@ -75,6 +63,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get darkTheme => '暗主题';
+
+  @override
+  String get downloadCancel => '取消下载';
+
+  @override
+  String get downloadPause => '暂停下载';
+
+  @override
+  String get downloadStart => '开始下载';
 
   @override
   String get draft => '草稿';
@@ -179,6 +176,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get openAboutDialog => '打开关于对话框';
 
   @override
+  String get openFolder => '打开文件夹';
+
+  @override
   String get openSettingsDialog => '打开设置对话框';
 
   @override
@@ -189,6 +189,11 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get progress => '进度';
+
+  @override
+  String relatedMessages(Object count) {
+    return '$count条相关消息';
+  }
 
   @override
   String get rememberMe => '记住我';

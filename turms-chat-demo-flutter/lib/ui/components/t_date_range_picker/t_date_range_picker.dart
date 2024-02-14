@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -40,6 +38,9 @@ class _TDateRangePickerState extends State<TDateRangePicker> {
   DateTime? selectedStartDate;
   DateTime? selectedEndDate;
 
+  DateTime? hoveredStartDate;
+  DateTime? hoveredEndDate;
+
   @override
   void initState() {
     super.initState();
@@ -67,8 +68,10 @@ class _TDateRangePickerState extends State<TDateRangePicker> {
           child: _TDateRangeInput(
             startDate: selectedStartDate,
             startDateFocusNode: startDateFocusNode,
+            previewStartDate: hoveredStartDate,
             endDate: selectedEndDate,
             endDateFocusNode: endDateFocusNode,
+            previewEndDate: hoveredEndDate,
           ),
         ),
         follower: TapRegion(
@@ -76,6 +79,8 @@ class _TDateRangePickerState extends State<TDateRangePicker> {
           child: _TDateRangePickerPanel(
             availableStartDate: widget.firstDate,
             availableEndDate: widget.lastDate,
+            hoveredStartDate: hoveredStartDate,
+            hoveredEndDate: hoveredEndDate,
             initialDateRange: widget.initialDateRange,
             onDateChanged: (DateTime value) {
               if (startDateFocusNode.hasFocus) {
@@ -95,6 +100,26 @@ class _TDateRangePickerState extends State<TDateRangePicker> {
                   startDateFocusNode.requestFocus();
                 } else {
                   widget._popupController.hidePopover?.call();
+                }
+              }
+              setState(() {});
+            },
+            onMouseRegionEntered: (DateTime value) {
+              if (startDateFocusNode.hasFocus) {
+                hoveredStartDate = value;
+              } else {
+                hoveredEndDate = value;
+              }
+              setState(() {});
+            },
+            onMouseRegionExited: (DateTime value) {
+              if (startDateFocusNode.hasFocus) {
+                if (hoveredStartDate == value) {
+                  hoveredStartDate = null;
+                }
+              } else {
+                if (hoveredEndDate == value) {
+                  hoveredEndDate = null;
                 }
               }
               setState(() {});

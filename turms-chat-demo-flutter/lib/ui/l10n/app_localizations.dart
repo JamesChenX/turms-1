@@ -117,30 +117,6 @@ abstract class AppLocalizations {
   /// **'Actions'**
   String get actions;
 
-  /// No description provided for @downloadStart.
-  ///
-  /// In en, this message translates to:
-  /// **'Start'**
-  String get downloadStart;
-
-  /// No description provided for @downloadPause.
-  ///
-  /// In en, this message translates to:
-  /// **'Pause'**
-  String get downloadPause;
-
-  /// No description provided for @downloadCancel.
-  ///
-  /// In en, this message translates to:
-  /// **'Cancel'**
-  String get downloadCancel;
-
-  /// No description provided for @openFolder.
-  ///
-  /// In en, this message translates to:
-  /// **'Open Folder'**
-  String get openFolder;
-
   /// No description provided for @addContact.
   ///
   /// In en, this message translates to:
@@ -237,10 +213,28 @@ abstract class AppLocalizations {
   /// **'Dark'**
   String get darkTheme;
 
+  /// No description provided for @downloadCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get downloadCancel;
+
+  /// No description provided for @downloadPause.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get downloadPause;
+
+  /// No description provided for @downloadStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get downloadStart;
+
   /// No description provided for @draft.
   ///
   /// In en, this message translates to:
-  /// **'draft'**
+  /// **'Draft'**
   String get draft;
 
   /// No description provided for @dropFilesHere.
@@ -441,6 +435,12 @@ abstract class AppLocalizations {
   /// **'Open About Dialog'**
   String get openAboutDialog;
 
+  /// No description provided for @openFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Folder'**
+  String get openFolder;
+
   /// No description provided for @openSettingsDialog.
   ///
   /// In en, this message translates to:
@@ -464,6 +464,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Progress'**
   String get progress;
+
+  /// No description provided for @relatedMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} related messages'**
+  String relatedMessages(Object count);
 
   /// No description provided for @rememberMe.
   ///

@@ -9,11 +9,15 @@ class ContactTile extends StatefulWidget {
   const ContactTile(
       {super.key,
       required this.contact,
-      required this.focused,
+      required this.nameTextSpans,
+      required this.isSearchMode,
+      required this.selected,
       required this.onTap});
 
   final Contact contact;
-  final bool focused;
+  final List<TextSpan> nameTextSpans;
+  final bool isSearchMode;
+  final bool selected;
   final GestureTapCallback onTap;
 
   @override
@@ -28,7 +32,7 @@ class _ContactTileState extends State<ContactTile> {
     final contact = widget.contact;
     return TListTile(
         onTap: widget.onTap,
-        focused: widget.focused,
+        focused: widget.selected,
         backgroundColor: ThemeConfig.conversationBackgroundColor,
         focusedBackgroundColor: ThemeConfig.conversationFocusedBackgroundColor,
         hoveredBackgroundColor: ThemeConfig.conversationHoveredBackgroundColor,
@@ -45,8 +49,15 @@ class _ContactTileState extends State<ContactTile> {
             width: 10,
           ),
           Expanded(
-              child: Text(
-            contact.name,
+              child: Text.rich(
+            TextSpan(
+                children: widget.isSearchMode
+                    ? widget.nameTextSpans
+                    : [
+                        TextSpan(
+                          text: contact.name,
+                        )
+                      ]),
             overflow: TextOverflow.ellipsis,
             maxLines: 1,
             softWrap: false,

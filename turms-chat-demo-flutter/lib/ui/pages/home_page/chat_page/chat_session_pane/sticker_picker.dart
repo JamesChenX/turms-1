@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../components/t_button/t_text_button.dart';
-import '../../../themes/theme_config.dart';
+import '../../../../components/components.dart';
+import '../../../../themes/theme_config.dart';
 
 typedef EmojiCallback = void Function(String emoji);
 

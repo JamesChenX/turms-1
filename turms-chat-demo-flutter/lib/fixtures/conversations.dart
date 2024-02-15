@@ -8,7 +8,7 @@ import '../domain/message/message_delivery_status.dart';
 import '../domain/user/models/group_contact.dart';
 import '../domain/user/models/user_contact.dart';
 import '../infra/random/random_utils.dart';
-import '../ui/pages/home_page/chat_page/message.dart';
+import '../ui/pages/home_page/chat_page/chat_session_pane/message.dart';
 import 'contacts.dart';
 
 final random = Random(123456789);

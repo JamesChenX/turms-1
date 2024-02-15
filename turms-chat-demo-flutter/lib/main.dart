@@ -16,6 +16,7 @@ import 'domain/window/view_models/window_maximized_view_model.dart';
 import 'infra/app/app_config.dart';
 import 'infra/assets/assets.gen.dart';
 import 'infra/logging/logger.dart';
+import 'infra/media/video_utils.dart';
 import 'infra/platform/platform_helpers.dart';
 import 'infra/tray/tray_menu_item.dart';
 import 'infra/tray/tray_utils.dart';
@@ -55,6 +56,7 @@ Future<void> main() async {
   };
 
   await AppConfig.load();
+  VideoUtils.ensureInitialized();
 
   if (kDebugMode) {
     logger..d('The application directory: ${AppConfig.appDir}')..d(

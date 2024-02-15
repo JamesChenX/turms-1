@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../../../domain/user/models/contact.dart';
+import '../../../../../domain/user/models/system_contact.dart';
 import '../../../../../fixtures/contacts.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../l10n/view_models/app_localizations_view_model.dart';
@@ -19,6 +21,8 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
   Contact? selectedContact;
   bool isContactsInitialized = false;
   bool isContactsLoading = false;
+
+  String searchText = '';
 
   @override
   void initState() {
@@ -55,10 +59,24 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
     setState(() {});
     // TODO: use real API
     await Future.delayed(const Duration(seconds: 3));
-    ref.read(contactsViewModel.notifier).state = fixtureContacts;
+    ref.read(contactsViewModel.notifier).state = [
+      SystemContact(
+          type: SystemContactType.friendRequest,
+          name: appLocalizations.friendRequests,
+          icon: Symbols.person_add_rounded),
+      SystemContact(
+          type: SystemContactType.fileTransfer,
+          name: appLocalizations.fileTransfer,
+          icon: Symbols.drive_file_move_rounded),
+    ]..addAll(fixtureContacts);
     ref.read(isContactsInitializedViewModel.notifier).state = true;
     isContactsInitialized = true;
     isContactsLoading = false;
+    setState(() {});
+  }
+
+  void updateSearchText(String value) {
+    searchText = value;
     setState(() {});
   }
 }

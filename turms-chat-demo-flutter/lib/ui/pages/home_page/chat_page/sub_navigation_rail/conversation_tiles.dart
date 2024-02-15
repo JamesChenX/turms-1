@@ -9,7 +9,7 @@ import '../../../../../infra/built_in_types/built_in_type_helpers.dart';
 import '../../../../../infra/ui/text_utils.dart';
 import '../../../../l10n/view_models/app_localizations_view_model.dart';
 import '../../../../themes/theme_config.dart';
-import '../message.dart';
+import '../chat_session_pane/message.dart';
 import 'conversation_tile.dart';
 import 'sub_navigation_rail_controller.dart';
 
@@ -69,7 +69,7 @@ class ConversationTiles extends ConsumerWidget {
         return ConversationTile(
           key: Key(conversation.id),
           conversation: conversation,
-          focused: selectedConversationId == conversation.id,
+          selected: selectedConversationId == conversation.id,
           isSearchMode: isSearchMode,
           nameTextSpans: nameTextSpans,
           messageTextSpans: isSearchMode

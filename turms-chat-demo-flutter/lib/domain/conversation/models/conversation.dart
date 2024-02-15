@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 
-import '../../../ui/pages/home_page/chat_page/message.dart';
+import '../../../ui/pages/home_page/chat_page/chat_session_pane/message.dart';
 
 abstract class Conversation {
   Conversation(

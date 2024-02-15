@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:turms_chat_demo/ui/pages/home_page/chat_page/message.dart';
+import 'package:turms_chat_demo/ui/pages/home_page/chat_page/chat_session_pane/message.dart';
 
 import '../../../../../domain/conversation/models/conversation.dart';
 import '../../../../components/t_avatar/t_avatar.dart';
@@ -21,7 +21,7 @@ class ConversationTile extends ConsumerStatefulWidget {
       required this.nameTextSpans,
       required this.messageTextSpans,
       required this.isSearchMode,
-      this.focused = false,
+      this.selected = false,
       required this.onTap});
 
   final Conversation conversation;
@@ -29,7 +29,7 @@ class ConversationTile extends ConsumerStatefulWidget {
   final List<TextSpan> messageTextSpans;
   final bool isSearchMode;
 
-  final bool focused;
+  final bool selected;
 
   final GestureTapCallback onTap;
 
@@ -45,7 +45,7 @@ class _ConversationTileState extends ConsumerState<ConversationTile> {
     final appLocalizations = ref.watch(appLocalizationsViewModel);
     return TListTile(
       onTap: widget.onTap,
-      focused: widget.focused,
+      focused: widget.selected,
       backgroundColor: ThemeConfig.conversationBackgroundColor,
       focusedBackgroundColor: ThemeConfig.conversationFocusedBackgroundColor,
       hoveredBackgroundColor: ThemeConfig.conversationHoveredBackgroundColor,

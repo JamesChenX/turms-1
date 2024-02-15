@@ -5,6 +5,8 @@ import '../../../../../domain/user/models/contact.dart';
 import '../../../../../domain/user/models/system_contact.dart';
 import '../../../../../fixtures/contacts.dart';
 import '../../../../../fixtures/relationship_groups.dart';
+import '../../../../../infra/built_in_types/built_in_type_helpers.dart';
+import '../../../../../infra/ui/text_utils.dart';
 import '../../../../components/t_accordion.dart';
 import '../../../../components/t_search_bar.dart';
 import '../../../../themes/theme_config.dart';
@@ -28,9 +30,11 @@ class SubNavigationRailView extends StatelessWidget {
           if (subNavigationRailController.isContactsLoading)
             _buildLoadingIndicator(),
           Expanded(
-            child: ListView(
-              children: _buildRelationshipGroups(context),
-            ),
+            child: subNavigationRailController.searchText.isNotBlank
+                ? _buildSearchResults()
+                : ListView(
+                    children: _buildRelationshipGroups(context),
+                  ),
           ),
         ],
       ));
@@ -49,8 +53,43 @@ class SubNavigationRailView extends StatelessWidget {
         alignment: Alignment.center,
         child: TSearchBar(
           hintText: subNavigationRailController.appLocalizations.search,
+          transformValue: (value) {
+            subNavigationRailController.updateSearchText(value);
+            return value;
+          },
         ),
       );
+
+  Widget _buildSearchResults() {
+    final selectedContactId = subNavigationRailController.selectedContact?.id;
+    final matchedContacts = subNavigationRailController.contacts
+        .expand<(Contact, List<TextSpan>)>((contact) {
+      final searchText = subNavigationRailController.searchText;
+      final spans = TextUtils.splitText(
+          text: contact.name,
+          searchText: searchText,
+          searchTextStyle: ThemeConfig.textStyleHighlight);
+      if (spans.length == 1 && searchText.isNotBlank) {
+        return [];
+      }
+      return [(contact, spans)];
+    }).toList();
+
+    return ListView.builder(
+        itemCount: matchedContacts.length,
+        itemBuilder: (BuildContext context, int index) {
+          final (contact, spans) = matchedContacts[index];
+          return ContactTile(
+            contact: contact,
+            selected: contact.id == selectedContactId,
+            onTap: () {
+              subNavigationRailController.selectContact(contact);
+            },
+            nameTextSpans: spans,
+            isSearchMode: true,
+          );
+        });
+  }
 
   List<Widget> _buildRelationshipGroups(BuildContext context) {
     final selectedContactId = subNavigationRailController.selectedContact?.id;
@@ -66,11 +105,14 @@ class SubNavigationRailView extends StatelessWidget {
           icon: Symbols.drive_file_move_rounded),
     ]
         .map<Widget>((contact) => ContactTile(
-            contact: contact,
-            focused: contact.id == selectedContactId,
-            onTap: () {
-              subNavigationRailController.selectContact(contact);
-            }))
+              contact: contact,
+              nameTextSpans: [],
+              isSearchMode: false,
+              selected: contact.id == selectedContactId,
+              onTap: () {
+                subNavigationRailController.selectContact(contact);
+              },
+            ))
         .toList();
 
     // TODO:
@@ -101,11 +143,14 @@ class SubNavigationRailView extends StatelessWidget {
         contentChild: Column(
           children: contacts
               .map((contact) => ContactTile(
-                  contact: contact,
-                  focused: contact.id == selectedContactId,
-                  onTap: () {
-                    subNavigationRailController.selectContact(contact);
-                  }))
+                    contact: contact,
+                    selected: contact.id == selectedContactId,
+                    onTap: () {
+                      subNavigationRailController.selectContact(contact);
+                    },
+                    nameTextSpans: [],
+                    isSearchMode: false,
+                  ))
               .toList(),
         ),
       );

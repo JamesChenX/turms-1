@@ -1,6 +1,6 @@
 import 'package:fixnum/fixnum.dart';
 
-import '../../../../domain/message/message_delivery_status.dart';
+import '../../../../../domain/message/message_delivery_status.dart';
 
 class ChatMessage {
   const ChatMessage(this.senderId, this.sentByMe, this.text,

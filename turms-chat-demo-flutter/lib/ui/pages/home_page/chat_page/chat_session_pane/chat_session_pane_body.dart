@@ -7,7 +7,7 @@ import '../../../../../domain/user/models/user.dart';
 import '../../../../../domain/user/view_models/logged_in_user_info_view_model.dart';
 import '../../../../../fixtures/contacts.dart';
 import '../../../../themes/theme_config.dart';
-import '../message_bubble.dart';
+import 'message_bubble/message_bubble.dart';
 
 class ChatSessionPaneBody extends ConsumerStatefulWidget {
   const ChatSessionPaneBody(this.selectedConversation, {super.key});

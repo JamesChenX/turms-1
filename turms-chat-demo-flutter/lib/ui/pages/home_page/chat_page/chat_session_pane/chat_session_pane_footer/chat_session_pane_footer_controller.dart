@@ -14,7 +14,7 @@ import '../../../../../components/t_editor/t_editor.dart';
 import '../../../../../components/t_popup/t_popup.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../l10n/view_models/app_localizations_view_model.dart';
-import '../../message.dart';
+import '../message.dart';
 import '../../view_models/selected_conversation_view_model.dart';
 import 'chat_session_pane_footer.dart';
 import 'chat_session_pane_footer_view.dart';

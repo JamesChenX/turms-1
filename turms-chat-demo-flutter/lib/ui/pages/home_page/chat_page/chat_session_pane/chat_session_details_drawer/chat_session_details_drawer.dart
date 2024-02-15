@@ -6,8 +6,8 @@ import '../../../../../components/t_horizontal_divider.dart';
 import '../../../../../components/t_search_bar.dart';
 import '../../../../../themes/theme_config.dart';
 
-class ChatSessionDetailsPage extends ConsumerWidget {
-  const ChatSessionDetailsPage({super.key});
+class ChatSessionDetailsDrawer extends ConsumerWidget {
+  const ChatSessionDetailsDrawer({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

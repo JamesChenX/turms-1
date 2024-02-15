@@ -8,9 +8,8 @@ import '../../../../../components/t_editor/t_editor.dart';
 import '../../../../../components/t_popup/t_popup.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../themes/theme_config.dart';
-import '../../attachment.dart';
-import '../../emoji_embed_builder.dart';
-import '../../sticker_picker.dart';
+import '../attachment.dart';
+import '../sticker_picker.dart';
 import 'chat_session_pane_footer_controller.dart';
 
 class ChatSessionPaneFooterView extends StatelessWidget {

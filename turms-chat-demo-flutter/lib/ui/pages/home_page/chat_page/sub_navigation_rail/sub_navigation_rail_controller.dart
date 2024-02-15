@@ -14,7 +14,7 @@ import '../../../../../infra/notification/notification_utils.dart';
 import '../../../../../infra/window/window_utils.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../l10n/view_models/app_localizations_view_model.dart';
-import '../message.dart';
+import '../chat_session_pane/message.dart';
 import '../view_models/conversations_view_model.dart';
 import '../view_models/is_conversations_initialized_view_model.dart';
 import '../view_models/selected_conversation_view_model.dart';

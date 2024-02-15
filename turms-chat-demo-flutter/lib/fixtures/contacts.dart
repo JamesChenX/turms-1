@@ -97,11 +97,13 @@ List<ContactConversation> contactConversations = [
     '一并敛埋'
   ]),
   // America
-  ContactConversation('Nina Simone', []),
+  ContactConversation('Nina Simone', [
+    '![Nina Simone - Stars / Feelings (Medley / Live at Montreux, 1976)](https://www.youtube.com/watch?v=Mf_5l1yTKNY)',
+    '![butterfly](https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4)'
+  ]),
   // Brazil
   ContactConversation('Elis Regina', ['Como Nossos Pais']),
   // Japan
-  // let the music loop forever.
   ContactConversation('Nujabes - Aruarian Dance', []),
 ];
 

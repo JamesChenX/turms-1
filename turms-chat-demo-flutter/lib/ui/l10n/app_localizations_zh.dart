@@ -158,6 +158,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get minimizeToTray => '最小化到托盘';
 
   @override
+  String get muteNotifications => '消息免打扰';
+
+  @override
   String get network => '网络';
 
   @override
@@ -221,6 +224,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get shortcuts => '快捷键';
+
+  @override
+  String get stickOnTop => '置顶';
 
   @override
   String get sticker => '表情';

@@ -34,15 +34,16 @@ final fixtureConversations = fixtureContacts.map((contact) {
           final (messageIndex, message) = item;
           final sentByMe = random.nextBool();
           return ChatMessage(
-              sentByMe
+              messageId: RandomUtils.nextUniqueInt64(),
+              senderId: sentByMe
                   ?
                   // TODO: We should use the logged in user ID
                   Int64(-1)
                   : contact.userId,
-              sentByMe,
-              message,
-              timestamps[count - messageIndex - 1],
-              sentByMe
+              sentByMe: sentByMe,
+              text: message,
+              timestamp: timestamps[count - messageIndex - 1],
+              status: sentByMe
                   ? _deliveryStatuses[random.nextInt(_deliveryStatuses.length)]
                   : MessageDeliveryStatus.delivered);
         }).toList());
@@ -62,12 +63,13 @@ final fixtureConversations = fixtureContacts.map((contact) {
       final message = messages[RandomUtils.nextInt() % messageCount];
       date = date.add(Duration(seconds: random.nextInt(60 * 60 * 24 * 500)));
       ChatMessage(
-          memberId,
+          messageId: RandomUtils.nextUniqueInt64(),
+          senderId: memberId,
           // TODO
-          false,
-          message,
-          date,
-          MessageDeliveryStatus.delivered);
+          sentByMe: false,
+          text: message,
+          timestamp: date,
+          status: MessageDeliveryStatus.delivered);
     }
     return GroupConversation(
         contact: contact,

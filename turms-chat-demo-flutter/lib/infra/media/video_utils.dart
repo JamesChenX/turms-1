@@ -28,4 +28,24 @@ final class VideoUtils {
       );
     }
   }
+
+// static Future<MatrixImageFile?> getVideoThumbnail() async {
+//   final tmpDir = await getTemporaryDirectory();
+//   final tmpFile = File('${tmpDir.path}/$name');
+//   Video
+//   if (await tmpFile.exists() == false) {
+//     await tmpFile.writeAsBytes(bytes);
+//   }
+//   try {
+//     final bytes = await VideoCompress.getByteThumbnail(tmpFile.path);
+//     if (bytes == null) return null;
+//     return MatrixImageFile(
+//       bytes: bytes,
+//       name: name,
+//     );
+//   } catch (e, s) {
+//     Logs().w('Error while compressing video', e, s);
+//   }
+//   return null;
+// }
 }

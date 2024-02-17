@@ -399,6 +399,12 @@ abstract class AppLocalizations {
   /// **'Minimize to Tray'**
   String get minimizeToTray;
 
+  /// No description provided for @muteNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Mute Notifications'**
+  String get muteNotifications;
+
   /// No description provided for @network.
   ///
   /// In en, this message translates to:
@@ -524,6 +530,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Shortcuts'**
   String get shortcuts;
+
+  /// No description provided for @stickOnTop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stick on Top'**
+  String get stickOnTop;
 
   /// No description provided for @sticker.
   ///

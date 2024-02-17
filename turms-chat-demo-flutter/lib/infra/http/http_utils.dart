@@ -1,24 +1,26 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:http/http.dart' as http;
+
+import '../io/file_utils.dart';
+import 'downloaded_file.dart';
 
 class HttpUtils {
   HttpUtils._();
 
-  static Future<File> downloadFile(
+  static Future<DownloadedFile?> downloadFile(
       {String method = 'GET',
       required Uri uri,
       required String filePath,
-      void Function(double)? onProgress}) async {
+      void Function(double progress)? onProgress}) async {
     final response = await http.Client().send(http.Request(method, uri));
     final total = response.contentLength ?? 0;
     if (total <= 0) {
-      return File(filePath);
+      return null;
     }
     var received = 0;
     final bytes = <int>[];
-    final completer = Completer<File>();
+    final completer = Completer<DownloadedFile?>();
     response.stream.listen(
         (value) {
           bytes.addAll(value);
@@ -27,9 +29,12 @@ class HttpUtils {
         },
         onError: completer.completeError,
         onDone: () async {
-          final file = File(filePath);
-          await file.writeAsBytes(bytes);
-          completer.complete(file);
+          if (bytes.isEmpty) {
+            completer.complete();
+            return;
+          }
+          final file = await FileUtils.writeAsBytes(filePath, bytes);
+          completer.complete(DownloadedFile(file: file, bytes: bytes));
         });
     return completer.future;
   }

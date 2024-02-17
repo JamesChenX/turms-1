@@ -234,7 +234,7 @@ class _MessageBubbleState extends State<MessageBubble> {
               ),
             _MessageType.youtube => Text(widget.youtubeUrl ?? ''),
             _MessageType.video => MessageBubbleVideo(
-                url: widget.videoUrl!,
+                url: Uri.parse(widget.videoUrl!),
               ),
             _MessageType.audio => Text(widget.audioUrl ?? ''),
             _MessageType.image => Text(widget.imageUrl ?? ''),

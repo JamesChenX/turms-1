@@ -39,9 +39,18 @@ class AboutPageController extends ConsumerState<AboutPage> {
       return null;
     }
     final asset = versionedAsset.asset;
-    return HttpUtils.downloadFile(
+    final filePath = '${AppConfig.appDir}${Platform.pathSeparator}app${Platform.pathSeparator}${asset.name!}';
+    if (await File(filePath).exists()) {
+      return File(filePath);
+    }
+    final downloadFile = await HttpUtils.downloadFile(
         uri: Uri.parse(asset.browserDownloadUrl!),
-        filePath: '${AppConfig.appDir}${Platform.pathSeparator}${asset.name!}');
+        filePath:
+            filePath);
+    if (downloadFile == null) {
+      return null;
+    }
+    return downloadFile.bytes.isEmpty ? null : downloadFile.file;
   }
 
   void updateIsDownloading(bool isDownloading) {

@@ -11,6 +11,7 @@ import '../../../../../domain/message/message_delivery_status.dart';
 import '../../../../../domain/user/view_models/logged_in_user_info_view_model.dart';
 import '../../../../../fixtures/conversations.dart';
 import '../../../../../infra/notification/notification_utils.dart';
+import '../../../../../infra/random/random_utils.dart';
 import '../../../../../infra/window/window_utils.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../l10n/view_models/app_localizations_view_model.dart';
@@ -121,7 +122,12 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
         final contactId = conversation.contact.userId;
         if (contactId != loggedInUser.userId) {
           conversation.messages.add(ChatMessage(
-              contactId, false, message, now, MessageDeliveryStatus.delivered));
+              messageId: RandomUtils.nextUniqueInt64(),
+              senderId: contactId,
+              sentByMe: false,
+              text: message,
+              timestamp: now,
+              status: MessageDeliveryStatus.delivered));
           onMessageReceived(message, conversation, conversations,
               conversationIndexForUpdating);
           return;
@@ -132,7 +138,12 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
         final senderId =
             memberIds.firstWhere((memberId) => memberId != loggedInUser.userId);
         conversation.messages.add(ChatMessage(
-            senderId, false, message, now, MessageDeliveryStatus.delivered));
+            messageId: RandomUtils.nextUniqueInt64(),
+            senderId: senderId,
+            sentByMe: false,
+            text: message,
+            timestamp: now,
+            status: MessageDeliveryStatus.delivered));
         onMessageReceived(
             message, conversation, conversations, conversationIndexForUpdating);
         break;

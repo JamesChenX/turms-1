@@ -10,6 +10,7 @@ import '../../../../../../domain/conversation/models/conversation.dart';
 import '../../../../../../domain/message/message_delivery_status.dart';
 import '../../../../../../domain/user/view_models/logged_in_user_info_view_model.dart';
 import '../../../../../../infra/built_in_types/built_in_type_helpers.dart';
+import '../../../../../../infra/random/random_utils.dart';
 import '../../../../../components/t_editor/t_editor.dart';
 import '../../../../../components/t_popup/t_popup.dart';
 import '../../../../../l10n/app_localizations.dart';
@@ -152,9 +153,18 @@ class ChatSessionPaneFooterController
 
   void sendMessage() {
     final document = getEditorDocument();
-    ref.read(selectedConversationViewModel.notifier).state!.messages.add(
-        ChatMessage(ref.read(loggedInUserViewModel)!.userId, true, document,
-            DateTime.now(), MessageDeliveryStatus.delivering));
+    ref
+        .read(selectedConversationViewModel.notifier)
+        .state!
+        .messages
+        .add(ChatMessage(
+            // TODO: use real ID
+            messageId: RandomUtils.nextUniqueInt64(),
+            senderId: ref.read(loggedInUserViewModel)!.userId,
+            sentByMe: true,
+            text: document,
+            timestamp: DateTime.now(),
+            status: MessageDeliveryStatus.delivering));
     selectedConversationViewModelRef.notifyListeners();
 
     editorController.text = '';

@@ -23,6 +23,7 @@ class AppConfig {
   static Future<void> load() async {
     packageInfo = await PackageInfo.fromPlatform();
     final appDocDir = await getApplicationDocumentsDirectory();
-    appDir = '${appDocDir.path}${Platform.pathSeparator}';
+    appDir =
+        '${appDocDir.path}${Platform.pathSeparator}${AppConfig.packageInfo.packageName}';
   }
 }

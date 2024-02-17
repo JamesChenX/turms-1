@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../infra/env/env_vars.dart';
+import '../../components/t_focus_tracker.dart';
 import '../../components/t_title_bar.dart';
 import '../../themes/theme_config.dart';
 import 'about_page/about_page.dart';
@@ -76,7 +77,7 @@ class _HomePageLandscapeState extends ConsumerState<HomePageLandscape> {
     );
     if (EnvVars.showFocusTracker) {
       // TODO
-      // child = TFocusTracker(
+      // return TFocusTracker(
       //   child: child,
       // );
     }

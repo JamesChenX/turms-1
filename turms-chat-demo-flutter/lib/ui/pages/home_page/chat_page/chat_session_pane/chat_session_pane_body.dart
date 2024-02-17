@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../../../../../domain/conversation/models/conversation.dart';
 import '../../../../../domain/conversation/models/private_conversation.dart';
 import '../../../../../domain/user/models/user.dart';
@@ -31,7 +30,7 @@ class _ChatSessionPaneBodyState extends ConsumerState<ChatSessionPaneBody> {
     _scrollController.addListener(() {
       final position = _scrollController.position;
       final pixels = position.pixels;
-      if (pixels == position.maxScrollExtent) {
+      if (pixels + 8 >= position.maxScrollExtent) {
         // User has scrolled to the top
         // Display loading message and load more messages
         _loadMoreMessages();
@@ -95,8 +94,8 @@ class _ChatSessionPaneBodyState extends ConsumerState<ChatSessionPaneBody> {
           user = fixtureUserContacts
               .firstWhere((element) => element.userId == message.senderId);
         }
-        return MessageBubble(
-          key: UniqueKey(), // TODO: use message ID
+        return MessageBubble.fromMessage(
+          key: Key(message.messageId.toString()),
           user: user,
           message: message,
         );

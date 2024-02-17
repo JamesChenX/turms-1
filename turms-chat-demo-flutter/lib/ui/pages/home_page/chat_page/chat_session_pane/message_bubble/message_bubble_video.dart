@@ -1,11 +1,20 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:path/path.dart';
 import 'package:video_player/video_player.dart';
+
+import '../../../../../../infra/crypto/crypto_utils.dart';
+import '../../../../../../infra/http/http_utils.dart';
+import '../../../../../../infra/io/file_utils.dart';
+import '../../../../../../infra/io/path_utils.dart';
 
 class MessageBubbleVideo extends StatefulWidget {
   const MessageBubbleVideo({Key? key, required this.url}) : super(key: key);
 
-  final String url;
+  final Uri url;
 
   @override
   State<MessageBubbleVideo> createState() => _MessageBubbleVideoState();
@@ -18,22 +27,44 @@ class _MessageBubbleVideoState extends State<MessageBubbleVideo> {
   bool _isPlaying = false;
 
   @override
+  void didUpdateWidget(MessageBubbleVideo oldWidget) {
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   void initState() {
     super.initState();
 
-    _controller = VideoPlayerController.networkUrl(
-      Uri.parse(widget.url),
-    );
-    _initializeVideoPlayerFuture = _controller.initialize();
-    _controller
-      ..setVolume(1.0)
-      ..addListener(() {
-        if (_controller.value.position == _controller.value.duration) {
-          _controller.seekTo(Duration.zero);
+    _initializeVideoPlayerFuture = Future.microtask(() async {
+      final url = widget.url;
+      final urlStr = url.toString();
+      final ext = extension(urlStr);
+      final fileName = '${CryptoUtils.getSha256ByString(urlStr)}.$ext';
+      final filePath = PathUtils.joinAppPath(['file', fileName]);
+      final file = File(filePath);
+      final VideoPlayerController controller;
+      if (await file.exists()) {
+        controller = VideoPlayerController.file(File(filePath));
+      } else {
+        final downloadedFile =
+            await HttpUtils.downloadFile(uri: url, filePath: filePath);
+        if (downloadedFile == null) {
+          // TODO: display illegal file
+          return;
+        }
+        controller = VideoPlayerController.file(downloadedFile.file);
+      }
+      await controller.setVolume(1.0);
+      controller.addListener(() {
+        if (controller.value.position == controller.value.duration) {
+          controller.seekTo(Duration.zero);
           _isPlaying = false;
           setState(() {});
         }
       });
+      await controller.initialize();
+      _controller = controller;
+    });
   }
 
   @override

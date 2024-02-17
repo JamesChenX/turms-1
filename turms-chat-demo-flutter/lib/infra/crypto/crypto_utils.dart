@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:async/async.dart';
@@ -8,6 +9,13 @@ const _chunkSize = 4096;
 
 class CryptoUtils {
   CryptoUtils._();
+
+  static String getSha256ByBytes(List<int> bytes) {
+    final digest = sha256.convert(bytes);
+    return base64.encode(digest.bytes);
+  }
+
+  static String getSha256ByString(String str) => getSha256ByBytes(utf8.encode(str));
 
   static Future<Digest> getFileSha256(String path) async {
     final reader = ChunkedStreamReader(File(path).openRead());

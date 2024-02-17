@@ -158,6 +158,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get minimizeToTray => 'Minimize to Tray';
 
   @override
+  String get muteNotifications => 'Mute Notifications';
+
+  @override
   String get network => 'Network';
 
   @override
@@ -221,6 +224,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get shortcuts => 'Shortcuts';
+
+  @override
+  String get stickOnTop => 'Stick on Top';
 
   @override
   String get sticker => 'Sticker';

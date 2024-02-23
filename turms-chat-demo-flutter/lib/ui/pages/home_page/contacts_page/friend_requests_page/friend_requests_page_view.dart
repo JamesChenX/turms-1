@@ -84,13 +84,12 @@ class FriendRequestsPageView extends ConsumerWidget {
             FriendRequestTile(
               key: Key(friendRequest.id.toString()),
               friendRequest: friendRequest,
-              onAccept: () async {
-                await friendRequestsPageController.acceptFriendRequest(
-                    friendRequest,
-                );
-              }, onStartConversation: () {
-
-            },
+              onAccept: () async =>
+                  friendRequestsPageController.acceptFriendRequest(
+                friendRequest,
+              ),
+              onStartConversation: () =>
+                  friendRequestsPageController.startConversation(friendRequest),
             )
           ];
         })

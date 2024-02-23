@@ -125,9 +125,11 @@ class CreateGroupPageView extends StatelessWidget {
                         .contains(userContact.userId),
                     onChanged: (value) {
                       if (value) {
-                        createGroupPageController.addSelectedContact(userContact);
+                        createGroupPageController
+                            .addSelectedContact(userContact);
                       } else {
-                        createGroupPageController.removeSelectedContact(userContact);
+                        createGroupPageController
+                            .removeSelectedContact(userContact);
                       }
                     }),
                 const SizedBox(
@@ -186,8 +188,8 @@ class CreateGroupPageView extends StatelessWidget {
                   iconSize: 16,
                   addContainer: false,
                   onTap: () {
-                    createGroupPageController.removeSelectedContact(
-                        userContact);
+                    createGroupPageController
+                        .removeSelectedContact(userContact);
                   },
                 )
               ],

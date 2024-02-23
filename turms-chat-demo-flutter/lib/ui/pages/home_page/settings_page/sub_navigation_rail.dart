@@ -38,6 +38,9 @@ class _SubNavigationRailState extends ConsumerState<SubNavigationRail> {
                 style: const TextStyle(
                     fontSize: 16, color: ThemeConfig.textColorSecondary)),
           ),
+          // Note that we don't change the tab color when the tab is selected
+          // because we have only a few settings, and the UI will be weired
+          // if we change the color when the tab is selected.
           TTabs(tabs: [
             for (final entry in formFieldGroupToContext.entries)
               TTab(id: entry.key, text: entry.value.getTitle(appLocalizations))

@@ -36,9 +36,9 @@ class LoginFormController extends ConsumerState<LoginForm> {
 
   @override
   Widget build(BuildContext context) {
-    appLocalizations = ref.read(appLocalizationsViewModel);
-    appSettings = ref.read(appSettingsViewModel)!;
-    userLoginInfos = ref.read(userLoginInfosViewModel);
+    appLocalizations = ref.watch(appLocalizationsViewModel);
+    appSettings = ref.watch(appSettingsViewModel)!;
+    userLoginInfos = ref.watch(userLoginInfosViewModel);
     return LoginFormView(this);
   }
 

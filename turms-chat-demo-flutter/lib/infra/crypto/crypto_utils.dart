@@ -15,7 +15,8 @@ class CryptoUtils {
     return base64.encode(digest.bytes);
   }
 
-  static String getSha256ByString(String str) => getSha256ByBytes(utf8.encode(str));
+  static String getSha256ByString(String str) =>
+      getSha256ByBytes(utf8.encode(str));
 
   static Future<Digest> getFileSha256(String path) async {
     final reader = ChunkedStreamReader(File(path).openRead());

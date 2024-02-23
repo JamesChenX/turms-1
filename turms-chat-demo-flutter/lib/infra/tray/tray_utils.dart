@@ -36,7 +36,6 @@ final class TrayUtils {
 }
 
 class _TrayListener extends TrayListener {
-
   _TrayListener({required this.onTrayMenuItemTap});
   final void Function(MenuItem menuItem) onTrayMenuItemTap;
 

@@ -31,42 +31,42 @@ class FilesPageView extends ConsumerWidget {
   }
 
   Widget _buildQueryFilters(
-          BuildContext context, AppLocalizations appLocalizations) {
+      BuildContext context, AppLocalizations appLocalizations) {
     final now = DateTime.now();
     return ColoredBox(
-        color: ThemeConfig.homePageBackgroundColor,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints.tightFor(
-              height: ThemeConfig.homePageHeaderHeight),
-          child: Stack(children: [
-            const TWindowControlZone(toggleMaximizeOnDoubleTap: true),
-            Center(
-              child: Padding(
-                padding: ThemeConfig.paddingV8H16,
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 200,
-                      child: TSearchBar(hintText: appLocalizations.fileName),
+      color: ThemeConfig.homePageBackgroundColor,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints.tightFor(
+            height: ThemeConfig.homePageHeaderHeight),
+        child: Stack(children: [
+          const TWindowControlZone(toggleMaximizeOnDoubleTap: true),
+          Center(
+            child: Padding(
+              padding: ThemeConfig.paddingV8H16,
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 200,
+                    child: TSearchBar(hintText: appLocalizations.fileName),
+                  ),
+                  const SizedBox(
+                    width: 16,
+                  ),
+                  TDateRangePicker(
+                    firstDate: DateTime(now.year - 3),
+                    lastDate: now,
+                    initialDateRange: DateTimeRange(
+                      start: now.subtract(const Duration(days: 7)),
+                      end: now,
                     ),
-                    const SizedBox(
-                      width: 16,
-                    ),
-                    TDateRangePicker(
-                      firstDate: DateTime(now.year - 3),
-                      lastDate: now,
-                      initialDateRange: DateTimeRange(
-                        start: now.subtract(const Duration(days: 7)),
-                        end: now,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-          ]),
-        ),
-      );
+          ),
+        ]),
+      ),
+    );
   }
 
   Widget _buildTable(

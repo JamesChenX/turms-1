@@ -92,7 +92,15 @@ class ContactProfilePageView extends ConsumerWidget {
                     )
                   ],
                 ),
-                if (intro.isNotBlank) Text(selectedContact.intro),
+                if (intro.isNotBlank) ...[
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  Text(selectedContact.intro)
+                ],
+                const SizedBox(
+                  height: 16,
+                ),
                 _buildActions(ref)
               ],
             ),
@@ -100,10 +108,16 @@ class ContactProfilePageView extends ConsumerWidget {
         ),
       );
 
-  Column _buildActions(WidgetRef ref) => Column(
-        children: [
-          const Icon(Symbols.chat, size: 32),
-          Text(ref.watch(appLocalizationsViewModel).messages)
-        ],
+  Widget _buildActions(WidgetRef ref) => MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: GestureDetector(
+          onTap: contactProfilePageController.startConversation,
+          child: Column(
+            children: [
+              const Icon(Symbols.chat, size: 32),
+              Text(ref.watch(appLocalizationsViewModel).messages)
+            ],
+          ),
+        ),
       );
 }

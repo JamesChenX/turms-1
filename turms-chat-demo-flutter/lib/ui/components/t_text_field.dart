@@ -107,10 +107,11 @@ class _TTextFieldState extends ConsumerState<TTextField> {
       },
       onSubmitted: widget.onSubmitted,
       onTapOutside: widget.onTapOutside,
-      style: widget.style ?? const TextStyle(
-          fontSize: 14,
-          // cursor height
-          height: 1.2),
+      style: widget.style ??
+          const TextStyle(
+              fontSize: 14,
+              // cursor height
+              height: 1.2),
       decoration: InputDecoration(
         hintText: widget.hintText,
         filled: true,

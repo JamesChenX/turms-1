@@ -60,7 +60,7 @@ class ChatSessionPaneFooterController
           final draft = getEditorDocument();
           if (draft != (previousDraft ?? '')) {
             currentConversation.draft = draft;
-            selectedConversationViewModelRef.notifyListeners();
+            ref.read(selectedConversationViewModel.notifier).notifyListeners();
           }
         }
         final currentDraft = newConversation?.draft;
@@ -153,19 +153,14 @@ class ChatSessionPaneFooterController
 
   void sendMessage() {
     final document = getEditorDocument();
-    ref
-        .read(selectedConversationViewModel.notifier)
-        .state!
-        .messages
-        .add(ChatMessage(
-            // TODO: use real ID
-            messageId: RandomUtils.nextUniqueInt64(),
-            senderId: ref.read(loggedInUserViewModel)!.userId,
-            sentByMe: true,
-            text: document,
-            timestamp: DateTime.now(),
-            status: MessageDeliveryStatus.delivering));
-    selectedConversationViewModelRef.notifyListeners();
+    ref.read(selectedConversationViewModel.notifier).addMessage(ChatMessage(
+        // TODO: use real ID
+        messageId: RandomUtils.nextUniqueInt64(),
+        senderId: ref.read(loggedInUserViewModel)!.userId,
+        sentByMe: true,
+        text: document,
+        timestamp: DateTime.now(),
+        status: MessageDeliveryStatus.delivering));
 
     editorController.text = '';
     setState(() {});

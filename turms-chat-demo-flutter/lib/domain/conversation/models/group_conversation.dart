@@ -1,5 +1,6 @@
 import 'package:flutter/src/painting/image_provider.dart';
 
+import '../../user/models/contact.dart';
 import '../../user/models/group_contact.dart';
 import 'conversation.dart';
 
@@ -18,4 +19,8 @@ class GroupConversation extends Conversation {
 
   @override
   set image(ImageProvider<Object>? _image) {}
+
+  @override
+  bool hasSameContact(Contact contact) =>
+      contact is GroupContact && contact.groupId == this.contact.groupId;
 }

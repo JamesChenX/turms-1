@@ -1,5 +1,6 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:super_drag_and_drop/super_drag_and_drop.dart';
 
@@ -41,18 +42,24 @@ class ChatSessionPaneFooterView extends StatelessWidget {
     );
   }
 
-  Column _buildEditor(
+  Widget _buildEditor(
           BuildContext context, AppLocalizations appLocalizations) =>
       Column(
         children: [
           Expanded(
             child: ColoredBox(
               color: ThemeConfig.homePageBackgroundColor,
-              child: TEditor(
-                controller: chatPageFooterController.editorController,
-                autofocus: true,
-                focusNode: chatPageFooterController.editorFocusNode,
-                contentPadding: const EdgeInsets.only(top: 8),
+              child: CallbackShortcuts(
+                bindings: {
+                  const SingleActivator(LogicalKeyboardKey.enter):
+                      chatPageFooterController.sendMessage
+                },
+                child: TEditor(
+                  controller: chatPageFooterController.editorController,
+                  autofocus: true,
+                  focusNode: chatPageFooterController.editorFocusNode,
+                  contentPadding: const EdgeInsets.only(top: 8),
+                ),
               ),
             ),
           ),

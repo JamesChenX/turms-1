@@ -3,21 +3,22 @@ import 'package:flutter/material.dart';
 import '../t_tooltip.dart';
 
 class TIconButton extends StatefulWidget {
-  const TIconButton({super.key,
-    this.addContainer = true,
-    this.size,
-    this.color,
-    this.hoverColor,
-    required this.iconData,
-    this.iconFill,
-    this.iconSize,
-    this.iconWeight,
-    this.iconColor,
-    this.iconHoverColor,
-    this.iconFlipX = false,
-    this.tooltip,
-    this.onTap,
-    this.onTapDown});
+  const TIconButton(
+      {super.key,
+      this.addContainer = true,
+      this.size,
+      this.color,
+      this.hoverColor,
+      required this.iconData,
+      this.iconFill,
+      this.iconSize,
+      this.iconWeight,
+      this.iconColor,
+      this.iconHoverColor,
+      this.iconFlipX = false,
+      this.tooltip,
+      this.onTap,
+      this.onTapDown});
 
   final bool addContainer;
   final Size? size;
@@ -95,9 +96,9 @@ class _TIconButtonState extends State<TIconButton> {
         child: widget.onTap == null && widget.onTapDown == null
             ? child
             : GestureDetector(
-          onTap: widget.onTap,
-          onTapDown: widget.onTapDown,
-          child: child,
-        ));
+                onTap: widget.onTap,
+                onTapDown: widget.onTapDown,
+                child: child,
+              ));
   }
 }

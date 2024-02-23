@@ -18,13 +18,11 @@ class AppDatabase extends _$AppDatabase {
 
   @override
   MigrationStrategy get migration =>
-      MigrationStrategy(
-          beforeOpen: (details) async {
-            if (kDebugMode) {
-              await validateDatabaseSchema();
-            }
-          }
-      );
+      MigrationStrategy(beforeOpen: (details) async {
+        if (kDebugMode) {
+          await validateDatabaseSchema();
+        }
+      });
 }
 
 final appDatabase = AppDatabase(DatabaseUtils.createDatabase(

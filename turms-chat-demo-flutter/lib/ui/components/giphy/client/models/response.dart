@@ -8,23 +8,22 @@ class GiphyResponse {
   GiphyResponse(
       {required this.data, required this.pagination, required this.meta});
 
-  factory GiphyResponse.fromJson(Map<String, dynamic> json) =>
-      GiphyResponse(
-          data: (json['data'] as List?)
-                  ?.whereType<Map<String, dynamic>>()
-                  .map(GiphyGif.fromJson)
-                  .toList(
-                    growable: false,
-                  ) ??
-              List<GiphyGif>.empty(),
-          pagination: json.containsKey('pagination')
-              ? GiphyPagination.fromJson(
-                  json['pagination'] as Map<String, dynamic>,
-                )
-              : null,
-          meta: json.containsKey('meta')
-              ? GiphyMeta.fromJson(json['meta'] as Map<String, dynamic>)
-              : null);
+  factory GiphyResponse.fromJson(Map<String, dynamic> json) => GiphyResponse(
+      data: (json['data'] as List?)
+              ?.whereType<Map<String, dynamic>>()
+              .map(GiphyGif.fromJson)
+              .toList(
+                growable: false,
+              ) ??
+          List<GiphyGif>.empty(),
+      pagination: json.containsKey('pagination')
+          ? GiphyPagination.fromJson(
+              json['pagination'] as Map<String, dynamic>,
+            )
+          : null,
+      meta: json.containsKey('meta')
+          ? GiphyMeta.fromJson(json['meta'] as Map<String, dynamic>)
+          : null);
 
   Map<String, dynamic> toJson() =>
       <String, dynamic>{'data': data, 'pagination': pagination, 'meta': meta};

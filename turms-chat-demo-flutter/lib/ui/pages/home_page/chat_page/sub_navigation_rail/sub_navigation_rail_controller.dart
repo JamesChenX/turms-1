@@ -56,7 +56,7 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
 
   @override
   Widget build(BuildContext context) {
-    appLocalizations = ref.read(appLocalizationsViewModel);
+    appLocalizations = ref.watch(appLocalizationsViewModel);
     conversations = ref.watch(conversationsViewModel);
     final previousSelectedConversationId = selectedConversation?.id;
     selectedConversation = ref.watch(selectedConversationViewModel);
@@ -162,7 +162,7 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
     }
     final selectedConversation = ref.read(selectedConversationViewModel);
     if (selectedConversation?.id == newConversation.id) {
-      selectedConversationViewModelRef.notifyListeners();
+      ref.read(selectedConversationViewModel.notifier).notifyListeners();
     } else {
       newConversation.unreadMessageCount++;
     }

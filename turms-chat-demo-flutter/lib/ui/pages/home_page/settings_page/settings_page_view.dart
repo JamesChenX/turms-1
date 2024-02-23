@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:turms_chat_demo/ui/pages/home_page/settings_page/settings_pane.dart';
-import 'package:turms_chat_demo/ui/pages/home_page/settings_page/sub_navigation_rail.dart';
 
 import '../../../components/components.dart';
 import '../../../themes/theme_config.dart';
 import 'settings_page_controller.dart';
+import 'settings_pane.dart';
+import 'sub_navigation_rail.dart';
 
 class SettingsPageView extends StatelessWidget {
   const SettingsPageView(this.settingsPageController);

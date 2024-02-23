@@ -16,14 +16,15 @@ class FriendRequest {
   final DateTime creationDate;
   final String message;
 
-  FriendRequest copyWith({required FriendRequestStatus status}) => FriendRequest(
-      id: id,
-      status: status,
-      senderId: senderId,
-      senderName: senderName,
-      creationDate: creationDate,
-      message: message,
-    );
+  FriendRequest copyWith({required FriendRequestStatus status}) =>
+      FriendRequest(
+        id: id,
+        status: status,
+        senderId: senderId,
+        senderName: senderName,
+        creationDate: creationDate,
+        message: message,
+      );
 // final String status;
 }
 

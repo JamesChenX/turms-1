@@ -106,35 +106,11 @@ class _UserProfilePopupState extends ConsumerState<UserProfilePopup> {
   }
 
   void startConversation(User user) {
-    // 1. Hide the popup
     popupController.hidePopover?.call();
-    // 2. Switch to the chat page
-    ref.read(homePageTabViewModel.notifier).state = HomePageTab.chat;
-    // 3. Check if the conversation already selected
-    final selectedConversation = ref.read(selectedConversationViewModel);
-    if (selectedConversation != null &&
-        selectedConversation is PrivateConversation &&
-        selectedConversation.contact.userId == user.userId) {
-      return;
-    }
-    // 4. Check if the conversation already exists
-    final conversations = ref.read(conversationsViewModel);
-    for (final conversation in conversations) {
-      if (conversation is PrivateConversation &&
-          conversation.contact.userId == user.userId) {
-        ref.read(selectedConversationViewModel.notifier).state = conversation;
-        return;
-      }
-    }
-    // 5. Create a new conversation
-    final newConversation = PrivateConversation(
-        // TODO: get history messages
-        messages: [],
-        contact: UserContact.fromUser(user, Int64(-1)));
-    conversations.add(newConversation);
-    ref.read(selectedConversationViewModel.notifier).state = newConversation;
-    // Scrollable.ensureVisible(context);
-    setState(() {});
+    // TODO: Handle the case when the user is a stranger.
+    ref
+        .read(selectedConversationViewModel.notifier)
+        .select(UserContact(userId: user.userId, name: user.name));
   }
 }
 

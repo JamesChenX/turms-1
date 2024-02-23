@@ -3,9 +3,14 @@ import 'package:flutter/material.dart';
 import '../themes/theme_config.dart';
 
 class TTabs extends StatefulWidget {
-  const TTabs({super.key, required this.tabs, required this.onTabSelected});
+  const TTabs(
+      {super.key,
+      required this.tabs,
+      this.selectedTabId,
+      required this.onTabSelected});
 
   final List<TTab> tabs;
+  final Object? selectedTabId;
   final void Function(int index, TTab tab) onTabSelected;
 
   @override
@@ -14,13 +19,12 @@ class TTabs extends StatefulWidget {
 
 class _TTabsState extends State<TTabs> {
   Object? _hoveringTabId;
-  Object? _selectedTabId;
 
   @override
   Widget build(BuildContext context) => Column(
         children: widget.tabs.indexed.map((item) {
           final (index, tab) = item;
-          final isSelected = _selectedTabId == tab.id;
+          final isSelected = widget.selectedTabId == tab.id;
           return _buildTab(tab, index, isSelected);
         }).toList(),
       );
@@ -36,7 +40,6 @@ class _TTabsState extends State<TTabs> {
       }),
       child: GestureDetector(
           onTap: () {
-            _selectedTabId = tab.id;
             widget.onTabSelected(index, tab);
             setState(() {});
           },

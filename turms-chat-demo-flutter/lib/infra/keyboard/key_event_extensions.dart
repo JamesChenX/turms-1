@@ -1,6 +1,5 @@
 import 'package:flutter/services.dart';
 
-
 extension KeyEventExtensions on KeyEvent {
   bool get isControlPressed =>
       logicalKey == LogicalKeyboardKey.controlLeft ||
@@ -17,5 +16,4 @@ extension KeyEventExtensions on KeyEvent {
   bool get isMetaPressed =>
       logicalKey == LogicalKeyboardKey.metaLeft ||
       logicalKey == LogicalKeyboardKey.metaRight;
-
 }

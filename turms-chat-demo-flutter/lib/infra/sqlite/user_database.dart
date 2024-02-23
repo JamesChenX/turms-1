@@ -16,13 +16,12 @@ class UserDatabase extends _$UserDatabase {
   @override
   int get schemaVersion => 1;
   @override
-  MigrationStrategy get migration => MigrationStrategy(
-      beforeOpen: (details) async {
+  MigrationStrategy get migration =>
+      MigrationStrategy(beforeOpen: (details) async {
         if (kDebugMode) {
           await validateDatabaseSchema();
         }
-      }
-  );
+      });
 }
 
 final _userIdToDatabase = <Int64, UserDatabase>{};

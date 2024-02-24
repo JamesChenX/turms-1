@@ -60,7 +60,7 @@ class _TPopupState extends State<TPopup> {
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         key: _targetKey,
-        onTapDown: (details) => _toggleOverlay(),
+        onPanDown: (details) => _toggleOverlay(),
         child: CompositedTransformTarget(
           link: _layerLink,
           child: widget.target,
@@ -154,9 +154,6 @@ class _TPopupState extends State<TPopup> {
 
   Widget _buildMask(Size size) => GestureDetector(
         behavior: HitTestBehavior.translucent,
-        // Do not use "onTap",
-        // otherwise we will prevent widgets behind
-        // the child container from receiving the "onTap" event.
         onPanDown: (details) {
           final targetRenderBox =
               _targetKey.currentContext?.findRenderObject() as RenderBox;

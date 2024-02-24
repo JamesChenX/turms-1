@@ -55,7 +55,7 @@ class _TTitleBarState extends ConsumerState<TTitleBar> {
               ? widget.backgroundColor.darken()
               : widget.backgroundColor,
           hoverColor: const Color.fromARGB(255, 226, 226, 226),
-          iconData: Symbols.push_pin,
+          iconData: Symbols.push_pin_rounded,
           iconSize: 16,
           iconColor: _isAlwaysOnTop
               ? ThemeConfig.primary
@@ -73,7 +73,7 @@ class _TTitleBarState extends ConsumerState<TTitleBar> {
           size: ThemeConfig.titleBarSize,
           color: widget.backgroundColor,
           hoverColor: const Color.fromARGB(255, 226, 226, 226),
-          iconData: Symbols.horizontal_rule,
+          iconData: Symbols.horizontal_rule_rounded,
           iconSize: 16,
           iconColor: const Color.fromARGB(255, 67, 67, 67),
           onTap: WindowUtils.minimize,
@@ -85,7 +85,9 @@ class _TTitleBarState extends ConsumerState<TTitleBar> {
       size: ThemeConfig.titleBarSize,
       color: widget.backgroundColor,
       hoverColor: const Color.fromARGB(255, 226, 226, 226),
-      iconData: isWindowMaximized ? Symbols.stack : Symbols.crop_square_rounded,
+      iconData: isWindowMaximized
+          ? Symbols.stack_rounded
+          : Symbols.crop_square_rounded,
       iconSize: 16,
       iconColor: const Color.fromARGB(255, 67, 67, 67),
       iconFlipX: isWindowMaximized,
@@ -107,10 +109,10 @@ class _TTitleBarState extends ConsumerState<TTitleBar> {
         size: ThemeConfig.titleBarSize,
         color: widget.backgroundColor,
         hoverColor: Colors.red,
-        iconData: Symbols.close,
+        iconData: Symbols.close_rounded,
         iconSize: 16,
         iconColor: const Color.fromARGB(255, 67, 67, 67),
-        iconHoverColor: Colors.white,
+        iconColorHovered: Colors.white,
         tooltip: localizations.close,
         onTap: widget.popOnCloseTapped
             ? () => Navigator.of(context).pop()

@@ -43,11 +43,11 @@ class RelationshipActionMenuButton extends ConsumerWidget {
           iconSize: 26,
           iconWeight: 300,
           tooltip: appLocalizations.settings,
-          onTapDown: (details) {
+          onPanDown: (details) {
             _menuController.open();
           },
           iconColor: Colors.white54,
-          iconHoverColor: Colors.white70),
+          iconColorHovered: Colors.white70),
     );
   }
 }

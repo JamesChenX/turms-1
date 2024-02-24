@@ -71,7 +71,7 @@ class _AttachmentState extends ConsumerState<Attachment> {
                   onEnter: (_) => setState(() => isCloseHovered = true),
                   onExit: (_) => setState(() => isCloseHovered = false),
                   child: TIconButton(
-                      iconData: Symbols.close,
+                      iconData: Symbols.close_rounded,
                       iconWeight: isCloseHovered ? 700 : 400,
                       tooltip:
                           ref.watch(appLocalizationsViewModel).removeAttachment,

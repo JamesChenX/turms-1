@@ -66,7 +66,7 @@ class TDatePicker extends ConsumerWidget {
             TIconButton(
               iconData: Symbols.keyboard_double_arrow_left_rounded,
               iconColor: Colors.black45,
-              iconHoverColor: Colors.black,
+              iconColorHovered: Colors.black,
               addContainer: false,
               onTap: () => onCalendarDateChanged?.call(
                 DateTime(calendarDate.year - 1, calendarDate.month),
@@ -76,7 +76,7 @@ class TDatePicker extends ConsumerWidget {
             TIconButton(
               iconData: Symbols.keyboard_arrow_left_rounded,
               iconColor: Colors.black45,
-              iconHoverColor: Colors.black,
+              iconColorHovered: Colors.black,
               addContainer: false,
               onTap: () => onCalendarDateChanged?.call(
                 DateTime(calendarDate.year, calendarDate.month - 1),
@@ -93,7 +93,7 @@ class TDatePicker extends ConsumerWidget {
             TIconButton(
               iconData: Symbols.keyboard_arrow_right_rounded,
               iconColor: Colors.black45,
-              iconHoverColor: Colors.black,
+              iconColorHovered: Colors.black,
               addContainer: false,
               onTap: () => onCalendarDateChanged?.call(
                 DateTime(calendarDate.year, calendarDate.month + 1),
@@ -103,7 +103,7 @@ class TDatePicker extends ConsumerWidget {
             TIconButton(
               iconData: Symbols.keyboard_double_arrow_right_rounded,
               iconColor: Colors.black45,
-              iconHoverColor: Colors.black,
+              iconColorHovered: Colors.black,
               addContainer: false,
               onTap: () => onCalendarDateChanged?.call(
                 DateTime(calendarDate.year + 1, calendarDate.month),

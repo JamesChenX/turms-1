@@ -51,7 +51,7 @@ class _ChatSessionPaneHeaderState extends ConsumerState<ChatSessionPaneHeader> {
                     child: TIconButton(
                       onTap: () => widget.drawerController.toggle!.call(),
                       tooltip: ref.watch(appLocalizationsViewModel).chatInfo,
-                      iconData: Symbols.more_horiz,
+                      iconData: Symbols.more_horiz_rounded,
                     ),
                   )
                 ],

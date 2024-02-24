@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,6 +12,7 @@ import '../../../../../../domain/conversation/models/conversation.dart';
 import '../../../../../../domain/message/message_delivery_status.dart';
 import '../../../../../../domain/user/view_models/logged_in_user_info_view_model.dart';
 import '../../../../../../infra/built_in_types/built_in_type_helpers.dart';
+import '../../../../../../infra/io/data_reader_file_adaptor.dart';
 import '../../../../../../infra/random/random_utils.dart';
 import '../../../../../components/t_editor/t_editor.dart';
 import '../../../../../components/t_popup/t_popup.dart';
@@ -24,6 +27,7 @@ class ChatSessionPaneFooterController
     extends ConsumerState<ChatSessionPaneFooter> {
   final List<DataReaderFile> localFiles = [];
   bool dragging = false;
+  bool isPickingFile = false;
 
   late EmojiTextEditingController editorController;
   late FocusNode editorFocusNode;
@@ -120,7 +124,7 @@ class ChatSessionPaneFooterController
       item.dataReader!
           .getFile(null, completer.complete, onError: completer.completeError);
       return completer.future;
-    }).toList();
+    });
     final newFiles = await Future.wait(futures);
     if (tryAddNewFile(newFiles)) {
       setState(() {});
@@ -170,5 +174,24 @@ class ChatSessionPaneFooterController
   void removeFiles(DataReaderFile file) {
     localFiles.remove(file);
     setState(() {});
+  }
+
+  Future<void> pickFile() async {
+    if (isPickingFile) {
+      return;
+    }
+    isPickingFile = true;
+    try {
+      final result = await FilePicker.platform.pickFiles();
+      if (result == null) {
+        // User canceled the picker
+        return;
+      }
+      final file = File(result.files.single.path!);
+      tryAddNewFile([DataReaderFileValueAdapter(file)]);
+      setState(() {});
+    } finally {
+      isPickingFile = false;
+    }
   }
 }

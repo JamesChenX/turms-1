@@ -37,7 +37,7 @@ class _TabsState extends ConsumerState<Tabs> {
     return Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
       Column(children: [
         TIconButton(
-            iconData: Symbols.chat,
+            iconData: Symbols.chat_rounded,
             iconFill: isChatTab,
             iconSize: 26,
             iconWeight: isChatTab ? 400 : 300,
@@ -46,10 +46,10 @@ class _TabsState extends ConsumerState<Tabs> {
             onTap: () => ref.read(homePageTabViewModel.notifier).state =
                 HomePageTab.chat,
             iconColor: isChatTab ? ThemeConfig.primary : Colors.white54,
-            iconHoverColor: isChatTab ? ThemeConfig.primary : Colors.white70),
+            iconColorHovered: isChatTab ? ThemeConfig.primary : Colors.white70),
         const SizedBox(height: 4),
         TIconButton(
-            iconData: Symbols.person,
+            iconData: Symbols.person_rounded,
             iconFill: isContactsTab,
             iconSize: 26,
             iconWeight: isContactsTab ? 400 : 300,
@@ -58,11 +58,11 @@ class _TabsState extends ConsumerState<Tabs> {
             onTap: () => ref.read(homePageTabViewModel.notifier).state =
                 HomePageTab.contacts,
             iconColor: isContactsTab ? ThemeConfig.primary : Colors.white54,
-            iconHoverColor:
+            iconColorHovered:
                 isContactsTab ? ThemeConfig.primary : Colors.white70),
         const SizedBox(height: 4),
         TIconButton(
-            iconData: Symbols.description,
+            iconData: Symbols.description_rounded,
             iconFill: isFilesTab,
             iconSize: 26,
             iconWeight: isFilesTab ? 400 : 300,
@@ -71,7 +71,8 @@ class _TabsState extends ConsumerState<Tabs> {
             onTap: () => ref.read(homePageTabViewModel.notifier).state =
                 HomePageTab.files,
             iconColor: isFilesTab ? ThemeConfig.primary : Colors.white54,
-            iconHoverColor: isFilesTab ? ThemeConfig.primary : Colors.white70),
+            iconColorHovered:
+                isFilesTab ? ThemeConfig.primary : Colors.white70),
       ]),
       MenuAnchor(
         controller: _menuController,
@@ -99,17 +100,17 @@ class _TabsState extends ConsumerState<Tabs> {
           ),
         ],
         child: TIconButton(
-            iconData: Symbols.menu_sharp,
+            iconData: Symbols.menu_rounded,
             // iconData: Symbols.settings,
             // iconFill: isSettingsTab,
             iconSize: 26,
             iconWeight: 300,
             tooltip: appLocalizations.settings,
-            onTapDown: (details) {
+            onPanDown: (details) {
               _menuController.open();
             },
             iconColor: Colors.white54,
-            iconHoverColor: Colors.white70),
+            iconColorHovered: Colors.white70),
       ),
     ]);
   }

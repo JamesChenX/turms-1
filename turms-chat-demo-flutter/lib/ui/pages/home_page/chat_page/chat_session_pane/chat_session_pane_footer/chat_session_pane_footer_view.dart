@@ -1,9 +1,16 @@
+import 'dart:io';
+
 import 'package:dotted_border/dotted_border.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:open_filex/open_filex.dart';
+import 'package:super_clipboard/super_clipboard.dart';
 import 'package:super_drag_and_drop/super_drag_and_drop.dart';
 
+import '../../../../../../infra/app/app_config.dart';
+import '../../../../../../infra/io/data_reader_file_adaptor.dart';
 import '../../../../../components/t_button/t_icon_button.dart';
 import '../../../../../components/t_editor/t_editor.dart';
 import '../../../../../components/t_popup/t_popup.dart';
@@ -114,8 +121,10 @@ class ChatSessionPaneFooterView extends StatelessWidget {
                         followerAnchor: Alignment.bottomCenter,
                         offset: const Offset(-5, -5),
                         target: TIconButton(
-                          iconData: Symbols.emoji_emotions,
-                          iconHoverColor: ThemeConfig.primary,
+                          iconData: Symbols.emoji_emotions_rounded,
+                          iconColor: Colors.black54,
+                          iconColorHovered: Colors.black87,
+                          iconColorPressed: ThemeConfig.primary,
                           tooltip: appLocalizations.sticker,
                           // onPressed: () {
                           // GiphySheet.open(
@@ -124,12 +133,20 @@ class ChatSessionPaneFooterView extends StatelessWidget {
                         ),
                         follower: StickerPicker(
                           emojiCallback: chatPageFooterController.insertEmoji,
-                        ))
+                        )),
+                    TIconButton(
+                      iconData: Symbols.folder_rounded,
+                      iconColor: Colors.black54,
+                      iconColorHovered: Colors.black87,
+                      iconColorPressed: ThemeConfig.primary,
+                      tooltip: appLocalizations.sticker,
+                      onTap: () async => chatPageFooterController.pickFile(),
+                    )
                   ],
                 ),
                 TIconButton(
-                    iconData: Symbols.send,
-                    iconHoverColor: ThemeConfig.primary,
+                    iconData: Symbols.send_rounded,
+                    iconColorHovered: ThemeConfig.primary,
                     tooltip: appLocalizations.send,
                     onTap: chatPageFooterController.sendMessage)
               ],

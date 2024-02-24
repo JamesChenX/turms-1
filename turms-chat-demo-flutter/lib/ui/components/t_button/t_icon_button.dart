@@ -14,11 +14,12 @@ class TIconButton extends StatefulWidget {
       this.iconSize,
       this.iconWeight,
       this.iconColor,
-      this.iconHoverColor,
+      this.iconColorHovered,
+      this.iconColorPressed,
       this.iconFlipX = false,
       this.tooltip,
       this.onTap,
-      this.onTapDown});
+      this.onPanDown});
 
   final bool addContainer;
   final Size? size;
@@ -30,15 +31,14 @@ class TIconButton extends StatefulWidget {
   final double? iconSize;
   final double? iconWeight;
   final Color? iconColor;
-  final Color? iconHoverColor;
+  final Color? iconColorHovered;
+  final Color? iconColorPressed;
   final bool iconFlipX;
 
   final String? tooltip;
 
   final VoidCallback? onTap;
-  final GestureTapDownCallback? onTapDown;
-
-  // this.iconHoverColor ??= iconColor;
+  final GestureDragDownCallback? onPanDown;
 
   @override
   State<StatefulWidget> createState() => _TIconButtonState();
@@ -46,6 +46,7 @@ class TIconButton extends StatefulWidget {
 
 class _TIconButtonState extends State<TIconButton> {
   bool isHovered = false;
+  bool isPressed = false;
 
   @override
   Widget build(BuildContext context) {
@@ -53,9 +54,11 @@ class _TIconButtonState extends State<TIconButton> {
     Widget child = Icon(
       widget.iconData,
       fill: (widget.iconFill ?? false) ? 1 : 0,
-      color: isHovered
-          ? (widget.iconHoverColor ?? widget.iconColor)
-          : widget.iconColor,
+      color: isPressed
+          ? (widget.iconColorPressed ?? widget.iconColor)
+          : isHovered
+              ? (widget.iconColorHovered ?? widget.iconColor)
+              : widget.iconColor,
       weight: widget.iconWeight ?? iconTheme.weight,
       size: widget.iconSize ?? iconTheme.size,
     );
@@ -91,14 +94,24 @@ class _TIconButtonState extends State<TIconButton> {
     return MouseRegion(
         cursor: SystemMouseCursors.click,
         onEnter: (_) => setState(() => isHovered = true),
-        onExit: (_) => setState(() => isHovered = false),
+        onExit: (_) {
+          isHovered = false;
+          isPressed = false;
+          setState(() {});
+        },
         // TODO: darken on pressing
-        child: widget.onTap == null && widget.onTapDown == null
-            ? child
-            : GestureDetector(
-                onTap: widget.onTap,
-                onTapDown: widget.onTapDown,
-                child: child,
-              ));
+        child: GestureDetector(
+          onTap: () {
+            isPressed = false;
+            widget.onTap?.call();
+            setState(() {});
+          },
+          onPanDown: (details) {
+            isPressed = true;
+            widget.onPanDown?.call(details);
+            setState(() {});
+          },
+          child: child,
+        ));
   }
 }

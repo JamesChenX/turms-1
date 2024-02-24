@@ -54,7 +54,7 @@ class _TDropdownMenuState<T> extends ConsumerState<TDropdownMenu<T>> {
           showCursor: false,
           mouseCursor: SystemMouseCursors.basic,
           suffixIcon: const Icon(
-            Symbols.arrow_drop_down,
+            Symbols.arrow_drop_down_rounded,
           ),
         ),
       ),

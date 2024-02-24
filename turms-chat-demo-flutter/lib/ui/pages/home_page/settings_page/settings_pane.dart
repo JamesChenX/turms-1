@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../domain/user/models/index.dart';
 import '../../../../domain/user/models/setting_action_on_close.dart';
 import '../../../../domain/user/models/setting_locale.dart';
+import '../../../../domain/user/models/user_setting_ids.dart';
 import '../../../../domain/user/repositories/user_settings_repository.dart';
 import '../../../../domain/user/view_models/logged_in_user_info_view_model.dart';
 import '../../../../domain/user/view_models/user_settings_view_model.dart';
@@ -24,6 +25,7 @@ import '../home_page_action.dart';
 import 'setting_form_field_groups.dart';
 
 part 'settings_pane_controller.dart';
+
 part 'settings_pane_view.dart';
 
 class SettingsPane extends ConsumerStatefulWidget {

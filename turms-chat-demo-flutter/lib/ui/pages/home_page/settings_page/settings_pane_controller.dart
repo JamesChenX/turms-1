@@ -26,6 +26,42 @@ class _SettingsPaneController extends ConsumerState<SettingsPane> {
     return _SettingsPaneView(this);
   }
 
+  Future<void> updateActionOnClose(SettingActionOnClose value) async {
+    await userSettingsRepository.upsert(
+        ref.read(loggedInUserViewModel)!.userId,
+        UserSettingId.actionOnClose.name,
+        UserSettingId.actionOnClose.convertValueToString(value));
+    ref.read(userSettingsViewModel.notifier).state!.actionOnClose = value;
+    userSettingsViewModelRef.notifyListeners();
+  }
+
+  Future<void> updateCheckForUpdatesAutomatically(bool value) async {
+    await userSettingsRepository.upsert(
+        ref.read(loggedInUserViewModel)!.userId,
+        UserSettingId.checkForUpdatesAutomatically.name,
+        UserSettingId.checkForUpdatesAutomatically.convertValueToString(value));
+    ref
+        .read(userSettingsViewModel.notifier)
+        .state!
+        .checkForUpdatesAutomatically = value;
+    userSettingsViewModelRef.notifyListeners();
+  }
+
+  Future<void> updateLaunchOnStartup(bool value) async {
+    try {
+      if (value) {
+        await autostartManager.enable();
+      } else {
+        await autostartManager.disable();
+      }
+    } catch (e) {
+      unawaited(TToast.showToast(
+          context, appLocalizations.failedToUpdateSettings(e.toString())));
+    }
+    ref.read(userSettingsViewModel.notifier).state!.launchOnStartup = value;
+    userSettingsViewModelRef.notifyListeners();
+  }
+
   Future<void> updateLocale(SettingLocale value) async {
     final Locale locale;
     if (value case SettingLocale.system) {
@@ -49,30 +85,6 @@ class _SettingsPaneController extends ConsumerState<SettingsPane> {
     userSettingsViewModelRef.notifyListeners();
   }
 
-  Future<void> updateLaunchOnStartup(bool value) async {
-    try {
-      if (value) {
-        await autostartManager.enable();
-      } else {
-        await autostartManager.disable();
-      }
-    } catch (e) {
-      unawaited(TToast.showToast(
-          context, appLocalizations.failedToUpdateSettings(e.toString())));
-    }
-    ref.read(userSettingsViewModel.notifier).state!.launchOnStartup = value;
-    userSettingsViewModelRef.notifyListeners();
-  }
-
-  Future<void> updateActionOnClose(SettingActionOnClose value) async {
-    await userSettingsRepository.upsert(
-        ref.read(loggedInUserViewModel)!.userId,
-        UserSettingId.actionOnClose.name,
-        UserSettingId.actionOnClose.convertValueToString(value));
-    ref.read(userSettingsViewModel.notifier).state!.actionOnClose = value;
-    userSettingsViewModelRef.notifyListeners();
-  }
-
   Future<void> updateNewMessageNotification(bool value) async {
     await userSettingsRepository.upsert(
         ref.read(loggedInUserViewModel)!.userId,
@@ -83,15 +95,41 @@ class _SettingsPaneController extends ConsumerState<SettingsPane> {
     userSettingsViewModelRef.notifyListeners();
   }
 
-  Future<void> updateCheckForUpdatesAutomatically(bool value) async {
+  Future<void> updateShortcut(
+      HomePageAction action, ShortcutActivator shortcutActivator) async {
+    final userSettingId = action.userSettingId;
     await userSettingsRepository.upsert(
         ref.read(loggedInUserViewModel)!.userId,
-        UserSettingId.checkForUpdatesAutomatically.name,
-        UserSettingId.checkForUpdatesAutomatically.convertValueToString(value));
-    ref
-        .read(userSettingsViewModel.notifier)
-        .state!
-        .checkForUpdatesAutomatically = value;
+        userSettingId.name,
+        userSettingId.convertValueToString(shortcutActivator));
+    switch (action) {
+      case HomePageAction.showChatPage:
+        ref.read(userSettingsViewModel.notifier).state!.shortcutShowChatPage =
+            shortcutActivator;
+        break;
+      case HomePageAction.showContactsPage:
+        ref
+            .read(userSettingsViewModel.notifier)
+            .state!
+            .shortcutShowContactsPage = shortcutActivator;
+        break;
+      case HomePageAction.showFilesPage:
+        ref.read(userSettingsViewModel.notifier).state!.shortcutShowFilesPage =
+            shortcutActivator;
+        break;
+      case HomePageAction.showSettingsDialog:
+        ref
+            .read(userSettingsViewModel.notifier)
+            .state!
+            .shortcutShowSettingsDialog = shortcutActivator;
+        break;
+      case HomePageAction.showAboutDialog:
+        ref
+            .read(userSettingsViewModel.notifier)
+            .state!
+            .shortcutShowAboutDialog = shortcutActivator;
+        break;
+    }
     userSettingsViewModelRef.notifyListeners();
   }
 

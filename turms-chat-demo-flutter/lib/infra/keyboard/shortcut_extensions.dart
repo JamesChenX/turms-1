@@ -1,5 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+
+import 'shortcut_utils.dart';
 
 extension ShortcutActivatorExtensions on ShortcutActivator {
   List<LogicalKeyboardKey> get keys {
@@ -36,6 +41,8 @@ extension ShortcutActivatorExtensions on ShortcutActivator {
     }
   }
 
+  String toStoredString() => ShortcutUtils.toStoredString(this);
+
   String get description {
     if (triggers?.isNotEmpty == false) {
       return '';
@@ -43,17 +50,16 @@ extension ShortcutActivatorExtensions on ShortcutActivator {
     final buffer = StringBuffer();
     // LogicalKeySet
     switch (this) {
-      case KeySet():
-        final keys = (this as KeySet).keys;
+      case LogicalKeySet():
+        final keys = (this as LogicalKeySet).keys;
         for (final key in keys) {
           if (buffer.isNotEmpty) {
             buffer.write(' + ');
           }
-          final logicalKeyboardKey = key as LogicalKeyboardKey;
-          if (logicalKeyboardKey == LogicalKeyboardKey.control) {
+          if (key == LogicalKeyboardKey.control) {
             buffer.write('Ctrl');
           } else {
-            buffer.write(logicalKeyboardKey.keyLabel);
+            buffer.write(key.keyLabel);
           }
         }
         return buffer.toString();
@@ -61,11 +67,23 @@ extension ShortcutActivatorExtensions on ShortcutActivator {
         final activator = this as SingleActivator;
         if (activator.alt) {
           buffer.write('Alt');
-        } else if (activator.control) {
+        }
+        if (activator.control) {
+          if (buffer.isNotEmpty) {
+            buffer.write(' + ');
+          }
           buffer.write('Ctrl');
-        } else if (activator.meta) {
+        }
+        if (activator.meta) {
+          if (buffer.isNotEmpty) {
+            buffer.write(' + ');
+          }
           buffer.write('Meta');
-        } else if (activator.shift) {
+        }
+        if (activator.shift) {
+          if (buffer.isNotEmpty) {
+            buffer.write(' + ');
+          }
           buffer.write('Shift');
         }
         buffer.write(' + ');

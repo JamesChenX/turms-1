@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:fixnum/fixnum.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -106,7 +107,16 @@ class LoginFormController extends ConsumerState<LoginForm> {
   Future<UserSettings> _getUserSettings() async {
     final userSettingsTableData =
         await userSettingsRepository.selectAll(userId);
-    return UserSettings.fromTableData(userSettingsTableData)
+    final (userSettings, exception) =
+        UserSettings.fromTableData(userSettingsTableData);
+    if (exception != null) {
+      if (kReleaseMode) {
+        logger.w('Failed to read user settings: ${exception.toString()}');
+      } else {
+        throw exception;
+      }
+    }
+    return userSettings
       // Set default values if the user never set them.
       ..actionOnClose ??= SettingActionOnClose.minimizeToTray
       ..newMessageNotification ??= true

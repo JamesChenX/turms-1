@@ -34,7 +34,11 @@ class AppController extends ConsumerState<App> with WindowListener {
   void initState() {
     super.initState();
     windowManager.addListener(this);
-    WindowUtils.show();
+    // show windows in the next frame to ensure the UI is ready.
+    // Otherwise the UI will jitter because it is painting.
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      WindowUtils.show();
+    });
   }
 
   @override
@@ -45,16 +49,19 @@ class AppController extends ConsumerState<App> with WindowListener {
 
   @override
   Widget build(BuildContext context) {
-    final displayLoginPage = ref.watch(loggedInUserViewModel) == null;
-    if (shouldDisplayLoginPage != displayLoginPage && !isWindowSettingUp) {
-      _hideAndResize(displayLoginPage).then((value) {
-        shouldDisplayLoginPage = displayLoginPage;
-        setState(() {});
-        SchedulerBinding.instance.addPostFrameCallback((_) {
-          WindowUtils.show();
+    ref.listen(loggedInUserViewModel,
+        (previousLoggedInUser, currentLoggedInUser) {
+      final displayLoginPage = currentLoggedInUser == null;
+      if (shouldDisplayLoginPage != displayLoginPage && !isWindowSettingUp) {
+        _hideAndResize(displayLoginPage).then((value) {
+          shouldDisplayLoginPage = displayLoginPage;
+          setState(() {});
+          SchedulerBinding.instance.addPostFrameCallback((_) {
+            WindowUtils.show();
+          });
         });
-      });
-    }
+      }
+    });
     appTheme = ref.watch(appThemeViewModel);
     isWindowMaximized = ref.watch(isWindowMaximizedViewModel);
     return AppView(this);

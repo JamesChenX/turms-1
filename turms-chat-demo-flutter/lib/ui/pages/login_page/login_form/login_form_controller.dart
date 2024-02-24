@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../domain/app/models/app_settings.dart';
 import '../../../../domain/app/repositories/app_settings_repository.dart';
 import '../../../../domain/app/view_models/app_settings_view_model.dart';
+import '../../../../domain/user/models/setting_action_on_close.dart';
 import '../../../../domain/user/models/user.dart';
 import '../../../../domain/user/models/user_settings.dart';
 import '../../../../domain/user/repositories/user_login_info_repository.dart';
@@ -14,7 +15,11 @@ import '../../../../domain/user/repositories/user_settings_repository.dart';
 import '../../../../domain/user/view_models/logged_in_user_info_view_model.dart';
 import '../../../../domain/user/view_models/user_login_infos_view_model.dart';
 import '../../../../domain/user/view_models/user_settings_view_model.dart';
+import '../../../../infra/autostart/autostart_manager.dart';
+import '../../../../infra/github/github_client.dart';
+import '../../../../infra/logging/logger.dart';
 import '../../../../infra/sqlite/app_database.dart';
+import '../../../../infra/task/task_utils.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../l10n/view_models/app_localizations_view_model.dart';
 import '../../../l10n/view_models/use_system_locale_view_model.dart';
@@ -63,9 +68,7 @@ class LoginFormController extends ConsumerState<LoginForm> {
     }
     await appSettingsRepository.upsertRememberMe(shouldRemember);
     // read user settings
-    final userSettingsTableData =
-        await userSettingsRepository.selectAll(userId);
-    final userSettings = UserSettings.fromTableData(userSettingsTableData);
+    final userSettings = await _getUserSettings();
     ref.read(userSettingsViewModel.notifier).state = userSettings;
     final locale = userSettings.locale;
     if (locale != null) {
@@ -74,11 +77,41 @@ class LoginFormController extends ConsumerState<LoginForm> {
           lookupAppLocalizations(locale);
     }
 
+    TaskUtils.addPeriodicTask(
+        name: 'checkForUpdates',
+        duration: const Duration(hours: 1),
+        callback: () async {
+          final checkForUpdates =
+              ref.read(userSettingsViewModel)?.checkForUpdatesAutomatically ??
+                  false;
+          if (!checkForUpdates) {
+            return true;
+          }
+          try {
+            final file = await GithubUtils.downloadLatestApp();
+            // TODO: pop up a dialog to notify user.
+          } catch (e) {
+            logger.w('Failed to download latest application: ${e.toString()}');
+          }
+          return true;
+        });
+
     // set status for logged in user
     ref.read(loggedInUserViewModel.notifier).state =
         User(userId: userId, name: 'James Chen');
     isWaitingLoginRequest = false;
     setState(() {});
+  }
+
+  Future<UserSettings> _getUserSettings() async {
+    final userSettingsTableData =
+        await userSettingsRepository.selectAll(userId);
+    return UserSettings.fromTableData(userSettingsTableData)
+      // Set default values if the user never set them.
+      ..actionOnClose ??= SettingActionOnClose.minimizeToTray
+      ..newMessageNotification ??= true
+      ..launchOnStartup ??= await autostartManager.isEnabled()
+      ..checkForUpdatesAutomatically ??= true;
   }
 
   void setUserId(String? newValue) {

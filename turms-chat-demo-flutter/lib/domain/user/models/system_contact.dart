@@ -1,4 +1,4 @@
-import 'contact.dart';
+part of 'contact.dart';
 
 class SystemContact extends Contact {
   SystemContact(

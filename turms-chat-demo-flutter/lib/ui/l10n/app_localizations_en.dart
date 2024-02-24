@@ -83,6 +83,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exit => 'Exit';
 
   @override
+  String failedToUpdateSettings(Object error) {
+    return 'Failed to update settings: $error';
+  }
+
+  @override
   String get fileName => 'Name';
 
   @override

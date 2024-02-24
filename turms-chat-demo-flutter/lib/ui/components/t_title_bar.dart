@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
+import '../../domain/user/models/setting_action_on_close.dart';
+import '../../domain/user/view_models/user_settings_view_model.dart';
 import '../../domain/window/view_models/window_maximized_view_model.dart';
 import '../../infra/ui/color_extensions.dart';
 import '../../infra/window/window_utils.dart';
@@ -112,6 +114,10 @@ class _TTitleBarState extends ConsumerState<TTitleBar> {
         tooltip: localizations.close,
         onTap: widget.popOnCloseTapped
             ? () => Navigator.of(context).pop()
-            : WindowUtils.close,
+            : () => switch (ref.read(userSettingsViewModel)?.actionOnClose ??
+                    SettingActionOnClose.exit) {
+                  SettingActionOnClose.minimizeToTray => WindowUtils.hide(),
+                  SettingActionOnClose.exit => WindowUtils.close(),
+                },
       );
 }

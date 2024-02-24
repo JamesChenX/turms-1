@@ -1,8 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../../domain/user/models/group_contact.dart';
-import '../../../../../domain/user/models/user_contact.dart';
+import '../../../../../domain/user/models/index.dart';
 import '../../../../../infra/built_in_types/built_in_type_helpers.dart';
 import '../../../../components/t_avatar/t_avatar.dart';
 import '../../../../components/t_button/t_text_button.dart';

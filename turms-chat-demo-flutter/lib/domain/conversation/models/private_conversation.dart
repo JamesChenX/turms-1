@@ -1,7 +1,6 @@
 import 'package:flutter/src/painting/image_provider.dart';
 
-import '../../user/models/contact.dart';
-import '../../user/models/user_contact.dart';
+import '../../user/models/index.dart';
 import 'conversation.dart';
 
 class PrivateConversation extends Conversation {

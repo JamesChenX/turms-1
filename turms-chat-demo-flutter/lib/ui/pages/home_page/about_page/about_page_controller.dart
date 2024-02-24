@@ -27,31 +27,6 @@ class AboutPageController extends ConsumerState<AboutPage> {
     launchUrlString('https://github.com/turms-im/turms');
   }
 
-  /// returns null if the current version is latest.
-  Future<File?> downloadLatestApp() async {
-    final versionedAsset = await GithubUtils.fetchVersion();
-    if (versionedAsset == null) {
-      return null;
-    }
-    final currentVersion = Version.parse(
-        GithubUtils.normalizeVersion(AppConfig.packageInfo.version));
-    if (versionedAsset.version < currentVersion) {
-      return null;
-    }
-    final asset = versionedAsset.asset;
-    final filePath =
-        '${AppConfig.appDir}${Platform.pathSeparator}app${Platform.pathSeparator}${asset.name!}';
-    if (await File(filePath).exists()) {
-      return File(filePath);
-    }
-    final downloadFile = await HttpUtils.downloadFile(
-        uri: Uri.parse(asset.browserDownloadUrl!), filePath: filePath);
-    if (downloadFile == null) {
-      return null;
-    }
-    return downloadFile.bytes.isEmpty ? null : downloadFile.file;
-  }
-
   void updateIsDownloading(bool isDownloading) {
     if (this.isDownloading != isDownloading) {
       this.isDownloading = isDownloading;

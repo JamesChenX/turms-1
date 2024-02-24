@@ -9,11 +9,6 @@ final appThemeViewModel = StateProvider<AppTheme>((ref) {
   if (userSettings == null) {
     return const AppTheme(themeMode: ThemeMode.system);
   }
-  final themeMode = switch (userSettings.theme) {
-    null => ThemeMode.system,
-    'dark' => ThemeMode.dark,
-    'light' => ThemeMode.light,
-    _ => ThemeMode.system,
-  };
+  final themeMode = userSettings.theme ?? ThemeMode.system;
   return AppTheme(locale: userSettings.locale, themeMode: themeMode);
 });

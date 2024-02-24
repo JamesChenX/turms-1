@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../domain/conversation/models/conversation.dart';
 import '../../../../../domain/conversation/models/private_conversation.dart';
-import '../../../../../domain/user/models/user_contact.dart';
+import '../../../../../domain/user/models/index.dart';
 import '../../../../../infra/built_in_types/built_in_type_helpers.dart';
 import '../../../../../infra/ui/text_utils.dart';
 import '../../../../l10n/view_models/app_localizations_view_model.dart';

@@ -1,8 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 
-import '../../../../../domain/user/models/contact.dart';
-import '../../../../../domain/user/models/system_contact.dart';
+import '../../../../../domain/user/models/index.dart';
 import '../../../../../fixtures/contacts.dart';
 import '../../../../../fixtures/relationship_groups.dart';
 import '../../../../../infra/built_in_types/built_in_type_helpers.dart';

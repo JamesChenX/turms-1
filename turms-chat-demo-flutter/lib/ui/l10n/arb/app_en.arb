@@ -25,6 +25,7 @@
   "draft": "Draft",
   "dropFilesHere": "Drop files here",
   "exit": "Exit",
+  "failedToUpdateSettings": "Failed to update settings: {error}",
   "fileName": "Name",
   "fileSize": "Size",
   "fileTransfer": "File Transfer",

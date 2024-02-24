@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:turms_chat_demo/domain/user/models/contact.dart';
+import '../../../../../domain/user/models/contact.dart';
 
-import '../../../../../domain/user/models/group_contact.dart';
-import '../../../../../domain/user/models/system_contact.dart';
-import '../../../../../domain/user/models/user_contact.dart';
+import '../../../../../domain/user/models/index.dart';
 import '../../../../../infra/built_in_types/built_in_type_helpers.dart';
 import '../../../../components/t_avatar/t_avatar.dart';
 import '../../../../components/t_empty.dart';

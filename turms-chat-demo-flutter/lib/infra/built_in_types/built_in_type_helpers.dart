@@ -38,6 +38,20 @@ extension StringExtensions on String {
   }
 }
 
+extension EnumExtensionsIterable<T extends Enum> on Iterable<T> {
+  T? firstOrNullByName(String? name) {
+    if (name == null) {
+      return null;
+    }
+    for (final value in this) {
+      if (value.name == name) {
+        return value;
+      }
+    }
+    return null;
+  }
+}
+
 extension Iterables<E> on Iterable<E> {
   Map<K, List<E>> groupBy<K>(K Function(E) keyFunction) => fold(
       <K, List<E>>{},

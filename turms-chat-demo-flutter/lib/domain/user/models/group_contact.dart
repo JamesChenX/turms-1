@@ -1,6 +1,4 @@
-import 'package:fixnum/fixnum.dart';
-
-import 'contact.dart';
+part of 'contact.dart';
 
 class GroupContact extends Contact {
   GroupContact(

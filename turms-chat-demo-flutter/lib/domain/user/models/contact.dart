@@ -1,8 +1,15 @@
 import 'dart:typed_data';
 
+import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 
-abstract class Contact {
+import 'user.dart';
+
+part 'group_contact.dart';
+part 'system_contact.dart';
+part 'user_contact.dart';
+
+sealed class Contact {
   Contact({
     required this.name,
     this.intro = '',

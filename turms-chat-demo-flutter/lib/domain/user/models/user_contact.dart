@@ -1,7 +1,4 @@
-import 'package:fixnum/fixnum.dart';
-
-import 'contact.dart';
-import 'user.dart';
+part of 'contact.dart';
 
 class UserContact extends Contact implements User {
   UserContact(

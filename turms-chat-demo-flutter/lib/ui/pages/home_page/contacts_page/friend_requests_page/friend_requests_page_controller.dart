@@ -1,11 +1,7 @@
-import 'package:fixnum/src/int64.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../../domain/user/models/contact.dart';
-import '../../../../../domain/user/models/friend_request.dart';
-import '../../../../../domain/user/models/user.dart';
-import '../../../../../domain/user/models/user_contact.dart';
+import '../../../../../domain/user/models/index.dart';
 import '../../../../../infra/built_in_types/built_in_type_helpers.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../l10n/view_models/app_localizations_view_model.dart';

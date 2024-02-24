@@ -25,6 +25,7 @@
   "draft": "草稿",
   "dropFilesHere": "在此放置文件",
   "exit": "退出",
+  "failedToUpdateSettings": "设置更新失败: {error}",
   "fileName": "文件名",
   "fileSize": "大小",
   "fileTransfer": "文件传输助手",

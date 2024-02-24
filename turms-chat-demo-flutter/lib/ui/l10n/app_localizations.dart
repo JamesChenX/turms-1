@@ -252,6 +252,12 @@ abstract class AppLocalizations {
   /// **'Exit'**
   String get exit;
 
+  /// No description provided for @failedToUpdateSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update settings: {error}'**
+  String failedToUpdateSettings(Object error);
+
   /// No description provided for @fileName.
   ///
   /// In en, this message translates to:

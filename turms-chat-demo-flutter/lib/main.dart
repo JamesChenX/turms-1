@@ -15,6 +15,7 @@ import 'domain/user/view_models/user_login_infos_view_model.dart';
 import 'domain/window/view_models/window_maximized_view_model.dart';
 import 'infra/app/app_config.dart';
 import 'infra/assets/assets.gen.dart';
+import 'infra/autostart/autostart_manager.dart';
 import 'infra/logging/logger.dart';
 import 'infra/media/video_utils.dart';
 import 'infra/platform/platform_helpers.dart';
@@ -56,6 +57,10 @@ Future<void> main() async {
   };
 
   await AppConfig.load();
+  initAutostartManager(
+      appName: AppConfig.packageInfo.appName,
+      appPath: Platform.resolvedExecutable,
+      args: []);
   VideoUtils.ensureInitialized();
 
   if (kDebugMode) {

@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../../domain/user/models/contact.dart';
-import '../../../../../domain/user/models/user_contact.dart';
+import '../../../../../domain/user/models/index.dart';
 
 late StateProviderRef<List<Contact>> contactsViewModelRef;
 final contactsViewModel = StateProvider<List<Contact>>((ref) {

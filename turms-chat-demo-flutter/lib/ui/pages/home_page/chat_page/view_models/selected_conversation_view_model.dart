@@ -1,16 +1,7 @@
-import 'package:fixnum/fixnum.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../domain/conversation/models/conversation.dart';
-import '../../../../../domain/conversation/models/group_conversation.dart';
-import '../../../../../domain/conversation/models/private_conversation.dart';
-import '../../../../../domain/message/message_delivery_status.dart';
-import '../../../../../domain/user/models/contact.dart';
-import '../../../../../domain/user/models/group_contact.dart';
-import '../../../../../domain/user/models/user.dart';
-import '../../../../../domain/user/models/user_contact.dart';
-import '../../../../../domain/user/view_models/logged_in_user_info_view_model.dart';
-import '../../../../../infra/random/random_utils.dart';
+import '../../../../../domain/user/models/index.dart';
 import '../../home_page_tab.dart';
 import '../../shared_view_models/home_page_tab_view_model.dart';
 import '../chat_session_pane/message.dart';

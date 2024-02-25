@@ -1,6 +1,7 @@
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 import '../../../../../domain/conversation/models/conversation.dart';
 import '../../../../../domain/conversation/models/private_conversation.dart';
@@ -45,27 +46,15 @@ class ConversationTiles extends ConsumerWidget {
     final relatedMessages =
         ref.watch(appLocalizationsViewModel).relatedMessages;
     final isSearchMode = subNavigationRailController.searchText.isNotBlank;
-    return ListView.builder(
+    return ScrollablePositionedList.builder(
       padding: EdgeInsets.zero,
       itemCount: conversations.length,
-      prototypeItem: ConversationTile(
-        conversation: PrivateConversation(
-          contact: UserContact(
-              userId: Int64(), name: '', relationshipGroupId: Int64()),
-          messages: [],
-        ),
-        isSearchMode: false,
-        nameTextSpans: [],
-        messageTextSpans: [],
-        onTap: () {},
-      ),
+      itemScrollController: subNavigationRailController.itemScrollController,
       itemBuilder: (context, index) {
         final (conversation, nameTextSpans, matchedMessages) =
             conversations[index];
         final selectedConversationId =
             subNavigationRailController.selectedConversation?.id;
-        subNavigationRailController.conversationIdToContext[conversation.id] =
-            context;
         return ConversationTile(
           key: Key(conversation.id),
           conversation: conversation,

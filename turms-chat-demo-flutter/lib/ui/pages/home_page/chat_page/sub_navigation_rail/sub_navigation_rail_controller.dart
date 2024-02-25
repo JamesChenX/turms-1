@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 import '../../../../../domain/conversation/models/conversation.dart';
 import '../../../../../domain/conversation/models/group_conversation.dart';
@@ -25,10 +27,10 @@ import 'sub_navigation_rail_view.dart';
 
 class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
   late MenuController menuController;
+  late ItemScrollController itemScrollController;
 
   late AppLocalizations appLocalizations;
   late List<Conversation> conversations;
-  Map<String, BuildContext> conversationIdToContext = {};
   Conversation? selectedConversation;
   bool isConversationsInitialized = false;
   bool isConversationsLoading = false;
@@ -39,6 +41,7 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
   void initState() {
     super.initState();
     menuController = MenuController();
+    itemScrollController = ItemScrollController();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (conversations.isNotEmpty) {
         return;
@@ -64,10 +67,19 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
     final conversationId = selectedConversation?.id;
     if (conversationId != null &&
         previousSelectedConversationId != conversationId) {
-      final context = conversationIdToContext[conversationId];
-      if (context != null) {
-        Scrollable.ensureVisible(context);
-      }
+      // Jump to the selected conversation in the next frame
+      // to ensure the selected conversation is rendered.
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        final index =
+            conversations.indexWhere((element) => element.id == conversationId);
+        if (index == -1) {
+          return;
+        }
+        // Use "jumpTo" instead of "scrollTo"
+        // to not render all passing conversations,
+        // especially for a large list of conversations.
+        itemScrollController.jumpTo(index: index);
+      });
     }
     return SubNavigationRailView(this);
   }

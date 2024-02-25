@@ -13,6 +13,8 @@ import 'versioned_asset.dart';
 class GithubUtils {
   GithubUtils._();
 
+  static Future<File?>? _pendingDownload;
+
   static Future<VersionedAsset?> fetchVersion() async {
     // TODO: make configurable
     const url = 'https://api.github.com/repos/turms-im/turms/releases';
@@ -56,6 +58,14 @@ class GithubUtils {
 
   /// returns null if the current version is latest.
   static Future<File?> downloadLatestApp() async {
+    var pending = _pendingDownload;
+    if (pending == null) {
+      _pendingDownload = pending = _downloadLatestApp0();
+    }
+    return pending;
+  }
+
+  static Future<File?> _downloadLatestApp0() async {
     final versionedAsset = await GithubUtils.fetchVersion();
     if (versionedAsset == null) {
       return null;

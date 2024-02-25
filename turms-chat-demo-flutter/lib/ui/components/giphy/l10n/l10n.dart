@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:pixel_snap/widgets.dart';
+import 'package:flutter/widgets.dart';
 
 import 'default_localizations.dart';
 import 'lang/en.dart';

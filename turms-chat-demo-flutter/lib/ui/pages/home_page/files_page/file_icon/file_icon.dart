@@ -1,6 +1,6 @@
 import 'dart:ui' as ui;
 
-import 'package:pixel_snap/material.dart';
+import 'package:flutter/material.dart';
 
 import '../../../../../infra/ui/color_extensions.dart';
 

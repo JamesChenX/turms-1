@@ -1,6 +1,6 @@
-import 'package:pixel_snap/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:flutter/material.dart';
 
 import '../../../../domain/user/view_models/logged_in_user_info_view_model.dart';
 import '../../../../infra/keyboard/shortcut_extensions.dart';
@@ -34,6 +34,12 @@ class _TabsState extends ConsumerState<Tabs> {
     final appLocalizations = ref.watch(appLocalizationsViewModel);
     final actionToShortcut = ref.watch(actionToShortcutViewModel);
 
+    final shortcutShowChatPage =
+        actionToShortcut[HomePageAction.showChatPage]!.$1;
+    final shortcutShowContactsPage =
+        actionToShortcut[HomePageAction.showContactsPage]!.$1;
+    final shortcutShowFilesPage =
+        actionToShortcut[HomePageAction.showFilesPage]!.$1;
     return Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
       Column(children: [
         TIconButton(
@@ -41,8 +47,9 @@ class _TabsState extends ConsumerState<Tabs> {
             iconFill: isChatTab,
             iconSize: 26,
             iconWeight: isChatTab ? 400 : 300,
-            tooltip:
-                '${appLocalizations.chats} (${actionToShortcut[HomePageAction.showChatPage]!.description})',
+            tooltip: shortcutShowChatPage == null
+                ? appLocalizations.chats
+                : '${appLocalizations.chats} (${shortcutShowChatPage.description})',
             onTap: () => ref.read(homePageTabViewModel.notifier).state =
                 HomePageTab.chat,
             iconColor: isChatTab ? ThemeConfig.primary : Colors.white54,
@@ -53,8 +60,9 @@ class _TabsState extends ConsumerState<Tabs> {
             iconFill: isContactsTab,
             iconSize: 26,
             iconWeight: isContactsTab ? 400 : 300,
-            tooltip:
-                '${appLocalizations.contacts} (${actionToShortcut[HomePageAction.showContactsPage]!.description})',
+            tooltip: shortcutShowContactsPage == null
+                ? appLocalizations.contacts
+                : '${appLocalizations.contacts} (${shortcutShowContactsPage.description})',
             onTap: () => ref.read(homePageTabViewModel.notifier).state =
                 HomePageTab.contacts,
             iconColor: isContactsTab ? ThemeConfig.primary : Colors.white54,
@@ -66,8 +74,9 @@ class _TabsState extends ConsumerState<Tabs> {
             iconFill: isFilesTab,
             iconSize: 26,
             iconWeight: isFilesTab ? 400 : 300,
-            tooltip:
-                '${appLocalizations.files} (${actionToShortcut[HomePageAction.showFilesPage]!.description})',
+            tooltip: shortcutShowFilesPage == null
+                ? appLocalizations.files
+                : '${appLocalizations.files} (${shortcutShowFilesPage.description})',
             onTap: () => ref.read(homePageTabViewModel.notifier).state =
                 HomePageTab.files,
             iconColor: isFilesTab ? ThemeConfig.primary : Colors.white54,

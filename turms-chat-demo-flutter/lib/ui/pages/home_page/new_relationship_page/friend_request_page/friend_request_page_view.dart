@@ -1,5 +1,5 @@
-import 'package:pixel_snap/cupertino.dart';
-import 'package:pixel_snap/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 import '../../../../../domain/user/models/index.dart';
 import '../../../../../infra/built_in_types/built_in_type_helpers.dart';

@@ -1,4 +1,4 @@
-import 'package:pixel_snap/widgets.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../domain/user/models/contact.dart';

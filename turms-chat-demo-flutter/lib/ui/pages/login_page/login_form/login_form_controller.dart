@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/foundation.dart';
-import 'package:pixel_snap/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/material.dart';
 
 import '../../../../domain/app/models/app_settings.dart';
 import '../../../../domain/app/repositories/app_settings_repository.dart';
@@ -24,6 +24,7 @@ import '../../../../infra/task/task_utils.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../l10n/view_models/app_localizations_view_model.dart';
 import '../../../l10n/view_models/use_system_locale_view_model.dart';
+import '../../home_page/home_page_action.dart';
 import 'login_form.dart';
 import 'login_form_view.dart';
 
@@ -114,6 +115,41 @@ class LoginFormController extends ConsumerState<LoginForm> {
         logger.w('Failed to read user settings: ${exception.toString()}');
       } else {
         throw exception;
+      }
+    }
+
+    for (final type in HomePageAction.values) {
+      switch (type) {
+        case HomePageAction.showChatPage:
+          if (!userSettings.shortcutShowChatPage.$2) {
+            userSettings.shortcutShowChatPage =
+                (type.defaultShortcutActivator, true);
+          }
+          break;
+        case HomePageAction.showContactsPage:
+          if (!userSettings.shortcutShowContactsPage.$2) {
+            userSettings.shortcutShowContactsPage =
+                (type.defaultShortcutActivator, true);
+          }
+          break;
+        case HomePageAction.showFilesPage:
+          if (!userSettings.shortcutShowFilesPage.$2) {
+            userSettings.shortcutShowFilesPage =
+                (type.defaultShortcutActivator, true);
+          }
+          break;
+        case HomePageAction.showSettingsDialog:
+          if (!userSettings.shortcutShowSettingsDialog.$2) {
+            userSettings.shortcutShowSettingsDialog =
+                (type.defaultShortcutActivator, true);
+          }
+          break;
+        case HomePageAction.showAboutDialog:
+          if (!userSettings.shortcutShowAboutDialog.$2) {
+            userSettings.shortcutShowAboutDialog =
+                (type.defaultShortcutActivator, true);
+          }
+          break;
       }
     }
     return userSettings

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
-import 'package:pixel_snap/widgets.dart';
+import 'package:flutter/widgets.dart';
 
 class ShortcutUtils {
   ShortcutUtils._();

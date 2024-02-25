@@ -1,4 +1,4 @@
-import 'package:pixel_snap/widgets.dart';
+import 'package:flutter/widgets.dart';
 
 import 'chat_session_pane/chat_session_pane.dart';
 import 'sub_navigation_rail/sub_navigation_rail.dart';

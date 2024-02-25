@@ -2,7 +2,7 @@ part of 'settings_pane.dart';
 
 class _SettingsPaneController extends ConsumerState<SettingsPane> {
   late AppLocalizations appLocalizations;
-  late Map<HomePageAction, ShortcutActivator> actionToShortcut;
+  late Map<HomePageAction, (ShortcutActivator?, bool)> actionToShortcut;
 
   late bool useSystemLocale;
   late ThemeMode themeMode;
@@ -96,38 +96,46 @@ class _SettingsPaneController extends ConsumerState<SettingsPane> {
   }
 
   Future<void> updateShortcut(
-      HomePageAction action, ShortcutActivator shortcutActivator) async {
+      HomePageAction action, ShortcutActivator? shortcutActivator) async {
     final userSettingId = action.userSettingId;
-    await userSettingsRepository.upsert(
+    if (shortcutActivator == null) {
+      await userSettingsRepository.upsert(
         ref.read(loggedInUserViewModel)!.userId,
         userSettingId.name,
-        userSettingId.convertValueToString(shortcutActivator));
+        UserSettings.unsetValue,
+      );
+    } else {
+      // Remove conflicted shortcuts.
+      for (final homePageAction in HomePageAction.values) {
+        if (action != homePageAction &&
+            (actionToShortcut[homePageAction]!
+                    .$1
+                    ?.hasSameKeys(shortcutActivator) ??
+                false)) {
+          await updateShortcut(homePageAction, null);
+        }
+      }
+      await userSettingsRepository.upsert(
+          ref.read(loggedInUserViewModel)!.userId,
+          userSettingId.name,
+          userSettingId.convertValueToString(shortcutActivator));
+    }
+    final userSettings = ref.read(userSettingsViewModel.notifier).state!;
     switch (action) {
       case HomePageAction.showChatPage:
-        ref.read(userSettingsViewModel.notifier).state!.shortcutShowChatPage =
-            shortcutActivator;
+        userSettings.shortcutShowChatPage = (shortcutActivator, true);
         break;
       case HomePageAction.showContactsPage:
-        ref
-            .read(userSettingsViewModel.notifier)
-            .state!
-            .shortcutShowContactsPage = shortcutActivator;
+        userSettings.shortcutShowContactsPage = (shortcutActivator, true);
         break;
       case HomePageAction.showFilesPage:
-        ref.read(userSettingsViewModel.notifier).state!.shortcutShowFilesPage =
-            shortcutActivator;
+        userSettings.shortcutShowFilesPage = (shortcutActivator, true);
         break;
       case HomePageAction.showSettingsDialog:
-        ref
-            .read(userSettingsViewModel.notifier)
-            .state!
-            .shortcutShowSettingsDialog = shortcutActivator;
+        userSettings.shortcutShowSettingsDialog = (shortcutActivator, true);
         break;
       case HomePageAction.showAboutDialog:
-        ref
-            .read(userSettingsViewModel.notifier)
-            .state!
-            .shortcutShowAboutDialog = shortcutActivator;
+        userSettings.shortcutShowAboutDialog = (shortcutActivator, true);
         break;
     }
     userSettingsViewModelRef.notifyListeners();

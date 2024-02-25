@@ -1,4 +1,4 @@
-import 'package:pixel_snap/material.dart';
+import 'package:flutter/material.dart';
 
 import '../../../infra/exception/stackful_exception.dart';
 import '../../../infra/sqlite/user_database.dart';
@@ -7,6 +7,10 @@ import 'user_setting_ids.dart';
 
 class UserSettings {
   UserSettings(this._idToSetting);
+
+  /// Set to an empty string instead of null
+  /// to distinguish from the default value.
+  static const unsetValue = '';
 
   static (UserSettings, StackfulException?) fromTableData(
       List<UserSettingTableData> records) {
@@ -60,23 +64,23 @@ class UserSettings {
         break;
       case UserSettingId.shortcutShowChatPage:
         settings.shortcutShowChatPage =
-            settingId.convertStringToValue(recordValue);
+            (settingId.convertStringToValue(recordValue), true);
         break;
       case UserSettingId.shortcutShowContactsPage:
         settings.shortcutShowContactsPage =
-            settingId.convertStringToValue(recordValue);
+            (settingId.convertStringToValue(recordValue), true);
         break;
       case UserSettingId.shortcutShowFilesPage:
         settings.shortcutShowFilesPage =
-            settingId.convertStringToValue(recordValue);
+            (settingId.convertStringToValue(recordValue), true);
         break;
       case UserSettingId.shortcutShowSettingsDialog:
         settings.shortcutShowSettingsDialog =
-            settingId.convertStringToValue(recordValue);
+            (settingId.convertStringToValue(recordValue), true);
         break;
       case UserSettingId.shortcutShowAboutDialog:
         settings.shortcutShowAboutDialog =
-            settingId.convertStringToValue(recordValue);
+            (settingId.convertStringToValue(recordValue), true);
         break;
       case UserSettingId.theme:
         settings.theme = settingId.convertStringToValue(recordValue);
@@ -116,36 +120,54 @@ class UserSettings {
   set newMessageNotification(bool? value) =>
       _idToSetting[UserSettingId.newMessageNotification] = value;
 
-  ShortcutActivator? get shortcutShowChatPage =>
-      _idToSetting[UserSettingId.shortcutShowChatPage] as ShortcutActivator?;
+  (ShortcutActivator?, bool) get shortcutShowChatPage =>
+      _idToSetting[UserSettingId.shortcutShowChatPage] as (
+        ShortcutActivator?,
+        bool
+      )? ??
+      (null, false);
 
-  set shortcutShowChatPage(ShortcutActivator? value) =>
+  set shortcutShowChatPage((ShortcutActivator?, bool)? value) =>
       _idToSetting[UserSettingId.shortcutShowChatPage] = value;
 
-  ShortcutActivator? get shortcutShowContactsPage =>
-      _idToSetting[UserSettingId.shortcutShowContactsPage]
-          as ShortcutActivator?;
+  (ShortcutActivator?, bool) get shortcutShowContactsPage =>
+      _idToSetting[UserSettingId.shortcutShowContactsPage] as (
+        ShortcutActivator?,
+        bool
+      )? ??
+      (null, false);
 
-  set shortcutShowContactsPage(ShortcutActivator? value) =>
+  set shortcutShowContactsPage((ShortcutActivator?, bool)? value) =>
       _idToSetting[UserSettingId.shortcutShowContactsPage] = value;
 
-  ShortcutActivator? get shortcutShowFilesPage =>
-      _idToSetting[UserSettingId.shortcutShowFilesPage] as ShortcutActivator?;
+  (ShortcutActivator?, bool) get shortcutShowFilesPage =>
+      _idToSetting[UserSettingId.shortcutShowFilesPage] as (
+        ShortcutActivator?,
+        bool
+      )? ??
+      (null, false);
 
-  set shortcutShowFilesPage(ShortcutActivator? value) =>
+  set shortcutShowFilesPage((ShortcutActivator?, bool)? value) =>
       _idToSetting[UserSettingId.shortcutShowFilesPage] = value;
 
-  ShortcutActivator? get shortcutShowSettingsDialog =>
-      _idToSetting[UserSettingId.shortcutShowSettingsDialog]
-          as ShortcutActivator?;
+  (ShortcutActivator?, bool) get shortcutShowSettingsDialog =>
+      _idToSetting[UserSettingId.shortcutShowSettingsDialog] as (
+        ShortcutActivator?,
+        bool
+      )? ??
+      (null, false);
 
-  set shortcutShowSettingsDialog(ShortcutActivator? value) =>
+  set shortcutShowSettingsDialog((ShortcutActivator?, bool)? value) =>
       _idToSetting[UserSettingId.shortcutShowSettingsDialog] = value;
 
-  ShortcutActivator? get shortcutShowAboutDialog =>
-      _idToSetting[UserSettingId.shortcutShowAboutDialog] as ShortcutActivator?;
+  (ShortcutActivator?, bool) get shortcutShowAboutDialog =>
+      _idToSetting[UserSettingId.shortcutShowAboutDialog] as (
+        ShortcutActivator?,
+        bool
+      )? ??
+      (null, false);
 
-  set shortcutShowAboutDialog(ShortcutActivator? value) =>
+  set shortcutShowAboutDialog((ShortcutActivator?, bool)? value) =>
       _idToSetting[UserSettingId.shortcutShowAboutDialog] = value;
 
   ThemeMode? get theme => _idToSetting[UserSettingId.theme] as ThemeMode?;

@@ -1,4 +1,4 @@
-import 'package:pixel_snap/cupertino.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../domain/conversation/models/conversation.dart';
 import '../../../../../domain/conversation/models/private_conversation.dart';

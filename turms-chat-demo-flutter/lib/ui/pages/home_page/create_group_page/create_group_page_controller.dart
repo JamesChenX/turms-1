@@ -1,7 +1,7 @@
 import 'package:fixnum/fixnum.dart';
-import 'package:pixel_snap/cupertino.dart';
-import 'package:pixel_snap/material.dart';
-import 'package:pixel_snap/widgets.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../domain/user/models/index.dart';

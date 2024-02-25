@@ -1,4 +1,4 @@
-import 'package:pixel_snap/material.dart';
+import 'package:flutter/material.dart';
 
 import '../../../components/t_dialog.dart';
 import 'settings_page_controller.dart';

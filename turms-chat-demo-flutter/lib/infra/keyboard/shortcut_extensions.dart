@@ -1,5 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:pixel_snap/material.dart';
+import 'package:flutter/material.dart';
 
 import 'shortcut_utils.dart';
 
@@ -91,6 +92,29 @@ extension ShortcutActivatorExtensions on ShortcutActivator {
       default:
         return '';
     }
+  }
+
+  bool hasSameKeys(ShortcutActivator other) =>
+      listEquals(keyList, other.keyList);
+}
+
+extension SingleActivatorExtensions on SingleActivator {
+  LogicalKeySet toLogicalKeySet() {
+    final keys = <LogicalKeyboardKey>{};
+    if (alt) {
+      keys.add(LogicalKeyboardKey.alt);
+    }
+    if (control) {
+      keys.add(LogicalKeyboardKey.control);
+    }
+    if (meta) {
+      keys.add(LogicalKeyboardKey.meta);
+    }
+    if (shift) {
+      keys.add(LogicalKeyboardKey.shift);
+    }
+    keys.add(trigger);
+    return LogicalKeySet.fromSet(keys);
   }
 }
 

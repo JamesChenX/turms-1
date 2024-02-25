@@ -1,4 +1,4 @@
-import 'package:pixel_snap/material.dart';
+import 'package:flutter/material.dart';
 
 class HomePagePortrait extends StatelessWidget {
   const HomePagePortrait({Key? key}) : super(key: key);

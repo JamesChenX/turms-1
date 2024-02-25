@@ -1,4 +1,4 @@
-import 'package:pixel_snap/material.dart';
+import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import 't_text_field.dart';

@@ -1,5 +1,5 @@
 import 'package:flutter/services.dart';
-import 'package:pixel_snap/widgets.dart';
+import 'package:flutter/widgets.dart';
 
 import '../../../domain/user/models/index.dart';
 import '../../../domain/user/models/user_setting_ids.dart';

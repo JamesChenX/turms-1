@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:pixel_snap/material.dart';
+import 'package:flutter/material.dart';
 
 import '../../themes/theme_config.dart';
 

@@ -1,4 +1,4 @@
-import 'package:pixel_snap/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../infra/env/env_vars.dart';
@@ -28,20 +28,37 @@ class _HomePageLandscapeState extends ConsumerState<HomePageLandscape> {
   Widget build(BuildContext context) {
     final tab = ref.watch(homePageTabViewModel);
     final actionToShortcut = ref.watch(actionToShortcutViewModel);
+    final bindings = <ShortcutActivator, VoidCallback>{};
+    final shortcutShowChatPage =
+        actionToShortcut[HomePageAction.showChatPage]!.$1;
+    final shortcutShowContactsPage =
+        actionToShortcut[HomePageAction.showContactsPage]!.$1;
+    final shortcutShowFilesPage =
+        actionToShortcut[HomePageAction.showFilesPage]!.$1;
+    final shortcutShowSettingsDialog =
+        actionToShortcut[HomePageAction.showSettingsDialog]!.$1;
+    final shortcutShowAboutDialog =
+        actionToShortcut[HomePageAction.showAboutDialog]!.$1;
+    if (shortcutShowChatPage != null) {
+      bindings[shortcutShowChatPage] = () =>
+          ref.read(homePageTabViewModel.notifier).state = HomePageTab.chat;
+    }
+    if (shortcutShowContactsPage != null) {
+      bindings[shortcutShowContactsPage] = () =>
+          ref.read(homePageTabViewModel.notifier).state = HomePageTab.contacts;
+    }
+    if (shortcutShowFilesPage != null) {
+      bindings[shortcutShowFilesPage] = () =>
+          ref.read(homePageTabViewModel.notifier).state = HomePageTab.files;
+    }
+    if (shortcutShowSettingsDialog != null) {
+      bindings[shortcutShowSettingsDialog] = () => showSettingsDialog(context);
+    }
+    if (shortcutShowAboutDialog != null) {
+      bindings[shortcutShowAboutDialog] = () => showAppAboutDialog(context);
+    }
     final child = CallbackShortcuts(
-      bindings: {
-        actionToShortcut[HomePageAction.showChatPage]!: () =>
-            ref.read(homePageTabViewModel.notifier).state = HomePageTab.chat,
-        actionToShortcut[HomePageAction.showContactsPage]!: () => ref
-            .read(homePageTabViewModel.notifier)
-            .state = HomePageTab.contacts,
-        actionToShortcut[HomePageAction.showFilesPage]!: () =>
-            ref.read(homePageTabViewModel.notifier).state = HomePageTab.files,
-        actionToShortcut[HomePageAction.showSettingsDialog]!: () =>
-            showSettingsDialog(context),
-        actionToShortcut[HomePageAction.showAboutDialog]!: () =>
-            showAppAboutDialog(context)
-      },
+      bindings: bindings,
       child: FocusScope(
         debugLabel: 'HomePageLandscape',
         autofocus: true,

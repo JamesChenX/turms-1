@@ -1,4 +1,4 @@
-import 'package:pixel_snap/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 /// Used to listen to the keyboard without the interfere of the focus system.

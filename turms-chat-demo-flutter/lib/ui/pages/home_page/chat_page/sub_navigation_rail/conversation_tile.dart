@@ -1,4 +1,4 @@
-import 'package:pixel_snap/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:turms_chat_demo/ui/pages/home_page/chat_page/chat_session_pane/message.dart';
 

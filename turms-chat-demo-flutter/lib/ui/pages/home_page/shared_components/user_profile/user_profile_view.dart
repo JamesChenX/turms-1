@@ -1,4 +1,4 @@
-import 'package:pixel_snap/material.dart';
+import 'package:flutter/material.dart';
 
 import '../../../../components/t_avatar/t_avatar.dart';
 import 'user_profile_controller.dart';

@@ -1,4 +1,4 @@
-import 'package:pixel_snap/material.dart';
+import 'package:flutter/material.dart';
 
 import '../../client/models/type.dart';
 import 'giphy_tab_detail.dart';

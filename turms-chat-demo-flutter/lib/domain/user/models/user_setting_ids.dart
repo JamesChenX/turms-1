@@ -1,10 +1,9 @@
-import 'dart:ui';
-
-import 'package:pixel_snap/material.dart';
+import 'package:flutter/material.dart';
 
 import '../../../infra/built_in_types/built_in_type_helpers.dart';
 import '../../../infra/keyboard/shortcut_extensions.dart';
 import '../../../infra/keyboard/shortcut_utils.dart';
+import 'index.dart';
 import 'setting_action_on_close.dart';
 
 enum UserSettingId {
@@ -50,7 +49,9 @@ enum UserSettingId {
         UserSettingId.shortcutShowFilesPage ||
         UserSettingId.shortcutShowSettingsDialog ||
         UserSettingId.shortcutShowAboutDialog =>
-          ShortcutUtils.fromStoredString(value),
+          value == UserSettings.unsetValue
+              ? null
+              : ShortcutUtils.fromStoredString(value),
         UserSettingId.theme => ThemeMode.values.firstOrNullByName(value),
       } as T?;
 }

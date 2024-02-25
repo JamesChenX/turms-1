@@ -7,7 +7,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: directives_ordering,unnecessary_import,implicit_dynamic_list_literal,deprecated_member_use
 
-import 'package:pixel_snap/widgets.dart';
+import 'package:flutter/widgets.dart';
 
 class $AssetsFontsGen {
   const $AssetsFontsGen();

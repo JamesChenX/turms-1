@@ -1,4 +1,4 @@
-import 'package:pixel_snap/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -75,9 +75,17 @@ final _allowedKeys = <LogicalKeyboardKey>{
   LogicalKeyboardKey.arrowDown,
   // Modifier keys
   LogicalKeyboardKey.shift,
+  LogicalKeyboardKey.shiftLeft,
+  LogicalKeyboardKey.shiftRight,
   LogicalKeyboardKey.alt,
+  LogicalKeyboardKey.altLeft,
+  LogicalKeyboardKey.altRight,
   LogicalKeyboardKey.control,
+  LogicalKeyboardKey.controlLeft,
+  LogicalKeyboardKey.controlRight,
   LogicalKeyboardKey.meta,
+  LogicalKeyboardKey.metaLeft,
+  LogicalKeyboardKey.metaRight,
 };
 
 class TShortcutTextField extends ConsumerStatefulWidget {
@@ -103,10 +111,9 @@ class _TShortcutTextFieldState extends ConsumerState<TShortcutTextField> {
     _focusNode = FocusNode();
     _textEditingController = TextEditingController();
     final initialKeys = widget.initialKeys;
-    if (initialKeys != null && initialKeys.isNotEmpty) {
-      _keys = initialKeys..sortKeys();
-      _textEditingController.text = _formatKeys();
-    }
+    _keys = initialKeys == null || initialKeys.isEmpty ? [] : initialKeys
+      ..sortKeys();
+    _textEditingController.text = _formatKeys();
   }
 
   @override
@@ -114,6 +121,17 @@ class _TShortcutTextFieldState extends ConsumerState<TShortcutTextField> {
     _focusNode.dispose();
     _textEditingController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(TShortcutTextField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialKeys != oldWidget.initialKeys) {
+      final initialKeys = widget.initialKeys;
+      _keys = initialKeys == null || initialKeys.isEmpty ? [] : initialKeys
+        ..sortKeys();
+      _textEditingController.text = _formatKeys();
+    }
   }
 
   @override
@@ -153,6 +171,9 @@ class _TShortcutTextFieldState extends ConsumerState<TShortcutTextField> {
   }
 
   String _formatKeys() {
+    if (_keys.isEmpty) {
+      return ref.read(appLocalizationsViewModel).none;
+    }
     final buffer = StringBuffer();
     for (final key in _keys) {
       if (buffer.isNotEmpty) {

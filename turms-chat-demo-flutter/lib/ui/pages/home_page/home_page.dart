@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:pixel_snap/material.dart';
 
 import '../../components/t_responsive_layout.dart';
 import 'home_page_landscape.dart';

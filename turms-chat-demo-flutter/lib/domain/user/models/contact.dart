@@ -1,12 +1,14 @@
 import 'dart:typed_data';
 
 import 'package:fixnum/fixnum.dart';
-import 'package:flutter/material.dart';
+import 'package:pixel_snap/material.dart';
 
 import 'user.dart';
 
 part 'group_contact.dart';
+
 part 'system_contact.dart';
+
 part 'user_contact.dart';
 
 sealed class Contact {

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:pixel_snap/material.dart';
 
 import '../built_in_types/built_in_type_helpers.dart';
 

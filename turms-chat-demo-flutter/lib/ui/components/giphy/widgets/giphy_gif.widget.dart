@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:extended_image/extended_image.dart';
-import 'package:flutter/material.dart';
+import 'package:pixel_snap/material.dart';
 
 import '../client/models/gif.dart';
 import '../l10n/l10n.dart';

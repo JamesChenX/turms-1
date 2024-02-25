@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:pixel_snap/cupertino.dart';
 
 import '../../../l10n/app_localizations.dart';
 

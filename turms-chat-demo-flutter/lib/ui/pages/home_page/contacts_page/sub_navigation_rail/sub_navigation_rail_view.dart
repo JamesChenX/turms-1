@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:pixel_snap/cupertino.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 import '../../../../../domain/user/models/index.dart';

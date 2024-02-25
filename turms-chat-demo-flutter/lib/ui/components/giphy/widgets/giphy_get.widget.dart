@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:pixel_snap/material.dart';
 
 import '../client/models/gif.dart';
 import '../giphy_sheet.dart';

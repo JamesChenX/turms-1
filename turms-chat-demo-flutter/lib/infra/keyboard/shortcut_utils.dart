@@ -1,19 +1,19 @@
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
+import 'package:pixel_snap/widgets.dart';
 
 class ShortcutUtils {
   ShortcutUtils._();
 
   static String toStoredString(ShortcutActivator activator) {
-    if (activator.triggers?.isNotEmpty == false) {
-      return '[]';
-    }
     final finalKeys = <int>[];
     switch (activator) {
       case LogicalKeySet():
         final keys = activator.keys;
+        if (keys.isEmpty) {
+          return '[]';
+        }
         for (final key in keys) {
           finalKeys.add(key.keyId);
         }

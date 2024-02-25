@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:flutter/material.dart';
+import 'package:pixel_snap/material.dart';
 
 import '../../../infra/built_in_types/built_in_type_helpers.dart';
 import '../../../infra/keyboard/shortcut_extensions.dart';

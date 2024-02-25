@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:pixel_snap/material.dart';
 
 class GiphyTabBottom extends StatelessWidget {
   const GiphyTabBottom({

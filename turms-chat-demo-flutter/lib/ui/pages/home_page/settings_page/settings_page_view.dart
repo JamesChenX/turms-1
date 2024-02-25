@@ -1,6 +1,6 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:pixel_snap/cupertino.dart';
+import 'package:pixel_snap/material.dart';
+import 'package:pixel_snap/widgets.dart';
 
 import '../../../components/components.dart';
 import '../../../themes/theme_config.dart';

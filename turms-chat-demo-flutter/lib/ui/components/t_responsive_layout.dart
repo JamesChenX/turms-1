@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart';
+import 'package:pixel_snap/widgets.dart';
 
 class TResponsiveLayout extends StatelessWidget {
   final Widget portraitLayoutContent;

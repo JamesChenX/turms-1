@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:pixel_snap/material.dart';
 
 import '../../infra/ui/color_extensions.dart';
 import '../../infra/ui/text_extensions.dart';

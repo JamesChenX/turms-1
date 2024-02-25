@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:pixel_snap/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../infra/animation/animation_extensions.dart';

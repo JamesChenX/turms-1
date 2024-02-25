@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:fixnum/fixnum.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:pixel_snap/cupertino.dart';
 
 class User {
   User(

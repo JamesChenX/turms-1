@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:pixel_snap/material.dart';
 import 'package:flutter/rendering.dart';
 
 import '../../infra/animation/animation_utils.dart';

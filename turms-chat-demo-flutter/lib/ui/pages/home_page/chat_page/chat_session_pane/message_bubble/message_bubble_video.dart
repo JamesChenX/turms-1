@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter/material.dart';
+import 'package:pixel_snap/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:path/path.dart';
 import 'package:video_player/video_player.dart';

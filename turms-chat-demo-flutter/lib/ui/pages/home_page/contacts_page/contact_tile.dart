@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart';
+import 'package:pixel_snap/widgets.dart';
 
 import '../../../../domain/user/models/contact.dart';
 import '../../../components/t_avatar/t_avatar.dart';

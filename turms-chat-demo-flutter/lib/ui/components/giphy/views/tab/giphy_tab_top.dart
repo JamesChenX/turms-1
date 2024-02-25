@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:pixel_snap/material.dart';
 
 class GiphyTabTop extends StatefulWidget {
   GiphyTabTop({Key? key}) : super(key: key);

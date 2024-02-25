@@ -1,6 +1,6 @@
 library giphy_get;
 
-import 'package:flutter/material.dart';
+import 'package:pixel_snap/material.dart';
 
 import 'client/models/gif.dart';
 import 'client/models/languages.dart';

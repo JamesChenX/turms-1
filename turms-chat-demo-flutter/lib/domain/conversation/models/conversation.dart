@@ -1,5 +1,5 @@
 import 'package:fixnum/fixnum.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:pixel_snap/cupertino.dart';
 
 import '../../../ui/pages/home_page/chat_page/chat_session_pane/message.dart';
 import '../../user/models/contact.dart';

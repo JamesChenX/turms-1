@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:pixel_snap/material.dart';
 
 import '../../../infra/animation/animation_utils.dart';
 import '../../../infra/animation/dismissed_status_change_type.dart';

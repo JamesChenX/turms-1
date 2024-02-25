@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:pixel_snap/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../domain/user/view_models/user_settings_view_model.dart';

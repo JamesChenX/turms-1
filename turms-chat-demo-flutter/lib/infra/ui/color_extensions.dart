@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:pixel_snap/material.dart';
 
 extension ColorBrightness on Color {
   Color darken([double factor = .1]) => Color.lerp(this, Colors.black, factor)!;

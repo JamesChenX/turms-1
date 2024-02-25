@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
+import 'package:pixel_snap/material.dart';
 
 class AppTheme {
   const AppTheme({this.locale, required this.themeMode});

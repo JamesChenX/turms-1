@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:pixel_snap/material.dart';
 import 'package:flutter/services.dart';
 
 import '../t_checkbox/t_simple_checkbox.dart';

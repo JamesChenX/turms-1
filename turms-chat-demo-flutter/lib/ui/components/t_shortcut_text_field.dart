@@ -1,8 +1,9 @@
-import 'package:flutter/material.dart';
+import 'package:pixel_snap/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../infra/keyboard/logical_keyboard_key_extensions.dart';
+import '../../infra/keyboard/shortcut_extensions.dart';
 import '../l10n/view_models/app_localizations_view_model.dart';
 import 't_text_field.dart';
 
@@ -74,17 +75,9 @@ final _allowedKeys = <LogicalKeyboardKey>{
   LogicalKeyboardKey.arrowDown,
   // Modifier keys
   LogicalKeyboardKey.shift,
-  LogicalKeyboardKey.shiftLeft,
-  LogicalKeyboardKey.shiftRight,
   LogicalKeyboardKey.alt,
-  LogicalKeyboardKey.altLeft,
-  LogicalKeyboardKey.altRight,
   LogicalKeyboardKey.control,
-  LogicalKeyboardKey.controlLeft,
-  LogicalKeyboardKey.controlRight,
   LogicalKeyboardKey.meta,
-  LogicalKeyboardKey.metaLeft,
-  LogicalKeyboardKey.metaRight,
 };
 
 class TShortcutTextField extends ConsumerStatefulWidget {
@@ -111,8 +104,7 @@ class _TShortcutTextFieldState extends ConsumerState<TShortcutTextField> {
     _textEditingController = TextEditingController();
     final initialKeys = widget.initialKeys;
     if (initialKeys != null && initialKeys.isNotEmpty) {
-      initialKeys.sort(_compareKey);
-      _keys = initialKeys;
+      _keys = initialKeys..sortKeys();
       _textEditingController.text = _formatKeys();
     }
   }
@@ -154,8 +146,8 @@ class _TShortcutTextFieldState extends ConsumerState<TShortcutTextField> {
             .where(_allowedKeys.contains)
             .toSet()
             .take(4)
-            .toList();
-        _keys.sort(_compareKey);
+            .toList()
+          ..sortKeys();
         _textEditingController.text = _formatKeys();
     }
   }
@@ -173,26 +165,5 @@ class _TShortcutTextFieldState extends ConsumerState<TShortcutTextField> {
       }
     }
     return buffer.toString();
-  }
-
-  int _compareKey(LogicalKeyboardKey a, LogicalKeyboardKey b) {
-    if (a == LogicalKeyboardKey.control) {
-      return -1;
-    } else if (b == LogicalKeyboardKey.control) {
-      return 1;
-    } else if (a == LogicalKeyboardKey.shift) {
-      return -1;
-    } else if (b == LogicalKeyboardKey.shift) {
-      return 1;
-    } else if (a == LogicalKeyboardKey.alt) {
-      return -1;
-    } else if (b == LogicalKeyboardKey.alt) {
-      return 1;
-    } else if (a == LogicalKeyboardKey.meta) {
-      return -1;
-    } else if (b == LogicalKeyboardKey.meta) {
-      return 1;
-    }
-    return a.keyLabel.compareTo(b.keyLabel);
   }
 }

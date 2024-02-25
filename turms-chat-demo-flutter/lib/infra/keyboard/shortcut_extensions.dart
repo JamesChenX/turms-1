@@ -1,13 +1,11 @@
-import 'dart:convert';
-
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
+import 'package:pixel_snap/material.dart';
 
 import 'shortcut_utils.dart';
 
 extension ShortcutActivatorExtensions on ShortcutActivator {
-  List<LogicalKeyboardKey> get keys {
+  /// Don't call "keys" to avoid confusing with [KeySet.keys].
+  List<LogicalKeyboardKey> get keyList {
     switch (this) {
       case SingleActivator():
         final singleActivator = this as SingleActivator;
@@ -35,7 +33,7 @@ extension ShortcutActivatorExtensions on ShortcutActivator {
           return [singleActivator.trigger];
         }
       case LogicalKeySet():
-        return (this as LogicalKeySet).triggers.toList();
+        return (this as LogicalKeySet).keys.toList()..sortKeys();
       default:
         return [];
     }
@@ -44,14 +42,14 @@ extension ShortcutActivatorExtensions on ShortcutActivator {
   String toStoredString() => ShortcutUtils.toStoredString(this);
 
   String get description {
-    if (triggers?.isNotEmpty == false) {
-      return '';
-    }
-    final buffer = StringBuffer();
     // LogicalKeySet
     switch (this) {
       case LogicalKeySet():
-        final keys = (this as LogicalKeySet).keys;
+        final keys = (this as LogicalKeySet).keyList;
+        if (keys.isEmpty) {
+          return '';
+        }
+        final buffer = StringBuffer();
         for (final key in keys) {
           if (buffer.isNotEmpty) {
             buffer.write(' + ');
@@ -64,6 +62,7 @@ extension ShortcutActivatorExtensions on ShortcutActivator {
         }
         return buffer.toString();
       case SingleActivator():
+        final buffer = StringBuffer();
         final activator = this as SingleActivator;
         if (activator.alt) {
           buffer.write('Alt');
@@ -92,5 +91,32 @@ extension ShortcutActivatorExtensions on ShortcutActivator {
       default:
         return '';
     }
+  }
+}
+
+extension ShortcutExtensionsIterable<T extends LogicalKeyboardKey> on List<T> {
+  void sortKeys() {
+    sort(_compareKey);
+  }
+
+  int _compareKey(LogicalKeyboardKey a, LogicalKeyboardKey b) {
+    if (a == LogicalKeyboardKey.control) {
+      return -1;
+    } else if (b == LogicalKeyboardKey.control) {
+      return 1;
+    } else if (a == LogicalKeyboardKey.shift) {
+      return -1;
+    } else if (b == LogicalKeyboardKey.shift) {
+      return 1;
+    } else if (a == LogicalKeyboardKey.alt) {
+      return -1;
+    } else if (b == LogicalKeyboardKey.alt) {
+      return 1;
+    } else if (a == LogicalKeyboardKey.meta) {
+      return -1;
+    } else if (b == LogicalKeyboardKey.meta) {
+      return 1;
+    }
+    return a.keyLabel.compareTo(b.keyLabel);
   }
 }

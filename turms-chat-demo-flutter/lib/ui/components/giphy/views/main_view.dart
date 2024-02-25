@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:pixel_snap/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../shared_states.dart';
@@ -44,38 +44,38 @@ class _MainViewState extends ConsumerState<MainView>
   }
 
   @override
-  Widget build(BuildContext context) => _buildSheet();
+  Widget build(BuildContext context) => Placeholder();
 
-  Widget _buildSheet() => DraggableScrollableSheet(
-      minChildSize: sheetMinExtent,
-      maxChildSize: sheetMaxExtent,
-      initialChildSize: ref.read(sheetInitialExtentProvider),
-      builder: (ctx, scrollController) {
-        _scrollController = scrollController;
-        return _buildSheetBody();
-      });
-
-  Widget _buildSheetBody() => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          GiphyTabTop(),
-          GiphyTabBar(
-            tabController: _tabController,
-            showGIFs: widget.showGIFs,
-            showStickers: widget.showStickers,
-            showEmojis: widget.showEmojis,
-          ),
-          GiphySearchBar(),
-          Expanded(
-            child: GiphyTabView(
-              tabController: _tabController,
-              scrollController: _scrollController,
-              showGIFs: widget.showGIFs,
-              showStickers: widget.showStickers,
-              showEmojis: widget.showEmojis,
-            ),
-          ),
-          const GiphyTabBottom(),
-        ],
-      );
+// Widget _buildSheet() => DraggableScrollableSheet(
+//     minChildSize: sheetMinExtent,
+//     maxChildSize: sheetMaxExtent,
+//     initialChildSize: ref.read(sheetInitialExtentProvider),
+//     builder: (ctx, scrollController) {
+//       _scrollController = scrollController;
+//       return _buildSheetBody();
+//     });
+//
+// Widget _buildSheetBody() => Column(
+//       mainAxisSize: MainAxisSize.min,
+//       children: [
+//         GiphyTabTop(),
+//         GiphyTabBar(
+//           tabController: _tabController,
+//           showGIFs: widget.showGIFs,
+//           showStickers: widget.showStickers,
+//           showEmojis: widget.showEmojis,
+//         ),
+//         GiphySearchBar(),
+//         Expanded(
+//           child: GiphyTabView(
+//             tabController: _tabController,
+//             scrollController: _scrollController,
+//             showGIFs: widget.showGIFs,
+//             showStickers: widget.showStickers,
+//             showEmojis: widget.showEmojis,
+//           ),
+//         ),
+//         const GiphyTabBottom(),
+//       ],
+//     );
 }

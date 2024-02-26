@@ -83,10 +83,7 @@ class GithubUtils {
     }
     final downloadFile = await HttpUtils.downloadFile(
         uri: Uri.parse(asset.browserDownloadUrl!), filePath: filePath);
-    if (downloadFile == null) {
-      return null;
-    }
-    return downloadFile.bytes.isEmpty ? null : downloadFile.file;
+    return downloadFile?.file;
   }
 
   static String normalizeVersion(String version) {

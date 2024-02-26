@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
 
@@ -8,15 +9,36 @@ import 'downloaded_file.dart';
 class HttpUtils {
   HttpUtils._();
 
+  static Future<DownloadedFile?> downloadFileIfNotExists(
+      {String method = 'GET',
+      required Uri uri,
+      required String filePath,
+      int maxBytes = (2 << 32) - 1,
+      void Function(double progress)? onProgress}) async {
+    final file = File(filePath);
+    final exists = await file.exists();
+    if (exists) {
+      return DownloadedFile(file: file);
+    }
+    return downloadFile(
+        method: method,
+        uri: uri,
+        filePath: filePath,
+        maxBytes: maxBytes,
+        onProgress: onProgress);
+  }
+
   static Future<DownloadedFile?> downloadFile(
       {String method = 'GET',
       required Uri uri,
       required String filePath,
+      int maxBytes = (2 << 32) - 1,
       void Function(double progress)? onProgress}) async {
     final response = await http.Client().send(http.Request(method, uri));
-    final total = response.contentLength ?? 0;
-    if (total <= 0) {
-      return null;
+    final contentLength = response.contentLength;
+    if (contentLength != null && contentLength > maxBytes) {
+      throw Exception(
+          'File is too large. Max: $maxBytes. Actual: $contentLength');
     }
     var received = 0;
     final bytes = <int>[];
@@ -25,7 +47,15 @@ class HttpUtils {
         (value) {
           bytes.addAll(value);
           received += value.length;
-          onProgress?.call(received / total);
+          // The "contentLength" header is not always the real size,
+          // so we need to calculate size.
+          if (received > maxBytes) {
+            throw Exception(
+                'File is too large. Max: $maxBytes. Received: $received');
+          }
+          if (contentLength != null) {
+            onProgress?.call(received / contentLength);
+          }
         },
         onError: completer.completeError,
         onDone: () async {

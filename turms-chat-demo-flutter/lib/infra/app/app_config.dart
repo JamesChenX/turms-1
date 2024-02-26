@@ -11,10 +11,10 @@ class AppConfig {
 
   static const title = EnvVars.windowTitle;
 
-  static const defaultWindowSizeBeforeLogin = Size(480, 450);
+  static const defaultWindowSizeForLoginScreen = Size(480, 450);
 
-  static const defaultWindowSizeAfterLogin = Size(960, 640);
-  static const minWindowSizeAfterLogin = Size(700, 640);
+  static const defaultWindowSizeForHomeScreen = Size(960, 640);
+  static const minWindowSizeForHomeScreen = Size(700, 640);
 
   static late PackageInfo packageInfo;
 

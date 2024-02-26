@@ -70,7 +70,6 @@ Future<void> main() async {
   }
 
   final container = ProviderContainer();
-
   await initForDesktopPlatforms(container);
 
   final appSettings = await appSettingsRepository.selectAll();
@@ -83,11 +82,12 @@ Future<void> main() async {
   // Note that we need to setup window before painting,
   // otherwise UI will jitter.
   await WindowUtils.setupWindow(
-      minimumSize: AppConfig.defaultWindowSizeBeforeLogin,
-      size: AppConfig.defaultWindowSizeBeforeLogin,
+      minimumSize: AppConfig.defaultWindowSizeForLoginScreen,
+      size: AppConfig.defaultWindowSizeForLoginScreen,
       backgroundColor: Colors.transparent,
       title: AppConfig.title);
-  runApp(UncontrolledProviderScope(container: container, child: const App()));
+  runApp(UncontrolledProviderScope(
+      container: container, child: App(container: container)));
 }
 
 Future<void> initForDesktopPlatforms(ProviderContainer container) async {

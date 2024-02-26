@@ -5,6 +5,8 @@ import 'package:async/async.dart';
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
 
+import '../codec/base62_utils.dart';
+
 const _chunkSize = 4096;
 
 class CryptoUtils {
@@ -12,7 +14,7 @@ class CryptoUtils {
 
   static String getSha256ByBytes(List<int> bytes) {
     final digest = sha256.convert(bytes);
-    return base64.encode(digest.bytes);
+    return Base62Utils.encode(digest.bytes);
   }
 
   static String getSha256ByString(String str) =>

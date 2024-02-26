@@ -23,7 +23,11 @@ class FileUtils {
     if (downloadsDir == null) {
       return null;
     }
-    ext = (ext != null) ? '.$ext' : '';
+    ext = ext == null
+        ? ''
+        : ext.startsWith('.')
+            ? ext
+            : '.$ext';
     var path =
         '${downloadsDir.path}$pathSeparator${AppConfig.packageInfo.packageName}$pathSeparator$name$ext';
     var num = 1;

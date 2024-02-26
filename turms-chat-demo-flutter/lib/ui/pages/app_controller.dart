@@ -85,15 +85,15 @@ class AppController extends ConsumerState<App> with WindowListener {
       // the previous min size will restrict the current resize
       // on window_manager (0.3.7).
       await WindowUtils.setupWindow(
-          minimumSize: AppConfig.defaultWindowSizeBeforeLogin);
+          minimumSize: AppConfig.defaultWindowSizeForLoginScreen);
       await WindowUtils.setupWindow(
-          size: AppConfig.defaultWindowSizeBeforeLogin,
+          size: AppConfig.defaultWindowSizeForLoginScreen,
           backgroundColor: Colors.transparent);
     } else {
       await WindowUtils.setupWindow(
-          minimumSize: AppConfig.minWindowSizeAfterLogin);
+          minimumSize: AppConfig.minWindowSizeForHomeScreen);
       await WindowUtils.setupWindow(
-          size: AppConfig.defaultWindowSizeAfterLogin,
+          size: AppConfig.defaultWindowSizeForHomeScreen,
           resizable: true,
           backgroundColor: Colors.white);
     }

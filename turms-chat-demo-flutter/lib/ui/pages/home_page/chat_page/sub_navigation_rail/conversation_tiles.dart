@@ -1,7 +1,6 @@
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 import '../../../../../domain/conversation/models/conversation.dart';
 import '../../../../../domain/conversation/models/private_conversation.dart';
@@ -46,15 +45,37 @@ class ConversationTiles extends ConsumerWidget {
     final relatedMessages =
         ref.watch(appLocalizationsViewModel).relatedMessages;
     final isSearchMode = subNavigationRailController.searchText.isNotBlank;
-    return ScrollablePositionedList.builder(
+    subNavigationRailController.conversationIdToContext.clear();
+    // Don't use "ScrollablePositionedList" because it's buggy.
+    // e.g. https://github.com/google/flutter.widgets/issues/276
+    final conversationCount = conversations.length;
+    final conversationIdToIndex = {
+      for (var i = 0; i < conversationCount; i++) conversations[i].$1.id: i
+    };
+    return ListView.builder(
+      controller: subNavigationRailController.scrollController,
       padding: EdgeInsets.zero,
-      itemCount: conversations.length,
-      itemScrollController: subNavigationRailController.itemScrollController,
+      itemCount: conversationCount,
+      prototypeItem: ConversationTile(
+        conversation: PrivateConversation(
+          contact: UserContact(
+              userId: Int64(), name: '', relationshipGroupId: Int64()),
+          messages: [],
+        ),
+        isSearchMode: false,
+        nameTextSpans: [],
+        messageTextSpans: [],
+        onTap: () {},
+      ),
+      findChildIndexCallback: (key) =>
+          conversationIdToIndex[(key as ValueKey<String>).value],
       itemBuilder: (context, index) {
         final (conversation, nameTextSpans, matchedMessages) =
             conversations[index];
         final selectedConversationId =
             subNavigationRailController.selectedConversation?.id;
+        subNavigationRailController.conversationIdToContext[conversation.id] =
+            context;
         return ConversationTile(
           key: Key(conversation.id),
           conversation: conversation,

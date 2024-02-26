@@ -26,3 +26,11 @@ extension FileSizeExtensions on num {
     return '$result ${affixes[affix]}';
   }
 }
+
+extension FileSizeExtensionsInt on int {
+  // ignore: non_constant_identifier_names
+  int get KB => this * 1024;
+
+  // ignore: non_constant_identifier_names
+  int get MB => this * 1024 * 1024;
+}

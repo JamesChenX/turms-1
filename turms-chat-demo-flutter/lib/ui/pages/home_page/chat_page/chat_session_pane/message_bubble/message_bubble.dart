@@ -8,6 +8,7 @@ import '../../../../../components/t_editor/t_editor.dart';
 import '../../../../../themes/theme_config.dart';
 import '../../../shared_components/user_profile_popup.dart';
 import '../message.dart';
+import 'message_bubble_image.dart';
 import 'message_bubble_video.dart';
 
 enum _MessageType {
@@ -77,9 +78,11 @@ class MessageBubble extends StatefulWidget {
             audioUrl: url,
             onLongPress: onLongPress);
       } else if (url.endsWith('.png') ||
-          url.endsWith('.jpg') ||
-          url.endsWith('.jpeg') ||
-          url.endsWith('.gif')) {
+              url.endsWith('.'
+                  'jpg') ||
+              url.endsWith('.jpeg')
+          //  || url.endsWith('.gif')
+          ) {
         return MessageBubble(
             key: key,
             user: user,
@@ -237,7 +240,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                 url: Uri.parse(widget.videoUrl!),
               ),
             _MessageType.audio => Text(widget.audioUrl ?? ''),
-            _MessageType.image => Text(widget.imageUrl ?? ''),
+            _MessageType.image => MessageBubbleImage(url: widget.imageUrl!),
             _MessageType.file => Text(widget.fileUrl ?? ''),
           },
         ),

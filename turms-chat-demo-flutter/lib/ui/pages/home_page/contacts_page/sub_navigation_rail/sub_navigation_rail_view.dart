@@ -1,3 +1,4 @@
+import 'package:fixnum/fixnum.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 
@@ -74,18 +75,32 @@ class SubNavigationRailView extends StatelessWidget {
       return [(contact, spans)];
     }).toList();
 
+    final itemCount = matchedContacts.length;
+    final contactIdToIndex = {
+      for (var i = 0; i < itemCount; i++) matchedContacts[i].$1.id: i
+    };
     return ListView.builder(
-        itemCount: matchedContacts.length,
+        itemCount: itemCount,
+        findChildIndexCallback: (key) =>
+            contactIdToIndex[(key as ValueKey<String>).value],
+        prototypeItem: ContactTile(
+          contact: UserContact(userId: Int64.MIN_VALUE, name: ''),
+          nameTextSpans: [],
+          isSearchMode: true,
+          selected: false,
+          onTap: () {},
+        ),
         itemBuilder: (BuildContext context, int index) {
           final (contact, spans) = matchedContacts[index];
           return ContactTile(
+            key: Key(contact.id),
             contact: contact,
+            nameTextSpans: spans,
+            isSearchMode: true,
             selected: contact.id == selectedContactId,
             onTap: () {
               subNavigationRailController.selectContact(contact);
             },
-            nameTextSpans: spans,
-            isSearchMode: true,
           );
         });
   }

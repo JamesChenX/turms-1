@@ -12,7 +12,8 @@ class ContactConversation {
 
 List<ContactConversation> contactConversations = [
   // Earth
-  ContactConversation('Murmurs of Earth - Greetings in 55 languages', [
+  ContactConversation('Murmurs of Earth', [
+    'Greetings in 55 languages',
     '𒁲𒈠𒃶𒈨𒂗',
     'Οἵτινές ποτ᾿ ἔστε χαίρετε! Εἰρηνικῶς πρὸς φίλους ἐληλύθαμεν φίλοι.',
     'Paz e felicidade a todos',
@@ -67,7 +68,8 @@ List<ContactConversation> contactConversations = [
     'Milí přátelé, přejeme vám vše nejlepší',
     'ನಮಸ್ತೆ, ಕನ್ನಡಿಗರ ಪರವಾಗಿ ಶುಭಾಷಯಗಳು.',
     '-',
-    'Hello from the children of planet Earth'
+    'Hello from the children of planet Earth',
+    '![Solar System Portrait](https://voyager.jpl.nasa.gov/assets/images/galleries/images-voyager-took/solar-system-portrait/PIA00451.jpg)'
   ]),
   // China
   ContactConversation('窦唯', [
@@ -103,7 +105,7 @@ List<ContactConversation> contactConversations = [
   // Brazil
   ContactConversation('Elis Regina', ['Como Nossos Pais']),
   // Japan
-  ContactConversation('Nujabes - Aruarian Dance', []),
+  ContactConversation('Nujabes', ['Aruarian Dance']),
 ];
 
 final fixtureUserContacts = contactConversations.indexed.map((item) {

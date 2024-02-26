@@ -8,7 +8,6 @@ import 'package:video_player/video_player.dart';
 
 import '../../../../../../infra/crypto/crypto_utils.dart';
 import '../../../../../../infra/http/http_utils.dart';
-import '../../../../../../infra/io/file_utils.dart';
 import '../../../../../../infra/io/path_utils.dart';
 
 class MessageBubbleVideo extends StatefulWidget {
@@ -40,7 +39,7 @@ class _MessageBubbleVideoState extends State<MessageBubbleVideo> {
       final urlStr = url.toString();
       final ext = extension(urlStr);
       final fileName = '${CryptoUtils.getSha256ByString(urlStr)}.$ext';
-      final filePath = PathUtils.joinAppPath(['file', fileName]);
+      final filePath = PathUtils.joinAppPath(['files', fileName]);
       final file = File(filePath);
       final VideoPlayerController controller;
       if (await file.exists()) {
@@ -79,57 +78,56 @@ class _MessageBubbleVideoState extends State<MessageBubbleVideo> {
         height: 200,
         child: FutureBuilder(
             future: _initializeVideoPlayerFuture,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                return Stack(
-                  children: [
-                    AspectRatio(
-                      aspectRatio: _controller.value.aspectRatio,
-                      child: VideoPlayer(_controller),
+            builder: (context, snapshot) =>
+                snapshot.connectionState == ConnectionState.done
+                    ? _buildStack()
+                    : const Center(child: CircularProgressIndicator())),
+      );
+
+  Widget _buildStack() => Stack(
+        children: [
+          AspectRatio(
+            aspectRatio: _controller.value.aspectRatio,
+            child: VideoPlayer(_controller),
+          ),
+          if (!_isPlaying)
+            Center(
+              child: SizedBox(
+                width: 36,
+                height: 36,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(128, 0, 0, 0),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white),
+                  ),
+                  child: const Center(
+                    child: Icon(
+                      Symbols.play_arrow_rounded,
+                      color: Colors.white,
+                      size: 20,
                     ),
-                    if (!_isPlaying)
-                      Center(
-                        child: SizedBox(
-                          width: 36,
-                          height: 36,
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              color: const Color.fromARGB(128, 0, 0, 0),
-                              shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white),
-                            ),
-                            child: const Center(
-                              child: Icon(
-                                Symbols.play_arrow_rounded,
-                                color: Colors.white,
-                                size: 20,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    Positioned.fill(
-                      child: MouseRegion(
-                        cursor: SystemMouseCursors.click,
-                        child: GestureDetector(
-                          behavior: HitTestBehavior.translucent,
-                          onTap: () {
-                            if (_isPlaying) {
-                              _controller.pause();
-                            } else {
-                              _controller.play();
-                            }
-                            _isPlaying = !_isPlaying;
-                            setState(() {});
-                          },
-                        ),
-                      ),
-                    )
-                  ],
-                );
-              } else {
-                return const Center(child: CircularProgressIndicator());
-              }
-            }),
+                  ),
+                ),
+              ),
+            ),
+          Positioned.fill(
+            child: MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: () {
+                  if (_isPlaying) {
+                    _controller.pause();
+                  } else {
+                    _controller.play();
+                  }
+                  _isPlaying = !_isPlaying;
+                  setState(() {});
+                },
+              ),
+            ),
+          )
+        ],
       );
 }

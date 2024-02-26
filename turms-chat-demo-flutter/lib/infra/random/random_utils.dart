@@ -9,8 +9,8 @@ const _charCount = _chars.length;
 
 final _random = Random();
 var _counter = 0;
-const _timestampMask = 2 ^ 47 - 1;
-const _counterMask = 2 ^ 16 - 1;
+const _timestampMask = (1 << 47) - 1;
+const _counterMask = (1 << 16) - 1;
 
 class RandomUtils {
   RandomUtils._();
@@ -42,6 +42,6 @@ class RandomUtils {
     final now = DateTime.now();
     final timestamp = now.millisecondsSinceEpoch & _timestampMask;
     final counter = _counter++;
-    return Int64(timestamp << 16 | counter & _counterMask);
+    return Int64((timestamp << 16) | (counter & _counterMask));
   }
 }

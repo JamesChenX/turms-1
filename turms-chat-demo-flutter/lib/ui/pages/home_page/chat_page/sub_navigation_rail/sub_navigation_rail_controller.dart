@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 import '../../../../../domain/conversation/models/conversation.dart';
 import '../../../../../domain/conversation/models/group_conversation.dart';
@@ -27,10 +26,11 @@ import 'sub_navigation_rail_view.dart';
 
 class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
   late MenuController menuController;
-  late ItemScrollController itemScrollController;
+  late ScrollController scrollController;
 
   late AppLocalizations appLocalizations;
   late List<Conversation> conversations;
+  Map<String, BuildContext> conversationIdToContext = {};
   Conversation? selectedConversation;
   bool isConversationsInitialized = false;
   bool isConversationsLoading = false;
@@ -41,7 +41,7 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
   void initState() {
     super.initState();
     menuController = MenuController();
-    itemScrollController = ItemScrollController();
+    scrollController = ScrollController();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (conversations.isNotEmpty) {
         return;
@@ -59,6 +59,12 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    scrollController.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     appLocalizations = ref.watch(appLocalizationsViewModel);
     conversations = ref.watch(conversationsViewModel);
@@ -67,19 +73,30 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
     final conversationId = selectedConversation?.id;
     if (conversationId != null &&
         previousSelectedConversationId != conversationId) {
-      // Jump to the selected conversation in the next frame
-      // to ensure the selected conversation is rendered.
-      SchedulerBinding.instance.addPostFrameCallback((_) {
-        final index =
-            conversations.indexWhere((element) => element.id == conversationId);
-        if (index == -1) {
-          return;
-        }
-        // Use "jumpTo" instead of "scrollTo"
-        // to not render all passing conversations,
-        // especially for a large list of conversations.
-        itemScrollController.jumpTo(index: index);
-      });
+      final context = conversationIdToContext[conversationId];
+      if (context == null) {
+        SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+          final context = conversationIdToContext[conversationId];
+          if (context != null) {
+            Scrollable.ensureVisible(context);
+            return;
+          }
+          final conversationIndex = conversations
+              .indexWhere((element) => element.id == conversationId);
+          if (conversationIndex == -1) {
+            return;
+          }
+          final itemContext = conversationIdToContext.values.firstOrNull;
+          if (itemContext == null) {
+            return;
+          }
+          final box = itemContext.findRenderObject() as RenderBox;
+          // TODO: alignment
+          scrollController.jumpTo(box.size.height * conversationIndex);
+        });
+      } else {
+        Scrollable.ensureVisible(context);
+      }
     }
     return SubNavigationRailView(this);
   }

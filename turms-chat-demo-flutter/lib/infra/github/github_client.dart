@@ -82,7 +82,9 @@ class GithubUtils {
       return File(filePath);
     }
     final downloadFile = await HttpUtils.downloadFile(
-        uri: Uri.parse(asset.browserDownloadUrl!), filePath: filePath);
+        taskId: filePath,
+        uri: Uri.parse(asset.browserDownloadUrl!),
+        filePath: filePath);
     return downloadFile?.file;
   }
 

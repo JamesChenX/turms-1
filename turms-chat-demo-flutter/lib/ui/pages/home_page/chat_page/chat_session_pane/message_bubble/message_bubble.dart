@@ -214,35 +214,35 @@ class _MessageBubbleState extends State<MessageBubble> {
     );
   }
 
-  GestureDetector _buildMessageBubble(BuildContext context) => GestureDetector(
+  Widget _buildMessageBubble(BuildContext context) => GestureDetector(
       onLongPressStart: (details) {
         widget.onLongPress?.call(context, details.globalPosition);
       },
-      child: Container(
-        constraints:
-            BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.5),
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: widget.message.sentByMe
-              ? const Color.fromARGB(255, 149, 216, 248)
-              : Colors.white,
-          borderRadius: ThemeConfig.borderRadius4,
-        ),
-        child: IntrinsicWidth(
-          child: switch (widget.type) {
-            _MessageType.text => TEditor(
+      child: IntrinsicWidth(
+        child: switch (widget.type) {
+          _MessageType.text => Container(
+              constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width * 0.5),
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: widget.message.sentByMe
+                    ? const Color.fromARGB(255, 149, 216, 248)
+                    : Colors.white,
+                borderRadius: ThemeConfig.borderRadius4,
+              ),
+              child: TEditor(
                 controller: _controller,
                 contentPadding: ThemeConfig.paddingV4H4,
                 readOnly: true,
               ),
-            _MessageType.youtube => Text(widget.youtubeUrl ?? ''),
-            _MessageType.video => MessageBubbleVideo(
-                url: Uri.parse(widget.videoUrl!),
-              ),
-            _MessageType.audio => Text(widget.audioUrl ?? ''),
-            _MessageType.image => MessageBubbleImage(url: widget.imageUrl!),
-            _MessageType.file => Text(widget.fileUrl ?? ''),
-          },
-        ),
+            ),
+          _MessageType.youtube => Text(widget.youtubeUrl ?? ''),
+          _MessageType.video => MessageBubbleVideo(
+              url: Uri.parse(widget.videoUrl!),
+            ),
+          _MessageType.audio => Text(widget.audioUrl ?? ''),
+          _MessageType.image => MessageBubbleImage(url: widget.imageUrl!),
+          _MessageType.file => Text(widget.fileUrl ?? ''),
+        },
       ));
 }

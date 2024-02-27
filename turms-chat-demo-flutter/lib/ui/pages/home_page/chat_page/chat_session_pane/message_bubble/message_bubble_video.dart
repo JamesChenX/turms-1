@@ -45,8 +45,8 @@ class _MessageBubbleVideoState extends State<MessageBubbleVideo> {
       if (await file.exists()) {
         controller = VideoPlayerController.file(File(filePath));
       } else {
-        final downloadedFile =
-            await HttpUtils.downloadFile(uri: url, filePath: filePath);
+        final downloadedFile = await HttpUtils.downloadFile(
+            taskId: filePath, uri: url, filePath: filePath);
         if (downloadedFile == null) {
           // TODO: display illegal file
           return;

@@ -9,11 +9,15 @@ import 'downloaded_file.dart';
 class HttpUtils {
   HttpUtils._();
 
+  static final _pendingTaskIdToDownloadedFile =
+      <String, Future<DownloadedFile?>>{};
+
   static Future<DownloadedFile?> downloadFileIfNotExists(
-      {String method = 'GET',
+      {String? taskId,
+      String method = 'GET',
       required Uri uri,
       required String filePath,
-      int maxBytes = (2 << 32) - 1,
+      int maxBytes = (1 << 32) - 1,
       void Function(double progress)? onProgress}) async {
     final file = File(filePath);
     final exists = await file.exists();
@@ -21,6 +25,7 @@ class HttpUtils {
       return DownloadedFile(file: file);
     }
     return downloadFile(
+        taskId: taskId,
         method: method,
         uri: uri,
         filePath: filePath,
@@ -29,10 +34,42 @@ class HttpUtils {
   }
 
   static Future<DownloadedFile?> downloadFile(
+      {String? taskId,
+      String method = 'GET',
+      required Uri uri,
+      required String filePath,
+      int maxBytes = (1 << 32) - 1,
+      void Function(double progress)? onProgress}) async {
+    if (taskId == null) {
+      return _downloadFile(
+        method: method,
+        uri: uri,
+        filePath: filePath,
+        maxBytes: maxBytes,
+        onProgress: onProgress,
+      );
+    }
+    final downloadedFile = _pendingTaskIdToDownloadedFile[taskId];
+    if (downloadedFile != null) {
+      return downloadedFile;
+    }
+    final downloadFile = _downloadFile(
+      method: method,
+      uri: uri,
+      filePath: filePath,
+      maxBytes: maxBytes,
+      onProgress: onProgress,
+    );
+    _pendingTaskIdToDownloadedFile[taskId] = downloadFile;
+    return downloadFile.whenComplete(
+        () => unawaited(_pendingTaskIdToDownloadedFile.remove(taskId)));
+  }
+
+  static Future<DownloadedFile?> _downloadFile(
       {String method = 'GET',
       required Uri uri,
       required String filePath,
-      int maxBytes = (2 << 32) - 1,
+      int maxBytes = (1 << 32) - 1,
       void Function(double progress)? onProgress}) async {
     final response = await http.Client().send(http.Request(method, uri));
     final contentLength = response.contentLength;

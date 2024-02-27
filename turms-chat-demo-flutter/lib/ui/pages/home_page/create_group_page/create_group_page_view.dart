@@ -109,8 +109,14 @@ class CreateGroupPageView extends StatelessWidget {
       return [(contact, spans)];
     }).toList();
 
+    final itemCount = matchedUserContacts.length;
+    final matchedContactIdToIndex = {
+      for (var i = 0; i < itemCount; i++) matchedUserContacts[i].$1.id: i
+    };
     return ListView.builder(
         itemCount: matchedUserContacts.length,
+        findChildIndexCallback: (key) =>
+            matchedContactIdToIndex[(key as ValueKey<String>).value],
         itemBuilder: (BuildContext context, int index) {
           final (userContact, spans) = matchedUserContacts[index];
           return TListTile(
@@ -158,8 +164,14 @@ class CreateGroupPageView extends StatelessWidget {
 
   Widget _buildSelectedContacts(AppLocalizations appLocalizations) {
     final selectedUserContacts = createGroupPageController.selectedUserContacts;
+    final itemCount = selectedUserContacts.length;
+    final selectedUserContactIdToIndex = {
+      for (var i = 0; i < itemCount; i++) i: i
+    };
     return ListView.builder(
-        itemCount: selectedUserContacts.length,
+        itemCount: itemCount,
+        findChildIndexCallback: (key) =>
+            selectedUserContactIdToIndex[(key as ValueKey<String>).value],
         itemBuilder: (BuildContext context, int index) {
           final userContact = selectedUserContacts[index];
           return TListTile(

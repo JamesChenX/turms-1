@@ -1,16 +1,21 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image/image.dart' as img;
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:path/path.dart';
 
 import '../../../../../../infra/crypto/crypto_utils.dart';
-import '../../../../../../infra/http/downloaded_file.dart';
 import '../../../../../../infra/http/http_utils.dart';
-import '../../../../../../infra/io/async_data_builder.dart';
 import '../../../../../../infra/io/path_utils.dart';
+import '../../../../../../infra/media/cache_memory_image_provider.dart';
+import '../../../../../../infra/task/task_utils.dart';
 import '../../../../../../infra/units/file_size_extensions.dart';
+import '../../../../../themes/theme_config.dart';
+
+const _imageBorderWidth = 1.0;
 
 class MessageBubbleImage extends StatefulWidget {
   const MessageBubbleImage({Key? key, required this.url}) : super(key: key);
@@ -27,24 +32,14 @@ const maxHeight = 200;
 class _MessageBubbleImageState extends State<MessageBubbleImage> {
   late Image image;
 
-  late Future<DownloadedFile?> downloadFile;
+  late Future<Uint8List?> downloadFile;
+  late String thumbnailImagePath;
 
   @override
   void initState() {
     super.initState();
 
-    final url = widget.url;
-    final urlStr = url.toString();
-    final ext = extension(urlStr);
-    final fileName = '${CryptoUtils.getSha256ByString(urlStr)}$ext';
-    final filePath = PathUtils.joinAppPath(['files', fileName]);
-
-    downloadFile = HttpUtils.downloadFileIfNotExists(
-      uri: Uri.parse(url),
-      filePath: filePath,
-      maxBytes: 10.MB,
-    );
-    downloadFile.then((value) {});
+    downloadFile = _getImage();
   }
 
   @override
@@ -53,27 +48,32 @@ class _MessageBubbleImageState extends State<MessageBubbleImage> {
   }
 
   @override
-  Widget build(BuildContext context) => TAsyncDataBuilder(
-        future: downloadFile,
-        builder: (context, snapshot) => snapshot.when(
-          data: (data) {
-            if (data == null) {
-              return _buildError();
-            }
-            return Image(
-              image: ResizeImage(FileImage(data.file),
-                  width: maxWidth,
-                  height: maxHeight,
-                  policy: ResizeImagePolicy.fit),
-              // cacheHeight: maxHeight,
-              // cacheWidth: maxWidth,
-              width: maxWidth.toDouble(),
-              height: maxHeight.toDouble(),
-              fit: BoxFit.contain,
-            );
-          },
-          error: (error, stackTrace) => _buildError(),
-          loading: () => Stack(
+  Widget build(BuildContext context) => Image(
+        isAntiAlias: true,
+        gaplessPlayback: true,
+        image: CachedMemoryImageProvider(thumbnailImagePath, downloadFile),
+        // cacheHeight: maxHeight,
+        // cacheWidth: maxWidth,
+        // width: maxWidth.toDouble(),
+        // height: maxHeight.toDouble(),
+        fit: BoxFit.contain,
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) {
+            return DecoratedBox(
+                decoration: BoxDecoration(
+                    borderRadius: ThemeConfig.borderRadius4,
+                    border: Border.all(
+                        color: ThemeConfig.borderDefaultColor,
+                        width: _imageBorderWidth)),
+                child: ClipRRect(
+                  borderRadius: ThemeConfig.borderRadius4,
+                  child: Padding(
+                    padding: const EdgeInsets.all(_imageBorderWidth),
+                    child: child,
+                  ),
+                ));
+          }
+          return Stack(
             children: [
               SizedBox(
                 width: maxWidth.toDouble(),
@@ -86,11 +86,12 @@ class _MessageBubbleImageState extends State<MessageBubbleImage> {
                 child: CircularProgressIndicator(),
               )
             ],
-          ),
-        ),
+          );
+        },
+        errorBuilder: (context, error, stackTrace) => _buildError(),
       );
 
-  // todo: click to download
+// todo: click to download
   Stack _buildError() => Stack(
         children: [
           SizedBox(
@@ -105,4 +106,72 @@ class _MessageBubbleImageState extends State<MessageBubbleImage> {
           )
         ],
       );
+
+  Future<Uint8List?> _getImage() async {
+    final url = widget.url;
+    final urlStr = url.toString();
+    final ext = extension(urlStr);
+    final fileBaseName = CryptoUtils.getSha256ByString(urlStr);
+    final fileName = '$fileBaseName$ext';
+    final outputImagePath =
+        PathUtils.joinAppPath(['files', '$fileBaseName-thumbnail$ext']);
+    thumbnailImagePath = outputImagePath;
+    final outputFile = File(outputImagePath);
+    if (await outputFile.exists()) {
+      // cache result
+      return outputFile.readAsBytes();
+    }
+    final filePath = PathUtils.joinAppPath(['files', fileName]);
+    return HttpUtils.downloadFileIfNotExists(
+      taskId: filePath,
+      uri: Uri.parse(url),
+      filePath: filePath,
+      maxBytes: 10.MB,
+    ).then((value) async {
+      if (value == null) {
+        return null;
+      }
+      final bytes = await value.bytes;
+      if (bytes.isEmpty) {
+        return null;
+      }
+      return TaskUtils.addTask(
+          id: outputImagePath,
+          callback: () => compute((message) async {
+                var image = img.decodeNamedImage(filePath, bytes);
+                if (image == null) {
+                  return null;
+                }
+                if (image.width > maxWidth || image.height > maxHeight) {
+                  if (image.width > image.height) {
+                    image = img.copyResize(image,
+                        width: maxWidth,
+                        maintainAspect: true,
+                        interpolation: img.Interpolation.cubic);
+                  } else {
+                    image = img.copyResize(image,
+                        height: maxHeight,
+                        maintainAspect: true,
+                        interpolation: img.Interpolation.cubic);
+                  }
+                }
+
+                final encodedImageBytes =
+                    img.encodeNamedImage(outputImagePath, image);
+                if (encodedImageBytes == null) {
+                  return null;
+                }
+
+                // final outputImage = img.copyResize(image,
+                //     width: 200, height: 200, maintainAspect: true, interpolation: img.Interpolation.cubic);
+                // final encodedImageBytes =
+                //     img.encodeNamedImage(outputImagePath, outputImage);
+                // if (encodedImageBytes == null) {
+                //   return null;
+                // }
+                await outputFile.writeAsBytes(encodedImageBytes);
+                return encodedImageBytes;
+              }, null));
+    });
+  }
 }

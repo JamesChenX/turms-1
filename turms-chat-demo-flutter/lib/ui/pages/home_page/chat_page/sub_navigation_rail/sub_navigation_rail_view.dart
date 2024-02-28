@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../../components/t_button/t_icon_button.dart';
@@ -16,17 +17,30 @@ class SubNavigationRailView extends StatelessWidget {
   final SubNavigationRailController subNavigationRailController;
 
   @override
-  Widget build(BuildContext context) => ColoredBox(
-      color: ThemeConfig.conversationBackgroundColor,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildSearchBar(context),
-          if (subNavigationRailController.isConversationsLoading)
-            _buildLoadingIndicator(),
-          _buildConversationTiles(context)
-        ],
-      ));
+  Widget build(BuildContext context) => GestureDetector(
+        onPanDown: (details) {
+          subNavigationRailController.onPanDown(details);
+        },
+        child: Focus(
+          focusNode: subNavigationRailController.focusNode,
+          canRequestFocus: true,
+          onFocusChange: (value) {
+            print(value);
+          },
+          onKeyEvent: subNavigationRailController.onKeyEvent,
+          child: ColoredBox(
+              color: ThemeConfig.conversationBackgroundColor,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildSearchBar(context),
+                  if (subNavigationRailController.isConversationsLoading)
+                    _buildLoadingIndicator(),
+                  _buildConversationTiles(context)
+                ],
+              )),
+        ),
+      );
 
   Widget _buildLoadingIndicator() => Container(
         alignment: AlignmentDirectional.center,

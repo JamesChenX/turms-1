@@ -12,8 +12,8 @@ class TRadio<T> extends StatefulWidget {
     this.radioColor = const Color(0xff10DC60),
     this.activeBgColor = Colors.white,
     this.inactiveBgColor = Colors.white,
-    this.activeBorderColor = ThemeConfig.borderDefaultColor,
-    this.inactiveBorderColor = ThemeConfig.borderDefaultColor,
+    this.activeBorderColor = ThemeConfig.borderColor,
+    this.inactiveBorderColor = ThemeConfig.borderColor,
     this.toggleable = false,
     this.label,
   }) : super(key: key);

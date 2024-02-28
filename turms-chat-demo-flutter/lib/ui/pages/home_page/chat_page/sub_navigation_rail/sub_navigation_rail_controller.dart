@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../domain/conversation/models/conversation.dart';
@@ -25,6 +26,7 @@ import 'sub_navigation_rail.dart';
 import 'sub_navigation_rail_view.dart';
 
 class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
+  late FocusNode focusNode;
   late MenuController menuController;
   late ScrollController scrollController;
 
@@ -40,6 +42,7 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
   @override
   void initState() {
     super.initState();
+    focusNode = FocusNode();
     menuController = MenuController();
     scrollController = ScrollController();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -61,6 +64,7 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
   @override
   void dispose() {
     super.dispose();
+    focusNode.dispose();
     scrollController.dispose();
   }
 
@@ -210,5 +214,36 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
   void updateSearchText(String value) {
     searchText = value.toLowerCase().trim();
     setState(() {});
+  }
+
+  KeyEventResult onKeyEvent(FocusNode node, KeyEvent event) {
+    final selectedConversation = this.selectedConversation;
+    if (selectedConversation == null) {
+      return KeyEventResult.ignored;
+    }
+    if (event is! KeyDownEvent) {
+      return KeyEventResult.ignored;
+    }
+    final isArrowUp = event.logicalKey == LogicalKeyboardKey.arrowUp;
+    final isArrowDown = event.logicalKey == LogicalKeyboardKey.arrowDown;
+    if (!isArrowUp && !isArrowDown) {
+      return KeyEventResult.ignored;
+    }
+    final conversationIndex = conversations
+        .indexWhere((element) => element.id == selectedConversation.id);
+    if (isArrowUp) {
+      if (conversationIndex > 0) {
+        selectConversation(conversations[conversationIndex - 1]);
+      }
+    } else {
+      if (conversationIndex < conversations.length - 1) {
+        selectConversation(conversations[conversationIndex + 1]);
+      }
+    }
+    return KeyEventResult.handled;
+  }
+
+  void onPanDown(DragDownDetails details) {
+    focusNode.requestFocus();
   }
 }

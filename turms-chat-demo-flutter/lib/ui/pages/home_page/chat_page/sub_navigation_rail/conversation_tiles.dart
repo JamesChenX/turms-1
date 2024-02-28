@@ -13,44 +13,73 @@ import '../chat_session_pane/message.dart';
 import 'conversation_tile.dart';
 import 'sub_navigation_rail_controller.dart';
 
-class ConversationTiles extends ConsumerWidget {
-  const ConversationTiles({Key? key, required this.subNavigationRailController})
+class ConversationTiles extends ConsumerStatefulWidget {
+  ConversationTiles({Key? key, required this.subNavigationRailController})
       : super(key: key);
 
   final SubNavigationRailController subNavigationRailController;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final conversations = subNavigationRailController.conversations
-        .expand<(Conversation, List<TextSpan>, List<ChatMessage>)>(
-            (conversation) {
-      final searchText = subNavigationRailController.searchText;
-      final nameTextSpans = TextUtils.splitText(
-          text: conversation.name,
-          searchText: searchText,
-          searchTextStyle: ThemeConfig.textStyleHighlight);
-      final matchedMessages = searchText.isBlank
-          ? <ChatMessage>[]
-          : conversation.messages
-              .where((message) =>
-                  message.text.toLowerCase().contains(searchText.toLowerCase()))
-              .toList();
-      if (nameTextSpans.length == 1 &&
-          matchedMessages.isEmpty &&
-          searchText.isNotBlank) {
-        return [];
+  ConsumerState<ConversationTiles> createState() => _ConversationTilesState();
+}
+
+class _ConversationTilesState extends ConsumerState<ConversationTiles> {
+  String previousSearchText = '';
+  List<(Conversation, List<TextSpan>, List<ChatMessage>)>
+      conversationsInSearchMode = [];
+
+  @override
+  Widget build(BuildContext context) {
+    final subNavigationRailController = widget.subNavigationRailController;
+    final searchText = subNavigationRailController.searchText;
+    final isSearchMode = searchText.isNotBlank;
+    // If searching and search text doesn't change,
+    // keep displaying the snapshot of conversations of last search result
+    // because it is a weired behavior if the found conversations change
+    // as new messages are added while searching.
+    List<(Conversation, List<TextSpan>, List<ChatMessage>)> parsedConversations;
+    if (isSearchMode && searchText == previousSearchText) {
+      parsedConversations = conversationsInSearchMode;
+    } else {
+      final subNavigationRailController = widget.subNavigationRailController;
+      parsedConversations = subNavigationRailController.conversations
+          .expand<(Conversation, List<TextSpan>, List<ChatMessage>)>(
+              (conversation) {
+        final nameTextSpans = TextUtils.splitText(
+            text: conversation.name,
+            searchText: searchText,
+            searchTextStyle: ThemeConfig.textStyleHighlight);
+        final matchedMessages = isSearchMode
+            ? conversation.messages
+                .where((message) => message.text
+                    .toLowerCase()
+                    .contains(searchText.toLowerCase()))
+                .toList()
+            : <ChatMessage>[];
+        if (nameTextSpans.length == 1 &&
+            matchedMessages.isEmpty &&
+            isSearchMode) {
+          return [];
+        }
+        return [(conversation, nameTextSpans, matchedMessages)];
+      }).toList();
+      if (isSearchMode) {
+        previousSearchText = searchText;
+        conversationsInSearchMode = parsedConversations;
+      } else {
+        previousSearchText = '';
+        conversationsInSearchMode = [];
       }
-      return [(conversation, nameTextSpans, matchedMessages)];
-    }).toList();
+    }
     final relatedMessages =
         ref.watch(appLocalizationsViewModel).relatedMessages;
-    final isSearchMode = subNavigationRailController.searchText.isNotBlank;
     subNavigationRailController.conversationIdToContext.clear();
     // Don't use "ScrollablePositionedList" because it's buggy.
     // e.g. https://github.com/google/flutter.widgets/issues/276
-    final conversationCount = conversations.length;
+    final conversationCount = parsedConversations.length;
     final conversationIdToIndex = {
-      for (var i = 0; i < conversationCount; i++) conversations[i].$1.id: i
+      for (var i = 0; i < conversationCount; i++)
+        parsedConversations[i].$1.id: i
     };
     return ListView.builder(
       controller: subNavigationRailController.scrollController,
@@ -71,7 +100,7 @@ class ConversationTiles extends ConsumerWidget {
           conversationIdToIndex[(key as ValueKey<String>).value],
       itemBuilder: (context, index) {
         final (conversation, nameTextSpans, matchedMessages) =
-            conversations[index];
+            parsedConversations[index];
         final selectedConversationId =
             subNavigationRailController.selectedConversation?.id;
         subNavigationRailController.conversationIdToContext[conversation.id] =

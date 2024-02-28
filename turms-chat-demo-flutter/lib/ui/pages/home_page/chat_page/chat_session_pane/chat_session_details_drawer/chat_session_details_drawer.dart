@@ -16,13 +16,13 @@ class ChatSessionDetailsDrawer extends ConsumerWidget {
     final appLocalizations = ref.watch(appLocalizationsViewModel);
     const divider = THorizontalDivider();
     return SizedBox(
-      width: 250,
+      width: ThemeConfig.subNavigationRailWidth,
       height: double.infinity,
       child: DecoratedBox(
         decoration: const BoxDecoration(
             color: Colors.white,
             border: Border(
-              left: BorderSide(width: 1, color: ThemeConfig.borderDefaultColor),
+              left: BorderSide(width: 1, color: ThemeConfig.borderColor),
             )),
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),

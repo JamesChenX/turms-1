@@ -22,7 +22,9 @@ class _SubNavigationRailState extends ConsumerState<SubNavigationRail> {
     return Container(
       decoration: const BoxDecoration(
           border: Border(
-              right: BorderSide(color: Color.fromARGB(255, 240, 240, 240)))),
+              right: BorderSide(
+                  color:
+                      ThemeConfig.settingPageSubNavigationRailDividerColor))),
       width: 140,
       // padding: const EdgeInsets.symmetric(vertical: 16),
       child: Column(

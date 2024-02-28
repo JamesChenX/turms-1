@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../themes/theme_config.dart';
 import '../t_checkbox/t_simple_checkbox.dart';
 import '../t_dropdown_menu.dart';
 import '../t_horizontal_divider.dart';
@@ -26,8 +27,15 @@ class TForm extends StatelessWidget {
               child: THorizontalDivider(),
             ));
           }
-          children.add(Text(group.title,
-              key: group.titleKey, style: const TextStyle(fontSize: 16)));
+          final text = Text(group.title,
+              key: group.titleKey, style: const TextStyle(fontSize: 16));
+          final titleSuffix = group.titleSuffix;
+          if (titleSuffix == null) {
+            children.add(text);
+          } else {
+            children.add(
+                Row(children: [text, const SizedBox(width: 16), titleSuffix]));
+          }
           for (final element in group.fields.indexed) {
             final (index, field) = element;
             for (final widget in _buildFormField(index, field)) {
@@ -124,9 +132,14 @@ class TFormData {
 }
 
 class TFormFieldGroup {
-  TFormFieldGroup({required this.title, this.titleKey, required this.fields});
+  TFormFieldGroup(
+      {required this.title,
+      this.titleSuffix,
+      this.titleKey,
+      required this.fields});
 
   final String title;
+  final Widget? titleSuffix;
   final Key? titleKey;
   final List<TFormField> fields;
 }

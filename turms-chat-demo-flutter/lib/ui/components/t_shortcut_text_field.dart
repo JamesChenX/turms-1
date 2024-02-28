@@ -149,14 +149,20 @@ class _TShortcutTextFieldState extends ConsumerState<TShortcutTextField> {
   void _onKeyEvent(KeyEvent event) {
     switch (event) {
       case KeyUpEvent():
+        if (HardwareKeyboard.instance.physicalKeysPressed.isNotEmpty) {
+          return;
+        }
         if (_keys.length == 1) {
           _textEditingController.text =
               ref.read(appLocalizationsViewModel).none;
-        } else if (_keys.any((element) => element.isModifier)) {
+          widget.onShortcutChanged([]);
+        } else if (_keys.any((element) => element.isModifier) ||
+            _keys.any((element) => !element.isModifier)) {
           widget.onShortcutChanged(_keys);
         } else {
           _textEditingController.text =
               ref.read(appLocalizationsViewModel).none;
+          widget.onShortcutChanged([]);
         }
       case KeyDownEvent():
         _keys = HardwareKeyboard.instance.logicalKeysPressed

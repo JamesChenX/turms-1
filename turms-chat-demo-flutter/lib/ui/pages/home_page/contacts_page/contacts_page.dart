@@ -18,8 +18,9 @@ class ContactsPage extends StatelessWidget {
   Container _buildSubNavigationRail() => Container(
         decoration: const BoxDecoration(
             border: Border(
-                right: BorderSide(color: Color.fromARGB(255, 213, 213, 213)))),
-        width: 250,
+                right: BorderSide(
+                    color: ThemeConfig.subNavigationRailDividerColor))),
+        width: ThemeConfig.subNavigationRailWidth,
         child: const SubNavigationRail(),
       );
 

@@ -210,6 +210,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get removeAttachment => '删除附件';
 
   @override
+  String get reset => '重置';
+
+  @override
   String get restore => '恢复';
 
   @override

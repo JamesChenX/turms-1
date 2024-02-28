@@ -96,7 +96,10 @@ class _SettingsPaneController extends ConsumerState<SettingsPane> {
   }
 
   Future<void> updateShortcut(
-      HomePageAction action, ShortcutActivator? shortcutActivator) async {
+      {bool notify = true,
+      bool resetConflictedShortcuts = true,
+      required HomePageAction action,
+      ShortcutActivator? shortcutActivator}) async {
     final userSettingId = action.userSettingId;
     if (shortcutActivator == null) {
       await userSettingsRepository.upsert(
@@ -105,14 +108,15 @@ class _SettingsPaneController extends ConsumerState<SettingsPane> {
         UserSettings.unsetValue,
       );
     } else {
-      // Remove conflicted shortcuts.
-      for (final homePageAction in HomePageAction.values) {
-        if (action != homePageAction &&
-            (actionToShortcut[homePageAction]!
-                    .$1
-                    ?.hasSameKeys(shortcutActivator) ??
-                false)) {
-          await updateShortcut(homePageAction, null);
+      if (resetConflictedShortcuts) {
+        for (final homePageAction in HomePageAction.values) {
+          if (action != homePageAction &&
+              (actionToShortcut[homePageAction]!
+                      .$1
+                      ?.hasSameKeys(shortcutActivator) ??
+                  false)) {
+            await updateShortcut(notify: false, action: homePageAction);
+          }
         }
       }
       await userSettingsRepository.upsert(
@@ -138,7 +142,9 @@ class _SettingsPaneController extends ConsumerState<SettingsPane> {
         userSettings.shortcutShowAboutDialog = (shortcutActivator, true);
         break;
     }
-    userSettingsViewModelRef.notifyListeners();
+    if (notify) {
+      userSettingsViewModelRef.notifyListeners();
+    }
   }
 
   Future<void> updateThemeMode(ThemeMode value) async {
@@ -147,6 +153,30 @@ class _SettingsPaneController extends ConsumerState<SettingsPane> {
         UserSettingId.theme.name,
         UserSettingId.theme.convertValueToString(value));
     ref.read(userSettingsViewModel.notifier).state!.theme = value;
+    userSettingsViewModelRef.notifyListeners();
+  }
+
+  bool hasAnyShortcutChanged() {
+    for (final homePageAction in HomePageAction.values) {
+      final hasSameKeys = actionToShortcut[homePageAction]
+              ?.$1
+              ?.hasSameKeys(homePageAction.defaultShortcutActivator) ??
+          false;
+      if (!hasSameKeys) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  Future<void> resetShortcuts() async {
+    for (final homePageAction in HomePageAction.values) {
+      await updateShortcut(
+          notify: false,
+          resetConflictedShortcuts: false,
+          action: homePageAction,
+          shortcutActivator: homePageAction.defaultShortcutActivator);
+    }
     userSettingsViewModelRef.notifyListeners();
   }
 }

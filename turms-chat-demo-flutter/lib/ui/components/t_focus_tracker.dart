@@ -22,6 +22,7 @@ class _TFocusTrackerState extends State<TFocusTracker> {
   @override
   void dispose() {
     FocusManager.instance.removeListener(onFocusChanged);
+    removeOverlayEntry();
     super.dispose();
   }
 

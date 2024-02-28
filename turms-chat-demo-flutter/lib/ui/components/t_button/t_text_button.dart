@@ -10,6 +10,7 @@ class TTextButton extends StatefulWidget {
       required this.text,
       this.textStyle,
       this.textStyleHovered,
+      this.addContainer = true,
       this.width,
       this.backgroundColor = ThemeConfig.primary,
       this.backgroundColorHovered,
@@ -41,6 +42,7 @@ class TTextButton extends StatefulWidget {
   final String text;
   final TextStyle? textStyle;
   final TextStyle? textStyleHovered;
+  final bool addContainer;
   final double? width;
   final Color backgroundColor;
   final Color? backgroundColorHovered;
@@ -98,25 +100,27 @@ class _TTextButtonState extends State<TTextButton> {
         ],
       );
     }
-    child = AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        decoration: BoxDecoration(
-          color: widget.disabled
-              ? ThemeConfig.colorDisabled
-              : widget.isLoading
-                  ? widget.backgroundColor.withOpacity(0.5)
-                  : _isHovered
-                      ? (widget.backgroundColorHovered ??
-                          widget.backgroundColor.withOpacity(0.8))
-                      : widget.backgroundColor,
-          borderRadius: ThemeConfig.borderRadius4,
-          border: _isHovered
-              ? (widget.borderHovered ?? widget.border)
-              : widget.border,
-        ),
-        padding: widget.padding,
-        width: widget.width,
-        child: child);
+    if (widget.addContainer) {
+      child = AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          decoration: BoxDecoration(
+            color: widget.disabled
+                ? ThemeConfig.colorDisabled
+                : widget.isLoading
+                    ? widget.backgroundColor.withOpacity(0.5)
+                    : _isHovered
+                        ? (widget.backgroundColorHovered ??
+                            widget.backgroundColor.withOpacity(0.8))
+                        : widget.backgroundColor,
+            borderRadius: ThemeConfig.borderRadius4,
+            border: _isHovered
+                ? (widget.borderHovered ?? widget.border)
+                : widget.border,
+          ),
+          padding: widget.padding,
+          width: widget.width,
+          child: child);
+    }
     return MouseRegion(
         cursor: widget.disabled
             ? SystemMouseCursors.forbidden

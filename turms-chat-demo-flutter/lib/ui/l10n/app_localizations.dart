@@ -498,6 +498,12 @@ abstract class AppLocalizations {
   /// **'Remove Attachment'**
   String get removeAttachment;
 
+  /// No description provided for @reset.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get reset;
+
   /// No description provided for @restore.
   ///
   /// In en, this message translates to:

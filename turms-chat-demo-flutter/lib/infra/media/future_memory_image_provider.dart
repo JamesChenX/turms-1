@@ -3,16 +3,16 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 
-class CachedMemoryImageProvider
-    extends ImageProvider<CachedMemoryImageProvider> {
-  CachedMemoryImageProvider(this.cacheEntryId, this.imageBytes);
+class FutureMemoryImageProvider
+    extends ImageProvider<FutureMemoryImageProvider> {
+  FutureMemoryImageProvider(this.cacheEntryId, this.imageBytes);
 
   final String cacheEntryId;
   final Future<Uint8List?> imageBytes;
 
   @override
   ImageStreamCompleter loadImage(
-          CachedMemoryImageProvider key, ImageDecoderCallback decode) =>
+          FutureMemoryImageProvider key, ImageDecoderCallback decode) =>
       MultiFrameImageStreamCompleter(
         codec: _loadAsync(decode),
         scale: 1.0,
@@ -35,16 +35,16 @@ class CachedMemoryImageProvider
   }
 
   @override
-  Future<CachedMemoryImageProvider> obtainKey(
+  Future<FutureMemoryImageProvider> obtainKey(
           ImageConfiguration configuration) =>
-      SynchronousFuture<CachedMemoryImageProvider>(this);
+      SynchronousFuture<FutureMemoryImageProvider>(this);
 
   @override
   bool operator ==(Object other) {
     if (other.runtimeType != runtimeType) {
       return false;
     }
-    return other is CachedMemoryImageProvider &&
+    return other is FutureMemoryImageProvider &&
         other.cacheEntryId == cacheEntryId;
   }
 

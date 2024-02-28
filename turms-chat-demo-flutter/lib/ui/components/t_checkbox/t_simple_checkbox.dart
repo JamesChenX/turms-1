@@ -9,8 +9,8 @@ class TSimpleCheckbox extends StatefulWidget {
     this.size = 16,
     this.activeBgColor = Colors.white,
     this.inactiveBgColor = Colors.white,
-    this.activeBorderColor = ThemeConfig.borderDefaultColor,
-    this.inactiveBorderColor = ThemeConfig.borderDefaultColor,
+    this.activeBorderColor = ThemeConfig.borderColor,
+    this.inactiveBorderColor = ThemeConfig.borderColor,
     required this.value,
     this.activeIcon = const Icon(
       Symbols.check_rounded,

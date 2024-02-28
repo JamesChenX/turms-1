@@ -77,6 +77,16 @@ class _SettingsPaneView extends StatelessWidget {
       TFormFieldGroup(
           title: formFieldGroupContext.getTitle(appLocalizations),
           titleKey: formFieldGroupContext.key,
+          titleSuffix: _settingsPaneController.hasAnyShortcutChanged()
+              ? TTextButton(
+                  text: appLocalizations.reset,
+                  addContainer: false,
+                  textStyle: TextStyle(color: ThemeConfig.linkColor),
+                  textStyleHovered:
+                      TextStyle(color: ThemeConfig.linkColorHovered),
+                  onTap: _settingsPaneController.resetShortcuts,
+                )
+              : null,
           fields: [
             TFormFieldShortcutTextField(
                 label: '${appLocalizations.goToChatPage}:',
@@ -84,8 +94,10 @@ class _SettingsPaneView extends StatelessWidget {
                     actionToShortcut[HomePageAction.showChatPage]!.$1?.keyList,
                 onShortcutChanged: (List<LogicalKeyboardKey> keys) {
                   _settingsPaneController.updateShortcut(
-                      HomePageAction.showChatPage,
-                      LogicalKeySet.fromSet(keys.toSet()));
+                      action: HomePageAction.showChatPage,
+                      shortcutActivator: keys.isEmpty
+                          ? null
+                          : LogicalKeySet.fromSet(keys.toSet()));
                 }),
             TFormFieldShortcutTextField(
                 label: '${appLocalizations.goToContactsPage}:',
@@ -94,16 +106,20 @@ class _SettingsPaneView extends StatelessWidget {
                     ?.keyList,
                 onShortcutChanged: (List<LogicalKeyboardKey> keys) =>
                     _settingsPaneController.updateShortcut(
-                        HomePageAction.showContactsPage,
-                        LogicalKeySet.fromSet(keys.toSet()))),
+                        action: HomePageAction.showContactsPage,
+                        shortcutActivator: keys.isEmpty
+                            ? null
+                            : LogicalKeySet.fromSet(keys.toSet()))),
             TFormFieldShortcutTextField(
                 label: '${appLocalizations.goToFilesPage}:',
                 initialKeys:
                     actionToShortcut[HomePageAction.showFilesPage]!.$1?.keyList,
                 onShortcutChanged: (List<LogicalKeyboardKey> keys) =>
                     _settingsPaneController.updateShortcut(
-                        HomePageAction.showFilesPage,
-                        LogicalKeySet.fromSet(keys.toSet()))),
+                        action: HomePageAction.showFilesPage,
+                        shortcutActivator: keys.isEmpty
+                            ? null
+                            : LogicalKeySet.fromSet(keys.toSet()))),
             TFormFieldShortcutTextField(
                 label: '${appLocalizations.openSettingsDialog}:',
                 initialKeys:
@@ -112,8 +128,10 @@ class _SettingsPaneView extends StatelessWidget {
                         ?.keyList,
                 onShortcutChanged: (List<LogicalKeyboardKey> keys) =>
                     _settingsPaneController.updateShortcut(
-                        HomePageAction.showSettingsDialog,
-                        LogicalKeySet.fromSet(keys.toSet()))),
+                        action: HomePageAction.showSettingsDialog,
+                        shortcutActivator: keys.isEmpty
+                            ? null
+                            : LogicalKeySet.fromSet(keys.toSet()))),
             TFormFieldShortcutTextField(
                 label: '${appLocalizations.openAboutDialog}:',
                 initialKeys: actionToShortcut[HomePageAction.showAboutDialog]!
@@ -121,8 +139,10 @@ class _SettingsPaneView extends StatelessWidget {
                     ?.keyList,
                 onShortcutChanged: (List<LogicalKeyboardKey> keys) =>
                     _settingsPaneController.updateShortcut(
-                        HomePageAction.showAboutDialog,
-                        LogicalKeySet.fromSet(keys.toSet()))),
+                        action: HomePageAction.showAboutDialog,
+                        shortcutActivator: keys.isEmpty
+                            ? null
+                            : LogicalKeySet.fromSet(keys.toSet()))),
           ]);
 
   TFormFieldGroup _buildNotificationsFieldGroup(

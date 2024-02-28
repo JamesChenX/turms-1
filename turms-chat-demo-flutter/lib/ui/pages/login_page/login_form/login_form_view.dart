@@ -53,8 +53,7 @@ class LoginFormView extends StatelessWidget {
                     isCollapsed: true,
                     contentPadding: EdgeInsets.symmetric(vertical: 16),
                     enabledBorder: const UnderlineInputBorder(
-                        borderSide:
-                            BorderSide(color: ThemeConfig.borderDefaultColor)),
+                        borderSide: BorderSide(color: ThemeConfig.borderColor)),
                     focusedBorder: const UnderlineInputBorder(
                         borderSide: BorderSide(
                       color: ThemeConfig.primary,
@@ -88,8 +87,7 @@ class LoginFormView extends StatelessWidget {
                     isCollapsed: true,
                     contentPadding: const EdgeInsets.symmetric(vertical: 16),
                     enabledBorder: const UnderlineInputBorder(
-                        borderSide:
-                            BorderSide(color: ThemeConfig.borderDefaultColor)),
+                        borderSide: BorderSide(color: ThemeConfig.borderColor)),
                     focusedBorder: const UnderlineInputBorder(
                         borderSide: BorderSide(
                       color: ThemeConfig.primary,

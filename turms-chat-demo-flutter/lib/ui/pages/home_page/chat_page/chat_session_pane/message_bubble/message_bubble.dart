@@ -186,12 +186,12 @@ class _MessageBubbleState extends State<MessageBubble> {
               Container(
                 padding: const EdgeInsets.all(1),
                 decoration: const BoxDecoration(
-                  color: Color.fromARGB(255, 250, 81, 81),
+                  color: ThemeConfig.messageBubbleErrorIconBackgroundColor,
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
                   Symbols.exclamation_rounded,
-                  color: Colors.white,
+                  color: ThemeConfig.messageBubbleErrorIconColor,
                   size: 20,
                 ),
               )

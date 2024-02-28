@@ -4,6 +4,7 @@ import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../../components/t_button/t_icon_button.dart';
 import '../../../../l10n/view_models/app_localizations_view_model.dart';
+import '../../../../themes/theme_config.dart';
 
 class Attachment extends ConsumerStatefulWidget {
   const Attachment(
@@ -36,8 +37,8 @@ class _AttachmentState extends ConsumerState<Attachment> {
             duration: const Duration(milliseconds: 100),
             decoration: BoxDecoration(
               color: isContainerHovered
-                  ? Colors.white
-                  : const Color.fromARGB(255, 250, 250, 250),
+                  ? ThemeConfig.messageAttachmentColorHovered
+                  : ThemeConfig.messageAttachmentColor,
               borderRadius: BorderRadius.circular(8),
               boxShadow: [
                 BoxShadow(

@@ -78,7 +78,7 @@ class AboutPageView extends StatelessWidget {
                         textStyle:
                             const TextStyle(color: ThemeConfig.linkColor),
                         textStyleHovered: const TextStyle(
-                            color: ThemeConfig.linkHoveredColor),
+                            color: ThemeConfig.linkColorHovered),
                         onTap: aboutPageController.openGitHub)
                   ],
                 )

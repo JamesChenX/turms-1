@@ -7,25 +7,6 @@ import '../../infra/ui/text_extensions.dart';
 class ThemeConfig {
   ThemeConfig._();
 
-  static final emojiFontFamily = switch (defaultTargetPlatform) {
-    TargetPlatform.iOS || TargetPlatform.macOS => 'Apple Color Emoji',
-    TargetPlatform.android ||
-    TargetPlatform.fuchsia ||
-    TargetPlatform.linux =>
-      'Noto Color Emoji',
-    TargetPlatform.windows => 'Segoe UI Emoji'
-  };
-
-  static const emojiFontFamilyFallback = [
-    'Apple Color Emoji',
-    'Segoe UI Emoji',
-    'Segoe UI Symbol',
-    'Noto Color Emoji',
-    'Noto Color Emoji Compat',
-    'Android Emoji',
-    'EmojiSymbols'
-  ];
-
   static const borderRadius0 = BorderRadius.zero;
   static const borderRadius4 = BorderRadius.all(Radius.circular(4));
   static const borderRadius8 = BorderRadius.all(Radius.circular(8));
@@ -52,7 +33,7 @@ class ThemeConfig {
   static const info = blue6;
 
   static const linkColor = blue5;
-  static const linkHoveredColor = blue6;
+  static const linkColorHovered = blue6;
 
   //Colors for theme
   static const primary = Color(0xff1890ff);
@@ -66,46 +47,55 @@ class ThemeConfig {
   static const darkBG = Color(0xff121212);
   static const colorDisabled = Colors.black38;
 
-  // static Color error = Colors.red.shade200;
   static const focusedError = Colors.red;
-
-  // static const Color badgeColor = Colors.red;
-  static const separator = Color(0xffd9d9d9);
-  static const dividerColor = Colors.black12;
 
   static const dialogWidthMedium = 550.0;
   static const dialogHeightMedium = 470.0;
 
-  static const borderDefaultColor = gray5;
+  // Colors for UI widgets
+  static const borderColor = gray5;
+  static const dividerColor = Colors.black12;
   static const textColorPrimary = Color(0xE0000000);
   static const textColorSecondary = Color(0xA6000000);
   static const textColorDisabled = Colors.black26;
   static const checkboxColor = gray6;
   static const titleBarColor = gray9;
+  static const defaultAvatarBackgroundColor =
+      Color.fromARGB(255, 117, 117, 117);
+  static const defaultAvatarIconColor = Colors.white;
 
+  static const tabTextColor = Color.fromARGB(255, 89, 89, 89);
+  static const tabTextColorSelected = primary;
+
+  // Space
   static const paddingV4H8 = EdgeInsets.symmetric(vertical: 4, horizontal: 8);
   static const paddingV4H4 = EdgeInsets.symmetric(vertical: 4, horizontal: 4);
   static const paddingV8H16 = EdgeInsets.symmetric(vertical: 8, horizontal: 16);
   static const paddingV16H8 = EdgeInsets.symmetric(vertical: 16, horizontal: 8);
   static const paddingH8 = EdgeInsets.symmetric(horizontal: 8);
 
-  static const colorChatSessionPaneSeparator =
-      Color.fromARGB(255, 231, 231, 231);
-
-  // static const unit = 2.0;
+  // Typography
   static const textStyleSecondary = TextStyle(color: textColorSecondary);
   static const textStyleHighlight = TextStyle(color: Colors.red);
+  static final emojiFontFamily = switch (defaultTargetPlatform) {
+    TargetPlatform.iOS || TargetPlatform.macOS => 'Apple Color Emoji',
+    TargetPlatform.android ||
+    TargetPlatform.fuchsia ||
+    TargetPlatform.linux =>
+      'Noto Color Emoji',
+    TargetPlatform.windows => 'Segoe UI Emoji'
+  };
+  static const emojiFontFamilyFallback = [
+    'Apple Color Emoji',
+    'Segoe UI Emoji',
+    'Segoe UI Symbol',
+    'Noto Color Emoji',
+    'Noto Color Emoji Compat',
+    'Android Emoji',
+    'EmojiSymbols'
+  ];
 
-  static const titleBarSize = Size(36, 28);
-
-  static const homePageHeaderHeight = 60.0;
-  static const homePageBackgroundColor = Color.fromARGB(255, 245, 245, 245);
-
-  static const conversationBackgroundColor = Color.fromARGB(255, 233, 233, 233);
-  static const conversationHoveredBackgroundColor =
-      Color.fromARGB(255, 218, 218, 218);
-  static const conversationFocusedBackgroundColor =
-      Color.fromARGB(255, 200, 200, 200);
+  // Shadows
   static const boxShadow = [
     BoxShadow(
       // Colors.black.withOpacity(0.2),
@@ -115,11 +105,38 @@ class ThemeConfig {
     ),
   ];
 
+  // Application
+
+  static const titleBarSize = Size(36, 28);
+
+  static const subNavigationRailWidth = 250.0;
+  static const subNavigationRailDividerColor =
+      Color.fromARGB(255, 213, 213, 213);
+
+  static const homePageHeaderHeight = 60.0;
+  static const homePageBackgroundColor = Color.fromARGB(255, 245, 245, 245);
+
+  static const conversationBackgroundColor = Color.fromARGB(255, 233, 233, 233);
+  static const conversationHoveredBackgroundColor =
+      Color.fromARGB(255, 218, 218, 218);
+  static const conversationFocusedBackgroundColor =
+      Color.fromARGB(255, 200, 200, 200);
+
+  static const chatSessionPaneDividerColor = Color.fromARGB(255, 231, 231, 231);
+  static const messageAttachmentColor = Color.fromARGB(255, 250, 250, 250);
+  static const messageAttachmentColorHovered = Colors.white;
+  static const messageBubbleErrorIconBackgroundColor =
+      Color.fromARGB(255, 250, 81, 81);
+  static const messageBubbleErrorIconColor = Colors.white;
+
+  static const settingPageSubNavigationRailDividerColor =
+      Color.fromARGB(255, 240, 240, 240);
+
   static ThemeData getLightTheme({String? fontFamily}) => ThemeData(
       useMaterial3: true,
       // splashFactory: NoSplash.splashFactory,
       primaryColor: primary,
-      unselectedWidgetColor: borderDefaultColor,
+      unselectedWidgetColor: borderColor,
       colorScheme: ColorScheme.fromSwatch().copyWith(
         secondary: lightAccent,
         background: lightBG,
@@ -138,7 +155,7 @@ class ThemeConfig {
       useMaterial3: true,
       // splashFactory: NoSplash.splashFactory,
       primaryColor: primary,
-      unselectedWidgetColor: borderDefaultColor,
+      unselectedWidgetColor: borderColor,
       colorScheme: ColorScheme.fromSwatch().copyWith(
         secondary: lightAccent,
         background: lightBG,

@@ -47,12 +47,10 @@ class _TTabsState extends State<TTabs> {
             width: double.maxFinite,
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
-              // width: 110,
               child: Text(tab.text,
                   style: isSelected
-                      ? const TextStyle(color: ThemeConfig.primary)
-                      : const TextStyle(
-                          color: Color.fromARGB(255, 89, 89, 89))),
+                      ? const TextStyle(color: ThemeConfig.tabTextColorSelected)
+                      : const TextStyle(color: ThemeConfig.tabTextColor)),
               decoration: BoxDecoration(
                 borderRadius: ThemeConfig.borderRadius4,
                 color: isSelected || _hoveringTabId == tab.id

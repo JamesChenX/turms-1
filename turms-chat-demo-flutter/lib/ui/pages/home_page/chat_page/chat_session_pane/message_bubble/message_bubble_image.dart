@@ -10,7 +10,7 @@ import 'package:path/path.dart';
 import '../../../../../../infra/crypto/crypto_utils.dart';
 import '../../../../../../infra/http/http_utils.dart';
 import '../../../../../../infra/io/path_utils.dart';
-import '../../../../../../infra/media/cache_memory_image_provider.dart';
+import '../../../../../../infra/media/future_memory_image_provider.dart';
 import '../../../../../../infra/task/task_utils.dart';
 import '../../../../../../infra/units/file_size_extensions.dart';
 import '../../../../../themes/theme_config.dart';
@@ -26,8 +26,8 @@ class MessageBubbleImage extends StatefulWidget {
   State<MessageBubbleImage> createState() => _MessageBubbleImageState();
 }
 
-const maxWidth = 200;
-const maxHeight = 200;
+const maxWidth = 200.0;
+const maxHeight = 200.0;
 
 class _MessageBubbleImageState extends State<MessageBubbleImage> {
   late Image image;
@@ -39,7 +39,7 @@ class _MessageBubbleImageState extends State<MessageBubbleImage> {
   void initState() {
     super.initState();
 
-    downloadFile = _getImage();
+    downloadFile = _fetchImage();
   }
 
   @override
@@ -48,14 +48,19 @@ class _MessageBubbleImageState extends State<MessageBubbleImage> {
   }
 
   @override
-  Widget build(BuildContext context) => Image(
+  Widget build(BuildContext context) => MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+          onPanDown: (details) {}, child: _buildThumbnailImage()));
+
+  Image _buildThumbnailImage() => Image(
         isAntiAlias: true,
         gaplessPlayback: true,
-        image: CachedMemoryImageProvider(thumbnailImagePath, downloadFile),
+        image: FutureMemoryImageProvider(thumbnailImagePath, downloadFile),
         // cacheHeight: maxHeight,
         // cacheWidth: maxWidth,
-        // width: maxWidth.toDouble(),
-        // height: maxHeight.toDouble(),
+        // width: maxWidth,
+        // height: maxHeight,
         fit: BoxFit.contain,
         loadingBuilder: (context, child, loadingProgress) {
           if (loadingProgress == null) {
@@ -63,7 +68,7 @@ class _MessageBubbleImageState extends State<MessageBubbleImage> {
                 decoration: BoxDecoration(
                     borderRadius: ThemeConfig.borderRadius4,
                     border: Border.all(
-                        color: ThemeConfig.borderDefaultColor,
+                        color: ThemeConfig.borderColor,
                         width: _imageBorderWidth)),
                 child: ClipRRect(
                   borderRadius: ThemeConfig.borderRadius4,
@@ -73,16 +78,17 @@ class _MessageBubbleImageState extends State<MessageBubbleImage> {
                   ),
                 ));
           }
-          return Stack(
+          return const Stack(
+            fit: StackFit.expand,
             children: [
               SizedBox(
-                width: maxWidth.toDouble(),
-                height: maxHeight.toDouble(),
-                child: const DecoratedBox(
+                width: maxWidth,
+                height: maxHeight,
+                child: DecoratedBox(
                   decoration: BoxDecoration(color: Colors.black12),
                 ),
               ),
-              const Center(
+              Center(
                 child: CircularProgressIndicator(),
               )
             ],
@@ -92,22 +98,22 @@ class _MessageBubbleImageState extends State<MessageBubbleImage> {
       );
 
 // todo: click to download
-  Stack _buildError() => Stack(
+  Stack _buildError() => const Stack(
         children: [
           SizedBox(
-            width: maxWidth.toDouble(),
-            height: maxHeight.toDouble(),
-            child: const DecoratedBox(
+            width: maxWidth,
+            height: maxHeight,
+            child: DecoratedBox(
               decoration: BoxDecoration(color: Colors.black12),
             ),
           ),
-          const Center(
+          Center(
             child: Icon(Symbols.image_not_supported_rounded),
           )
         ],
       );
 
-  Future<Uint8List?> _getImage() async {
+  Future<Uint8List?> _fetchImage() async {
     final url = widget.url;
     final urlStr = url.toString();
     final ext = extension(urlStr);
@@ -145,12 +151,12 @@ class _MessageBubbleImageState extends State<MessageBubbleImage> {
                 if (image.width > maxWidth || image.height > maxHeight) {
                   if (image.width > image.height) {
                     image = img.copyResize(image,
-                        width: maxWidth,
+                        width: maxWidth.toInt(),
                         maintainAspect: true,
                         interpolation: img.Interpolation.cubic);
                   } else {
                     image = img.copyResize(image,
-                        height: maxHeight,
+                        height: maxHeight.toInt(),
                         maintainAspect: true,
                         interpolation: img.Interpolation.cubic);
                   }

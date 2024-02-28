@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 
+import '../../../themes/theme_config.dart';
 import 'chat_session_pane/chat_session_pane.dart';
 import 'sub_navigation_rail/sub_navigation_rail.dart';
 
@@ -11,17 +12,18 @@ class ChatPage extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           _buildSubNavigationRail(),
-          _buildChatSessionPane(),
+          Expanded(child: _buildChatSessionPane()),
         ],
       );
 
   Widget _buildSubNavigationRail() => Container(
         decoration: const BoxDecoration(
             border: Border(
-                right: BorderSide(color: Color.fromARGB(255, 213, 213, 213)))),
-        width: 250,
+                right: BorderSide(
+                    color: ThemeConfig.subNavigationRailDividerColor))),
+        width: ThemeConfig.subNavigationRailWidth,
         child: const SubNavigationRail(),
       );
 
-  Widget _buildChatSessionPane() => Expanded(child: ChatSessionPane());
+  Widget _buildChatSessionPane() => ChatSessionPane();
 }

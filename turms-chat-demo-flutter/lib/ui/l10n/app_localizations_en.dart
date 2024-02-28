@@ -210,6 +210,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get removeAttachment => 'Remove Attachment';
 
   @override
+  String get reset => 'Reset';
+
+  @override
   String get restore => 'Restore';
 
   @override

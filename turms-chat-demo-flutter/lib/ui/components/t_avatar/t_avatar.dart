@@ -75,10 +75,10 @@ class TAvatar extends StatelessWidget {
         child = Container(
           height: containerSize,
           width: containerSize,
-          color: const Color.fromARGB(255, 117, 117, 117),
+          color: ThemeConfig.defaultAvatarBackgroundColor,
           child: Icon(Symbols.person_rounded,
               fill: 1,
-              color: Colors.white,
+              color: ThemeConfig.defaultAvatarIconColor,
               // The "person" icon seems smaller than other icons,
               // so we need to enlarge it.
               size: size.iconSize * 1.2),

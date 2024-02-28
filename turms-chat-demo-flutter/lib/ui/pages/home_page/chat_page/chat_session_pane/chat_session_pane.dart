@@ -114,7 +114,7 @@ class _ChatSessionPaneFooterState extends State<_ChatSessionPaneFooter> {
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 4),
                 child: THorizontalDivider(
-                  color: ThemeConfig.colorChatSessionPaneSeparator,
+                  color: ThemeConfig.chatSessionPaneDividerColor,
                 ),
               ),
             ),

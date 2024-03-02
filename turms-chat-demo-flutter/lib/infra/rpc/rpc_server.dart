@@ -27,12 +27,13 @@ import 'rpc_client.dart';
 /// WebSockets and JSON-RPC 2.0 to communicate).
 
 File getAppProcessFile() {
-  final appProcessFilePath = PathUtils.joinAppPath(['app-process.json']);
+  final appProcessFilePath = PathUtils.joinPathInAppScope(['app-process.json']);
   return File(appProcessFilePath);
 }
 
 class RpcServer {
-  RpcServer._(this._httpServer, this._appProcessFile);
+  RpcServer._(
+      this._httpServer, this._appProcessFile, this._appProcessRandomAccessFile);
 
   static Future<bool> _checkIfApplicationIsAlive(File appProcessFile) async {
     final json = await appProcessFile.readAsString();
@@ -50,7 +51,9 @@ class RpcServer {
       final client = await RpcClient.connect(port);
       return await client.sendHealthcheckRequest();
     } catch (e) {
-      if (e is SocketException) {
+      if (e is SocketException ||
+          (e is HttpException &&
+              e.message.toLowerCase().contains('connection closed'))) {
         return false;
       }
     }
@@ -65,6 +68,8 @@ class RpcServer {
       } else {
         await appProcessFile.delete();
       }
+    } else if (!await appProcessFile.parent.exists()) {
+      await appProcessFile.parent.create(recursive: true);
     }
 
     final handler = webSocketHandler((WebSocketChannel channel) {
@@ -75,7 +80,14 @@ class RpcServer {
     });
 
     var file = await appProcessFile.open(mode: FileMode.write);
-    file = await file.lock();
+    try {
+      file = await file.lock();
+    } catch (e) {
+      try {
+        await file.close();
+      } catch (_) {}
+      rethrow;
+    }
 
     HttpServer server;
     var retry = 0;
@@ -86,11 +98,10 @@ class RpcServer {
               poweredByHeader: null);
         } on SocketException catch (e) {
           if (e.osError?.message == 'EADDRINUSE') {
-            if (retry >= 10000) {
+            if (retry++ >= 10000) {
               rethrow;
             }
             port++;
-            retry++;
             continue;
           } else {
             rethrow;
@@ -101,17 +112,23 @@ class RpcServer {
       await file.writeString(jsonEncode({'pid': pid, 'rpcPort': port}));
     } catch (e) {
       await file.unlock();
+      await file.close();
       rethrow;
     }
 
-    return RpcServer._(server, file);
+    return RpcServer._(server, appProcessFile, file);
   }
 
   final HttpServer _httpServer;
-  final RandomAccessFile _appProcessFile;
+  final File _appProcessFile;
+  final RandomAccessFile _appProcessRandomAccessFile;
+
+  int get port => _httpServer.port;
 
   Future<void> close() async {
-    await _appProcessFile.unlock();
+    await _appProcessRandomAccessFile.unlock();
+    await _appProcessRandomAccessFile.close();
+    await _appProcessFile.delete();
     return _httpServer.close();
   }
 }

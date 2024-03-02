@@ -9,16 +9,6 @@
 
 import 'package:flutter/widgets.dart';
 
-class $AssetsFontsGen {
-  const $AssetsFontsGen();
-
-  /// File path: assets/fonts/Noto-COLRv1.ttf
-  String get notoCOLRv1 => 'assets/fonts/Noto-COLRv1.ttf';
-
-  /// List of all assets
-  List<String> get values => [notoCOLRv1];
-}
-
 class $AssetsImagesGen {
   const $AssetsImagesGen();
 
@@ -57,7 +47,6 @@ class $AssetsImagesGen {
 class Assets {
   Assets._();
 
-  static const $AssetsFontsGen fonts = $AssetsFontsGen();
   static const $AssetsImagesGen images = $AssetsImagesGen();
 }
 

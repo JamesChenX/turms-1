@@ -3,6 +3,258 @@
 part of 'user_database.dart';
 
 // ignore_for_file: type=lint
+class $LogEntryTableTable extends LogEntryTable
+    with TableInfo<$LogEntryTableTable, LogEntryTableData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $LogEntryTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _levelMeta = const VerificationMeta('level');
+  @override
+  late final GeneratedColumnWithTypeConverter<LogLevel, int> level =
+      GeneratedColumn<int>('level', aliasedName, false,
+              type: DriftSqlType.int, requiredDuringInsert: true)
+          .withConverter<LogLevel>($LogEntryTableTable.$converterlevel);
+  static const VerificationMeta _timestampMeta =
+      const VerificationMeta('timestamp');
+  @override
+  late final GeneratedColumn<DateTime> timestamp = GeneratedColumn<DateTime>(
+      'timestamp', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _messageMeta =
+      const VerificationMeta('message');
+  @override
+  late final GeneratedColumn<String> message = GeneratedColumn<String>(
+      'message', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [id, level, timestamp, message];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'log_entry';
+  @override
+  VerificationContext validateIntegrity(Insertable<LogEntryTableData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    context.handle(_levelMeta, const VerificationResult.success());
+    if (data.containsKey('timestamp')) {
+      context.handle(_timestampMeta,
+          timestamp.isAcceptableOrUnknown(data['timestamp']!, _timestampMeta));
+    } else if (isInserting) {
+      context.missing(_timestampMeta);
+    }
+    if (data.containsKey('message')) {
+      context.handle(_messageMeta,
+          message.isAcceptableOrUnknown(data['message']!, _messageMeta));
+    } else if (isInserting) {
+      context.missing(_messageMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  LogEntryTableData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LogEntryTableData(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      level: $LogEntryTableTable.$converterlevel.fromSql(attachedDatabase
+          .typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}level'])!),
+      timestamp: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}timestamp'])!,
+      message: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}message'])!,
+    );
+  }
+
+  @override
+  $LogEntryTableTable createAlias(String alias) {
+    return $LogEntryTableTable(attachedDatabase, alias);
+  }
+
+  static TypeConverter<LogLevel, int> $converterlevel = LogLevelConverter();
+}
+
+class LogEntryTableData extends DataClass
+    implements Insertable<LogEntryTableData> {
+  final int id;
+  final LogLevel level;
+  final DateTime timestamp;
+  final String message;
+  const LogEntryTableData(
+      {required this.id,
+      required this.level,
+      required this.timestamp,
+      required this.message});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    {
+      map['level'] =
+          Variable<int>($LogEntryTableTable.$converterlevel.toSql(level));
+    }
+    map['timestamp'] = Variable<DateTime>(timestamp);
+    map['message'] = Variable<String>(message);
+    return map;
+  }
+
+  LogEntryTableCompanion toCompanion(bool nullToAbsent) {
+    return LogEntryTableCompanion(
+      id: Value(id),
+      level: Value(level),
+      timestamp: Value(timestamp),
+      message: Value(message),
+    );
+  }
+
+  factory LogEntryTableData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LogEntryTableData(
+      id: serializer.fromJson<int>(json['id']),
+      level: serializer.fromJson<LogLevel>(json['level']),
+      timestamp: serializer.fromJson<DateTime>(json['timestamp']),
+      message: serializer.fromJson<String>(json['message']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'level': serializer.toJson<LogLevel>(level),
+      'timestamp': serializer.toJson<DateTime>(timestamp),
+      'message': serializer.toJson<String>(message),
+    };
+  }
+
+  LogEntryTableData copyWith(
+          {int? id, LogLevel? level, DateTime? timestamp, String? message}) =>
+      LogEntryTableData(
+        id: id ?? this.id,
+        level: level ?? this.level,
+        timestamp: timestamp ?? this.timestamp,
+        message: message ?? this.message,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('LogEntryTableData(')
+          ..write('id: $id, ')
+          ..write('level: $level, ')
+          ..write('timestamp: $timestamp, ')
+          ..write('message: $message')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, level, timestamp, message);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LogEntryTableData &&
+          other.id == this.id &&
+          other.level == this.level &&
+          other.timestamp == this.timestamp &&
+          other.message == this.message);
+}
+
+class LogEntryTableCompanion extends UpdateCompanion<LogEntryTableData> {
+  final Value<int> id;
+  final Value<LogLevel> level;
+  final Value<DateTime> timestamp;
+  final Value<String> message;
+  const LogEntryTableCompanion({
+    this.id = const Value.absent(),
+    this.level = const Value.absent(),
+    this.timestamp = const Value.absent(),
+    this.message = const Value.absent(),
+  });
+  LogEntryTableCompanion.insert({
+    this.id = const Value.absent(),
+    required LogLevel level,
+    required DateTime timestamp,
+    required String message,
+  })  : level = Value(level),
+        timestamp = Value(timestamp),
+        message = Value(message);
+  static Insertable<LogEntryTableData> custom({
+    Expression<int>? id,
+    Expression<int>? level,
+    Expression<DateTime>? timestamp,
+    Expression<String>? message,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (level != null) 'level': level,
+      if (timestamp != null) 'timestamp': timestamp,
+      if (message != null) 'message': message,
+    });
+  }
+
+  LogEntryTableCompanion copyWith(
+      {Value<int>? id,
+      Value<LogLevel>? level,
+      Value<DateTime>? timestamp,
+      Value<String>? message}) {
+    return LogEntryTableCompanion(
+      id: id ?? this.id,
+      level: level ?? this.level,
+      timestamp: timestamp ?? this.timestamp,
+      message: message ?? this.message,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (level.present) {
+      map['level'] =
+          Variable<int>($LogEntryTableTable.$converterlevel.toSql(level.value));
+    }
+    if (timestamp.present) {
+      map['timestamp'] = Variable<DateTime>(timestamp.value);
+    }
+    if (message.present) {
+      map['message'] = Variable<String>(message.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LogEntryTableCompanion(')
+          ..write('id: $id, ')
+          ..write('level: $level, ')
+          ..write('timestamp: $timestamp, ')
+          ..write('message: $message')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $UserSettingTableTable extends UserSettingTable
     with TableInfo<$UserSettingTableTable, UserSettingTableData> {
   @override
@@ -273,11 +525,13 @@ class UserSettingTableCompanion extends UpdateCompanion<UserSettingTableData> {
 
 abstract class _$UserDatabase extends GeneratedDatabase {
   _$UserDatabase(QueryExecutor e) : super(e);
+  late final $LogEntryTableTable logEntryTable = $LogEntryTableTable(this);
   late final $UserSettingTableTable userSettingTable =
       $UserSettingTableTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [userSettingTable];
+  List<DatabaseSchemaEntity> get allSchemaEntities =>
+      [logEntryTable, userSettingTable];
 }

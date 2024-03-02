@@ -70,8 +70,6 @@ class _TDropdownMenuState<T> extends ConsumerState<TDropdownMenu<T>> {
               for (final entry in widget.entries)
                 MouseRegion(
                   cursor: SystemMouseCursors.click,
-                  // onEnter: (_) => setState(() => _isHovered = true),
-                  // onExit: (_) => setState(() => _isHovered = false),
                   child: GestureDetector(
                     behavior: HitTestBehavior.translucent,
                     onTap: () {

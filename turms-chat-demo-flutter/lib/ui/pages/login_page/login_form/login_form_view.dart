@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../components/t_checkbox/t_checkbox.dart';
@@ -51,14 +53,14 @@ class LoginFormView extends StatelessWidget {
                     prefixIcon: const Icon(Symbols.person_outline_rounded,
                         color: ThemeConfig.textColorSecondary),
                     isCollapsed: true,
-                    contentPadding: EdgeInsets.symmetric(vertical: 16),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 16),
                     enabledBorder: const UnderlineInputBorder(
                         borderSide: BorderSide(color: ThemeConfig.borderColor)),
                     focusedBorder: const UnderlineInputBorder(
                         borderSide: BorderSide(
                       color: ThemeConfig.primary,
                     )),
-                    errorBorder: UnderlineInputBorder(
+                    errorBorder: const UnderlineInputBorder(
                         borderSide: BorderSide(color: ThemeConfig.error)),
                     focusedErrorBorder: const UnderlineInputBorder(
                         borderSide:
@@ -92,7 +94,7 @@ class LoginFormView extends StatelessWidget {
                         borderSide: BorderSide(
                       color: ThemeConfig.primary,
                     )),
-                    errorBorder: UnderlineInputBorder(
+                    errorBorder: const UnderlineInputBorder(
                         borderSide: BorderSide(color: ThemeConfig.error)),
                     focusedErrorBorder: const UnderlineInputBorder(
                         borderSide:
@@ -108,7 +110,7 @@ class LoginFormView extends StatelessWidget {
                 },
               ),
               const SizedBox(
-                height: 16,
+                height: 12,
               ),
               TCheckbox(
                 loginFormController.rememberMe!,
@@ -126,37 +128,29 @@ class LoginFormView extends StatelessWidget {
     );
   }
 
-  SizedBox _buildLoginButton(bool isWaitingLoginRequest,
+  Widget _buildLoginButton(bool isWaitingLoginRequest,
           AppLocalizations localizations, ThemeData theme) =>
-      SizedBox(
-          width: 270,
-          height: 50,
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              FilledButton(
-                onPressed:
-                    isWaitingLoginRequest ? null : loginFormController.submit,
-                style: FilledButton.styleFrom(
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: ThemeConfig.borderRadius4,
-                  ),
-                  disabledBackgroundColor: ThemeConfig.primaryDisabled,
+      FilledButton(
+        onPressed: isWaitingLoginRequest ? null : loginFormController.submit,
+        style: FilledButton.styleFrom(
+          minimumSize: const Size(0, 50),
+          shape: const RoundedRectangleBorder(
+            borderRadius: ThemeConfig.borderRadius4,
+          ),
+          disabledBackgroundColor: ThemeConfig.primaryDisabled,
+        ),
+        child: isWaitingLoginRequest
+            ? const SizedBox(
+                height: 25,
+                width: 25,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
                 ),
-                child: isWaitingLoginRequest
-                    ? const SizedBox(
-                        height: 25,
-                        width: 25,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                        ),
-                      )
-                    : Text(
-                        localizations.login,
-                        style: theme.textTheme.labelMedium!
-                            .copyWith(fontSize: 20, color: Colors.white),
-                      ),
+              )
+            : Text(
+                localizations.login,
+                style: theme.textTheme.labelMedium!
+                    .copyWith(fontSize: 20, color: Colors.white),
               ),
-            ],
-          ));
+      );
 }

@@ -1,10 +1,11 @@
 import 'package:drift/drift.dart';
-import 'package:logger/logger.dart';
+
+import 'log_level_converter.dart';
 
 class LogEntryTable extends Table {
   IntColumn get id => integer().autoIncrement()();
 
-  IntColumn get level => intEnum<Level>()();
+  IntColumn get level => integer().map(LogLevelConverter())();
 
   DateTimeColumn get timestamp => dateTime()();
 

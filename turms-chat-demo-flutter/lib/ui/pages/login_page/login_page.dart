@@ -11,11 +11,12 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Stack(children: [
-        ColoredBox(
-          color: Colors.white,
-          child: Padding(
-            padding:
-                const EdgeInsets.only(left: 36, right: 36, top: 36, bottom: 16),
+        const TWindowControlZone(toggleMaximizeOnDoubleTap: false),
+        Padding(
+          padding:
+              const EdgeInsets.only(left: 36, right: 36, top: 36, bottom: 24),
+          child: ColoredBox(
+            color: Colors.white,
             child: DecoratedBox(
               decoration: BoxDecoration(
                   color: Colors.white, borderRadius: BorderRadius.circular(20)),
@@ -35,7 +36,6 @@ class LoginPage extends StatelessWidget {
             ),
           ),
         ),
-        const TWindowControlZone(toggleMaximizeOnDoubleTap: false),
         const TTitleBar(displayCloseOnly: true, backgroundColor: Colors.white),
       ]);
 }

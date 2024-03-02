@@ -129,10 +129,10 @@ class _MessageBubbleImageState extends State<MessageBubbleImage> {
     final ext = extension(urlStr);
     final fileBaseName = CryptoUtils.getSha256ByString(urlStr);
     final fileName = '$fileBaseName$ext';
-    final filePath = PathUtils.joinAppPath(['files', fileName]);
+    final filePath = PathUtils.joinPathInUserScope(['files', fileName]);
     originalImagePath = filePath;
     final outputImagePath =
-        PathUtils.joinAppPath(['files', '$fileBaseName-thumbnail$ext']);
+        PathUtils.joinPathInUserScope(['files', '$fileBaseName-thumbnail$ext']);
     thumbnailImagePath = outputImagePath;
     final outputFile = File(outputImagePath);
     if (await outputFile.exists()) {

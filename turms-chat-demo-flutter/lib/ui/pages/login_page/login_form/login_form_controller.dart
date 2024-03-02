@@ -18,6 +18,7 @@ import '../../../../domain/user/view_models/user_login_infos_view_model.dart';
 import '../../../../domain/user/view_models/user_settings_view_model.dart';
 import '../../../../infra/autostart/autostart_manager.dart';
 import '../../../../infra/github/github_client.dart';
+import '../../../../infra/logging/log_appender_database.dart';
 import '../../../../infra/logging/logger.dart';
 import '../../../../infra/sqlite/app_database.dart';
 import '../../../../infra/task/task_utils.dart';
@@ -41,11 +42,20 @@ class LoginFormController extends ConsumerState<LoginForm> {
   late AppSettings appSettings;
   late List<UserLoginInfoTableData> userLoginInfos;
 
+  LogAppenderDatabase? _logAppenderDatabase;
+
   @override
   Widget build(BuildContext context) {
     appLocalizations = ref.watch(appLocalizationsViewModel);
     appSettings = ref.watch(appSettingsViewModel)!;
     userLoginInfos = ref.watch(userLoginInfosViewModel);
+    ref.listen(loggedInUserViewModel, (_, loggedInUser) {
+      final appender = _logAppenderDatabase;
+      if (loggedInUser == null && appender != null) {
+        logger.removeAppender(appender);
+        _logAppenderDatabase = null;
+      }
+    });
     return LoginFormView(this);
   }
 
@@ -70,7 +80,8 @@ class LoginFormController extends ConsumerState<LoginForm> {
     } else {
       await userLoginInfoRepository.deleteAll();
     }
-    // logger. TODO
+    final _logAppenderDatabase = LogAppenderDatabase(userId: userId);
+    logger.addAppender(_logAppenderDatabase);
     await appSettingsRepository.upsertRememberMe(shouldRemember);
     // read user settings
     final userSettings = await _getUserSettings();

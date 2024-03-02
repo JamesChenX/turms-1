@@ -5,11 +5,15 @@ import 'package:drift/native.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../../app/app_config.dart';
+import '../../io/path_utils.dart';
+
 class DatabaseUtils {
   DatabaseUtils._();
 
   static QueryExecutor createDatabase({
     required String dbName,
+    required bool isAppDatabase,
     bool inMemory = false,
     required bool logStatements,
   }) {
@@ -17,9 +21,10 @@ class DatabaseUtils {
       return NativeDatabase.memory(logStatements: logStatements);
     }
     return LazyDatabase(() async {
-      final dir = await getApplicationDocumentsDirectory();
-      final file = File(join(dir.path, 'database/$dbName.sqlite'));
-
+      final path = isAppDatabase
+          ? PathUtils.joinPathInAppScope(['database', '$dbName.sqlite'])
+          : PathUtils.joinPathInUserScope(['database', '$dbName.sqlite']);
+      final file = File(path);
       return NativeDatabase.createInBackground(file,
           logStatements: logStatements);
     });

@@ -39,7 +39,7 @@ class _MessageBubbleVideoState extends State<MessageBubbleVideo> {
       final urlStr = url.toString();
       final ext = extension(urlStr);
       final fileName = '${CryptoUtils.getSha256ByString(urlStr)}.$ext';
-      final filePath = PathUtils.joinAppPath(['files', fileName]);
+      final filePath = PathUtils.joinPathInUserScope(['files', fileName]);
       final file = File(filePath);
       final VideoPlayerController controller;
       if (await file.exists()) {

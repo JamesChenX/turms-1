@@ -5,6 +5,7 @@ class DatabaseUtils {
 
   static QueryExecutor createDatabase({
     required String dbName,
+    required bool isAppDatabase,
     bool inMemory = false,
     required bool logStatements,
   }) {

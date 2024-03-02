@@ -5,7 +5,6 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:logger/logger.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 import 'domain/app/models/app_settings.dart';
@@ -49,11 +48,11 @@ Future<void> run(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
 
   if (kReleaseMode) {
-    Logger.addLogListener((event) {
-      if (event.level.value >= Level.error.value) {
-        // TODO: Send error logs to servers
-      }
-    });
+    // logger.addAppender((event) {
+    //   if (event.level.value <= Level.error.value) {
+    //     // TODO: Send error logs to servers
+    //   }
+    // });
   } else if (kDebugMode) {
     debugInvertOversizedImages = true;
     // only uncomment when needed because it effects the performance.
@@ -103,7 +102,11 @@ Future<void> _initForDesktopPlatforms(
     final rpcServer = await RpcServer.create();
     WidgetsBinding.instance
         .addObserver(AppLifecycleListener(onExitRequested: () async {
-      await rpcServer.close();
+      try {
+        await rpcServer.close();
+      } catch (e) {
+        // ignore
+      }
       return AppExitResponse.exit;
     }));
   }

@@ -2,15 +2,14 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:fixnum/fixnum.dart';
-import 'package:logger/logger.dart';
 
 import '../sqlite/app_database.dart';
 import '../sqlite/user_database.dart';
 import 'log_appender.dart';
 import 'log_entry.dart';
 
-class DatabaseLogAppender extends LogAppender {
-  DatabaseLogAppender({
+class LogAppenderDatabase extends LogAppender {
+  LogAppenderDatabase({
     required this.userId,
   });
 

@@ -26,4 +26,6 @@ class AppDatabase extends _$AppDatabase {
 }
 
 final appDatabase = AppDatabase(DatabaseUtils.createDatabase(
-    dbName: 'app', logStatements: EnvVars.databaseLogStatements));
+    dbName: 'app',
+    isAppDatabase: true,
+    logStatements: EnvVars.databaseLogStatements));

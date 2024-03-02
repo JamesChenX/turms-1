@@ -4,8 +4,10 @@ import 'package:fixnum/fixnum.dart';
 import 'package:flutter/foundation.dart';
 
 import '../../domain/app/tables/log_entry_table.dart';
+import '../../domain/app/tables/log_level_converter.dart';
 import '../../domain/user/tables/user_setting_table.dart';
 import '../env/env_vars.dart';
+import '../logging/log_level.dart';
 import 'core/database_utils.dart';
 
 part 'user_database.g.dart';
@@ -33,4 +35,5 @@ UserDatabase createUserDatabaseIfNotExists(Int64 userId) =>
         userId,
         () => UserDatabase(DatabaseUtils.createDatabase(
             dbName: 'user_${userId.toString()}',
+            isAppDatabase: false,
             logStatements: EnvVars.databaseLogStatements)));

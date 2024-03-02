@@ -24,6 +24,9 @@ class UserLoginInfoRepository {
         onConflict: DoUpdate((old) => UserLoginInfoTableCompanion.custom(
             password: Constant(password), lastModifiedDate: Constant(now))));
   }
+
+  Future<void> deleteAll() =>
+      appDatabase.delete(appDatabase.userLoginInfoTable).go();
 }
 
 final userLoginInfoRepository = UserLoginInfoRepository();

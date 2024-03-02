@@ -5,6 +5,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../domain/user/models/setting_action_on_close.dart';
 import '../../domain/user/view_models/user_settings_view_model.dart';
 import '../../domain/window/view_models/window_maximized_view_model.dart';
+import '../../infra/app/app_utils.dart';
 import '../../infra/ui/color_extensions.dart';
 import '../../infra/window/window_utils.dart';
 import '../l10n/app_localizations.dart';
@@ -119,7 +120,7 @@ class _TTitleBarState extends ConsumerState<TTitleBar> {
             : () => switch (ref.read(userSettingsViewModel)?.actionOnClose ??
                     SettingActionOnClose.exit) {
                   SettingActionOnClose.minimizeToTray => WindowUtils.hide(),
-                  SettingActionOnClose.exit => WindowUtils.close(),
+                  SettingActionOnClose.exit => AppUtils.close(),
                 },
       );
 }

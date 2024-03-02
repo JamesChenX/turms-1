@@ -1,10 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
-import '../../../../../components/t_horizontal_divider.dart';
-import '../../../../../components/t_search_bar.dart';
+import '../../../../../components/components.dart';
 import '../../../../../l10n/view_models/app_localizations_view_model.dart';
 import '../../../../../themes/theme_config.dart';
 
@@ -25,10 +24,10 @@ class ChatSessionDetailsDrawer extends ConsumerWidget {
               left: BorderSide(width: 1, color: ThemeConfig.borderColor),
             )),
         child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
           child: Column(
             children: [
-              Align(
+              const Align(
                 alignment: Alignment.topLeft,
                 child: SelectionArea(child: Text('name')),
               ),
@@ -78,11 +77,49 @@ class ChatSessionDetailsDrawer extends ConsumerWidget {
                 ],
               ),
               divider,
+              const SizedBox(
+                height: 8,
+              ),
+              TTextButton(
+                text: appLocalizations.addNewMember,
+              ),
+              const SizedBox(
+                height: 8,
+              ),
               TSearchBar(hintText: appLocalizations.search),
-              Row(
-                children: [
-                  Text('add new memember'),
-                ],
+              const SizedBox(
+                height: 8,
+              ),
+              Expanded(
+                  child: ListView.separated(
+                itemCount: 20,
+                itemBuilder: (context, index) => Row(
+                  children: [
+                    TAvatar(name: 'name', size: TAvatarSize.small),
+                    const SizedBox(
+                      width: 8,
+                    ),
+                    const Expanded(
+                        child: Text(
+                      'a very long name, a very long name, a very long name, a very long name',
+                      overflow: TextOverflow.ellipsis,
+                    )),
+                    const SizedBox(
+                      width: 8,
+                    ),
+                    const Icon(Symbols.crowdsource)
+                  ],
+                ),
+                separatorBuilder: (BuildContext context, int index) =>
+                    const SizedBox(
+                  height: 4,
+                ),
+              )),
+              const SizedBox(
+                height: 8,
+              ),
+              TTextButton(
+                text: appLocalizations.leaveGroup,
               )
             ],
           ),

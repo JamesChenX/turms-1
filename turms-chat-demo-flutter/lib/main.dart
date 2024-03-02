@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -19,13 +20,27 @@ import 'infra/autostart/autostart_manager.dart';
 import 'infra/logging/logger.dart';
 import 'infra/media/video_utils.dart';
 import 'infra/platform/platform_helpers.dart';
+import 'infra/rpc/rpc_client.dart';
+import 'infra/rpc/rpc_server.dart';
 import 'infra/tray/tray_menu_item.dart';
 import 'infra/tray/tray_utils.dart';
 import 'infra/window/window_event_listener.dart';
 import 'infra/window/window_utils.dart';
 import 'ui/pages/app.dart';
 
-Future<void> main() async {
+Future<void> main(List<String> args) async {
+  try {
+    await run(args);
+  } catch (_) {
+    // Ensure all logs are flushed before exit.
+    scheduleMicrotask(() {
+      exit(1);
+    });
+    rethrow;
+  }
+}
+
+Future<void> run(List<String> args) async {
   // TODO: Enable other platforms when we have adapted and tested.
   if (!isDesktop) {
     throw Exception('Only desktop is supported currently');
@@ -57,27 +72,55 @@ Future<void> main() async {
   };
 
   await AppConfig.load();
-  initAutostartManager(
-      appName: AppConfig.packageInfo.appName,
-      appPath: Platform.resolvedExecutable,
-      args: []);
+  logger
+    ..i('The application directory: ${AppConfig.appDir}')
+    ..i('The application package info: ${AppConfig.packageInfo}');
+
   VideoUtils.ensureInitialized();
 
-  if (kDebugMode) {
-    logger
-      ..d('The application directory: ${AppConfig.appDir}')
-      ..d('The application package info: ${AppConfig.packageInfo}');
-  }
-
   final container = ProviderContainer();
-  await initForDesktopPlatforms(container);
+  await _initForDesktopPlatforms(args, container);
+  await _loadAppSettings(container);
 
+  runApp(UncontrolledProviderScope(
+      container: container, child: App(container: container)));
+}
+
+Future<void> _loadAppSettings(ProviderContainer container) async {
   final appSettings = await appSettingsRepository.selectAll();
   container.read(appSettingsViewModel.notifier).state =
       AppSettings.fromTableData(appSettings);
 
   final userLoginInfos = await userLoginInfoRepository.selectUserLoginInfos();
   container.read(userLoginInfosViewModel.notifier).state = userLoginInfos;
+}
+
+Future<void> _initForDesktopPlatforms(
+    List<String> args, ProviderContainer container) async {
+  if (args.contains('daemon')) {
+    await RpcClient.connect();
+  } else {
+    final rpcServer = await RpcServer.create();
+    WidgetsBinding.instance
+        .addObserver(AppLifecycleListener(onExitRequested: () async {
+      await rpcServer.close();
+      return AppExitResponse.exit;
+    }));
+  }
+
+  initAutostartManager(
+      appName: AppConfig.packageInfo.appName,
+      appPath: Platform.resolvedExecutable,
+      args: []);
+
+  // UI-related
+  await WindowUtils.ensureInitialized();
+
+  WindowUtils.addListener(WindowEventListener(onMaximize: () {
+    container.read(isWindowMaximizedViewModel.notifier).state = true;
+  }, onUnmaximize: () {
+    container.read(isWindowMaximizedViewModel.notifier).state = false;
+  }));
 
   // Note that we need to setup window before painting,
   // otherwise UI will jitter.
@@ -86,17 +129,6 @@ Future<void> main() async {
       size: AppConfig.defaultWindowSizeForLoginScreen,
       backgroundColor: Colors.transparent,
       title: AppConfig.title);
-  runApp(UncontrolledProviderScope(
-      container: container, child: App(container: container)));
-}
-
-Future<void> initForDesktopPlatforms(ProviderContainer container) async {
-  await WindowUtils.ensureInitialized();
-  WindowUtils.addListener(WindowEventListener(onMaximize: () {
-    container.read(isWindowMaximizedViewModel.notifier).state = true;
-  }, onUnmaximize: () {
-    container.read(isWindowMaximizedViewModel.notifier).state = false;
-  }));
   try {
     await TrayUtils.initTray(
         AppConfig.title,

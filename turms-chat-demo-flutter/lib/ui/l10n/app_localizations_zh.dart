@@ -20,6 +20,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get addContact => '添加联系人';
 
   @override
+  String get addNewMember => '添加新成员';
+
+  @override
   String get addNewRelationship => '添加新关系';
 
   @override
@@ -137,6 +140,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get launchOnStartup => '启动时运行';
+
+  @override
+  String get leaveGroup => '离开群组';
 
   @override
   String get lightTheme => '亮主题';

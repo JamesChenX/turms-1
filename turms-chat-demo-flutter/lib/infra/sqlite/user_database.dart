@@ -3,18 +3,20 @@ import 'package:drift_dev/api/migrations.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/foundation.dart';
 
+import '../../domain/app/tables/log_entry_table.dart';
 import '../../domain/user/tables/user_setting_table.dart';
 import '../env/env_vars.dart';
 import 'core/database_utils.dart';
 
 part 'user_database.g.dart';
 
-@DriftDatabase(tables: [UserSettingTable])
+@DriftDatabase(tables: [LogEntryTable, UserSettingTable])
 class UserDatabase extends _$UserDatabase {
   UserDatabase(super.e);
 
   @override
   int get schemaVersion => 1;
+
   @override
   MigrationStrategy get migration =>
       MigrationStrategy(beforeOpen: (details) async {

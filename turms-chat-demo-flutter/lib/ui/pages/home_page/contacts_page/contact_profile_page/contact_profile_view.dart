@@ -5,6 +5,7 @@ import '../../../../../domain/user/models/contact.dart';
 
 import '../../../../../domain/user/models/index.dart';
 import '../../../../../infra/built_in_types/built_in_type_helpers.dart';
+import '../../../../components/components.dart';
 import '../../../../components/t_avatar/t_avatar.dart';
 import '../../../../components/t_empty.dart';
 import '../../../../components/t_window_control_zone.dart';
@@ -97,7 +98,7 @@ class ContactProfilePageView extends ConsumerWidget {
                   Text(selectedContact.intro)
                 ],
                 const SizedBox(
-                  height: 16,
+                  height: 32,
                 ),
                 _buildActions(ref)
               ],
@@ -106,16 +107,8 @@ class ContactProfilePageView extends ConsumerWidget {
         ),
       );
 
-  Widget _buildActions(WidgetRef ref) => MouseRegion(
-        cursor: SystemMouseCursors.click,
-        child: GestureDetector(
-          onTap: contactProfilePageController.startConversation,
-          child: Column(
-            children: [
-              const Icon(Symbols.chat, size: 32),
-              Text(ref.watch(appLocalizationsViewModel).messages)
-            ],
-          ),
-        ),
+  Widget _buildActions(WidgetRef ref) => TTextButton(
+        text: ref.watch(appLocalizationsViewModel).messages,
+        onTap: contactProfilePageController.startConversation,
       );
 }

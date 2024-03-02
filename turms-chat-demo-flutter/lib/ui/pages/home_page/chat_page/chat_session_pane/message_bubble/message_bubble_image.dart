@@ -13,6 +13,7 @@ import '../../../../../../infra/io/path_utils.dart';
 import '../../../../../../infra/media/future_memory_image_provider.dart';
 import '../../../../../../infra/task/task_utils.dart';
 import '../../../../../../infra/units/file_size_extensions.dart';
+import '../../../../../components/t_image_viewer.dart';
 import '../../../../../themes/theme_config.dart';
 
 const _imageBorderWidth = 1.0;
@@ -33,6 +34,7 @@ class _MessageBubbleImageState extends State<MessageBubbleImage> {
   late Image image;
 
   late Future<Uint8List?> downloadFile;
+  late String originalImagePath;
   late String thumbnailImagePath;
 
   @override
@@ -51,16 +53,24 @@ class _MessageBubbleImageState extends State<MessageBubbleImage> {
   Widget build(BuildContext context) => MouseRegion(
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
-          onPanDown: (details) {}, child: _buildThumbnailImage()));
+          onTap: () async {
+            final originalImageFile = File(originalImagePath);
+            final ImageProvider image;
+            if (await originalImageFile.exists()) {
+              image = FileImage(originalImageFile);
+            } else {
+              // TODO: show a tip to let user know if the original image has been deleted.
+              image =
+                  FutureMemoryImageProvider(thumbnailImagePath, downloadFile);
+            }
+            unawaited(showImageViewerDialog(context, image));
+          },
+          child: _buildThumbnailImage()));
 
   Image _buildThumbnailImage() => Image(
         isAntiAlias: true,
         gaplessPlayback: true,
         image: FutureMemoryImageProvider(thumbnailImagePath, downloadFile),
-        // cacheHeight: maxHeight,
-        // cacheWidth: maxWidth,
-        // width: maxWidth,
-        // height: maxHeight,
         fit: BoxFit.contain,
         loadingBuilder: (context, child, loadingProgress) {
           if (loadingProgress == null) {
@@ -119,6 +129,8 @@ class _MessageBubbleImageState extends State<MessageBubbleImage> {
     final ext = extension(urlStr);
     final fileBaseName = CryptoUtils.getSha256ByString(urlStr);
     final fileName = '$fileBaseName$ext';
+    final filePath = PathUtils.joinAppPath(['files', fileName]);
+    originalImagePath = filePath;
     final outputImagePath =
         PathUtils.joinAppPath(['files', '$fileBaseName-thumbnail$ext']);
     thumbnailImagePath = outputImagePath;
@@ -127,7 +139,6 @@ class _MessageBubbleImageState extends State<MessageBubbleImage> {
       // cache result
       return outputFile.readAsBytes();
     }
-    final filePath = PathUtils.joinAppPath(['files', fileName]);
     return HttpUtils.downloadFileIfNotExists(
       taskId: filePath,
       uri: Uri.parse(url),

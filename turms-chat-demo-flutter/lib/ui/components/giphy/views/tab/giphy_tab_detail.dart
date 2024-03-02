@@ -1,4 +1,3 @@
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -115,36 +114,35 @@ class _GiphyTabDetailState extends ConsumerState<GiphyTabDetail> {
         onTap: () => _selectedGif(gif),
         child: images.fixedWidth.webp == null
             ? Container()
-            : ExtendedImage.network(
+            : Image.network(
                 images.fixedWidth.webp!,
                 semanticLabel: gif.title,
                 gaplessPlayback: true,
                 fit: BoxFit.fill,
                 headers: {'accept': 'image/*'},
-                loadStateChanged: (state) => AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 350),
-                  child: switch (state.extendedImageLoadState) {
-                    LoadState.loading => AspectRatio(
-                        aspectRatio: _aspectRatio,
-                        child: Container(
-                          color: Theme.of(context).cardColor,
-                        ),
-                      ),
-                    LoadState.completed => AspectRatio(
-                        aspectRatio: _aspectRatio,
-                        child: ExtendedRawImage(
-                          fit: BoxFit.fill,
-                          image: state.extendedImageInfo?.image,
-                        ),
-                      ),
-                    LoadState.failed => AspectRatio(
-                        aspectRatio: _aspectRatio,
-                        child: Container(
-                          color: Theme.of(context).cardColor,
-                        ),
-                      )
-                  },
-                ),
+                // loadStateChanged: (state) => AnimatedSwitcher(
+                //   duration: const Duration(milliseconds: 350),
+                //   child: switch (state.extendedImageLoadState) {
+                //     LoadState.loading => AspectRatio(
+                //         aspectRatio: _aspectRatio,
+                //         child: Container(
+                //           color: Theme.of(context).cardColor,
+                //         ),
+                //       ),
+                //     LoadState.completed => AspectRatio(
+                //         aspectRatio: _aspectRatio,
+                //         child: ExtendedRawImage(
+                //           fit: BoxFit.fill,
+                //           image: state.extendedImageInfo?.image,
+                //         ),
+                //       ),
+                //     LoadState.failed => AspectRatio(
+                //         aspectRatio: _aspectRatio,
+                //         child: Container(
+                //           color: Theme.of(context).cardColor,
+                //         ),
+                //       )
+                //   },
               ),
       ),
     );
@@ -194,10 +192,10 @@ class _GiphyTabDetailState extends ConsumerState<GiphyTabDetail> {
   }
 
   void _loadMoreIfScrollToEnd() {
-    if (widget.scrollController.positions.last.extentAfter.lessThan(500) &&
-        !_isLoading) {
-      _loadMore();
-    }
+    // if (widget.scrollController.positions.last.extentAfter.lessThan(500) &&
+    //     !_isLoading) {
+    //   _loadMore();
+    // }
   }
 
   // Return selected gif

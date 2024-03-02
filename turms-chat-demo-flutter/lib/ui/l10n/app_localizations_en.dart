@@ -20,6 +20,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addContact => 'Add Contact';
 
   @override
+  String get addNewMember => 'Add New Member';
+
+  @override
   String get addNewRelationship => 'Add New Relationship';
 
   @override
@@ -137,6 +140,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get launchOnStartup => 'Run on Startup';
+
+  @override
+  String get leaveGroup => 'Leave Group';
 
   @override
   String get lightTheme => 'Light';

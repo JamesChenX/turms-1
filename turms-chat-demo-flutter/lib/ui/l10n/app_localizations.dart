@@ -126,6 +126,12 @@ abstract class AppLocalizations {
   /// **'Add Contact'**
   String get addContact;
 
+  /// No description provided for @addNewMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Add New Member'**
+  String get addNewMember;
+
   /// No description provided for @addNewRelationship.
   ///
   /// In en, this message translates to:
@@ -359,6 +365,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Run on Startup'**
   String get launchOnStartup;
+
+  /// No description provided for @leaveGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave Group'**
+  String get leaveGroup;
 
   /// No description provided for @lightTheme.
   ///

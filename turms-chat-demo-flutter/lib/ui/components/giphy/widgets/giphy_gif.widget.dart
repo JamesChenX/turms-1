@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 
 import '../client/models/gif.dart';
@@ -8,12 +7,6 @@ import '../l10n/l10n.dart';
 import 'giphy_get.widget.dart';
 
 class GiphyGifWidget extends StatefulWidget {
-  final GiphyGif gif;
-  final GiphyGetWrapper giphyGetWrapper;
-  final bool showGiphyLabel;
-  final BorderRadius? borderRadius;
-  final Alignment imageAlignment;
-
   const GiphyGifWidget({
     Key? key,
     required this.gif,
@@ -22,6 +15,11 @@ class GiphyGifWidget extends StatefulWidget {
     this.imageAlignment = Alignment.center,
     this.showGiphyLabel = true,
   }) : super(key: key);
+  final GiphyGif gif;
+  final GiphyGetWrapper giphyGetWrapper;
+  final bool showGiphyLabel;
+  final BorderRadius? borderRadius;
+  final Alignment imageAlignment;
 
   @override
   State<GiphyGifWidget> createState() => _GiphyGifWidgetState();
@@ -65,7 +63,7 @@ class _GiphyGifWidgetState extends State<GiphyGifWidget> {
                   decoration: BoxDecoration(
                     borderRadius: widget.borderRadius,
                   ),
-                  child: ExtendedImage.network(
+                  child: Image.network(
                     images.fixedWidth.url,
                   ),
                 ),

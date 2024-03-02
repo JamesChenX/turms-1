@@ -24,9 +24,6 @@ class SubNavigationRailView extends StatelessWidget {
         child: Focus(
           focusNode: subNavigationRailController.focusNode,
           canRequestFocus: true,
-          onFocusChange: (value) {
-            print(value);
-          },
           onKeyEvent: subNavigationRailController.onKeyEvent,
           child: ColoredBox(
               color: ThemeConfig.conversationBackgroundColor,

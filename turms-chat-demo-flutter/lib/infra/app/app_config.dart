@@ -19,11 +19,14 @@ class AppConfig {
   static late PackageInfo packageInfo;
 
   static late String appDir;
+  static late String tempDir;
 
   static Future<void> load() async {
     packageInfo = await PackageInfo.fromPlatform();
     final appDocDir = await getApplicationDocumentsDirectory();
+    final appDocDirPath = await appDocDir.resolveSymbolicLinks();
     appDir =
-        '${appDocDir.path}${Platform.pathSeparator}${AppConfig.packageInfo.packageName}';
+        '$appDocDirPath${Platform.pathSeparator}${AppConfig.packageInfo.packageName}';
+    tempDir = await (await getTemporaryDirectory()).resolveSymbolicLinks();
   }
 }

@@ -67,7 +67,10 @@ class LoginFormController extends ConsumerState<LoginForm> {
     final shouldRemember = rememberMe!;
     if (shouldRemember) {
       await userLoginInfoRepository.upsert(userId.toString(), password);
+    } else {
+      await userLoginInfoRepository.deleteAll();
     }
+    // logger. TODO
     await appSettingsRepository.upsertRememberMe(shouldRemember);
     // read user settings
     final userSettings = await _getUserSettings();

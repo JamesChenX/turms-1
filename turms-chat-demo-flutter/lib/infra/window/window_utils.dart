@@ -6,8 +6,6 @@ import 'window_event_listener.dart';
 class WindowUtils {
   WindowUtils._();
 
-  static Future<void> close() async => windowManager.close();
-
   static Future<void> maximize() => windowManager.maximize();
 
   static Future<void> unmaximize() => windowManager.unmaximize();

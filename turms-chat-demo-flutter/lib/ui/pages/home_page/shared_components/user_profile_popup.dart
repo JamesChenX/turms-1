@@ -70,8 +70,9 @@ class _UserProfilePopupState extends ConsumerState<UserProfilePopup> {
         image: user.image,
       ),
       follower: Material(
+        borderRadius: ThemeConfig.borderRadius4,
         child: SizedBox(
-          height: 200,
+          height: 160,
           width: 280,
           child: Container(
               alignment: Alignment.center,
@@ -79,20 +80,17 @@ class _UserProfilePopupState extends ConsumerState<UserProfilePopup> {
                   color: Colors.white,
                   borderRadius: ThemeConfig.borderRadius4,
                   boxShadow: ThemeConfig.boxShadow),
-              padding: const EdgeInsets.all(10),
-              width: 50,
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    UserProfile(user: user),
-                    TTextButton(
-                      text: appLocalizations.messages,
-                      onTap: () => startConversation(user),
-                    ),
-                  ],
-                ),
+              padding: const EdgeInsets.only(
+                  left: 16, top: 16, right: 16, bottom: 16),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  UserProfile(user: user),
+                  TTextButton(
+                    text: appLocalizations.messages,
+                    onTap: () => startConversation(user),
+                  ),
+                ],
               )),
         ),
       ),

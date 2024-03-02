@@ -120,7 +120,7 @@ class LoginFormView extends StatelessWidget {
                 },
               ),
               const SizedBox(
-                height: 28,
+                height: 32,
               ),
               _buildLoginButton(isWaitingLoginRequest, localizations, theme)
             ],
@@ -133,7 +133,7 @@ class LoginFormView extends StatelessWidget {
       FilledButton(
         onPressed: isWaitingLoginRequest ? null : loginFormController.submit,
         style: FilledButton.styleFrom(
-          minimumSize: const Size(0, 50),
+          minimumSize: const Size(0, 56),
           shape: const RoundedRectangleBorder(
             borderRadius: ThemeConfig.borderRadius4,
           ),

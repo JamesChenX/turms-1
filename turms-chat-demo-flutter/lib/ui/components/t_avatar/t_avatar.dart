@@ -34,8 +34,7 @@ class TAvatar extends StatelessWidget {
       required this.name,
       this.image,
       this.icon,
-      this.size = TAvatarSize.medium,
-      this.onPressed})
+      this.size = TAvatarSize.medium})
       : firstChar = name.isEmpty ? '' : name.substring(0, 1);
 
   final String name;
@@ -43,7 +42,6 @@ class TAvatar extends StatelessWidget {
   final ImageProvider? image;
   final IconData? icon;
   final TAvatarSize size;
-  final GestureTapCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +85,6 @@ class TAvatar extends StatelessWidget {
         child = Container(
           height: containerSize,
           width: containerSize,
-          // color: const Color(0xffFF0E58),
           color: _pickColor(name),
           alignment: Alignment.center,
           child: Text(
@@ -97,12 +94,9 @@ class TAvatar extends StatelessWidget {
         );
       }
     }
-    return GestureDetector(
-      onTap: onPressed,
-      child: ClipRRect(
-        borderRadius: ThemeConfig.borderRadius4,
-        child: child,
-      ),
+    return ClipRRect(
+      borderRadius: ThemeConfig.borderRadius4,
+      child: child,
     );
   }
 

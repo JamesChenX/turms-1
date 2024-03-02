@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 
 import '../../../../components/t_avatar/t_avatar.dart';
+import '../../../../components/t_image_viewer.dart';
 import 'user_profile_controller.dart';
 
 class UserProfileView extends StatelessWidget {
@@ -9,19 +11,31 @@ class UserProfileView extends StatelessWidget {
   final UserProfileController userProfileController;
 
   @override
-  Widget build(BuildContext context) => _buildProfile();
+  Widget build(BuildContext context) => _buildProfile(context);
 
-  Widget _buildProfile() {
+  Widget _buildProfile(BuildContext context) {
     final widget = userProfileController.widget;
     final user = widget.user;
+    final image = user.image;
+    final avatar = TAvatar(
+      size: TAvatarSize.large,
+      name: user.name,
+      image: user.image,
+    );
     return IntrinsicHeight(
       child: Row(
         children: [
-          TAvatar(
-            size: TAvatarSize.large,
-            name: user.name,
-            image: user.image,
-          ),
+          image == null
+              ? avatar
+              : MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: GestureDetector(
+                    onTap: () {
+                      showImageViewerDialog(context, image);
+                    },
+                    child: avatar,
+                  ),
+                ),
           const SizedBox(
             width: 16,
           ),

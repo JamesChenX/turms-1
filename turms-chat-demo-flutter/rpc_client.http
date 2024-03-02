@@ -1,0 +1,6 @@
+WEBSOCKET ws://localhost:29510
+
+// language=JSON
+{
+  "message": "First message sent on connection",
+}

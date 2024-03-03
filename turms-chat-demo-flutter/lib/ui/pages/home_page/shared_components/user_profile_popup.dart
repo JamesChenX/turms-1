@@ -85,7 +85,10 @@ class _UserProfilePopupState extends ConsumerState<UserProfilePopup> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  UserProfile(user: user),
+                  UserProfile(
+                    user: user,
+                    avatarImageEditable: true,
+                  ),
                   TTextButton(
                     text: appLocalizations.messages,
                     onTap: () => startConversation(user),

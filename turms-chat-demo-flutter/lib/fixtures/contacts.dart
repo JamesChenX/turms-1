@@ -132,7 +132,9 @@ final fixtureGroupContacts = fixtureUserContacts.indexed.map((item) {
     memberIds.add(fixtureUserContacts[i].userId);
   }
   return GroupContact(
-      groupId: Int64(index + 1), memberIds: memberIds, name: 'fake group name');
+      groupId: Int64(index + 1),
+      memberIds: memberIds,
+      name: 'fake group name.' * 10);
 }).toList();
 
 final fixtureContacts = [...fixtureUserContacts, ...fixtureGroupContacts];

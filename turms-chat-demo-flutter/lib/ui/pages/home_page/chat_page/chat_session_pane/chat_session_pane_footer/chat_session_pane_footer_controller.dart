@@ -62,10 +62,12 @@ class ChatSessionPaneFooterController
         if (currentConversation != null) {
           final previousDraft = currentConversation.draft;
           final draft = getEditorDocument();
-          if (draft != (previousDraft ?? '')) {
+          if (draft.isNotEmpty && draft != previousDraft) {
             currentConversation.draft = draft;
-            ref.read(selectedConversationViewModel.notifier).notifyListeners();
+          } else {
+            currentConversation.draft = null;
           }
+          ref.read(selectedConversationViewModel.notifier).notifyListeners();
         }
         final currentDraft = newConversation?.draft;
         if (currentDraft?.isBlank ?? true) {

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
-import '../../themes/app_theme.dart';
 import '../../themes/theme_config.dart';
 
 class TEditor extends StatefulWidget {

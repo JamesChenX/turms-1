@@ -17,22 +17,7 @@ class CreateGroupPageView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appLocalizations = createGroupPageController.appLocalizations;
-    return SizedBox(
-      width: ThemeConfig.dialogWidthMedium,
-      height: ThemeConfig.dialogHeightMedium,
-      child: Stack(
-        children: [
-          Positioned.fill(
-            child: _buildBody(appLocalizations),
-          ),
-          const TTitleBar(
-            backgroundColor: ThemeConfig.homePageBackgroundColor,
-            displayCloseOnly: true,
-            popOnCloseTapped: true,
-          )
-        ],
-      ),
-    );
+    return _buildBody(appLocalizations);
   }
 
   Widget _buildBody(AppLocalizations appLocalizations) => Padding(

@@ -1,13 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pub_semver/pub_semver.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-import '../../../../infra/app/app_config.dart';
-import '../../../../infra/github/github_client.dart';
-import '../../../../infra/http/http_utils.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../l10n/view_models/app_localizations_view_model.dart';
 import 'about_page.dart';

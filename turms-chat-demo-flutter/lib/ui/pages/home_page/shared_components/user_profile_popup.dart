@@ -26,16 +26,19 @@ import '../../../l10n/view_models/app_localizations_view_model.dart';
 import '../../../themes/theme_config.dart';
 import '../chat_page/view_models/selected_conversation_view_model.dart';
 import 'user_profile/user_profile.dart';
+import 'user_profile_image_editor_dialog/user_profile_image_editor_dialog.dart';
 
 class UserProfilePopup extends ConsumerStatefulWidget {
   const UserProfilePopup({
     super.key,
     required this.user,
     this.position = UserProfilePopupPosition.bottomRight,
+    this.editable = false,
   });
 
   final User user;
   final UserProfilePopupPosition position;
+  final bool editable;
 
   @override
   ConsumerState<UserProfilePopup> createState() => _UserProfilePopupState();
@@ -87,11 +90,12 @@ class _UserProfilePopupState extends ConsumerState<UserProfilePopup> {
                 children: [
                   UserProfile(
                     user: user,
-                    avatarImageEditable: true,
+                    onEditTap:
+                        widget.editable ? _startEditUserProfileImage : null,
                   ),
                   TTextButton(
                     text: appLocalizations.messages,
-                    onTap: () => startConversation(user),
+                    onTap: () => _startConversation(user),
                   ),
                 ],
               )),
@@ -100,12 +104,17 @@ class _UserProfilePopupState extends ConsumerState<UserProfilePopup> {
     );
   }
 
-  void startConversation(User user) {
+  void _startConversation(User user) {
     popupController.hidePopover?.call();
     // TODO: Handle the case when the user is a stranger.
     ref
         .read(selectedConversationViewModel.notifier)
         .select(UserContact(userId: user.userId, name: user.name));
+  }
+
+  void _startEditUserProfileImage() {
+    popupController.hidePopover?.call();
+    showUserProfileImageEditorDialog(context, widget.user);
   }
 }
 

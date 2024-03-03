@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../domain/user/view_models/logged_in_user_info_view_model.dart';
-import 'tabs.dart';
 import '../shared_components/user_profile_popup.dart';
+import 'tabs.dart';
 
 class MainNavigationRail extends ConsumerWidget {
   const MainNavigationRail({super.key});
@@ -18,6 +18,7 @@ class MainNavigationRail extends ConsumerWidget {
           children: [
             UserProfilePopup(
               user: loggedInUser,
+              editable: true,
             ),
             const SizedBox(
               height: 24,

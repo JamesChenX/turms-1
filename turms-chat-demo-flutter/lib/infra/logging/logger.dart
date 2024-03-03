@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 
 import 'log_appender.dart';
 import 'log_appender_console.dart';
-import 'log_appender_database.dart';
 import 'log_entry.dart';
 import 'log_level.dart';
 
@@ -20,16 +19,21 @@ class Logger {
     appenders.remove(appender);
   }
 
-  void e(String message, [Object? error, StackTrace? stackTrace]) {
+  void error(String message, [Object? error, StackTrace? stackTrace]) {
     log(LogEntry(LogLevel.error, message,
         error: error, stackTrace: stackTrace));
   }
 
-  void w(String message) {
-    log(LogEntry(LogLevel.warning, message));
+  void warn(String message, [Object? error, StackTrace? stackTrace]) {
+    log(LogEntry(
+      LogLevel.warn,
+      message,
+      error: error,
+      stackTrace: stackTrace,
+    ));
   }
 
-  void i(String message) {
+  void info(String message) {
     log(LogEntry(LogLevel.info, message));
   }
 

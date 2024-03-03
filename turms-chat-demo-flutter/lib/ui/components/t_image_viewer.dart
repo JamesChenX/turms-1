@@ -69,9 +69,9 @@ class _TImageViewerState extends State<TImageViewer> {
 }
 
 Future<void> showImageViewerDialog(BuildContext context, ImageProvider image) =>
-    showTDialog(
-        context,
-        '/image-viewer-dialog',
-        TImageViewer(
+    showCustomTDialog(
+        routeName: '/image-viewer-dialog',
+        context: context,
+        child: TImageViewer(
           image: image,
         ));

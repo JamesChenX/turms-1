@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -30,15 +29,21 @@ class _ChatSessionPaneHeaderState extends ConsumerState<ChatSessionPaneHeader> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(
-                  left: 28,
-                ),
-                child: SelectionArea(
-                  child: Text(
-                    ref.watch(selectedConversationViewModel)?.name ?? '',
-                    style: const TextStyle(
-                        fontSize: 20, fontWeight: FontWeight.w500),
+              // Use Flexible to prevent overflow
+              Flexible(
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    left: 28,
+                    right: 128,
+                  ),
+                  child: SelectionArea(
+                    child: Text(
+                      ref.watch(selectedConversationViewModel)?.name ?? '',
+                      maxLines: 1,
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.w500),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ),
               ),

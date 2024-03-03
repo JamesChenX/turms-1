@@ -168,6 +168,12 @@ abstract class AppLocalizations {
   /// **'Auto Login'**
   String get autoLogin;
 
+  /// No description provided for @brightness.
+  ///
+  /// In en, this message translates to:
+  /// **'Brightness'**
+  String get brightness;
+
   /// No description provided for @cancel.
   ///
   /// In en, this message translates to:
@@ -197,6 +203,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Close'**
   String get close;
+
+  /// No description provided for @confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm;
 
   /// No description provided for @contacts.
   ///
@@ -252,6 +264,18 @@ abstract class AppLocalizations {
   /// **'Drop files here'**
   String get dropFilesHere;
 
+  /// No description provided for @edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get edit;
+
+  /// No description provided for @editProfileImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Profile Image'**
+  String get editProfileImage;
+
   /// No description provided for @exit.
   ///
   /// In en, this message translates to:
@@ -305,6 +329,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Files'**
   String get files;
+
+  /// No description provided for @flipHorizontally.
+  ///
+  /// In en, this message translates to:
+  /// **'Flip Horizontally'**
+  String get flipHorizontally;
+
+  /// No description provided for @flipVertically.
+  ///
+  /// In en, this message translates to:
+  /// **'Flip Vertically'**
+  String get flipVertically;
 
   /// No description provided for @friendRequests.
   ///
@@ -522,6 +558,24 @@ abstract class AppLocalizations {
   /// **'Restore'**
   String get restore;
 
+  /// No description provided for @rotateAndFlip.
+  ///
+  /// In en, this message translates to:
+  /// **'Rotate & Flip'**
+  String get rotateAndFlip;
+
+  /// No description provided for @rotateLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Rotate Left'**
+  String get rotateLeft;
+
+  /// No description provided for @rotateRight.
+  ///
+  /// In en, this message translates to:
+  /// **'Rotate Right'**
+  String get rotateRight;
+
   /// No description provided for @search.
   ///
   /// In en, this message translates to:
@@ -599,6 +653,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Update'**
   String get update;
+
+  /// No description provided for @uploadProfileImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload Image'**
+  String get uploadProfileImage;
 
   /// No description provided for @userId.
   ///

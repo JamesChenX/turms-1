@@ -1,14 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../shared_states.dart';
-import '../theme.dart';
-import 'search_bar/giphy_search_bar.dart';
-import 'tab/giphy_tab_bar.dart';
-import 'tab/giphy_tab_bottom.dart';
-import 'tab/giphy_tab_top.dart';
-import 'tab/giphy_tab_view.dart';
-
 class MainView extends ConsumerStatefulWidget {
   MainView({
     Key? key,

@@ -16,5 +16,7 @@ class NewRelationshipPage extends ConsumerStatefulWidget {
 
 Future<void> showNewRelationshipDialog(
         BuildContext context, bool showAddContactPage) =>
-    showTDialog(context, '/new-relationship-dialog',
-        NewRelationshipPage(showAddContactPage: showAddContactPage));
+    showCustomTDialog(
+        routeName: '/new-relationship-dialog',
+        context: context,
+        child: NewRelationshipPage(showAddContactPage: showAddContactPage));

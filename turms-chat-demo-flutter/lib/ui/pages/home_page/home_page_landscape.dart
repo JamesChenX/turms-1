@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../domain/user/view_models/user_settings_view_model.dart';
 import '../../../infra/env/env_vars.dart';
-import '../../components/t_focus_tracker.dart';
+import '../../../infra/github/github_client.dart';
+import '../../../infra/logging/logger.dart';
+import '../../../infra/task/task_utils.dart';
 import '../../components/t_title_bar.dart';
 import '../../themes/theme_config.dart';
 import 'about_page/about_page.dart';
@@ -15,6 +18,8 @@ import 'home_page_tab.dart';
 import 'main_navigation_rail/main_navigation_rail.dart';
 import 'settings_page/settings_page.dart';
 import 'shared_view_models/home_page_tab_view_model.dart';
+
+const _taskIdCheckForUpdates = 'checkForUpdates';
 
 class HomePageLandscape extends ConsumerStatefulWidget {
   const HomePageLandscape({Key? key}) : super(key: key);
@@ -99,5 +104,34 @@ class _HomePageLandscapeState extends ConsumerState<HomePageLandscape> {
       // );
     }
     return child;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    TaskUtils.addPeriodicTask(
+        id: _taskIdCheckForUpdates,
+        duration: const Duration(hours: 1),
+        callback: () async {
+          final checkForUpdates =
+              ref.read(userSettingsViewModel)?.checkForUpdatesAutomatically ??
+                  false;
+          if (!checkForUpdates) {
+            return true;
+          }
+          try {
+            final file = await GithubUtils.downloadLatestApp();
+            // TODO: pop up a dialog to notify user.
+          } catch (e, s) {
+            logger.warn('Failed to download latest application', e, s);
+          }
+          return true;
+        });
+  }
+
+  @override
+  void dispose() {
+    TaskUtils.removeTask(_taskIdCheckForUpdates);
+    super.dispose();
   }
 }

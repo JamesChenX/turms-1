@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-import '../../domain/user/view_models/user_settings_view_model.dart';
 import '../../infra/io/global_keyboard_listener.dart';
 import '../l10n/app_localizations.dart';
 import '../themes/theme_config.dart';

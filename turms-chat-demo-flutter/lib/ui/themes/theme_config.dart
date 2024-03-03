@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../infra/ui/color_extensions.dart';
-import '../../infra/ui/text_extensions.dart';
 
 class ThemeConfig {
   ThemeConfig._();

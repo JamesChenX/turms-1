@@ -15,7 +15,7 @@ class LogAppenderConsole extends LogAppender {
     LogLevel.trace: _LogLevelInfo('TRACE', AnsiColor.fg(AnsiColor.grey(0.5))),
     LogLevel.debug: _LogLevelInfo('DEBUG', null),
     LogLevel.info: _LogLevelInfo(' INFO', AnsiColor.fg(12)),
-    LogLevel.warning: _LogLevelInfo(' WARN', AnsiColor.fg(208)),
+    LogLevel.warn: _LogLevelInfo(' WARN', AnsiColor.fg(208)),
     LogLevel.error: _LogLevelInfo('ERROR', AnsiColor.fg(196)),
     LogLevel.fatal: _LogLevelInfo('FATAL', AnsiColor.fg(199)),
   };

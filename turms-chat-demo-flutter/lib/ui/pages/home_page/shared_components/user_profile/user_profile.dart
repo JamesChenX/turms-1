@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../domain/user/models/user.dart';
@@ -7,11 +8,11 @@ class UserProfile extends ConsumerStatefulWidget {
   const UserProfile({
     super.key,
     required this.user,
-    this.avatarImageEditable = false,
+    this.onEditTap,
   });
 
   final User user;
-  final bool avatarImageEditable;
+  final VoidCallback? onEditTap;
 
   @override
   ConsumerState<UserProfile> createState() => UserProfileController();

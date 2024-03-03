@@ -1,6 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:flutter/material.dart';
 
 import '../../../../domain/user/view_models/logged_in_user_info_view_model.dart';
 import '../../../../infra/keyboard/shortcut_extensions.dart';

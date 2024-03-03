@@ -41,6 +41,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get autoLogin => 'Auto Login';
 
   @override
+  String get brightness => 'Brightness';
+
+  @override
   String get cancel => 'Cancel';
 
   @override
@@ -54,6 +57,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get close => 'Close';
+
+  @override
+  String get confirm => 'Confirm';
 
   @override
   String get contacts => 'Contacts';
@@ -83,6 +89,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dropFilesHere => 'Drop files here';
 
   @override
+  String get edit => 'Edit';
+
+  @override
+  String get editProfileImage => 'Edit Profile Image';
+
+  @override
   String get exit => 'Exit';
 
   @override
@@ -110,6 +122,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get files => 'Files';
+
+  @override
+  String get flipHorizontally => 'Flip Horizontally';
+
+  @override
+  String get flipVertically => 'Flip Vertically';
 
   @override
   String get friendRequests => 'Friend Requests';
@@ -222,6 +240,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get restore => 'Restore';
 
   @override
+  String get rotateAndFlip => 'Rotate & Flip';
+
+  @override
+  String get rotateLeft => 'Rotate Left';
+
+  @override
+  String get rotateRight => 'Rotate Right';
+
+  @override
   String get search => 'Search';
 
   @override
@@ -259,6 +286,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get update => 'Update';
+
+  @override
+  String get uploadProfileImage => 'Upload Image';
 
   @override
   String get userId => 'User ID';

@@ -11,5 +11,7 @@ class CreateGroupPage extends ConsumerStatefulWidget {
   ConsumerState<CreateGroupPage> createState() => CreateGroupPageController();
 }
 
-Future<void> showCreateGroupDialog(BuildContext context) =>
-    showTDialog(context, '/create-group-dialog', CreateGroupPage());
+Future<void> showCreateGroupDialog(BuildContext context) => showSimpleTDialog(
+    routeName: '/create-group-dialog',
+    context: context,
+    child: const CreateGroupPage());

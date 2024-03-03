@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../themes/theme_config.dart';
 import '../t_checkbox/t_simple_checkbox.dart';
 import '../t_dropdown_menu.dart';
 import '../t_horizontal_divider.dart';

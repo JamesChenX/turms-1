@@ -12,7 +12,6 @@ import '../../domain/window/view_models/window_maximized_view_model.dart';
 import '../../infra/app/app_config.dart';
 import '../../infra/window/window_utils.dart';
 import '../components/t_dialog.dart';
-import '../l10n/app_localizations.dart';
 import '../l10n/view_models/app_localizations_view_model.dart';
 import '../l10n/view_models/use_system_locale_view_model.dart';
 import '../themes/app_theme.dart';

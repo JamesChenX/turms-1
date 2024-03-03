@@ -1,16 +1,9 @@
-import 'dart:io';
-
 import 'package:dotted_border/dotted_border.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:open_filex/open_filex.dart';
-import 'package:super_clipboard/super_clipboard.dart';
 import 'package:super_drag_and_drop/super_drag_and_drop.dart';
 
-import '../../../../../../infra/app/app_config.dart';
-import '../../../../../../infra/io/data_reader_file_adaptor.dart';
 import '../../../../../components/t_button/t_icon_button.dart';
 import '../../../../../components/t_editor/t_editor.dart';
 import '../../../../../components/t_popup/t_popup.dart';

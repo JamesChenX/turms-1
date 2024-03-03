@@ -6,7 +6,7 @@ class TaskUtils {
   TaskUtils._();
 
   static final _idToCallback = <Object, Future<dynamic>>{};
-  static final _nameToTimer = <String, Timer>{};
+  static final _idToTimer = <String, Timer>{};
 
   static Future<T> addTask<T>(
       {required Object id, required Future<T> Function() callback}) {
@@ -20,23 +20,27 @@ class TaskUtils {
   }
 
   static bool addPeriodicTask(
-      {required String name,
+      {required String id,
       required Duration duration,
       required Callback callback,
       bool runImmediately = false}) {
-    final timer = _nameToTimer[name];
+    final timer = _idToTimer[id];
     if (timer != null) {
       return false;
     }
     if (runImmediately) {
       callback();
     }
-    _nameToTimer[name] = Timer.periodic(duration, (timer) async {
+    _idToTimer[id] = Timer.periodic(duration, (timer) async {
       if (!await callback()) {
         timer.cancel();
       }
-      _nameToTimer.remove(name);
+      _idToTimer.remove(id);
     });
     return true;
+  }
+
+  static void removeTask(String id) {
+    _idToTimer.remove(id);
   }
 }

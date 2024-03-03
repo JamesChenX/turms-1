@@ -14,5 +14,7 @@ class SettingsPage extends StatefulWidget {
   State<SettingsPage> createState() => SettingsPageController();
 }
 
-Future<void> showSettingsDialog(BuildContext context) =>
-    showTDialog(context, '/settings-dialog', const SettingsPage());
+Future<void> showSettingsDialog(BuildContext context) => showCustomTDialog(
+    routeName: '/settings-dialog',
+    context: context,
+    child: const SettingsPage());

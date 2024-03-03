@@ -61,19 +61,19 @@ Future<void> run(List<String> args) async {
     // });
   }
 
-  logger.w('The application is still incubating, '
+  logger.warn('The application is still incubating, '
       'meaning we will make incompatible changes without migration support, '
       'such as database schema changes');
 
   MaterialSymbolsBase.forceCompileTimeTreeShaking();
   FlutterError.onError = (FlutterErrorDetails details) {
-    logger.e('Caught a Flutter error: $details');
+    logger.error('Caught a Flutter error: $details');
   };
 
   await AppConfig.load();
   logger
-    ..i('The application directory: ${AppConfig.appDir}')
-    ..i('The application package info: ${AppConfig.packageInfo}');
+    ..info('The application directory: ${AppConfig.appDir}')
+    ..info('The application package info: ${AppConfig.packageInfo}');
 
   VideoUtils.ensureInitialized();
 
@@ -141,6 +141,6 @@ Future<void> _initForDesktopPlatforms(
           TrayMenuItem(key: 'exit', label: 'Exit', onTap: () => exit(0)),
         ]);
   } catch (e) {
-    logger.w('Failed to init the tray: $e');
+    logger.warn('Failed to init the tray: $e');
   }
 }

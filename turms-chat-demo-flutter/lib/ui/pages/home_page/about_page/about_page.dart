@@ -13,5 +13,5 @@ class AboutPage extends ConsumerStatefulWidget {
 
 // Don't call "showAboutDialog" to avoid name conflict with
 // the one in "flutter/lib/src/material/about.dart".
-Future<void> showAppAboutDialog(BuildContext context) =>
-    showTDialog(context, '/about-dialog', const AboutPage());
+Future<void> showAppAboutDialog(BuildContext context) => showCustomTDialog(
+    routeName: '/about-dialog', context: context, child: const AboutPage());

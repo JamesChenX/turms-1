@@ -17,6 +17,7 @@ class TIconButton extends StatefulWidget {
       this.iconColorHovered,
       this.iconColorPressed,
       this.iconFlipX = false,
+      this.iconRotate,
       this.tooltip,
       this.onTap,
       this.onPanDown});
@@ -34,6 +35,7 @@ class TIconButton extends StatefulWidget {
   final Color? iconColorHovered;
   final Color? iconColorPressed;
   final bool iconFlipX;
+  final double? iconRotate;
 
   final String? tooltip;
 
@@ -65,6 +67,13 @@ class _TIconButtonState extends State<TIconButton> {
     if (widget.iconFlipX) {
       child = Transform.flip(
         flipX: true,
+        child: child,
+      );
+    }
+    final iconRotate = widget.iconRotate;
+    if (iconRotate != null) {
+      child = Transform.rotate(
+        angle: iconRotate,
         child: child,
       );
     }

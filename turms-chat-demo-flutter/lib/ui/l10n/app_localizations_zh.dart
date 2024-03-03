@@ -41,6 +41,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get autoLogin => '自动登录';
 
   @override
+  String get brightness => '亮度';
+
+  @override
   String get cancel => '取消';
 
   @override
@@ -54,6 +57,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get close => '关闭';
+
+  @override
+  String get confirm => '确定';
 
   @override
   String get contacts => '联系人';
@@ -83,6 +89,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get dropFilesHere => '在此放置文件';
 
   @override
+  String get edit => '编辑';
+
+  @override
+  String get editProfileImage => '编辑头像';
+
+  @override
   String get exit => '退出';
 
   @override
@@ -110,6 +122,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get files => '文件';
+
+  @override
+  String get flipHorizontally => '水平翻转';
+
+  @override
+  String get flipVertically => '垂直翻转';
 
   @override
   String get friendRequests => '好友请求';
@@ -222,6 +240,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get restore => '恢复';
 
   @override
+  String get rotateAndFlip => '旋转 & 翻转';
+
+  @override
+  String get rotateLeft => '向左旋转';
+
+  @override
+  String get rotateRight => '向右旋转';
+
+  @override
   String get search => '搜索';
 
   @override
@@ -259,6 +286,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get update => '更新';
+
+  @override
+  String get uploadProfileImage => '上传头像';
 
   @override
   String get userId => '用户ID';

@@ -34,7 +34,8 @@ class TAvatar extends StatelessWidget {
       required this.name,
       this.image,
       this.icon,
-      this.size = TAvatarSize.medium})
+      this.size = TAvatarSize.medium,
+      this.textSize})
       : firstChar = name.isEmpty ? '' : name.substring(0, 1);
 
   final String name;
@@ -42,62 +43,62 @@ class TAvatar extends StatelessWidget {
   final ImageProvider? image;
   final IconData? icon;
   final TAvatarSize size;
+  final double? textSize;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => ClipRRect(
+        borderRadius: ThemeConfig.borderRadius4,
+        child: _buildAvatar(),
+      );
+
+  Widget _buildAvatar() {
     final img = image;
     final containerSize = size.containerSize;
-    final Widget child;
     if (null != img) {
-      child = SizedBox(
+      return SizedBox(
         height: containerSize,
         width: containerSize,
         child: // FittedBox is used as a fallback in case the image is not fitted.
             FittedBox(child: Image(image: img)),
       );
-    } else {
-      if (null != icon) {
-        child = SizedBox(
-          height: containerSize,
-          width: containerSize,
-          child: ColoredBox(
-              color: ThemeConfig.primary,
-              child: Icon(
-                icon,
-                fill: 1,
-                color: Colors.white,
-                size: size.iconSize,
-              )),
-        );
-      } else if (name.isEmpty) {
-        child = Container(
-          height: containerSize,
-          width: containerSize,
-          color: ThemeConfig.defaultAvatarBackgroundColor,
-          child: Icon(Symbols.person_rounded,
+    } else if (null != icon) {
+      return SizedBox(
+        height: containerSize,
+        width: containerSize,
+        child: ColoredBox(
+            color: ThemeConfig.primary,
+            child: Icon(
+              icon,
               fill: 1,
-              color: ThemeConfig.defaultAvatarIconColor,
-              // The "person" icon seems smaller than other icons,
-              // so we need to enlarge it.
-              size: size.iconSize * 1.2),
-        );
-      } else {
-        child = Container(
-          height: containerSize,
-          width: containerSize,
-          color: _pickColor(name),
-          alignment: Alignment.center,
-          child: Text(
-            firstChar,
-            style: TextStyle(fontSize: size.textSize, color: Colors.white),
-          ),
-        );
-      }
+              color: Colors.white,
+              size: size.iconSize,
+            )),
+      );
+    } else if (name.isEmpty) {
+      return Container(
+        height: containerSize,
+        width: containerSize,
+        color: ThemeConfig.defaultAvatarBackgroundColor,
+        child: Icon(Symbols.person_rounded,
+            fill: 1,
+            color: ThemeConfig.defaultAvatarIconColor,
+            // The "person" icon seems smaller than other icons,
+            // so we need to enlarge it.
+            size: size.iconSize * 1.2),
+      );
+    } else {
+      return Container(
+        height: containerSize,
+        width: containerSize,
+        color: _pickColor(name),
+        alignment: Alignment.center,
+        child: Text(
+          firstChar,
+          style: TextStyle(
+              fontSize: textSize ?? size.textSize, color: Colors.white),
+        ),
+      );
     }
-    return ClipRRect(
-      borderRadius: ThemeConfig.borderRadius4,
-      child: child,
-    );
   }
 
   Color _pickColor(String name) {

@@ -101,7 +101,10 @@ class _TabsState extends ConsumerState<Tabs> {
             },
           ),
           MenuItemButton(
-            child: Text(appLocalizations.logOut),
+            child: Text(
+              appLocalizations.logOut,
+              style: TextStyle(color: Colors.red),
+            ),
             onPressed: () {
               // TODO: Reset all states related to the logged-in user.
               ref.read(loggedInUserViewModel.notifier).state = null;

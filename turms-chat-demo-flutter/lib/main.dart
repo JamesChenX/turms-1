@@ -18,6 +18,7 @@ import 'infra/assets/assets.gen.dart';
 import 'infra/autostart/autostart_manager.dart';
 import 'infra/logging/logger.dart';
 import 'infra/media/video_utils.dart';
+import 'infra/native/app_host_api.g.dart';
 import 'infra/platform/platform_helpers.dart';
 import 'infra/rpc/rpc_client.dart';
 import 'infra/rpc/rpc_server.dart';
@@ -46,6 +47,9 @@ Future<void> run(List<String> args) async {
   }
 
   WidgetsFlutterBinding.ensureInitialized();
+
+  final appHostApi = AppHostApi();
+  final info = await appHostApi.getDiskSpace('.');
 
   if (kReleaseMode) {
     // logger.addAppender((event) {

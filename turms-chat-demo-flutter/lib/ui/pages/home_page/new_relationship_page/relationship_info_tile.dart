@@ -48,7 +48,8 @@ class RelationshipInfoTile extends ConsumerWidget {
               text: isGroup
                   ? appLocalizations.joinGroup
                   : appLocalizations.addContact,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              containerPadding:
+                  const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               onTap: onTap),
         ]));
   }

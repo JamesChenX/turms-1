@@ -80,6 +80,8 @@
   "rotateLeft": "向左旋转",
   "rotateRight": "向右旋转",
   "search": "搜索",
+  "searchStickers": "搜索表情",
+  "selectProfileImage": "选择头像",
   "selectedContacts": "已选中的联系人",
   "send": "发送",
   "sendMessage": "发送消息",
@@ -92,7 +94,6 @@
   "theme": "主题",
   "today": "今天",
   "update": "更新",
-  "uploadProfileImage": "上传头像",
   "userId": "用户ID",
   "userPassword": "密码",
   "version": "版本"

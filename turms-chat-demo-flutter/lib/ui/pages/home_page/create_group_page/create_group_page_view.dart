@@ -212,8 +212,8 @@ class CreateGroupPageView extends StatelessWidget {
             disabled:
                 createGroupPageController.selectedUserContactIds.length <= 1,
             text: createGroupPageController.appLocalizations.create,
-            padding: ThemeConfig.paddingV4H8,
-            width: 64,
+            containerPadding: ThemeConfig.paddingV4H8,
+            containerWidth: 64,
             onTap: createGroupPageController.createGroup,
           )
         ],

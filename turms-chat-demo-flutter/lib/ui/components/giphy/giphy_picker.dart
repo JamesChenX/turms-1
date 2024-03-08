@@ -1,23 +1,55 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../client/models/gif.dart';
-import '../../client/models/response.dart';
-import '../../client/models/type.dart';
-import '../../shared_states.dart';
+import '../../l10n/view_models/app_localizations_view_model.dart';
+import '../components.dart';
+import 'client/client.dart';
+import 'client/models/gif.dart';
+import 'client/models/response.dart';
+import 'client/models/type.dart';
 
-class GiphyTabDetail extends ConsumerStatefulWidget {
-  GiphyTabDetail({Key? key, required this.type, required this.scrollController})
+final _queryTextViewModel = StateProvider<String>((ref) => '');
+
+class GiphyPicker extends ConsumerWidget {
+  const GiphyPicker({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final appLocalizations = ref.watch(appLocalizationsViewModel);
+    return Column(
+      children: [
+        TSearchBar(
+          hintText: appLocalizations.searchStickers,
+          onSubmitted: (value) {
+            ref.read(_queryTextViewModel.notifier).state = value;
+          },
+        ),
+        Expanded(
+          child: GiphyPickerBody(
+            type: GiphyType.emoji,
+            scrollController: ScrollController(),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class GiphyPickerBody extends ConsumerStatefulWidget {
+  GiphyPickerBody(
+      {Key? key, required this.type, required this.scrollController})
       : super(key: key);
 
   final GiphyType type;
   final ScrollController scrollController;
 
   @override
-  _GiphyTabDetailState createState() => _GiphyTabDetailState();
+  _GiphyPickerBodyState createState() => _GiphyPickerBodyState();
 }
 
-class _GiphyTabDetailState extends ConsumerState<GiphyTabDetail> {
+class _GiphyPickerBodyState extends ConsumerState<GiphyPickerBody> {
   GiphyResponse? _response;
 
   List<GiphyGif> _gifs = [];
@@ -52,7 +84,6 @@ class _GiphyTabDetailState extends ConsumerState<GiphyTabDetail> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    ref.watch(queryTextProvider);
 
     widget.scrollController.addListener(_loadMoreIfScrollToEnd);
     // _appBarProvider.addListener(_resetAndLoad); TODO?
@@ -64,10 +95,7 @@ class _GiphyTabDetailState extends ConsumerState<GiphyTabDetail> {
     final _mainAxisCount =
         ((MediaQuery.of(context).size.height - 30) / _gifWidth).round();
 
-    _limit = _crossAxisCount * _mainAxisCount;
-    if (_limit > 100) {
-      _limit = 100;
-    }
+    _limit = min(100, _crossAxisCount * _mainAxisCount);
     offset = 0;
 
     _loadMore();
@@ -81,7 +109,8 @@ class _GiphyTabDetailState extends ConsumerState<GiphyTabDetail> {
 
   @override
   Widget build(BuildContext context) {
-    if (_gifs.isEmpty) {
+    final gifs = _gifs;
+    if (gifs.isEmpty) {
       return const Center(
         child: CircularProgressIndicator(),
       );
@@ -95,9 +124,9 @@ class _GiphyTabDetailState extends ConsumerState<GiphyTabDetail> {
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       scrollDirection: _scrollDirection,
       controller: widget.scrollController,
-      itemCount: _gifs.length,
+      itemCount: gifs.length,
       itemBuilder: (ctx, idx) {
-        final _gif = _gifs[idx];
+        final _gif = gifs[idx];
         return _buildItem(_gif);
       },
     );
@@ -107,7 +136,6 @@ class _GiphyTabDetailState extends ConsumerState<GiphyTabDetail> {
     final images = gif.images!;
     final _aspectRatio = double.parse(images.fixedWidth.width) /
         double.parse(images.fixedWidth.height);
-
     return ClipRRect(
       borderRadius: BorderRadius.circular(10.0),
       child: InkWell(
@@ -149,42 +177,43 @@ class _GiphyTabDetailState extends ConsumerState<GiphyTabDetail> {
   }
 
   Future<void> _loadMore() async {
-    if (_isLoading || _response?.pagination?.totalCount == _gifs.length) {
+    final response = _response;
+    if (_isLoading || response?.pagination?.totalCount == _gifs.length) {
       return;
     }
 
     _isLoading = true;
 
-    final client = ref.read(clientProvider);
+    final client = ref.read(giphyClientProvider);
 
-    offset = _response == null
+    offset = response == null
         ? 0
-        : _response!.pagination!.offset + _response!.pagination!.count;
+        : response.pagination!.offset + response.pagination!.count;
 
-    // Get Gif or Emoji
-    if (widget.type == GiphyType.emoji) {
+    final type = widget.type;
+    if (type == GiphyType.emoji) {
       _response = await client.emojis(offset: offset, limit: _limit);
     } else {
-      final queryText = ref.read(queryTextProvider);
+      final queryText = ref.read(_queryTextViewModel);
       if (queryText.isNotEmpty) {
         _response = await client.search(queryText,
             // lang: _tabProvider.lang,
             offset: offset,
             // rating: _tabProvider.rating,
-            type: widget.type,
+            type: type,
             limit: _limit);
       } else {
         _response = await client.trending(
             // lang: _tabProvider.lang,
             offset: offset,
             // rating: _tabProvider.rating,
-            type: widget.type,
+            type: type,
             limit: _limit);
       }
     }
 
-    if (_response!.data.isNotEmpty && mounted) {
-      _gifs.addAll(_response!.data);
+    if (response!.data.isNotEmpty && mounted) {
+      _gifs.addAll(response.data);
       setState(() {});
     }
 
@@ -198,7 +227,6 @@ class _GiphyTabDetailState extends ConsumerState<GiphyTabDetail> {
     // }
   }
 
-  // Return selected gif
   void _selectedGif(GiphyGif gif) {
     Navigator.pop(context, gif);
   }

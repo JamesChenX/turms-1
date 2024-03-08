@@ -252,6 +252,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get search => 'Search';
 
   @override
+  String get searchStickers => 'Search Stickers';
+
+  @override
+  String get selectProfileImage => 'Select Image';
+
+  @override
   String get selectedContacts => 'Selected Contacts';
 
   @override
@@ -286,9 +292,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get update => 'Update';
-
-  @override
-  String get uploadProfileImage => 'Upload Image';
 
   @override
   String get userId => 'User ID';

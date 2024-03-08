@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 
+import '../../themes/theme_config.dart';
 import '../t_tooltip.dart';
+import 't_button.dart';
 
-class TIconButton extends StatefulWidget {
+class TIconButton extends StatelessWidget {
   const TIconButton(
       {super.key,
       this.addContainer = true,
-      this.size,
-      this.color,
-      this.hoverColor,
+      this.containerSize,
+      this.containerColor,
+      this.containerColorHovered,
+      this.containerBorder,
+      this.containerBorderHovered,
+      this.containerBorderRadius,
       required this.iconData,
       this.iconFill,
       this.iconSize,
@@ -18,14 +23,57 @@ class TIconButton extends StatefulWidget {
       this.iconColorPressed,
       this.iconFlipX = false,
       this.iconRotate,
+      this.disabled = false,
       this.tooltip,
       this.onTap,
       this.onPanDown});
 
+  factory TIconButton.outlined(
+          {required IconData iconData,
+          bool? iconFill,
+          double? iconSize,
+          double? iconWeight,
+          Color? iconColor,
+          Color? iconColorHovered,
+          Color? iconColorPressed,
+          bool? iconFlipX,
+          double? iconRotate,
+          Size? containerSize,
+          bool disabled = false,
+          String? tooltip,
+          VoidCallback? onTap}) =>
+      TIconButton(
+        iconData: iconData,
+        iconFill: iconFill,
+        iconSize: iconSize,
+        iconWeight: iconWeight,
+        iconColor: iconColor,
+        iconColorHovered: iconColorHovered,
+        iconColorPressed: iconColorPressed,
+        iconFlipX: iconFlipX ?? false,
+        iconRotate: iconRotate,
+        onTap: onTap,
+        containerSize: containerSize,
+        containerColor: Colors.white,
+        containerBorder: Border.all(color: ThemeConfig.dividerColor),
+        containerBorderHovered: Border.all(color: ThemeConfig.primary),
+        disabled: disabled,
+        tooltip: tooltip,
+      );
+
   final bool addContainer;
-  final Size? size;
-  final Color? color;
-  final Color? hoverColor;
+  final Size? containerSize;
+  final Color? containerColor;
+  final Color? containerColorHovered;
+  final BoxBorder? containerBorder;
+  final BoxBorder? containerBorderHovered;
+  final BorderRadiusGeometry? containerBorderRadius;
+
+  final bool disabled;
+  final String? tooltip;
+
+  final VoidCallback? onTap;
+  final GestureDragDownCallback? onPanDown;
 
   final IconData iconData;
   final bool? iconFill;
@@ -37,90 +85,52 @@ class TIconButton extends StatefulWidget {
   final bool iconFlipX;
   final double? iconRotate;
 
-  final String? tooltip;
-
-  final VoidCallback? onTap;
-  final GestureDragDownCallback? onPanDown;
-
-  @override
-  State<StatefulWidget> createState() => _TIconButtonState();
-}
-
-class _TIconButtonState extends State<TIconButton> {
-  bool isHovered = false;
-  bool isPressed = false;
-
   @override
   Widget build(BuildContext context) {
     final iconTheme = IconTheme.of(context);
+    return TButton(
+        addContainer: addContainer,
+        containerWidth: containerSize?.width ?? 40,
+        containerHeight: containerSize?.height ?? 40,
+        containerColor: containerColor,
+        containerColorHovered: containerColorHovered,
+        containerBorder: containerBorder,
+        containerBorderHovered: containerBorderHovered,
+        containerBorderRadius:
+            containerBorderRadius ?? ThemeConfig.borderRadius4,
+        tooltip: tooltip,
+        onTap: onTap,
+        onPanDown: onPanDown,
+        childHovered: _buildIcon(iconTheme, isHovered: true),
+        childPressed: _buildIcon(iconTheme, isPressed: true),
+        child: _buildIcon(iconTheme));
+  }
+
+  Widget _buildIcon(IconThemeData iconTheme,
+      {bool isPressed = false, bool isHovered = false}) {
     Widget child = Icon(
-      widget.iconData,
-      fill: (widget.iconFill ?? false) ? 1 : 0,
+      iconData,
+      fill: (iconFill ?? false) ? 1 : 0,
       color: isPressed
-          ? (widget.iconColorPressed ?? widget.iconColor)
+          ? (iconColorPressed ?? iconColorHovered ?? iconColor)
           : isHovered
-              ? (widget.iconColorHovered ?? widget.iconColor)
-              : widget.iconColor,
-      weight: widget.iconWeight ?? iconTheme.weight,
-      size: widget.iconSize ?? iconTheme.size,
+              ? (iconColorHovered ?? iconColor)
+              : iconColor,
+      weight: iconWeight ?? iconTheme.weight,
+      size: iconSize ?? iconTheme.size,
     );
-    if (widget.iconFlipX) {
+    if (iconFlipX) {
       child = Transform.flip(
         flipX: true,
         child: child,
       );
     }
-    final iconRotate = widget.iconRotate;
     if (iconRotate != null) {
       child = Transform.rotate(
-        angle: iconRotate,
+        angle: iconRotate!,
         child: child,
       );
     }
-    if (widget.addContainer) {
-      child = ClipRRect(
-          borderRadius: BorderRadius.circular(2),
-          child: AnimatedContainer(
-              color: isHovered
-                  ? (widget.hoverColor ?? widget.color)
-                  : widget.color,
-              // color: ThemeConfig.primary,
-              height: widget.size?.height ?? 40,
-              width: widget.size?.width ?? 40,
-              // decoration: BoxDecoration(
-              //     shape: BoxShape.circle, color: ThemeConfig.primary),
-              duration: const Duration(milliseconds: 100),
-              child: child));
-    }
-    if (widget.tooltip != null) {
-      child = TTooltip(
-        message: widget.tooltip,
-        preferBelow: true,
-        waitDuration: const Duration(milliseconds: 1000),
-        child: child,
-      );
-    }
-    return MouseRegion(
-        cursor: SystemMouseCursors.click,
-        onEnter: (_) => setState(() => isHovered = true),
-        onExit: (_) {
-          isHovered = false;
-          isPressed = false;
-          setState(() {});
-        },
-        // TODO: darken on pressing
-        child: GestureDetector(
-          onTap: () {
-            isPressed = false;
-            widget.onTap?.call();
-            setState(() {});
-          },
-          onPanDown: (details) {
-            isPressed = true;
-            widget.onPanDown?.call(details);
-            setState(() {});
-          },
-          child: child,
-        ));
+    return child;
   }
 }

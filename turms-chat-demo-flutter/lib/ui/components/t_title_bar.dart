@@ -51,11 +51,12 @@ class _TTitleBarState extends ConsumerState<TTitleBar> {
 
   TIconButton buildSetAlwaysOnTopButton(AppLocalizations localizations) =>
       TIconButton(
-          size: ThemeConfig.titleBarSize,
-          color: _isAlwaysOnTop
+          containerSize: ThemeConfig.titleBarSize,
+          containerColor: _isAlwaysOnTop
               ? widget.backgroundColor.darken()
               : widget.backgroundColor,
-          hoverColor: const Color.fromARGB(255, 226, 226, 226),
+          containerColorHovered: const Color.fromARGB(255, 226, 226, 226),
+          containerBorderRadius: BorderRadius.zero,
           iconData: Symbols.push_pin_rounded,
           iconSize: 16,
           iconColor: _isAlwaysOnTop
@@ -71,9 +72,10 @@ class _TTitleBarState extends ConsumerState<TTitleBar> {
 
   TIconButton buildMinimizeButton(AppLocalizations localizations) =>
       TIconButton(
-          size: ThemeConfig.titleBarSize,
-          color: widget.backgroundColor,
-          hoverColor: const Color.fromARGB(255, 226, 226, 226),
+          containerSize: ThemeConfig.titleBarSize,
+          containerColor: widget.backgroundColor,
+          containerColorHovered: const Color.fromARGB(255, 226, 226, 226),
+          containerBorderRadius: BorderRadius.zero,
           iconData: Symbols.horizontal_rule_rounded,
           iconSize: 16,
           iconColor: const Color.fromARGB(255, 67, 67, 67),
@@ -83,9 +85,10 @@ class _TTitleBarState extends ConsumerState<TTitleBar> {
   TIconButton buildMaximizeButton(AppLocalizations localizations) {
     final isWindowMaximized = ref.watch(isWindowMaximizedViewModel);
     return TIconButton(
-      size: ThemeConfig.titleBarSize,
-      color: widget.backgroundColor,
-      hoverColor: const Color.fromARGB(255, 226, 226, 226),
+      containerSize: ThemeConfig.titleBarSize,
+      containerColor: widget.backgroundColor,
+      containerColorHovered: const Color.fromARGB(255, 226, 226, 226),
+      containerBorderRadius: BorderRadius.zero,
       iconData: isWindowMaximized
           ? Symbols.stack_rounded
           : Symbols.crop_square_rounded,
@@ -107,9 +110,10 @@ class _TTitleBarState extends ConsumerState<TTitleBar> {
   TIconButton buildCloseButton(
           BuildContext context, AppLocalizations localizations) =>
       TIconButton(
-        size: ThemeConfig.titleBarSize,
-        color: widget.backgroundColor,
-        hoverColor: Colors.red,
+        containerSize: ThemeConfig.titleBarSize,
+        containerColor: widget.backgroundColor,
+        containerColorHovered: Colors.red,
+        containerBorderRadius: BorderRadius.zero,
         iconData: Symbols.close_rounded,
         iconSize: 16,
         iconColor: const Color.fromARGB(255, 67, 67, 67),

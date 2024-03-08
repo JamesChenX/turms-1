@@ -21,6 +21,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../domain/user/models/index.dart';
 import '../../../components/t_avatar/t_avatar.dart';
 import '../../../components/t_button/t_text_button.dart';
+import '../../../components/t_image_viewer.dart';
 import '../../../components/t_popup/t_popup.dart';
 import '../../../l10n/view_models/app_localizations_view_model.dart';
 import '../../../themes/theme_config.dart';
@@ -57,6 +58,11 @@ class _UserProfilePopupState extends ConsumerState<UserProfilePopup> {
   Widget build(BuildContext context) {
     final appLocalizations = ref.watch(appLocalizationsViewModel);
     final user = widget.user;
+    final image = user.image;
+    final avatar = TAvatar(
+      name: user.name,
+      image: image,
+    );
     return TPopup(
       controller: popupController,
       targetAnchor: widget.position == UserProfilePopupPosition.bottomRight
@@ -68,9 +74,16 @@ class _UserProfilePopupState extends ConsumerState<UserProfilePopup> {
       offset: widget.position == UserProfilePopupPosition.bottomRight
           ? const Offset(-5, -5)
           : const Offset(5, -5),
-      target: TAvatar(
-        name: user.name,
-        image: user.image,
+      target: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: image == null
+            ? avatar
+            : GestureDetector(
+                onTap: () {
+                  showImageViewerDialog(context, image);
+                },
+                child: avatar,
+              ),
       ),
       follower: Material(
         borderRadius: ThemeConfig.borderRadius4,

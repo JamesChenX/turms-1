@@ -73,8 +73,8 @@ class _FriendRequestTileState extends ConsumerState<FriendRequestTile> {
                 onTap: widget.onStartConversation,
               )
             : TTextButton(
-                width: 80,
-                padding: ThemeConfig.paddingV4H8,
+                containerWidth: 80,
+                containerPadding: ThemeConfig.paddingV4H8,
                 text: appLocalizations.accept,
                 isLoading: isHandling,
                 onTap: () async {

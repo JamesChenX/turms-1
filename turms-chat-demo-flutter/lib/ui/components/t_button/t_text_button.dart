@@ -3,141 +3,86 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import '../../themes/theme_config.dart';
+import 't_button.dart';
 
-class TTextButton extends StatefulWidget {
+class TTextButton extends StatelessWidget {
   const TTextButton(
       {super.key,
       required this.text,
       this.textStyle,
       this.textStyleHovered,
       this.addContainer = true,
-      this.width,
-      this.backgroundColor = ThemeConfig.primary,
-      this.backgroundColorHovered,
-      EdgeInsets? padding,
-      this.border,
-      this.borderHovered,
+      this.containerWidth,
+      this.containerColor = ThemeConfig.primary,
+      this.containerColorHovered,
+      EdgeInsets? containerPadding,
+      this.containerBorder,
+      this.containerBorderHovered,
       this.isLoading = false,
       this.disabled = false,
       this.onTap})
-      : padding = padding ?? ThemeConfig.paddingV8H16;
+      : containerPadding = containerPadding ?? ThemeConfig.paddingV8H16;
 
   factory TTextButton.outlined(
           {required String text,
-          VoidCallback? onTap,
           double? width,
-          EdgeInsets? padding}) =>
+          EdgeInsets? padding,
+          VoidCallback? onTap}) =>
       TTextButton(
         text: text,
-        onTap: onTap,
         textStyle: const TextStyle(color: Colors.black),
         textStyleHovered: const TextStyle(color: ThemeConfig.primary),
-        border: Border.all(color: ThemeConfig.dividerColor),
-        borderHovered: Border.all(color: ThemeConfig.primary),
-        backgroundColor: Colors.white,
-        width: width,
-        padding: padding,
+        containerBorder: Border.all(color: ThemeConfig.dividerColor),
+        containerBorderHovered: Border.all(color: ThemeConfig.primary),
+        containerColor: Colors.white,
+        containerWidth: width,
+        containerPadding: padding,
+        onTap: onTap,
       );
+
+  final bool addContainer;
+  final double? containerWidth;
+  final Color containerColor;
+  final Color? containerColorHovered;
+  final EdgeInsets containerPadding;
+  final BoxBorder? containerBorder;
+  final BoxBorder? containerBorderHovered;
+  final bool isLoading;
+  final bool disabled;
+  final VoidCallback? onTap;
 
   final String text;
   final TextStyle? textStyle;
   final TextStyle? textStyleHovered;
-  final bool addContainer;
-  final double? width;
-  final Color backgroundColor;
-  final Color? backgroundColorHovered;
-  final EdgeInsets padding;
-  final BoxBorder? border;
-  final BoxBorder? borderHovered;
-  final bool isLoading;
-  final bool disabled;
-
-  final VoidCallback? onTap;
 
   @override
-  State<StatefulWidget> createState() => _TTextButtonState();
-}
-
-class _TTextButtonState extends State<TTextButton> {
-  bool _isHovered = false;
-
-  @override
-  Widget build(BuildContext context) {
-    Widget child = AnimatedDefaultTextStyle(
-      style: _isHovered
-          ? (widget.textStyleHovered ??
-              widget.textStyle ??
-              const TextStyle(color: Colors.white))
-          : widget.textStyle ?? const TextStyle(color: Colors.white),
-      duration: const Duration(milliseconds: 200),
-      child: Text(
-        widget.text,
-        textAlign: TextAlign.center,
+  Widget build(BuildContext context) => TButton(
+      addContainer: addContainer,
+      containerWidth: containerWidth,
+      containerColor: containerColor,
+      containerColorHovered: containerColorHovered,
+      containerPadding: containerPadding,
+      containerBorder: containerBorder,
+      containerBorderHovered: containerBorderHovered,
+      isLoading: isLoading,
+      disabled: disabled,
+      onTap: onTap,
+      childHovered: AnimatedDefaultTextStyle(
+        style: textStyleHovered ??
+            textStyle ??
+            const TextStyle(color: Colors.white),
+        duration: const Duration(milliseconds: 200),
+        child: Text(
+          text,
+          textAlign: TextAlign.center,
+        ),
       ),
-    );
-    if (widget.isLoading) {
-      child = Stack(
-        children: [
-          Visibility.maintain(
-            child: child,
-            visible: false,
-          ),
-          Positioned.fill(child: Center(
-            child: LayoutBuilder(
-              builder: (BuildContext context, BoxConstraints constraints) {
-                final size =
-                    min(constraints.maxWidth, constraints.maxHeight) * 0.8;
-                return SizedBox(
-                  width: size,
-                  height: size,
-                  child: const CircularProgressIndicator(
-                    color: Colors.white,
-                  ),
-                );
-              },
-            ),
-          ))
-        ],
-      );
-    }
-    if (widget.addContainer) {
-      child = AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          decoration: BoxDecoration(
-            color: widget.disabled
-                ? ThemeConfig.colorDisabled
-                : widget.isLoading
-                    ? widget.backgroundColor.withOpacity(0.5)
-                    : _isHovered
-                        ? (widget.backgroundColorHovered ??
-                            widget.backgroundColor.withOpacity(0.8))
-                        : widget.backgroundColor,
-            borderRadius: ThemeConfig.borderRadius4,
-            border: _isHovered
-                ? (widget.borderHovered ?? widget.border)
-                : widget.border,
-          ),
-          padding: widget.padding,
-          width: widget.width,
-          child: child);
-    }
-    return MouseRegion(
-        cursor: widget.disabled
-            ? SystemMouseCursors.forbidden
-            : SystemMouseCursors.click,
-        onEnter: (_) {
-          setState(() => _isHovered = true);
-        },
-        onExit: (_) {
-          setState(() => _isHovered = false);
-        },
-        child: GestureDetector(
-          onTap: () {
-            if (!widget.disabled && !widget.isLoading) {
-              widget.onTap?.call();
-            }
-          },
-          child: child,
-        ));
-  }
+      child: AnimatedDefaultTextStyle(
+        style: textStyle ?? const TextStyle(color: Colors.white),
+        duration: const Duration(milliseconds: 200),
+        child: Text(
+          text,
+          textAlign: TextAlign.center,
+        ),
+      ));
 }

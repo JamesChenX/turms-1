@@ -82,8 +82,8 @@ class FriendRequestPageView extends StatelessWidget {
                     TTextButton(
                       isLoading: friendRequestPageController.isSending,
                       text: appLocalizations.send,
-                      padding: ThemeConfig.paddingV4H8,
-                      width: 64,
+                      containerPadding: ThemeConfig.paddingV4H8,
+                      containerWidth: 64,
                       onTap: () {
                         friendRequestPageController.sendFriendRequest(
                             (contact is UserContact)

@@ -10,7 +10,7 @@ import '../../../../../components/t_popup/t_popup.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../themes/theme_config.dart';
 import '../attachment.dart';
-import '../sticker_picker.dart';
+import '../sticker_picker/sticker_picker.dart';
 import 'chat_session_pane_footer_controller.dart';
 
 class ChatSessionPaneFooterView extends StatelessWidget {
@@ -125,7 +125,7 @@ class ChatSessionPaneFooterView extends StatelessWidget {
                           //     apiKey: 'P9DiP3JUOhOW2BMmJCgyotbn9lC23xHN');
                         ),
                         follower: StickerPicker(
-                          emojiCallback: chatPageFooterController.insertEmoji,
+                          onEmojiSelected: chatPageFooterController.insertEmoji,
                         )),
                     TIconButton(
                       iconData: Symbols.folder_rounded,
@@ -133,7 +133,9 @@ class ChatSessionPaneFooterView extends StatelessWidget {
                       iconColorHovered: Colors.black87,
                       iconColorPressed: ThemeConfig.primary,
                       tooltip: appLocalizations.sticker,
-                      onTap: () async => chatPageFooterController.pickFile(),
+                      onTap: () async {
+                        final file = await chatPageFooterController.pickFile();
+                      },
                     )
                   ],
                 ),

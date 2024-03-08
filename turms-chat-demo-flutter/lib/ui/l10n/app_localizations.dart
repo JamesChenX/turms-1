@@ -582,6 +582,18 @@ abstract class AppLocalizations {
   /// **'Search'**
   String get search;
 
+  /// No description provided for @searchStickers.
+  ///
+  /// In en, this message translates to:
+  /// **'Search Stickers'**
+  String get searchStickers;
+
+  /// No description provided for @selectProfileImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Image'**
+  String get selectProfileImage;
+
   /// No description provided for @selectedContacts.
   ///
   /// In en, this message translates to:
@@ -653,12 +665,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Update'**
   String get update;
-
-  /// No description provided for @uploadProfileImage.
-  ///
-  /// In en, this message translates to:
-  /// **'Upload Image'**
-  String get uploadProfileImage;
 
   /// No description provided for @userId.
   ///

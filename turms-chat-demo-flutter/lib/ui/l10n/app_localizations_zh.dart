@@ -252,6 +252,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get search => '搜索';
 
   @override
+  String get searchStickers => '搜索表情';
+
+  @override
+  String get selectProfileImage => '选择头像';
+
+  @override
   String get selectedContacts => '已选中的联系人';
 
   @override
@@ -286,9 +292,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get update => '更新';
-
-  @override
-  String get uploadProfileImage => '上传头像';
 
   @override
   String get userId => '用户ID';

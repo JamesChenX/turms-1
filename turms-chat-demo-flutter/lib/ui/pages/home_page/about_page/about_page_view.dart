@@ -73,8 +73,8 @@ class AboutPageView extends StatelessWidget {
                     ),
                     TTextButton(
                         text: 'github.com/turms-im/turms',
-                        backgroundColor: Colors.transparent,
-                        backgroundColorHovered: Colors.transparent,
+                        containerColor: Colors.transparent,
+                        containerColorHovered: Colors.transparent,
                         textStyle:
                             const TextStyle(color: ThemeConfig.linkColor),
                         textStyleHovered: const TextStyle(

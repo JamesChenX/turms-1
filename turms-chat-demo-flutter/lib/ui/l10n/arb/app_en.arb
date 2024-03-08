@@ -80,6 +80,8 @@
   "rotateLeft": "Rotate Left",
   "rotateRight": "Rotate Right",
   "search": "Search",
+  "searchStickers": "Search Stickers",
+  "selectProfileImage": "Select Image",
   "selectedContacts": "Selected Contacts",
   "send": "Send",
   "sendMessage": "Send Message",
@@ -92,7 +94,6 @@
   "theme": "Theme",
   "today": "Today",
   "update": "Update",
-  "uploadProfileImage": "Upload Image",
   "userId": "User ID",
   "userPassword": "Password",
   "version": "Version"

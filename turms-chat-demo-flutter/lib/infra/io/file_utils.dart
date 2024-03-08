@@ -1,15 +1,19 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../app/app_config.dart';
+import 'data_reader_file_adaptor.dart';
 
 final pathSeparator = Platform.pathSeparator;
 
 class FileUtils {
   FileUtils._();
+
+  static bool _isPickingFile = false;
 
   // static String? getFileExtension(String? mimeType) {
   //   if (mimeType == null) {
@@ -51,5 +55,23 @@ class FileUtils {
     final file = File(filePath);
     await file.writeAsBytes(bytes);
     return file;
+  }
+
+  static Future<FilePickerResult?> pickFile(
+      {List<String>? allowedExtensions, bool withReadStream = false}) async {
+    if (_isPickingFile) {
+      return null;
+    }
+    _isPickingFile = true;
+    try {
+      return await FilePicker.platform.pickFiles(
+        type: allowedExtensions == null ? FileType.any : FileType.custom,
+        // TODO: translate filters
+        allowedExtensions: allowedExtensions,
+        withReadStream: withReadStream,
+      );
+    } finally {
+      _isPickingFile = false;
+    }
   }
 }

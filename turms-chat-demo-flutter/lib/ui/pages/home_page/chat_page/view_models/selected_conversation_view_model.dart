@@ -7,11 +7,9 @@ import '../../shared_view_models/home_page_tab_view_model.dart';
 import '../chat_session_pane/message.dart';
 import 'conversations_view_model.dart';
 
-class SelectedConversationViewModelNotifier
-    extends StateNotifier<Conversation?> {
-  SelectedConversationViewModelNotifier(this.ref) : super(null);
-
-  final Ref ref;
+class SelectedConversationViewModelNotifier extends Notifier<Conversation?> {
+  @override
+  Conversation? build() => null;
 
   void select(Contact contact) {
     // 1. Go to the chat page
@@ -51,5 +49,5 @@ class SelectedConversationViewModelNotifier
 }
 
 final selectedConversationViewModel =
-    StateNotifierProvider<SelectedConversationViewModelNotifier, Conversation?>(
+    NotifierProvider<SelectedConversationViewModelNotifier, Conversation?>(
         SelectedConversationViewModelNotifier.new);

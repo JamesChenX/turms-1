@@ -12,6 +12,11 @@ import '../app/app_utils.dart';
 import '../io/path_utils.dart';
 import 'rpc_client.dart';
 
+File getAppProcessFile() {
+  final appProcessFilePath = PathUtils.joinPathInAppScope(['app-process.json']);
+  return File(appProcessFilePath);
+}
+
 /// We don't use UNIX sockets because:
 /// 1. Dart doesn't support UNIX sockets on Windows,
 /// though we can implement and maintain it ourselves,
@@ -25,12 +30,6 @@ import 'rpc_client.dart';
 /// 2. Use WebSockets and JSON-RPC 2.0 so that it is quite easy to debug
 /// and extend (e.g. use any tools that support
 /// WebSockets and JSON-RPC 2.0 to communicate).
-
-File getAppProcessFile() {
-  final appProcessFilePath = PathUtils.joinPathInAppScope(['app-process.json']);
-  return File(appProcessFilePath);
-}
-
 class RpcServer {
   RpcServer._(
       this._httpServer, this._appProcessFile, this._appProcessRandomAccessFile);

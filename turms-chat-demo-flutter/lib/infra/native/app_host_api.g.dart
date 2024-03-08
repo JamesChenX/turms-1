@@ -61,7 +61,7 @@ class _AppHostApiCodec extends StandardMessageCodec {
   @override
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
-      case 128: 
+      case 128:
         return DiskSpaceInfo.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
@@ -80,8 +80,10 @@ class AppHostApi {
   static const MessageCodec<Object?> pigeonChannelCodec = _AppHostApiCodec();
 
   Future<DiskSpaceInfo> getDiskSpace(String path) async {
-    const String __pigeon_channelName = 'dev.flutter.pigeon.turms_chat_demo.AppHostApi.getDiskSpace';
-    final BasicMessageChannel<Object?> __pigeon_channel = BasicMessageChannel<Object?>(
+    const String __pigeon_channelName =
+        'dev.flutter.pigeon.turms_chat_demo.AppHostApi.getDiskSpace';
+    final BasicMessageChannel<Object?> __pigeon_channel =
+        BasicMessageChannel<Object?>(
       __pigeon_channelName,
       pigeonChannelCodec,
       binaryMessenger: __pigeon_binaryMessenger,

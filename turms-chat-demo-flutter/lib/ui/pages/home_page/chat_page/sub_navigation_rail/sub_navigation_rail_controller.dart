@@ -9,7 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../domain/conversation/models/conversation.dart';
 import '../../../../../domain/conversation/models/group_conversation.dart';
 import '../../../../../domain/conversation/models/private_conversation.dart';
-import '../../../../../domain/message/message_delivery_status.dart';
+import '../../../../../domain/message/models/message_delivery_status.dart';
 import '../../../../../domain/user/view_models/logged_in_user_info_view_model.dart';
 import '../../../../../domain/user/view_models/user_settings_view_model.dart';
 import '../../../../../fixtures/conversations.dart';

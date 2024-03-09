@@ -78,10 +78,12 @@ class _MessageBubbleVideoState extends State<MessageBubbleVideo> {
         height: 200,
         child: FutureBuilder(
             future: _initializeVideoPlayerFuture,
-            builder: (context, snapshot) =>
-                snapshot.connectionState == ConnectionState.done
-                    ? _buildStack()
-                    : const Center(child: CircularProgressIndicator())),
+            builder: (context, snapshot) => snapshot.connectionState ==
+                    ConnectionState.done
+                ? _buildStack()
+                : const Center(
+                    child:
+                        RepaintBoundary(child: CircularProgressIndicator()))),
       );
 
   Widget _buildStack() => Stack(

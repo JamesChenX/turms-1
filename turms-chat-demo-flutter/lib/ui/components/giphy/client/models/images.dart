@@ -1,31 +1,6 @@
 import 'image.dart';
 
 class GiphyImages {
-  GiphyStillImage fixedHeightStill;
-  GiphyStillImage originalStill;
-  GiphyFullImage fixedWidth;
-  GiphyStillImage? fixedHeightSmallStill;
-  GiphyDownsampledImage? fixedHeightDownsampled;
-  GiphyPreviewImage? preview;
-  GiphyFullImage? fixedHeightSmall;
-  GiphyStillImage? downsizedStill;
-  GiphyDownsizedImage? downsized;
-  GiphyDownsizedImage? downsizedLarge;
-  GiphyStillImage? fixedWidthSmallStill;
-  GiphyWebPImage? previewWebp;
-  GiphyStillImage? fixedWidthStill;
-  GiphyFullImage? fixedWidthSmall;
-  GiphyPreviewImage? downsizedSmall;
-  GiphyDownsampledImage? fixedWidthDownsampled;
-  GiphyPreviewImage? downsizedMedium;
-  GiphyOriginalImage? original;
-  GiphyFullImage? fixedHeight;
-  GiphyPreviewImage? hd;
-  GiphyLoopingImage? looping;
-  GiphyPreviewImage? originalMp4;
-  GiphyDownsizedImage? previewGif;
-  GiphyStillImage? w480Still;
-
   GiphyImages({
     required this.fixedHeightStill,
     required this.originalStill,
@@ -168,6 +143,31 @@ class GiphyImages {
             : GiphyStillImage.fromJson(
                 json['480w_still'] as Map<String, dynamic>),
       );
+
+  GiphyStillImage fixedHeightStill;
+  GiphyStillImage originalStill;
+  GiphyFullImage fixedWidth;
+  GiphyStillImage? fixedHeightSmallStill;
+  GiphyDownsampledImage? fixedHeightDownsampled;
+  GiphyPreviewImage? preview;
+  GiphyFullImage? fixedHeightSmall;
+  GiphyStillImage? downsizedStill;
+  GiphyDownsizedImage? downsized;
+  GiphyDownsizedImage? downsizedLarge;
+  GiphyStillImage? fixedWidthSmallStill;
+  GiphyWebPImage? previewWebp;
+  GiphyStillImage? fixedWidthStill;
+  GiphyFullImage? fixedWidthSmall;
+  GiphyPreviewImage? downsizedSmall;
+  GiphyDownsampledImage? fixedWidthDownsampled;
+  GiphyPreviewImage? downsizedMedium;
+  GiphyOriginalImage? original;
+  GiphyFullImage? fixedHeight;
+  GiphyPreviewImage? hd;
+  GiphyLoopingImage? looping;
+  GiphyPreviewImage? originalMp4;
+  GiphyDownsizedImage? previewGif;
+  GiphyStillImage? w480Still;
 
   Map<String, dynamic> toJson() => <String, dynamic>{
         'fixed_height_still': fixedHeightStill.toJson(),

@@ -116,31 +116,33 @@ class _TButtonState extends State<TButton> {
         child: child,
       );
     }
-    return MouseRegion(
-        cursor: widget.disabled
-            ? SystemMouseCursors.forbidden
-            : SystemMouseCursors.click,
-        onEnter: (_) {
-          _isHovered = true;
-          setState(() {});
-        },
-        onExit: (_) {
-          _isHovered = false;
-          _isPressed = false;
-          setState(() {});
-        },
-        child: GestureDetector(
-          onTap: () {
-            if (!widget.disabled && !widget.isLoading) {
-              widget.onTap?.call();
-            }
-          },
-          onPanDown: (details) {
-            _isPressed = true;
-            widget.onPanDown?.call(details);
+    return RepaintBoundary(
+      child: MouseRegion(
+          cursor: widget.disabled
+              ? SystemMouseCursors.forbidden
+              : SystemMouseCursors.click,
+          onEnter: (_) {
+            _isHovered = true;
             setState(() {});
           },
-          child: child,
-        ));
+          onExit: (_) {
+            _isHovered = false;
+            _isPressed = false;
+            setState(() {});
+          },
+          child: GestureDetector(
+            onTap: () {
+              if (!widget.disabled && !widget.isLoading) {
+                widget.onTap?.call();
+              }
+            },
+            onPanDown: (details) {
+              _isPressed = true;
+              widget.onPanDown?.call(details);
+              setState(() {});
+            },
+            child: child,
+          )),
+    );
   }
 }

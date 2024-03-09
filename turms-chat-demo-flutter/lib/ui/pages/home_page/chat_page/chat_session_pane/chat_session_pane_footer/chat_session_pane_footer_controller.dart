@@ -8,12 +8,15 @@ import 'package:super_clipboard/super_clipboard.dart';
 import 'package:super_drag_and_drop/super_drag_and_drop.dart';
 
 import '../../../../../../domain/conversation/models/conversation.dart';
-import '../../../../../../domain/message/message_delivery_status.dart';
+import '../../../../../../domain/message/models/message_delivery_status.dart';
+import '../../../../../../domain/message/services/message_service.dart';
 import '../../../../../../domain/user/view_models/logged_in_user_info_view_model.dart';
 import '../../../../../../infra/built_in_types/built_in_type_helpers.dart';
 import '../../../../../../infra/io/data_reader_file_adaptor.dart';
 import '../../../../../../infra/io/file_utils.dart';
+import '../../../../../../infra/logging/logger.dart';
 import '../../../../../../infra/random/random_utils.dart';
+import '../../../../../components/components.dart';
 import '../../../../../components/t_editor/t_editor.dart';
 import '../../../../../components/t_popup/t_popup.dart';
 import '../../../../../l10n/app_localizations.dart';
@@ -156,14 +159,45 @@ class ChatSessionPaneFooterController
     setState(() {});
   }
 
-  void sendMessage() {
+  void sendInputMessage() {
     final document = getEditorDocument();
+    if (document.isBlank) {
+      return;
+    }
+    sendMessage(document);
+  }
+
+  void sendImage(String originalUrl, String thumbnailUrl) {
+    try {
+      final originalUri = Uri.parse(originalUrl);
+      originalUrl = originalUri.origin + originalUri.path;
+    } catch (e) {
+      TToast.showToast(context, appLocalizations.failedToSendImageInvalidUrl);
+      logger.error(
+          'Failed to send image. The original URL is invalid: $originalUrl', e);
+      return;
+    }
+    try {
+      final thumbnailUri = Uri.parse(thumbnailUrl);
+      thumbnailUrl = thumbnailUri.origin + thumbnailUri.path;
+    } catch (e) {
+      TToast.showToast(context, appLocalizations.failedToSendImageInvalidUrl);
+      logger.error(
+          'Failed to send image. The thumbnail URL is invalid: $thumbnailUrl',
+          e);
+      return;
+    }
+    final text = messageService.encodeImageMessage(originalUrl, thumbnailUrl);
+    sendMessage(text);
+  }
+
+  void sendMessage(String text) {
     ref.read(selectedConversationViewModel.notifier).addMessage(ChatMessage(
         // TODO: use real ID
         messageId: RandomUtils.nextUniqueInt64(),
         senderId: ref.read(loggedInUserViewModel)!.userId,
         sentByMe: true,
-        text: document,
+        text: text,
         timestamp: DateTime.now(),
         status: MessageDeliveryStatus.delivering));
 

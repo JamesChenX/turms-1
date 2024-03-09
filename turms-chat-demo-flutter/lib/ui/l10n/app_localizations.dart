@@ -282,6 +282,12 @@ abstract class AppLocalizations {
   /// **'Exit'**
   String get exit;
 
+  /// No description provided for @failedToSendImageInvalidUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to send image: Invalid URL'**
+  String get failedToSendImageInvalidUrl;
+
   /// No description provided for @failedToUpdateSettings.
   ///
   /// In en, this message translates to:

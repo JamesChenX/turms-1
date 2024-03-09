@@ -5,7 +5,7 @@ import '../../../../../components/components.dart';
 import '../../../../../components/t_button/t_icon_button.dart';
 import '../../../../../themes/theme_config.dart';
 
-const emoticons = [
+const _emoticons = [
   '😀',
   '😁',
   '😂',
@@ -100,14 +100,14 @@ class EmojiPickerPane extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => GridView.builder(
-        itemCount: emoticons.length,
+        itemCount: _emoticons.length,
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 10,
           mainAxisSpacing: 8,
           crossAxisSpacing: 8,
         ),
         itemBuilder: (context, index) {
-          final text = emoticons[index];
+          final text = _emoticons[index];
           return TTextButton(
               text: text,
               textStyle: TextStyle(

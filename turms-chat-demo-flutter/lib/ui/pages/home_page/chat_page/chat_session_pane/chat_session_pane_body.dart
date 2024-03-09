@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../domain/conversation/models/conversation.dart';
 import '../../../../../domain/conversation/models/private_conversation.dart';
+import '../../../../../domain/message/services/message_service.dart';
 import '../../../../../domain/user/models/user.dart';
 import '../../../../../domain/user/view_models/logged_in_user_info_view_model.dart';
 import '../../../../../fixtures/contacts.dart';
@@ -111,10 +112,14 @@ class _ChatSessionPaneBodyState extends ConsumerState<ChatSessionPaneBody> {
           user = fixtureUserContacts
               .firstWhere((element) => element.userId == message.senderId);
         }
-        return MessageBubble.fromMessage(
+        final messageInfo = messageService.parseMessageInfo(message.text);
+        return MessageBubble(
           key: ValueKey(message.messageId),
           user: user,
           message: message,
+          type: messageInfo.type,
+          originalUrl: messageInfo.originalUrl,
+          thumbnailUrl: messageInfo.thumbnailUrl,
         );
       },
     );

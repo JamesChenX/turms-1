@@ -33,7 +33,7 @@ Future<void> showCustomTDialog(
                         color: Colors.white,
                         borderRadius: borderRadius,
                         boxShadow: ThemeConfig.boxShadow),
-                    child: child),
+                    child: RepaintBoundary(child: child)),
               ),
             ));
 

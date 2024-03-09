@@ -69,7 +69,7 @@ List<ContactConversation> contactConversations = [
     'ನಮಸ್ತೆ, ಕನ್ನಡಿಗರ ಪರವಾಗಿ ಶುಭಾಷಯಗಳು.',
     '-',
     'Hello from the children of planet Earth',
-    '![Solar System Portrait](https://voyager.jpl.nasa.gov/assets/images/galleries/images-voyager-took/solar-system-portrait/PIA00451.jpg)'
+    '![https://voyager.jpl.nasa.gov/assets/images/galleries/images-voyager-took/solar-system-portrait/PIA00451.jpg](Solar System Portrait)'
   ]),
   // China
   ContactConversation('窦唯', [

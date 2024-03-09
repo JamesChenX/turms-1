@@ -31,7 +31,7 @@ class GiphyClient {
     int limit = 30,
     String rating = GiphyRating.g,
     String lang = GiphyLanguage.english,
-    GiphyType type = GiphyType.gifs,
+    GiphyType type = GiphyType.stickers,
   }) async =>
       _fetchCollection(
         baseUri.replace(
@@ -51,7 +51,7 @@ class GiphyClient {
     int limit = 30,
     String rating = GiphyRating.g,
     String lang = GiphyLanguage.english,
-    GiphyType type = GiphyType.gifs,
+    GiphyType type = GiphyType.stickers,
   }) async =>
       _fetchCollection(
         baseUri.replace(
@@ -87,7 +87,7 @@ class GiphyClient {
   Future<GiphyGif> random({
     required String tag,
     String rating = GiphyRating.g,
-    GiphyType type = GiphyType.gifs,
+    GiphyType type = GiphyType.stickers,
   }) async =>
       _fetchGif(
         baseUri.replace(

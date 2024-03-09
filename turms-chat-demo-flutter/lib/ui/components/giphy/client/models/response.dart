@@ -1,29 +1,33 @@
 import 'gif.dart';
 
 class GiphyResponse {
-  final List<GiphyGif> data;
-  final GiphyPagination? pagination;
-  final GiphyMeta? meta;
-
   GiphyResponse(
       {required this.data, required this.pagination, required this.meta});
 
-  factory GiphyResponse.fromJson(Map<String, dynamic> json) => GiphyResponse(
-      data: (json['data'] as List?)
-              ?.whereType<Map<String, dynamic>>()
-              .map(GiphyGif.fromJson)
-              .toList(
-                growable: false,
-              ) ??
-          List<GiphyGif>.empty(),
-      pagination: json.containsKey('pagination')
-          ? GiphyPagination.fromJson(
-              json['pagination'] as Map<String, dynamic>,
-            )
-          : null,
-      meta: json.containsKey('meta')
-          ? GiphyMeta.fromJson(json['meta'] as Map<String, dynamic>)
-          : null);
+  factory GiphyResponse.fromJson(Map<String, dynamic> json) {
+    final pagination = json['pagination'];
+    final meta = json['meta'];
+    return GiphyResponse(
+        data: (json['data'] as List?)
+                ?.whereType<Map<String, dynamic>>()
+                .map(GiphyGif.fromJson)
+                .toList(
+                  growable: false,
+                ) ??
+            List<GiphyGif>.empty(),
+        pagination: pagination == null
+            ? null
+            : GiphyPagination.fromJson(
+                pagination as Map<String, dynamic>,
+              ),
+        meta: meta == null
+            ? null
+            : GiphyMeta.fromJson(meta as Map<String, dynamic>));
+  }
+
+  final List<GiphyGif> data;
+  final GiphyPagination? pagination;
+  final GiphyMeta? meta;
 
   Map<String, dynamic> toJson() =>
       <String, dynamic>{'data': data, 'pagination': pagination, 'meta': meta};
@@ -46,19 +50,19 @@ class GiphyResponse {
 }
 
 class GiphyPagination {
-  final int totalCount;
-  final int count;
-  final int offset;
-
-  GiphyPagination(
-      {required this.totalCount, required this.count, required this.offset});
-
   factory GiphyPagination.fromJson(Map<String, dynamic> json) =>
       GiphyPagination(
         totalCount: json['total_count'] as int? ?? 0,
         count: json['count'] as int? ?? 0,
         offset: json['offset'] as int? ?? 0,
       );
+
+  GiphyPagination(
+      {required this.totalCount, required this.count, required this.offset});
+
+  final int totalCount;
+  final int count;
+  final int offset;
 
   Map<String, dynamic> toJson() => <String, dynamic>{
         'total_count': totalCount,
@@ -84,11 +88,6 @@ class GiphyPagination {
 }
 
 class GiphyMeta {
-  final int status;
-  final String message;
-
-  final String responseId;
-
   GiphyMeta(
       {required this.status, required this.message, required this.responseId});
 
@@ -97,6 +96,10 @@ class GiphyMeta {
         message: json['msg'] as String? ?? '',
         responseId: json['response_id'] as String? ?? '',
       );
+
+  final int status;
+  final String message;
+  final String responseId;
 
   Map<String, dynamic> toJson() => <String, dynamic>{
         'status': status,

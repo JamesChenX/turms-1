@@ -2,7 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
-import '../../../../../../domain/message/message_delivery_status.dart';
+import '../../../../../../domain/message/models/message_delivery_status.dart';
+import '../../../../../../domain/message/models/message_text_info.dart';
+import '../../../../../../domain/message/models/message_type.dart';
 import '../../../../../../domain/user/models/user.dart';
 import '../../../../../components/t_editor/t_editor.dart';
 import '../../../../../themes/theme_config.dart';
@@ -11,125 +13,22 @@ import '../message.dart';
 import 'message_bubble_image.dart';
 import 'message_bubble_video.dart';
 
-enum _MessageType {
-  text,
-  file,
-  image,
-  video,
-  audio,
-  youtube,
-}
-
-final _markdownImageRegex = RegExp(r'!\[(.*?)]\((https?:\/\/\S+\.\w+)\)');
-
 class MessageBubble extends StatefulWidget {
-  factory MessageBubble.fromMessage(
-      {Key? key,
-      required User user,
-      required ChatMessage message,
-      void Function(BuildContext, Offset)? onLongPress}) {
-    final text = message.text;
-    if (text.startsWith('![')) {
-      final matches = _markdownImageRegex.allMatches(text);
-      final matchCount = matches.length;
-      if (matchCount == 0 || matchCount > 1) {
-        return MessageBubble(
-            key: key,
-            user: user,
-            message: message,
-            type: _MessageType.text,
-            onLongPress: onLongPress);
-      }
-      final match = matches.first;
-      if (match.groupCount != 2) {
-        return MessageBubble(
-            key: key,
-            user: user,
-            message: message,
-            type: _MessageType.text,
-            onLongPress: onLongPress);
-      }
-      final url = match.group(2)!;
-      if (url.contains('//www.youtube.com/') ||
-          url.contains('//youtube.com/')) {
-        return MessageBubble(
-            key: key,
-            user: user,
-            message: message,
-            type: _MessageType.youtube,
-            youtubeUrl: url,
-            onLongPress: onLongPress);
-      } else if (url.endsWith('.mp4') ||
-          url.endsWith('.mov') ||
-          url.endsWith('.avi')) {
-        return MessageBubble(
-            key: key,
-            user: user,
-            message: message,
-            type: _MessageType.video,
-            videoUrl: url,
-            onLongPress: onLongPress);
-      } else if (url.endsWith('.mp3') || url.endsWith('.wav')) {
-        return MessageBubble(
-            key: key,
-            user: user,
-            message: message,
-            type: _MessageType.audio,
-            audioUrl: url,
-            onLongPress: onLongPress);
-      } else if (url.endsWith('.png') ||
-              url.endsWith('.'
-                  'jpg') ||
-              url.endsWith('.jpeg')
-          //  || url.endsWith('.gif')
-          ) {
-        return MessageBubble(
-            key: key,
-            user: user,
-            message: message,
-            type: _MessageType.image,
-            imageUrl: url,
-            onLongPress: onLongPress);
-      } else {
-        return MessageBubble(
-            key: key,
-            user: user,
-            message: message,
-            type: _MessageType.file,
-            fileUrl: url,
-            onLongPress: onLongPress);
-      }
-    } else {
-      return MessageBubble(
-          key: key,
-          user: user,
-          message: message,
-          type: _MessageType.text,
-          onLongPress: onLongPress);
-    }
-  }
-
   MessageBubble({
     Key? key,
     required this.user,
     required this.message,
     this.onLongPress,
     required this.type,
-    this.fileUrl,
-    this.imageUrl,
-    this.videoUrl,
-    this.audioUrl,
-    this.youtubeUrl,
+    this.originalUrl,
+    this.thumbnailUrl,
   }) : super(key: key);
 
   final User user;
   final ChatMessage message;
-  final _MessageType type;
-  final String? fileUrl;
-  final String? imageUrl;
-  final String? videoUrl;
-  final String? audioUrl;
-  final String? youtubeUrl;
+  final MessageType type;
+  final String? originalUrl;
+  final String? thumbnailUrl;
   final void Function(BuildContext, Offset)? onLongPress;
 
   @override
@@ -196,7 +95,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                 ),
               )
             else if (message.status == MessageDeliveryStatus.retrying)
-              const CupertinoActivityIndicator(),
+              RepaintBoundary(child: const CupertinoActivityIndicator()),
             const SizedBox(
               width: 12,
             ),
@@ -220,7 +119,7 @@ class _MessageBubbleState extends State<MessageBubble> {
       },
       child: IntrinsicWidth(
         child: switch (widget.type) {
-          _MessageType.text => Container(
+          MessageType.text => Container(
               constraints: BoxConstraints(
                   maxWidth: MediaQuery.of(context).size.width * 0.5),
               padding: const EdgeInsets.all(8),
@@ -236,13 +135,13 @@ class _MessageBubbleState extends State<MessageBubble> {
                 readOnly: true,
               ),
             ),
-          _MessageType.youtube => Text(widget.youtubeUrl ?? ''),
-          _MessageType.video => MessageBubbleVideo(
-              url: Uri.parse(widget.videoUrl!),
+          MessageType.youtube => Text(widget.originalUrl! ?? ''),
+          MessageType.video => MessageBubbleVideo(
+              url: Uri.parse(widget.originalUrl!),
             ),
-          _MessageType.audio => Text(widget.audioUrl ?? ''),
-          _MessageType.image => MessageBubbleImage(url: widget.imageUrl!),
-          _MessageType.file => Text(widget.fileUrl ?? ''),
+          MessageType.audio => Text(widget.originalUrl ?? ''),
+          MessageType.image => MessageBubbleImage(url: widget.originalUrl!),
+          MessageType.file => Text(widget.originalUrl ?? ''),
         },
       ));
 }

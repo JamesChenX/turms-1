@@ -33,7 +33,7 @@ class NewRelationshipPageView extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(
                     horizontal: safeAreaPaddingHorizontal),
                 child: TSearchBar(
-                  hintText: 'search',
+                  hintText: appLocalizations.search,
                   autofocus: true,
                   onSubmitted: newRelationshipPageController.searchUser,
                 ),

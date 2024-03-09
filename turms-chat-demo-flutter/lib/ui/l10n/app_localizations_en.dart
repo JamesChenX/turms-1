@@ -98,6 +98,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exit => 'Exit';
 
   @override
+  String get failedToSendImageInvalidUrl => 'Failed to send image: Invalid URL';
+
+  @override
   String failedToUpdateSettings(Object error) {
     return 'Failed to update settings: $error';
   }

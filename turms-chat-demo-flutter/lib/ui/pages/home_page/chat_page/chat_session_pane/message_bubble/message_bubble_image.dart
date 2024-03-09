@@ -99,7 +99,7 @@ class _MessageBubbleImageState extends State<MessageBubbleImage> {
                 ),
               ),
               Center(
-                child: CircularProgressIndicator(),
+                child: RepaintBoundary(child: CircularProgressIndicator()),
               )
             ],
           );

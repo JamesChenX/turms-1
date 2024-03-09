@@ -4,7 +4,7 @@ import 'package:fixnum/fixnum.dart';
 
 import '../domain/conversation/models/group_conversation.dart';
 import '../domain/conversation/models/private_conversation.dart';
-import '../domain/message/message_delivery_status.dart';
+import '../domain/message/models/message_delivery_status.dart';
 import '../domain/user/models/index.dart';
 import '../infra/random/random_utils.dart';
 import '../ui/pages/home_page/chat_page/chat_session_pane/message.dart';

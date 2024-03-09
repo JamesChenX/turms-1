@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:super_drag_and_drop/super_drag_and_drop.dart';
 
+import '../../../../../components/giphy/client/models/gif.dart';
 import '../../../../../components/t_alert/t_alert.dart';
 import '../../../../../components/t_button/t_icon_button.dart';
 import '../../../../../components/t_editor/t_editor.dart';
@@ -53,7 +54,7 @@ class ChatSessionPaneFooterView extends StatelessWidget {
               child: CallbackShortcuts(
                 bindings: {
                   const SingleActivator(LogicalKeyboardKey.enter):
-                      chatPageFooterController.sendMessage
+                      chatPageFooterController.sendInputMessage
                 },
                 child: TEditor(
                   controller: chatPageFooterController.editorController,
@@ -120,12 +121,18 @@ class ChatSessionPaneFooterView extends StatelessWidget {
                           iconColorHovered: Colors.black87,
                           iconColorPressed: ThemeConfig.primary,
                           tooltip: appLocalizations.sticker,
-                          // onPressed: () {
-                          // GiphySheet.open(
-                          //     context: context,
-                          //     apiKey: 'P9DiP3JUOhOW2BMmJCgyotbn9lC23xHN');
                         ),
                         follower: StickerPicker(
+                          onGiphyGifSelected: (GiphyGif value) {
+                            final images = value.images;
+                            final original = images?.original;
+                            final originalStill = images?.originalStill;
+                            if (original == null || originalStill == null) {
+                              return;
+                            }
+                            chatPageFooterController.sendImage(
+                                original.url, originalStill.url);
+                          },
                           onEmojiSelected: chatPageFooterController.insertEmoji,
                         )),
                     TIconButton(
@@ -144,7 +151,7 @@ class ChatSessionPaneFooterView extends StatelessWidget {
                     iconData: Symbols.send_rounded,
                     iconColorHovered: ThemeConfig.primary,
                     tooltip: appLocalizations.send,
-                    onTap: chatPageFooterController.sendMessage)
+                    onTap: chatPageFooterController.sendInputMessage)
               ],
             ),
           ),

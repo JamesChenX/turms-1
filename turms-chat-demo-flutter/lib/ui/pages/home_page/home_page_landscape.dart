@@ -12,6 +12,7 @@ import '../../../infra/native/index.dart';
 import '../../../infra/task/task_utils.dart';
 import '../../../infra/units/file_size_extensions.dart';
 import '../../components/t_alert/t_alert.dart';
+import '../../components/t_lazy_indexed_stack.dart';
 import '../../components/t_title_bar.dart';
 import '../../l10n/view_models/app_localizations_view_model.dart';
 import '../../themes/theme_config.dart';
@@ -84,8 +85,7 @@ class _HomePageLandscapeState extends ConsumerState<HomePageLandscape> {
                   child: MainNavigationRail(),
                 ),
                 Expanded(
-                    // child: IndexedStack(
-                    child: IndexedStack(
+                    child: TLazyIndexedStack(
                   index: switch (tab) {
                     HomePageTab.chat => 0,
                     HomePageTab.contacts => 1,

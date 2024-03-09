@@ -141,8 +141,10 @@ class LoginFormView extends StatelessWidget {
             ? const SizedBox(
                 height: 25,
                 width: 25,
-                child: CircularProgressIndicator(
-                  color: Colors.white,
+                child: RepaintBoundary(
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                  ),
                 ),
               )
             : Text(

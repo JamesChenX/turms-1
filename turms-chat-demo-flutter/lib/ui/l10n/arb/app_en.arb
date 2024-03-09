@@ -30,6 +30,7 @@
   "edit": "Edit",
   "editProfileImage": "Edit Profile Image",
   "exit": "Exit",
+  "failedToSendImageInvalidUrl": "Failed to send image: Invalid URL",
   "failedToUpdateSettings": "Failed to update settings: {error}",
   "fileName": "Name",
   "fileSize": "Size",

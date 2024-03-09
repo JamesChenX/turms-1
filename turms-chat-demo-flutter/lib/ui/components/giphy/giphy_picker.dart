@@ -13,7 +13,9 @@ import 'client/models/type.dart';
 final _queryTextViewModel = StateProvider<String>((ref) => '');
 
 class GiphyPicker extends ConsumerWidget {
-  const GiphyPicker({super.key});
+  const GiphyPicker({super.key, required this.onSelected});
+
+  final ValueChanged<GiphyGif> onSelected;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -28,8 +30,9 @@ class GiphyPicker extends ConsumerWidget {
         ),
         Expanded(
           child: GiphyPickerBody(
-            type: GiphyType.emoji,
+            type: GiphyType.stickers,
             scrollController: ScrollController(),
+            onSelected: onSelected,
           ),
         ),
       ],
@@ -39,11 +42,15 @@ class GiphyPicker extends ConsumerWidget {
 
 class GiphyPickerBody extends ConsumerStatefulWidget {
   GiphyPickerBody(
-      {Key? key, required this.type, required this.scrollController})
+      {Key? key,
+      required this.type,
+      required this.scrollController,
+      required this.onSelected})
       : super(key: key);
 
   final GiphyType type;
   final ScrollController scrollController;
+  final ValueChanged<GiphyGif> onSelected;
 
   @override
   _GiphyPickerBodyState createState() => _GiphyPickerBodyState();
@@ -95,7 +102,7 @@ class _GiphyPickerBodyState extends ConsumerState<GiphyPickerBody> {
     final _mainAxisCount =
         ((MediaQuery.of(context).size.height - 30) / _gifWidth).round();
 
-    _limit = min(100, _crossAxisCount * _mainAxisCount);
+    _limit = min(20, _crossAxisCount * _mainAxisCount);
     offset = 0;
 
     _loadMore();
@@ -112,7 +119,7 @@ class _GiphyPickerBodyState extends ConsumerState<GiphyPickerBody> {
     final gifs = _gifs;
     if (gifs.isEmpty) {
       return const Center(
-        child: CircularProgressIndicator(),
+        child: RepaintBoundary(child: CircularProgressIndicator()),
       );
     }
     return GridView.builder(
@@ -134,50 +141,59 @@ class _GiphyPickerBodyState extends ConsumerState<GiphyPickerBody> {
 
   Widget _buildItem(GiphyGif gif) {
     final images = gif.images!;
-    final _aspectRatio = double.parse(images.fixedWidth.width) /
-        double.parse(images.fixedWidth.height);
+    final fixedWidth = images.fixedWidth;
+    final _aspectRatio =
+        double.parse(fixedWidth.width) / double.parse(fixedWidth.height);
     return ClipRRect(
       borderRadius: BorderRadius.circular(10.0),
-      child: InkWell(
-        onTap: () => _selectedGif(gif),
-        child: images.fixedWidth.webp == null
-            ? Container()
-            : Image.network(
-                images.fixedWidth.webp!,
-                semanticLabel: gif.title,
-                gaplessPlayback: true,
-                fit: BoxFit.fill,
-                headers: {'accept': 'image/*'},
-                // loadStateChanged: (state) => AnimatedSwitcher(
-                //   duration: const Duration(milliseconds: 350),
-                //   child: switch (state.extendedImageLoadState) {
-                //     LoadState.loading => AspectRatio(
-                //         aspectRatio: _aspectRatio,
-                //         child: Container(
-                //           color: Theme.of(context).cardColor,
-                //         ),
-                //       ),
-                //     LoadState.completed => AspectRatio(
-                //         aspectRatio: _aspectRatio,
-                //         child: ExtendedRawImage(
-                //           fit: BoxFit.fill,
-                //           image: state.extendedImageInfo?.image,
-                //         ),
-                //       ),
-                //     LoadState.failed => AspectRatio(
-                //         aspectRatio: _aspectRatio,
-                //         child: Container(
-                //           color: Theme.of(context).cardColor,
-                //         ),
-                //       )
-                //   },
-              ),
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: GestureDetector(
+          onTap: () => widget.onSelected(gif),
+          child: fixedWidth.webp == null
+              ? Container()
+              : RepaintBoundary(
+                  child: Image.network(
+                    fixedWidth.webp!,
+                    cacheWidth: _gifWidth.toInt(),
+                    cacheHeight: _gifWidth ~/ _aspectRatio,
+                    semanticLabel: gif.title,
+                    gaplessPlayback: true,
+                    fit: BoxFit.fill,
+                    headers: {'accept': 'image/*'},
+                    // TODO
+                    // loadStateChanged: (state) => AnimatedSwitcher(
+                    //   duration: const Duration(milliseconds: 350),
+                    //   child: switch (state.extendedImageLoadState) {
+                    //     LoadState.loading => AspectRatio(
+                    //         aspectRatio: _aspectRatio,
+                    //         child: Container(
+                    //           color: Theme.of(context).cardColor,
+                    //         ),
+                    //       ),
+                    //     LoadState.completed => AspectRatio(
+                    //         aspectRatio: _aspectRatio,
+                    //         child: ExtendedRawImage(
+                    //           fit: BoxFit.fill,
+                    //           image: state.extendedImageInfo?.image,
+                    //         ),
+                    //       ),
+                    //     LoadState.failed => AspectRatio(
+                    //         aspectRatio: _aspectRatio,
+                    //         child: Container(
+                    //           color: Theme.of(context).cardColor,
+                    //         ),
+                    //       )
+                    //   },
+                  ),
+                ),
+        ),
       ),
     );
   }
 
   Future<void> _loadMore() async {
-    final response = _response;
+    var response = _response;
     if (_isLoading || response?.pagination?.totalCount == _gifs.length) {
       return;
     }
@@ -192,18 +208,18 @@ class _GiphyPickerBodyState extends ConsumerState<GiphyPickerBody> {
 
     final type = widget.type;
     if (type == GiphyType.emoji) {
-      _response = await client.emojis(offset: offset, limit: _limit);
+      response = await client.emojis(offset: offset, limit: _limit);
     } else {
       final queryText = ref.read(_queryTextViewModel);
       if (queryText.isNotEmpty) {
-        _response = await client.search(queryText,
+        response = await client.search(queryText,
             // lang: _tabProvider.lang,
             offset: offset,
             // rating: _tabProvider.rating,
             type: type,
             limit: _limit);
       } else {
-        _response = await client.trending(
+        response = await client.trending(
             // lang: _tabProvider.lang,
             offset: offset,
             // rating: _tabProvider.rating,
@@ -212,7 +228,8 @@ class _GiphyPickerBodyState extends ConsumerState<GiphyPickerBody> {
       }
     }
 
-    if (response!.data.isNotEmpty && mounted) {
+    _response = response;
+    if (response.data.isNotEmpty && mounted) {
       _gifs.addAll(response.data);
       setState(() {});
     }
@@ -225,10 +242,6 @@ class _GiphyPickerBodyState extends ConsumerState<GiphyPickerBody> {
     //     !_isLoading) {
     //   _loadMore();
     // }
-  }
-
-  void _selectedGif(GiphyGif gif) {
-    Navigator.pop(context, gif);
   }
 
   void _resetAndLoad() {

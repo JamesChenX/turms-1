@@ -67,9 +67,11 @@ class ChatSessionPane extends ConsumerWidget {
                     onTapOutside: (event) {
                       drawerController.hide?.call();
                     },
-                    child: TDrawer(
-                        controller: drawerController,
-                        child: const ChatSessionDetailsDrawer())),
+                    child: RepaintBoundary(
+                      child: TDrawer(
+                          controller: drawerController,
+                          child: const ChatSessionDetailsDrawer()),
+                    )),
               ],
             ),
           ),

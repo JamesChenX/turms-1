@@ -56,9 +56,13 @@ class GiphyGif {
         contentUrl: json['content_url'] as String?,
         sourceTld: json['source_tld'] as String?,
         sourcePostUrl: json['source_post_url'] as String?,
-        isSticker: json['is_sticker'] as int,
-        importDatetime: DateTime.parse(json['import_datetime'] as String),
-        trendingDatetime: DateTime.parse(json['trending_datetime'] as String),
+        isSticker: json['is_sticker'] as int?,
+        importDatetime: json['import_datetime'] == null
+            ? null
+            : DateTime.parse(json['import_datetime'] as String),
+        trendingDatetime: json['trending_datetime'] == null
+            ? null
+            : DateTime.parse(json['trending_datetime'] as String),
         images: GiphyImages.fromJson(
           json['images'] as Map<String, dynamic>,
         ),

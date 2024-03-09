@@ -98,6 +98,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get exit => '退出';
 
   @override
+  String get failedToSendImageInvalidUrl => '发送图片失败: 无效图片URL';
+
+  @override
   String failedToUpdateSettings(Object error) {
     return '设置更新失败: $error';
   }

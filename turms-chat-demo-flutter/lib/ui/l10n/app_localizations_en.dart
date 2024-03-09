@@ -172,6 +172,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get login => 'Login';
 
   @override
+  String get lowDiskSpace => 'Low Disk Space';
+
+  @override
+  String lowDiskSpacePrompt(Object space) {
+    return 'The disk space is lower than ${space}MB. Please delete some files or applications to free up space.';
+  }
+
+  @override
   String get maximize => 'Maximize';
 
   @override

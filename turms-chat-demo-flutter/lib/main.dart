@@ -48,9 +48,6 @@ Future<void> run(List<String> args) async {
 
   WidgetsFlutterBinding.ensureInitialized();
 
-  final appHostApi = AppHostApi();
-  final info = await appHostApi.getDiskSpace('.');
-
   if (kReleaseMode) {
     // logger.addAppender((event) {
     //   if (event.level.value <= Level.error.value) {

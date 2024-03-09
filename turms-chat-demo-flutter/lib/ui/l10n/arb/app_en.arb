@@ -54,6 +54,8 @@
   "lightTheme": "Light",
   "logOut": "Log Out",
   "login": "Login",
+  "lowDiskSpace": "Low Disk Space",
+  "lowDiskSpacePrompt": "The disk space is lower than {space}MB. Please delete some files or applications to free up space.",
   "maximize": "Maximize",
   "message": "Message",
   "messages": "Messages",

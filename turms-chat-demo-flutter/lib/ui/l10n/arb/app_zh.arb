@@ -54,6 +54,8 @@
   "lightTheme": "亮主题",
   "logOut": "退出登陆",
   "login": "登陆",
+  "lowDiskSpace": "存储空间不足",
+  "lowDiskSpacePrompt": "存储空间低于{space}MB。请删除一些文件或应用以释放空间。",
   "maximize": "最大化",
   "message": "消息",
   "messages": "发送消息",

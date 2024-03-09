@@ -41,6 +41,6 @@ class TaskUtils {
   }
 
   static void removeTask(String id) {
-    _idToTimer.remove(id);
+    _idToTimer.remove(id)?.cancel();
   }
 }

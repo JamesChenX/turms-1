@@ -71,10 +71,13 @@ class ThemeConfig {
   static const paddingV4H4 = EdgeInsets.symmetric(vertical: 4, horizontal: 4);
   static const paddingV8H16 = EdgeInsets.symmetric(vertical: 8, horizontal: 16);
   static const paddingV16H8 = EdgeInsets.symmetric(vertical: 16, horizontal: 8);
+  static const paddingV16H16 =
+      EdgeInsets.symmetric(vertical: 16, horizontal: 16);
   static const paddingH8 = EdgeInsets.symmetric(horizontal: 8);
 
   // Typography
   static const textStyleSecondary = TextStyle(color: textColorSecondary);
+  static const textStyleTitle = TextStyle(fontWeight: FontWeight.w800);
   static const textStyleHighlight = TextStyle(color: Colors.red);
   static final emojiFontFamily = switch (defaultTargetPlatform) {
     TargetPlatform.iOS || TargetPlatform.macOS => 'Apple Color Emoji',

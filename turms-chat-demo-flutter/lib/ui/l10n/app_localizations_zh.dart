@@ -172,6 +172,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get login => '登陆';
 
   @override
+  String get lowDiskSpace => '存储空间不足';
+
+  @override
+  String lowDiskSpacePrompt(Object space) {
+    return '存储空间低于${space}MB。请删除一些文件或应用以释放空间。';
+  }
+
+  @override
   String get maximize => '最大化';
 
   @override

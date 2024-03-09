@@ -1,12 +1,19 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../domain/user/view_models/user_settings_view_model.dart';
+import '../../../infra/app/app_config.dart';
 import '../../../infra/env/env_vars.dart';
 import '../../../infra/github/github_client.dart';
 import '../../../infra/logging/logger.dart';
+import '../../../infra/native/index.dart';
 import '../../../infra/task/task_utils.dart';
+import '../../../infra/units/file_size_extensions.dart';
+import '../../components/t_alert/t_alert.dart';
 import '../../components/t_title_bar.dart';
+import '../../l10n/view_models/app_localizations_view_model.dart';
 import '../../themes/theme_config.dart';
 import 'about_page/about_page.dart';
 import 'action_to_shortcut_view_model.dart';
@@ -19,6 +26,7 @@ import 'main_navigation_rail/main_navigation_rail.dart';
 import 'settings_page/settings_page.dart';
 import 'shared_view_models/home_page_tab_view_model.dart';
 
+const _taskIdCheckDiskSpace = 'checkDiskSpace';
 const _taskIdCheckForUpdates = 'checkForUpdates';
 
 class HomePageLandscape extends ConsumerStatefulWidget {
@@ -127,11 +135,31 @@ class _HomePageLandscapeState extends ConsumerState<HomePageLandscape> {
           }
           return true;
         });
+    TaskUtils.addPeriodicTask(
+      id: _taskIdCheckDiskSpace,
+      duration: const Duration(minutes: 3),
+      callback: () async {
+        final diskSpace = await appHostApi.getDiskSpace(AppConfig.appDir);
+        if (diskSpace.usable < 100.MB) {
+          final appLocalizations = ref.read(appLocalizationsViewModel);
+          unawaited(showAlertDialog(
+            context,
+            title: appLocalizations.lowDiskSpace,
+            content: appLocalizations.lowDiskSpacePrompt(100),
+            onTapConfirm: () {
+              Navigator.of(context).pop();
+            },
+          ));
+        }
+        return false;
+      },
+    );
   }
 
   @override
   void dispose() {
     TaskUtils.removeTask(_taskIdCheckForUpdates);
+    TaskUtils.removeTask(_taskIdCheckDiskSpace);
     super.dispose();
   }
 }

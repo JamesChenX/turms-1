@@ -18,6 +18,7 @@ bool isTDialogRoute(Route<dynamic> route) =>
 Future<void> showCustomTDialog(
         {required String routeName,
         required BuildContext context,
+        BorderRadiusGeometry borderRadius = ThemeConfig.borderRadius4,
         required Widget child}) =>
     showModal(
         routeSettings:
@@ -26,11 +27,11 @@ Future<void> showCustomTDialog(
         configuration: config,
         builder: (BuildContext context) => Align(
               child: Material(
-                borderRadius: ThemeConfig.borderRadius4,
+                borderRadius: borderRadius,
                 child: Container(
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: ThemeConfig.borderRadius4,
+                        borderRadius: borderRadius,
                         boxShadow: ThemeConfig.boxShadow),
                     child: child),
               ),

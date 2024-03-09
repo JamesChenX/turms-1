@@ -426,6 +426,18 @@ abstract class AppLocalizations {
   /// **'Login'**
   String get login;
 
+  /// No description provided for @lowDiskSpace.
+  ///
+  /// In en, this message translates to:
+  /// **'Low Disk Space'**
+  String get lowDiskSpace;
+
+  /// No description provided for @lowDiskSpacePrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'The disk space is lower than {space}MB. Please delete some files or applications to free up space.'**
+  String lowDiskSpacePrompt(Object space);
+
   /// No description provided for @maximize.
   ///
   /// In en, this message translates to:

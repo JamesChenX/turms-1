@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../../domain/user/models/friend_request.dart';
-import '../../../../components/t_avatar/t_avatar.dart';
-import '../../../../components/t_button/t_text_button.dart';
-import '../../../../l10n/view_models/app_localizations_view_model.dart';
-import '../../../../themes/theme_config.dart';
+import '../../../../../../domain/user/models/friend_request.dart';
+import '../../../../../components/t_avatar/t_avatar.dart';
+import '../../../../../components/t_button/t_text_button.dart';
+import '../../../../../l10n/view_models/app_localizations_view_model.dart';
+import '../../../../../themes/theme_config.dart';
 
 class FriendRequestTile extends ConsumerStatefulWidget {
   const FriendRequestTile(

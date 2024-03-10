@@ -58,21 +58,24 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
     setState(() {});
     // TODO: use real API
     await Future.delayed(const Duration(seconds: 3));
-    ref.read(contactsViewModel.notifier).state = [
-      SystemContact(
-          type: SystemContactType.friendRequest,
-          name: appLocalizations.friendRequests,
-          icon: Symbols.person_add_rounded),
-      SystemContact(
-          type: SystemContactType.fileTransfer,
-          name: appLocalizations.fileTransfer,
-          icon: Symbols.drive_file_move_rounded),
-    ]..addAll(fixtureContacts);
+    ref.read(contactsViewModel.notifier).state =
+        getSystemContacts() + fixtureContacts;
     ref.read(isContactsInitializedViewModel.notifier).state = true;
     isContactsInitialized = true;
     isContactsLoading = false;
     setState(() {});
   }
+
+  List<Contact> getSystemContacts() => [
+        SystemContact(
+            type: SystemContactType.requestNotification,
+            name: appLocalizations.requestNotification,
+            icon: Symbols.person_add_rounded),
+        SystemContact(
+            type: SystemContactType.fileTransfer,
+            name: appLocalizations.fileTransfer,
+            icon: Symbols.drive_file_move_rounded),
+      ];
 
   void updateSearchText(String value) {
     searchText = value;

@@ -16,6 +16,6 @@ class SystemContact extends Contact {
 }
 
 enum SystemContactType {
-  friendRequest,
+  requestNotification,
   fileTransfer,
 }

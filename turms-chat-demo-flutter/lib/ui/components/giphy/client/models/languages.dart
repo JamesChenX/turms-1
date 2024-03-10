@@ -1,4 +1,8 @@
 class GiphyLanguage {
+  static const bengali = 'bn';
+  static const chineseSimplified = 'zh-CN';
+  static const chineseTraditional = 'zh-TW';
+  static const czech = 'cs';
   static const english = 'en';
   static const spanish = 'es';
   static const portuguese = 'pt';
@@ -11,8 +15,6 @@ class GiphyLanguage {
   static const german = 'de';
   static const italian = 'it';
   static const japanese = 'ja';
-  static const chineseSimplified = 'zh-CN';
-  static const chineseTraditional = 'zh-TW';
   static const russian = 'ru';
   static const korean = 'ko';
   static const polish = 'pl';
@@ -20,9 +22,7 @@ class GiphyLanguage {
   static const romanian = 'ro';
   static const hungarian = 'hu';
   static const swedish = 'sv';
-  static const czech = 'cs';
   static const hindi = 'hi';
-  static const bengali = 'bn';
   static const danish = 'da';
   static const farsi = 'fa';
   static const filipino = 'tl';

@@ -19,15 +19,15 @@ class TImageViewer extends StatefulWidget {
 class _TImageViewerState extends State<TImageViewer> {
   @override
   void dispose() {
-    super.dispose();
     final image = widget.image;
     image.obtainKey(ImageConfiguration.empty).then((key) {
       if (PaintingBinding.instance.imageCache.containsKey(key)) {
-        Timer(const Duration(seconds: 30), () {
+        Timer(const Duration(seconds: 10), () {
           PaintingBinding.instance.imageCache.evict(key, includeLive: false);
         });
       }
     });
+    super.dispose();
   }
 
   @override
@@ -36,7 +36,7 @@ class _TImageViewerState extends State<TImageViewer> {
       width: 720,
       child: Column(
         children: [
-          Align(
+          const Align(
             alignment: Alignment.topRight,
             child: TTitleBar(
               displayCloseOnly: true,
@@ -55,11 +55,6 @@ class _TImageViewerState extends State<TImageViewer> {
                   gaplessPlayback: true,
                   fit: BoxFit.contain,
                   isAntiAlias: true,
-                  // initGestureConfigHandler: (state) {
-                  //   return GestureConfig(
-                  //     inPageView: true,
-                  //   );
-                  // },
                 ),
               ),
             ),

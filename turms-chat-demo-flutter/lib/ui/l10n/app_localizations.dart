@@ -378,6 +378,12 @@ abstract class AppLocalizations {
   /// **'Group ID'**
   String get groupId;
 
+  /// No description provided for @groupMembershipRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Group Membership Requests'**
+  String get groupMembershipRequests;
+
   /// No description provided for @groups.
   ///
   /// In en, this message translates to:
@@ -563,6 +569,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remove Attachment'**
   String get removeAttachment;
+
+  /// No description provided for @requestNotification.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Notification'**
+  String get requestNotification;
 
   /// No description provided for @reset.
   ///

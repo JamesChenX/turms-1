@@ -148,6 +148,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupId => 'Group ID';
 
   @override
+  String get groupMembershipRequests => 'Group Membership Requests';
+
+  @override
   String get groups => 'Groups';
 
   @override
@@ -243,6 +246,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get removeAttachment => 'Remove Attachment';
+
+  @override
+  String get requestNotification => 'Request Notification';
 
   @override
   String get reset => 'Reset';

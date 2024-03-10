@@ -108,16 +108,8 @@ class SubNavigationRailView extends StatelessWidget {
   List<Widget> _buildRelationshipGroups(BuildContext context) {
     final selectedContactId = subNavigationRailController.selectedContact?.id;
     final appLocalizations = subNavigationRailController.appLocalizations;
-    final widgets = [
-      SystemContact(
-          type: SystemContactType.friendRequest,
-          name: appLocalizations.friendRequests,
-          icon: Symbols.person_add_rounded),
-      SystemContact(
-          type: SystemContactType.fileTransfer,
-          name: appLocalizations.fileTransfer,
-          icon: Symbols.drive_file_move_rounded),
-    ]
+    final widgets = subNavigationRailController
+        .getSystemContacts()
         .map<Widget>((contact) => ContactTile(
               contact: contact,
               nameTextSpans: [],

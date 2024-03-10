@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../../domain/user/models/index.dart';
-import '../../../../../infra/built_in_types/built_in_type_helpers.dart';
-import '../../../../l10n/app_localizations.dart';
-import '../../../../l10n/view_models/app_localizations_view_model.dart';
-import '../../chat_page/view_models/selected_conversation_view_model.dart';
+import '../../../../../../domain/user/models/index.dart';
+import '../../../../../../infra/built_in_types/built_in_type_helpers.dart';
+import '../../../../../l10n/app_localizations.dart';
+import '../../../../../l10n/view_models/app_localizations_view_model.dart';
+import '../../../chat_page/view_models/selected_conversation_view_model.dart';
 import 'friend_requests_page.dart';
 import 'friend_requests_page_view.dart';
 import 'friend_requests_view_model.dart';
@@ -29,9 +29,8 @@ class FriendRequestsPageController extends ConsumerState<FriendRequestsPage> {
   Future<void> acceptFriendRequest(FriendRequest request) async {
     // TODO: use real API
     await Future.delayed(Duration(seconds: 3));
-    friendRequests.replace(
+    ref.read(friendRequestsViewModel.notifier).replace(
         request, request.copyWith(status: FriendRequestStatus.accepted));
-    friendRequestsViewModelRef.notifyListeners();
   }
 
   void startConversation(FriendRequest friendRequest) {

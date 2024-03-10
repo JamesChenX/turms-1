@@ -148,6 +148,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get groupId => '群组ID';
 
   @override
+  String get groupMembershipRequests => '入群请求';
+
+  @override
   String get groups => '群组';
 
   @override
@@ -243,6 +246,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get removeAttachment => '删除附件';
+
+  @override
+  String get requestNotification => '请求通知';
 
   @override
   String get reset => '重置';

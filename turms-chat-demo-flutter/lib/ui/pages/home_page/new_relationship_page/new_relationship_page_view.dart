@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -7,6 +8,7 @@ import '../../../components/t_search_bar/t_search_bar.dart';
 import '../../../components/t_title_bar/t_title_bar.dart';
 import '../../../themes/theme_config.dart';
 import 'new_relationship_page_controller.dart';
+import 'package:turms_chat_demo/ui/l10n/app_localizations.dart';
 import 'relationship_info_tile.dart';
 
 const safeAreaPaddingHorizontal = 24.0;
@@ -25,65 +27,8 @@ class NewRelationshipPageView extends StatelessWidget {
       child: Stack(
         children: [
           Positioned.fill(
-            child: Column(children: [
-              const SizedBox(height: 16),
-              Text(appLocalizations.addNewRelationship),
-              const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: safeAreaPaddingHorizontal),
-                child: TSearchBar(
-                  hintText: appLocalizations.search,
-                  autofocus: true,
-                  onSubmitted: newRelationshipPageController.searchUser,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Expanded(
-                child: Stack(
-                  children: [
-                    Column(
-                      children: [
-                        TabBar(
-                          isScrollable: true,
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                          tabAlignment: TabAlignment.start,
-                          controller:
-                              newRelationshipPageController.tabController,
-                          tabs: [
-                            Tab(
-                              text: appLocalizations.addContact,
-                              height: 40,
-                            ),
-                            Tab(
-                              text: appLocalizations.joinGroup,
-                              height: 40,
-                            )
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        if (!newRelationshipPageController.isSearching)
-                          Expanded(child: _buildSearchResultTabView())
-                      ],
-                    ),
-                    if (newRelationshipPageController.isSearching)
-                      const Center(
-                        child: SizedBox(
-                          height: 25,
-                          width: 25,
-                          child: CircularProgressIndicator(
-                            color: Colors.blue,
-                          ),
-                        ),
-                      )
-                  ],
-                ),
-              ),
-            ]),
+            child: _buildPage(appLocalizations),
           ),
-          // const Expanded(
-          //   child: SettingsPane(),
-          // ),
           const TTitleBar(
             backgroundColor: ThemeConfig.homePageBackgroundColor,
             displayCloseOnly: true,
@@ -93,6 +38,65 @@ class NewRelationshipPageView extends StatelessWidget {
       ),
     );
   }
+
+  Column _buildPage(AppLocalizations appLocalizations) => Column(children: [
+        const SizedBox(height: 16),
+        Text(appLocalizations.addNewRelationship),
+        const SizedBox(height: 16),
+        Padding(
+          padding:
+              const EdgeInsets.symmetric(horizontal: safeAreaPaddingHorizontal),
+          child: TSearchBar(
+            hintText: appLocalizations.search,
+            autofocus: true,
+            onSubmitted: newRelationshipPageController.searchUser,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Expanded(
+          child: Stack(
+            children: [
+              Column(
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: TabBar(
+                      isScrollable: true,
+                      tabAlignment: TabAlignment.start,
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      dividerHeight: 0,
+                      controller: newRelationshipPageController.tabController,
+                      tabs: [
+                        Tab(
+                          text: appLocalizations.addContact,
+                          height: 40,
+                        ),
+                        Tab(
+                          text: appLocalizations.joinGroup,
+                          height: 40,
+                        )
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  if (!newRelationshipPageController.isSearching)
+                    Expanded(child: _buildSearchResultTabView())
+                ],
+              ),
+              if (newRelationshipPageController.isSearching)
+                const Center(
+                  child: SizedBox(
+                    height: 25,
+                    width: 25,
+                    child: CircularProgressIndicator(
+                      color: Colors.blue,
+                    ),
+                  ),
+                )
+            ],
+          ),
+        ),
+      ]);
 
   Widget _buildSearchResultTabView() {
     final contacts = newRelationshipPageController.contacts;

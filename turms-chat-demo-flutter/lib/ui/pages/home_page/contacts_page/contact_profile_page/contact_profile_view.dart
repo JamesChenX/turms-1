@@ -7,7 +7,7 @@ import '../../../../../infra/built_in_types/built_in_type_helpers.dart';
 import '../../../../components/index.dart';
 import '../../../../l10n/view_models/app_localizations_view_model.dart';
 import '../../../../themes/theme_config.dart';
-import '../friend_requests_page/friend_requests_page.dart';
+import '../request_notifications_page/request_notifications_page.dart';
 import 'contact_profile_controller.dart';
 
 class ContactProfilePageView extends ConsumerWidget {
@@ -23,8 +23,8 @@ class ContactProfilePageView extends ConsumerWidget {
           toggleMaximizeOnDoubleTap: true, child: TEmpty());
     }
     if (selectedContact is SystemContact &&
-        selectedContact.type == SystemContactType.friendRequest) {
-      return const FriendRequestsPage();
+        selectedContact.type == SystemContactType.requestNotification) {
+      return const RequestNotificationsPage();
     }
     final intro = selectedContact.intro;
     return Stack(

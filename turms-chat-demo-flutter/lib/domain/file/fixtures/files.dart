@@ -1,4 +1,4 @@
-import '../domain/file/models/file_info.dart';
+import '../models/file_info.dart';
 
 final fixtureFiles = List.filled(
     50,

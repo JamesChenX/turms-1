@@ -7,7 +7,7 @@ import '../../../../../domain/conversation/models/private_conversation.dart';
 import '../../../../../domain/message/services/message_service.dart';
 import '../../../../../domain/user/models/user.dart';
 import '../../../../../domain/user/view_models/logged_in_user_info_view_model.dart';
-import '../../../../../fixtures/contacts.dart';
+import '../../../../../domain/user/fixtures/contacts.dart';
 import '../../../../themes/theme_config.dart';
 import 'message_bubble/message_bubble.dart';
 

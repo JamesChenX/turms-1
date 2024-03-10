@@ -7,6 +7,15 @@ import '../../themes/theme_config.dart';
 import '../t_dialog/t_dialog.dart';
 import '../t_title_bar/t_title_bar.dart';
 
+const _width = 720.0;
+const _height = 540.0;
+
+// The maximum allowed size is 4MB.
+// We should NOT use the size of the view
+// because we support zooming in the image viewer.
+const _widthInt = 2048;
+const _heightInt = 2048;
+
 class TImageViewer extends StatefulWidget {
   const TImageViewer({Key? key, required this.image}) : super(key: key);
 
@@ -32,8 +41,8 @@ class _TImageViewerState extends State<TImageViewer> {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-      height: 540,
-      width: 720,
+      width: _width,
+      height: _height,
       child: Column(
         children: [
           const Align(
@@ -51,7 +60,10 @@ class _TImageViewerState extends State<TImageViewer> {
                 maxScale: 5,
                 scaleFactor: 500,
                 child: Image(
-                  image: widget.image,
+                  image: ResizeImage(widget.image,
+                      width: _widthInt,
+                      height: _heightInt,
+                      policy: ResizeImagePolicy.fit),
                   gaplessPlayback: true,
                   fit: BoxFit.contain,
                   isAntiAlias: true,

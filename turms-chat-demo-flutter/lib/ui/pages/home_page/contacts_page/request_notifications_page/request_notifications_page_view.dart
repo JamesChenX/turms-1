@@ -52,7 +52,7 @@ class _RequestNotificationsPageView extends StatelessWidget {
               controller: requestNotificationsPageController.tabController,
               children: [
                 const FriendRequestsPage(),
-                const FriendRequestsPage(),
+                const GroupMembershipRequestsPage(),
               ]),
         ),
       )

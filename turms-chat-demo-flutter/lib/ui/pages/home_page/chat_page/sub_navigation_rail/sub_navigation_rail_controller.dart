@@ -12,7 +12,7 @@ import '../../../../../domain/conversation/models/private_conversation.dart';
 import '../../../../../domain/message/models/message_delivery_status.dart';
 import '../../../../../domain/user/view_models/logged_in_user_info_view_model.dart';
 import '../../../../../domain/user/view_models/user_settings_view_model.dart';
-import '../../../../../fixtures/conversations.dart';
+import '../../../../../domain/conversation/fixtures/conversations.dart';
 import '../../../../../infra/notification/notification_utils.dart';
 import '../../../../../infra/random/random_utils.dart';
 import '../../../../../infra/window/window_utils.dart';

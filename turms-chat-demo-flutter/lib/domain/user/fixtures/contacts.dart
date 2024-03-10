@@ -1,6 +1,6 @@
 import 'package:fixnum/fixnum.dart';
 
-import '../domain/user/models/index.dart';
+import '../models/index.dart';
 
 class ContactConversation {
   ContactConversation(this.userName, this.messages);

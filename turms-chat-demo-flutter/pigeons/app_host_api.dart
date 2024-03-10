@@ -1,8 +1,7 @@
 import 'package:pigeon/pigeon.dart';
 
 @ConfigurePigeon(PigeonOptions(
-  dartOut: 'lib/src/app_host_api.g.dart',
-  dartOptions: DartOptions(),
+  dartOut: 'lib/infra/native/app_host_api.g.dart',
   cppOptions: CppOptions(namespace: 'turms_chat_demo'),
   cppHeaderOut: 'windows/runner/app_host_api.g.h',
   cppSourceOut: 'windows/runner/app_host_api.g.cpp',

@@ -1,71 +1,64 @@
 import 'package:fixnum/fixnum.dart';
 
-import '../domain/user/models/friend_request.dart';
+import '../models/friend_request.dart';
+import '../models/index.dart';
+import '../../common/models/request_status.dart';
 
 final _now = DateTime.now();
 
 final friendRequests = [
   FriendRequest(
       id: Int64(1),
-      status: FriendRequestStatus.pending,
-      senderId: Int64(1),
-      senderName: 'fake name',
+      status: RequestStatus.pending,
+      sender: User(userId: Int64(1), name: 'fake name'),
       creationDate: _now,
       message: 'hello'),
   FriendRequest(
       id: Int64(2),
-      status: FriendRequestStatus.pending,
-      senderId: Int64(2),
-      senderName: 'fake name',
+      status: RequestStatus.pending,
+      sender: User(userId: Int64(2), name: 'fake name'),
       creationDate: _now,
       message: 'hi'),
   FriendRequest(
       id: Int64(3),
-      status: FriendRequestStatus.accepted,
-      senderId: Int64(3),
-      senderName: 'fake name',
+      status: RequestStatus.accepted,
+      sender: User(userId: Int64(3), name: 'fake name'),
       creationDate: _now,
       message: 'a very long message. ' * 50),
   FriendRequest(
       id: Int64(11),
-      status: FriendRequestStatus.pending,
-      senderId: Int64(11),
-      senderName: 'fake name',
+      status: RequestStatus.pending,
+      sender: User(userId: Int64(11), name: 'fake name'),
       creationDate: _now.subtract(const Duration(days: 15)),
       message: 'hello'),
   FriendRequest(
       id: Int64(12),
-      status: FriendRequestStatus.pending,
-      senderId: Int64(12),
-      senderName: 'fake name',
+      status: RequestStatus.pending,
+      sender: User(userId: Int64(12), name: 'fake name'),
       creationDate: _now.subtract(const Duration(days: 15)),
       message: 'hi'),
   FriendRequest(
       id: Int64(13),
-      status: FriendRequestStatus.accepted,
-      senderId: Int64(13),
-      senderName: 'fake name',
+      status: RequestStatus.accepted,
+      sender: User(userId: Int64(13), name: 'fake name'),
       creationDate: _now.subtract(const Duration(days: 15)),
       message: 'a very long message. ' * 50),
   FriendRequest(
       id: Int64(21),
-      status: FriendRequestStatus.pending,
-      senderId: Int64(21),
-      senderName: 'fake name',
+      status: RequestStatus.pending,
+      sender: User(userId: Int64(21), name: 'fake name'),
       creationDate: _now.subtract(const Duration(days: 365)),
       message: 'hello'),
   FriendRequest(
       id: Int64(22),
-      status: FriendRequestStatus.pending,
-      senderId: Int64(22),
-      senderName: 'fake name',
+      status: RequestStatus.pending,
+      sender: User(userId: Int64(22), name: 'fake name'),
       creationDate: _now.subtract(const Duration(days: 365)),
       message: 'hi'),
   FriendRequest(
       id: Int64(23),
-      status: FriendRequestStatus.accepted,
-      senderId: Int64(23),
-      senderName: 'fake name',
+      status: RequestStatus.accepted,
+      sender: User(userId: Int64(23), name: 'fake name'),
       creationDate: _now.subtract(const Duration(days: 365)),
       message: 'a very long message. ' * 50),
 ];

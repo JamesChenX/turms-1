@@ -1,35 +1,22 @@
 import 'package:fixnum/fixnum.dart';
+import '../../common/models/new_relationship_request.dart';
+import '../../common/models/request_status.dart';
 
-class FriendRequest {
+import 'index.dart';
+
+class FriendRequest extends NewRelationshipRequest {
   FriendRequest(
-      {required this.id,
-      required this.status,
-      required this.senderId,
-      required this.senderName,
-      required this.creationDate,
-      required this.message});
+      {required super.id,
+      required super.status,
+      required super.sender,
+      required super.creationDate,
+      required super.message});
 
-  final Int64 id;
-  final FriendRequestStatus status;
-  final Int64 senderId;
-  final String senderName;
-  final DateTime creationDate;
-  final String message;
-
-  FriendRequest copyWith({required FriendRequestStatus status}) =>
-      FriendRequest(
+  FriendRequest copyWith({required RequestStatus status}) => FriendRequest(
         id: id,
         status: status,
-        senderId: senderId,
-        senderName: senderName,
+        sender: sender,
         creationDate: creationDate,
         message: message,
       );
-// final String status;
-}
-
-enum FriendRequestStatus {
-  pending,
-  accepted,
-  // declined,
 }

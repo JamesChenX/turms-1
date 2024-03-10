@@ -1,41 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../../../domain/user/models/friend_request.dart';
+import '../../../../../../domain/common/models/new_relationship_request.dart';
+import '../../../../../../domain/common/models/request_status.dart';
 import '../../../../../components/t_avatar/t_avatar.dart';
 import '../../../../../components/t_button/t_text_button.dart';
 import '../../../../../l10n/view_models/app_localizations_view_model.dart';
 import '../../../../../themes/theme_config.dart';
 
-class FriendRequestTile extends ConsumerStatefulWidget {
-  const FriendRequestTile(
+class NewRelationshipRequestTile extends ConsumerStatefulWidget {
+  const NewRelationshipRequestTile(
       {Key? key,
-      required this.friendRequest,
+      required this.request,
       required this.onAccept,
       required this.onStartConversation})
       : super(key: key);
 
-  final FriendRequest friendRequest;
+  final NewRelationshipRequest request;
   final Future<void> Function() onAccept;
   final void Function() onStartConversation;
 
   @override
-  _FriendRequestTileState createState() => _FriendRequestTileState();
+  _NewRelationshipRequestTileState createState() =>
+      _NewRelationshipRequestTileState();
 }
 
-class _FriendRequestTileState extends ConsumerState<FriendRequestTile> {
+class _NewRelationshipRequestTileState
+    extends ConsumerState<NewRelationshipRequestTile> {
   bool isHandling = false;
 
   @override
   Widget build(BuildContext context) {
     final appLocalizations = ref.watch(appLocalizationsViewModel);
-    final friendRequest = widget.friendRequest;
-    final senderName = friendRequest.senderName;
-    final message = friendRequest.message;
-    final status = friendRequest.status;
+    final request = widget.request;
+    final sender = request.sender;
+    final message = request.message;
+    final status = request.status;
     return Row(
       children: [
-        TAvatar(name: senderName),
+        TAvatar(
+          name: sender.name,
+          image: sender.image,
+        ),
         const SizedBox(
           width: 16,
         ),
@@ -46,7 +52,7 @@ class _FriendRequestTileState extends ConsumerState<FriendRequestTile> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  senderName,
+                  sender.name,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -65,7 +71,7 @@ class _FriendRequestTileState extends ConsumerState<FriendRequestTile> {
         ),
         const SizedBox(width: 16),
         // TODO: support decline
-        status == FriendRequestStatus.accepted
+        status == RequestStatus.accepted
             ? TTextButton.outlined(
                 width: 80,
                 padding: ThemeConfig.paddingV4H8,

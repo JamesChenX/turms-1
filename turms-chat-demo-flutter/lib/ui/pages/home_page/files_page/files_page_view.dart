@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
-import '../../../../fixtures/files.dart';
+import '../../../../domain/file/fixtures/files.dart';
 import '../../../../infra/units/file_size_extensions.dart';
 import '../../../components/index.dart';
 import '../../../components/t_date_range_picker/t_date_range_picker.dart';

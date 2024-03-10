@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../components/t_tabs.dart';
+import '../../../components/t_tabs/t_tabs.dart';
 import 'setting_form_field_groups.dart';
 import 'settings_page.dart';
 import 'settings_page_view.dart';

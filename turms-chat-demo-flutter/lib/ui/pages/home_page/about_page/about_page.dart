@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../components/t_dialog.dart';
+import '../../../components/t_dialog/t_dialog.dart';
 import 'about_page_controller.dart';
 
 class AboutPage extends ConsumerStatefulWidget {

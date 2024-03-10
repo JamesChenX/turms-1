@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../l10n/view_models/date_format_view_models.dart';
 import '../../themes/theme_config.dart';
-import '../components.dart';
+import '../index.dart';
 
 enum RangePosition {
   start,

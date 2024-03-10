@@ -89,11 +89,19 @@ class FileIcon extends StatelessWidget {
   final String fileFormat;
 
   @override
-  Widget build(BuildContext context) => CustomPaint(
-        painter: FileIconPainter(fileFormat),
-        size: const Size(21, 28),
-      );
+  Widget build(BuildContext context) =>
+      RawImage(image: getFileImage(fileFormat));
 }
+
+final fileFormatToImage = <String, ui.Image>{};
+
+ui.Image getFileImage(String fileFormat) =>
+    fileFormatToImage.putIfAbsent(fileFormat, () {
+      final recorder = ui.PictureRecorder();
+      FileIconPainter(fileFormat).paint(Canvas(recorder), const Size(21, 28));
+      final picture = recorder.endRecording();
+      return picture.toImageSync(21, 28);
+    });
 
 class FileIconPainter extends CustomPainter {
   FileIconPainter(this.fileFormat, {super.repaint})
@@ -126,20 +134,6 @@ class FileIconPainter extends CustomPainter {
               Rect.fromLTWH(left, -length, length * 2, length * 2),
               const Radius.circular(2)),
           Paint()..color = color.darken(0.2));
-
-    // final icon = MdiIcons.check;
-    // TextPainter textPainter = TextPainter(textDirection: TextDirection.ltr);
-    // textPainter.text = TextSpan(
-    //   text: String.fromCharCode(icon.codePoint),
-    //   style: TextStyle(
-    //     color: Colors.black,
-    //     fontSize: size,
-    //     fontFamily: icon.fontFamily,
-    //     package: icon.fontPackage, // This line is mandatory for external icon packs
-    //   ),
-    // );
-    // textPainter.layout();
-    // textPainter.paint(canvas, Offset(x, y));
 
     final paragraphBuilder = ui.ParagraphBuilder(
       ui.ParagraphStyle(

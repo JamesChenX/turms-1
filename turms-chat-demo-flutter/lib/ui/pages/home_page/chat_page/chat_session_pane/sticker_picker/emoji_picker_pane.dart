@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
-import '../../../../../components/components.dart';
+import '../../../../../components/index.dart';
 import '../../../../../components/t_button/t_icon_button.dart';
 import '../../../../../themes/theme_config.dart';
 

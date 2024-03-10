@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
-import '../../../components/t_empty.dart';
-import '../../../components/t_empty_result.dart';
-import '../../../components/t_search_bar.dart';
-import '../../../components/t_title_bar.dart';
+import '../../../components/t_empty/t_empty.dart';
+import '../../../components/t_empty/t_empty_result.dart';
+import '../../../components/t_search_bar/t_search_bar.dart';
+import '../../../components/t_title_bar/t_title_bar.dart';
 import '../../../themes/theme_config.dart';
 import 'new_relationship_page_controller.dart';
 import 'relationship_info_tile.dart';

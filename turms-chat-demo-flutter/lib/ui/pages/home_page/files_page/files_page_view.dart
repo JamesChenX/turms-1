@@ -6,7 +6,7 @@ import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../../fixtures/files.dart';
 import '../../../../infra/units/file_size_extensions.dart';
-import '../../../components/components.dart';
+import '../../../components/index.dart';
 import '../../../components/t_date_range_picker/t_date_range_picker.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../l10n/view_models/date_format_view_models.dart';

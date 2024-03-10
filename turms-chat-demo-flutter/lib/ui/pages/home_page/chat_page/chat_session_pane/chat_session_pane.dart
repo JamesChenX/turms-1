@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../components/components.dart';
+import '../../../../components/index.dart';
 import '../../../../themes/theme_config.dart';
 import '../view_models/selected_conversation_view_model.dart';
 import 'chat_session_details_drawer/chat_session_details_drawer.dart';

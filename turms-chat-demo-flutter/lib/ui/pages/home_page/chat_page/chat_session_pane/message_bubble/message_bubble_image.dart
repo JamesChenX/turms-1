@@ -13,7 +13,7 @@ import '../../../../../../infra/io/path_utils.dart';
 import '../../../../../../infra/media/future_memory_image_provider.dart';
 import '../../../../../../infra/task/task_utils.dart';
 import '../../../../../../infra/units/file_size_extensions.dart';
-import '../../../../../components/t_image_viewer.dart';
+import '../../../../../components/t_image_viewer/t_image_viewer.dart';
 import '../../../../../themes/theme_config.dart';
 
 const _imageBorderWidth = 1.0;

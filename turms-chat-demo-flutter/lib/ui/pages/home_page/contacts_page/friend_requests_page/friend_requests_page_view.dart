@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:turms_chat_demo/domain/user/models/friend_request.dart';
 import 'package:turms_chat_demo/ui/l10n/app_localizations.dart';
 
-import '../../../../components/t_horizontal_divider.dart';
-import '../../../../components/t_window_control_zone.dart';
+import '../../../../components/t_divider/t_horizontal_divider.dart';
+import '../../../../components/t_window_control_zone/t_window_control_zone.dart';
 import '../../../../l10n/view_models/date_format_view_models.dart';
 import '../../../../themes/theme_config.dart';
 import 'friend_request_tile.dart';

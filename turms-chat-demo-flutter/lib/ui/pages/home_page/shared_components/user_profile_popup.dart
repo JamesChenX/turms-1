@@ -24,7 +24,7 @@ import '../../../../domain/user/models/index.dart';
 import '../../../components/t_alert/t_alert.dart';
 import '../../../components/t_avatar/t_avatar.dart';
 import '../../../components/t_button/t_text_button.dart';
-import '../../../components/t_image_viewer.dart';
+import '../../../components/t_image_viewer/t_image_viewer.dart';
 import '../../../components/t_popup/t_popup.dart';
 import '../../../l10n/view_models/app_localizations_view_model.dart';
 import '../../../themes/theme_config.dart';

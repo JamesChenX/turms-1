@@ -1,9 +1,9 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:turms_chat_demo/ui/components/t_title_bar.dart';
+import 'package:turms_chat_demo/ui/components/t_title_bar/t_title_bar.dart';
 
-import '../themes/theme_config.dart';
+import '../../themes/theme_config.dart';
 
 const config = FadeScaleTransitionConfiguration(
   barrierColor: Colors.transparent,

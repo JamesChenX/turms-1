@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../components/t_dialog.dart';
+import '../../../components/t_dialog/t_dialog.dart';
 import 'settings_page_controller.dart';
 
 /// UI design: We don't put all settings separated by groups in one view because:

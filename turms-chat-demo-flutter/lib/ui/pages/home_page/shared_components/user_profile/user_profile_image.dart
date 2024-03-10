@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../components/t_avatar/t_avatar.dart';
-import '../../../../components/t_image_viewer.dart';
+import '../../../../components/t_image_viewer/t_image_viewer.dart';
 import 'user_profile_controller.dart';
 
 class UserProfileImage extends StatefulWidget {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../themes/theme_config.dart';
+import '../../themes/theme_config.dart';
 
 class TListTile extends StatefulWidget {
   const TListTile(

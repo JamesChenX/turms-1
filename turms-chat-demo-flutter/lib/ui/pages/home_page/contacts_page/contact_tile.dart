@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 
 import '../../../../domain/user/models/contact.dart';
 import '../../../components/t_avatar/t_avatar.dart';
-import '../../../components/t_list_tile.dart';
+import '../../../components/t_list_tile/t_list_tile.dart';
 import '../../../themes/theme_config.dart';
 
 class ContactTile extends StatefulWidget {

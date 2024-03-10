@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../themes/theme_config.dart';
+import '../../themes/theme_config.dart';
 
 class TVerticalDivider extends StatelessWidget {
   const TVerticalDivider({Key? key}) : super(key: key);

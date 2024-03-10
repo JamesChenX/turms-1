@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../themes/theme_config.dart';
-import 't_dialog.dart';
-import 't_title_bar.dart';
+import '../../themes/theme_config.dart';
+import '../t_dialog/t_dialog.dart';
+import '../t_title_bar/t_title_bar.dart';
 
 class TImageViewer extends StatefulWidget {
   const TImageViewer({Key? key, required this.image}) : super(key: key);

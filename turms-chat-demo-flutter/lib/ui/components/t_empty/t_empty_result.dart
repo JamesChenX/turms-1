@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
-import '../l10n/view_models/app_localizations_view_model.dart';
-import '../themes/theme_config.dart';
+import '../../l10n/view_models/app_localizations_view_model.dart';
+import '../../themes/theme_config.dart';
 
 class TEmptyResult extends ConsumerWidget {
   const TEmptyResult({super.key, this.icon = Symbols.description_rounded});

@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import '../../themes/theme_config.dart';
-import '../t_tooltip.dart';
+import '../t_tooltip/t_tooltip.dart';
 
 class TButton extends StatefulWidget {
   const TButton(

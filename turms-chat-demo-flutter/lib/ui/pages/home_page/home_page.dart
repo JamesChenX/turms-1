@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../components/t_responsive_layout.dart';
+import '../../components/t_layout/t_responsive_layout.dart';
 import 'home_page_landscape.dart';
 import 'home_page_portrait.dart';
 

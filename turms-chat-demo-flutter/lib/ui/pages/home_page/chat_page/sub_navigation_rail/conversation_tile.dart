@@ -4,7 +4,7 @@ import 'package:turms_chat_demo/ui/pages/home_page/chat_page/chat_session_pane/m
 
 import '../../../../../domain/conversation/models/conversation.dart';
 import '../../../../components/t_avatar/t_avatar.dart';
-import '../../../../components/t_list_tile.dart';
+import '../../../../components/t_list_tile/t_list_tile.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../l10n/view_models/app_localizations_view_model.dart';
 import '../../../../l10n/view_models/date_format_view_models.dart';

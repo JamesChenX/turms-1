@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../l10n/view_models/app_localizations_view_model.dart';
-import '../components.dart';
+import '../index.dart';
 import 'client/client.dart';
 import 'client/models/gif.dart';
 import 'client/models/response.dart';

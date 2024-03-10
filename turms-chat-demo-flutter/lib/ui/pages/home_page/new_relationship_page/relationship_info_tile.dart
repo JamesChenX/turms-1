@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../domain/user/models/contact.dart';
 import '../../../components/t_avatar/t_avatar.dart';
 import '../../../components/t_button/t_text_button.dart';
-import '../../../components/t_list_tile.dart';
+import '../../../components/t_list_tile/t_list_tile.dart';
 import '../../../l10n/view_models/app_localizations_view_model.dart';
 import '../../../themes/theme_config.dart';
 import 'new_relationship_page_view.dart';

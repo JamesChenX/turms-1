@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-import '../../infra/animation/animation_utils.dart';
-import '../../infra/animation/dismissed_status_change_type.dart';
+import '../../../infra/animation/animation_utils.dart';
+import '../../../infra/animation/dismissed_status_change_type.dart';
 
 // Modified:
 // * Disappear instead of keeping displaying when hovering.

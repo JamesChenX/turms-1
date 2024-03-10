@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../components/t_tabs.dart';
+import '../../../components/t_tabs/t_tabs.dart';
 import '../../../l10n/view_models/app_localizations_view_model.dart';
 import '../../../themes/theme_config.dart';
 import 'setting_form_field_groups.dart';

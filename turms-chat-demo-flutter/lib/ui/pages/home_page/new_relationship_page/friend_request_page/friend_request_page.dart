@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../domain/user/models/contact.dart';
-import '../../../../components/t_dialog.dart';
+import '../../../../components/t_dialog/t_dialog.dart';
 import 'friend_request_page_controller.dart';
 
 class FriendRequestPage extends ConsumerStatefulWidget {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../components/t_dialog.dart';
+import '../../../components/t_dialog/t_dialog.dart';
 import 'new_relationship_page_controller.dart';
 
 class NewRelationshipPage extends ConsumerStatefulWidget {

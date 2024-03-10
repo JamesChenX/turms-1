@@ -3,8 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
-import '../l10n/view_models/app_localizations_view_model.dart';
-import 't_button/t_icon_button.dart';
+import '../../l10n/view_models/app_localizations_view_model.dart';
+import '../t_button/t_icon_button.dart';
 
 class TTextField extends ConsumerStatefulWidget {
   const TTextField(

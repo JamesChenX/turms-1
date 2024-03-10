@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
-import 't_text_field.dart';
+import '../t_text_field/t_text_field.dart';
 
 class TSearchBar extends StatelessWidget {
   const TSearchBar(

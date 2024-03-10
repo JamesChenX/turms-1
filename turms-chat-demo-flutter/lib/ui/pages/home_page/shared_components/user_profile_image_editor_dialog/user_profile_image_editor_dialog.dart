@@ -11,7 +11,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../../../../domain/user/models/index.dart';
 import '../../../../../infra/io/file_utils.dart';
 import '../../../../../infra/io/io_extensions.dart';
-import '../../../../components/components.dart';
+import '../../../../components/index.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../l10n/view_models/app_localizations_view_model.dart';
 import '../../../../themes/theme_config.dart';

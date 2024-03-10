@@ -16,7 +16,7 @@ import '../../../../../../infra/io/data_reader_file_adaptor.dart';
 import '../../../../../../infra/io/file_utils.dart';
 import '../../../../../../infra/logging/logger.dart';
 import '../../../../../../infra/random/random_utils.dart';
-import '../../../../../components/components.dart';
+import '../../../../../components/index.dart';
 import '../../../../../components/t_editor/t_editor.dart';
 import '../../../../../components/t_popup/t_popup.dart';
 import '../../../../../l10n/app_localizations.dart';

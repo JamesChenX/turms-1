@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -12,8 +13,8 @@ import '../../../infra/native/index.dart';
 import '../../../infra/task/task_utils.dart';
 import '../../../infra/units/file_size_extensions.dart';
 import '../../components/t_alert/t_alert.dart';
-import '../../components/t_lazy_indexed_stack.dart';
-import '../../components/t_title_bar.dart';
+import '../../components/t_lazy_indexed_stack/t_lazy_indexed_stack.dart';
+import '../../components/t_title_bar/t_title_bar.dart';
 import '../../l10n/view_models/app_localizations_view_model.dart';
 import '../../themes/theme_config.dart';
 import 'about_page/about_page.dart';
@@ -92,9 +93,9 @@ class _HomePageLandscapeState extends ConsumerState<HomePageLandscape> {
                     HomePageTab.files => 2,
                   },
                   children: [
-                    const ChatPage(),
-                    const ContactsPage(),
-                    const FilesPage(),
+                    const RepaintBoundary(child: ChatPage()),
+                    const RepaintBoundary(child: ContactsPage()),
+                    const RepaintBoundary(child: FilesPage()),
                   ],
                 ))
               ],

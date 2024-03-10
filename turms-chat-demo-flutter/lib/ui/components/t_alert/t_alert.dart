@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../l10n/view_models/app_localizations_view_model.dart';
 import '../../themes/theme_config.dart';
 import '../t_button/t_text_button.dart';
-import '../t_dialog.dart';
+import '../t_dialog/t_dialog.dart';
 
 class TAlert extends ConsumerWidget {
   const TAlert({

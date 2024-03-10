@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-import '../../../components/components.dart';
+import '../../../components/index.dart';
 import '../../../themes/theme_config.dart';
 import 'settings_page_controller.dart';
 import 'settings_pane.dart';

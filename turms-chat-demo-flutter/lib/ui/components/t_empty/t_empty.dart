@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../infra/assets/assets.gen.dart';
+import '../../../infra/assets/assets.gen.dart';
 
 class TEmpty extends StatelessWidget {
   const TEmpty({super.key});

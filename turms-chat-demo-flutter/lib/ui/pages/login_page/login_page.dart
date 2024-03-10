@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 import '../../../infra/assets/assets.gen.dart';
-import '../../components/t_title_bar.dart';
-import '../../components/t_window_control_zone.dart';
+import '../../components/t_title_bar/t_title_bar.dart';
+import '../../components/t_window_control_zone/t_window_control_zone.dart';
 import 'login_form/login_form.dart';
 
 class LoginPage extends StatelessWidget {

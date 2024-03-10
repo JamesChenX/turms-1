@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../infra/keyboard/logical_keyboard_key_extensions.dart';
-import '../../infra/keyboard/shortcut_extensions.dart';
-import '../l10n/view_models/app_localizations_view_model.dart';
-import 't_text_field.dart';
+import '../../../infra/keyboard/logical_keyboard_key_extensions.dart';
+import '../../../infra/keyboard/shortcut_extensions.dart';
+import '../../l10n/view_models/app_localizations_view_model.dart';
+import '../t_text_field/t_text_field.dart';
 
 final _allowedKeys = <LogicalKeyboardKey>{
   // A-Z

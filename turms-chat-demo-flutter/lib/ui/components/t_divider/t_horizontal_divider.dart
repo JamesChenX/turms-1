@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../themes/theme_config.dart';
+import '../../themes/theme_config.dart';
 
 class THorizontalDivider extends StatelessWidget {
   const THorizontalDivider({Key? key, this.color = ThemeConfig.dividerColor})

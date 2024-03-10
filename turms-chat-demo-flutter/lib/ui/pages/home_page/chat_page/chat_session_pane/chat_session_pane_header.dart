@@ -4,7 +4,7 @@ import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../../components/t_button/t_icon_button.dart';
 import '../../../../components/t_drawer/t_drawer.dart';
-import '../../../../components/t_window_control_zone.dart';
+import '../../../../components/t_window_control_zone/t_window_control_zone.dart';
 import '../../../../l10n/view_models/app_localizations_view_model.dart';
 import '../view_models/selected_conversation_view_model.dart';
 import 'chat_session_pane.dart';

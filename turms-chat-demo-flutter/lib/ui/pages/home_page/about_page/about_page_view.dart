@@ -7,7 +7,7 @@ import '../../../../infra/app/app_config.dart';
 import '../../../../infra/assets/assets.gen.dart';
 import '../../../../infra/github/github_client.dart';
 import '../../../components/t_button/t_text_button.dart';
-import '../../../components/t_title_bar.dart';
+import '../../../components/t_title_bar/t_title_bar.dart';
 import '../../../components/t_toast/t_toast.dart';
 import '../../../themes/theme_config.dart';
 import 'about_page_controller.dart';

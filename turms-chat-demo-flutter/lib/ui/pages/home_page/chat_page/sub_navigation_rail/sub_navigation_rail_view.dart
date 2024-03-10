@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../../components/t_button/t_icon_button.dart';
-import '../../../../components/t_search_bar.dart';
+import '../../../../components/t_search_bar/t_search_bar.dart';
 import '../../../../themes/theme_config.dart';
 import '../../create_group_page/create_group_page.dart';
 import '../../new_relationship_page/new_relationship_page.dart';

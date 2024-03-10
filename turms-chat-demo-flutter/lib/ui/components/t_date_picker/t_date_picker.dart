@@ -5,7 +5,7 @@ import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 import '../../../infra/datetime/datetime_utils.dart';
 import '../../l10n/view_models/app_localizations_view_model.dart';
-import '../components.dart';
+import '../index.dart';
 import 't_date_cell.dart';
 
 class TDatePicker extends ConsumerWidget {

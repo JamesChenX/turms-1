@@ -11,13 +11,21 @@ class GroupConversation extends Conversation {
       required this.contact})
       : super(id: 'group:${contact.groupId}', name: contact.name);
 
+  @override
   final GroupContact contact;
+
+  @override
+  set contact(Contact _contact) {
+    throw UnimplementedError();
+  }
 
   @override
   ImageProvider<Object>? get image => contact.image;
 
   @override
-  set image(ImageProvider<Object>? _image) {}
+  set image(ImageProvider<Object>? _image) {
+    throw UnimplementedError();
+  }
 
   @override
   bool hasSameContact(Contact contact) =>

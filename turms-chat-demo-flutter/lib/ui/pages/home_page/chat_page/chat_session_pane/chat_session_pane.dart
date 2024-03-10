@@ -70,7 +70,9 @@ class ChatSessionPane extends ConsumerWidget {
                     child: RepaintBoundary(
                       child: TDrawer(
                           controller: drawerController,
-                          child: const ChatSessionDetailsDrawer()),
+                          child: ChatSessionDetailsDrawer(
+                            conversation: selectedConversation,
+                          )),
                     )),
               ],
             ),

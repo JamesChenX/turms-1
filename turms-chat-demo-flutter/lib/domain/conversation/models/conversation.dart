@@ -34,6 +34,7 @@ abstract class Conversation {
   int unreadMessageCount;
   String? draft;
 
+  abstract Contact contact;
   abstract ImageProvider? image;
 
   bool hasSameContact(Contact contact);

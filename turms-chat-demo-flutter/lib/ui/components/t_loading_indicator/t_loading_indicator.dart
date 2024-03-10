@@ -8,13 +8,13 @@ class TLoadingIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Row(
         children: [
-          Text(text),
-          const SizedBox(
-            width: 8,
-          ),
           const RepaintBoundary(
             child: CupertinoActivityIndicator(),
           ),
+          const SizedBox(
+            width: 8,
+          ),
+          Text(text),
         ],
       );
 }

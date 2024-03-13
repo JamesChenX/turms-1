@@ -10,25 +10,23 @@ class TAudioPlayer extends StatefulWidget {
 
 class _TAudioPlayerState extends State<TAudioPlayer> {
   @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 64,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: Colors.black87,
-          borderRadius: BorderRadius.circular(8),
+  Widget build(BuildContext context) => SizedBox(
+        height: 64,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: Colors.black87,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            children: [
+              IconButton(
+                icon: const Icon(Symbols.play_arrow_rounded),
+                onPressed: () {},
+              ),
+              // Slider(value: value, onChanged: onChanged),
+              const Text('00:10/00:21')
+            ],
+          ),
         ),
-        child: Row(
-          children: [
-            IconButton(
-              icon: Icon(Symbols.play_arrow_rounded),
-              onPressed: () {},
-            ),
-            // Slider(value: value, onChanged: onChanged),
-            Text('00:10/00:21')
-          ],
-        ),
-      ),
-    );
-  }
+      );
 }

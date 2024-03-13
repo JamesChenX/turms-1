@@ -47,19 +47,6 @@ class ChatSessionPane extends ConsumerWidget {
                   children: [
                     Expanded(child: ChatSessionPaneBody(selectedConversation)),
                     const _ChatSessionPaneFooter(),
-                    // Listener(
-                    //   child: MouseRegion(
-                    //     cursor: SystemMouseCursors.move,
-                    //     child: Container(
-                    //       color: Colors.red,
-                    //       height: 8,
-                    //     ),
-                    //   ),
-                    // ),
-                    // ConstrainedBox(
-                    //   constraints: const BoxConstraints.tightFor(height: 240),
-                    //   child: const ChatSessionPaneFooter(),
-                    // )
                   ],
                 ),
                 TapRegion(

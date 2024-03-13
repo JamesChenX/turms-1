@@ -17,9 +17,8 @@ class AboutPageController extends ConsumerState<AboutPage> {
     return AboutPageView(this);
   }
 
-  void openGitHub() {
-    launchUrlString('https://github.com/turms-im/turms');
-  }
+  Future<bool> openGitHub() =>
+      launchUrlString('https://github.com/turms-im/turms');
 
   void updateIsDownloading(bool isDownloading) {
     if (this.isDownloading != isDownloading) {

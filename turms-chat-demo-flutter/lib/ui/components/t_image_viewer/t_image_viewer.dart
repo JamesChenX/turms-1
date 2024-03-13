@@ -59,6 +59,7 @@ class _TImageViewerState extends State<TImageViewer> {
                 minScale: 0.25,
                 maxScale: 5,
                 scaleFactor: 500,
+                // TODO: use adaptive image size
                 child: Image(
                   image: ResizeImage(widget.image,
                       width: _widthInt,

@@ -9,8 +9,8 @@ part 't_drawer_route.dart';
 class TDrawer extends StatefulWidget {
   const TDrawer({super.key, this.controller, required this.child});
 
-  final Widget child;
   final TDrawerController? controller;
+  final Widget child;
 
   @override
   State<TDrawer> createState() => _TDrawerState(controller);
@@ -23,11 +23,14 @@ class _TDrawerState extends State<TDrawer> with SingleTickerProviderStateMixin {
     controller?.hide = hide;
   }
 
+  late Widget currentChild;
+  Widget? nextChild;
   late AnimationController animationController;
 
   @override
   void initState() {
     super.initState();
+    currentChild = widget.child;
     animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 200),
@@ -36,6 +39,10 @@ class _TDrawerState extends State<TDrawer> with SingleTickerProviderStateMixin {
 
   @override
   void dispose() {
+    final controller = widget.controller;
+    controller?.toggle = null;
+    controller?.show = null;
+    controller?.hide = null;
     animationController.dispose();
     super.dispose();
   }
@@ -43,15 +50,24 @@ class _TDrawerState extends State<TDrawer> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) => _TDrawerView(
         animation: animationController,
-        child: widget.child,
+        child: currentChild,
       );
 
   @override
   void didUpdateWidget(TDrawer oldWidget) {
     super.didUpdateWidget(oldWidget);
-    widget.controller?.toggle = toggle;
-    widget.controller?.show = show;
-    widget.controller?.hide = hide;
+    final newController = widget.controller;
+    newController?.toggle = toggle;
+    newController?.show = show;
+    newController?.hide = hide;
+    // Only change to show the next child
+    // if the drawer is not visible,
+    // or the drawer is hidden and show again.
+    if (animationController.status.isNotDismissed) {
+      nextChild = widget.child;
+    } else {
+      currentChild = widget.child;
+    }
   }
 
   void toggle() {
@@ -64,6 +80,11 @@ class _TDrawerState extends State<TDrawer> with SingleTickerProviderStateMixin {
 
   void show() {
     animationController.forward();
+    if (nextChild != null) {
+      currentChild = nextChild!;
+      nextChild = null;
+      setState(() {});
+    }
   }
 
   void hide() {

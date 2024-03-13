@@ -24,7 +24,12 @@ class ChatSessionDetailsGroupConversation extends ConsumerWidget {
       children: [
         Align(
           alignment: Alignment.topLeft,
-          child: SelectionArea(child: Text(contact.name)),
+          child: SelectionArea(
+              child: Text(
+            contact.name,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          )),
         ),
         if (intro.isNotBlank) ...[
           const SizedBox(
@@ -35,10 +40,9 @@ class ChatSessionDetailsGroupConversation extends ConsumerWidget {
               child: Text(
                 // TODO: test
                 intro.padRight(200, '123test'),
-                softWrap: true,
                 maxLines: 4,
-                style: ThemeConfig.textStyleSecondary,
                 overflow: TextOverflow.ellipsis,
+                style: ThemeConfig.textStyleSecondary,
               ),
             ),
           )

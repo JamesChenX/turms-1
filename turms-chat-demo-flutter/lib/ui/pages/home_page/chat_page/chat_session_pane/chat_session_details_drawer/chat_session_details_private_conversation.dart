@@ -20,37 +20,8 @@ class ChatSessionDetailsPrivateConversation extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final appLocalizations = AppLocalizations.of(context);
     const divider = THorizontalDivider();
-    final intro = contact.intro;
     return Column(
       children: [
-        Align(
-          alignment: Alignment.topLeft,
-          child: SelectionArea(child: Text(contact.name)),
-        ),
-        if (intro.isNotBlank) ...[
-          const SizedBox(
-            height: 8,
-          ),
-          SizedBox(
-            child: SelectionArea(
-              child: Text(
-                // TODO: test
-                intro.padRight(200, '123test'),
-                softWrap: true,
-                maxLines: 4,
-                style: ThemeConfig.textStyleSecondary,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          )
-        ],
-        const SizedBox(
-          height: 8,
-        ),
-        divider,
-        const SizedBox(
-          height: 8,
-        ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

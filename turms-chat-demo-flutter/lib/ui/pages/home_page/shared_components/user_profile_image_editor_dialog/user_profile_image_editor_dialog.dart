@@ -71,7 +71,7 @@ class _UserProfileImageEditorDialogState
                             textSize: 125,
                           )
                         : DecoratedBox(
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               color: Colors.black26,
                             ),
                             child: Image(
@@ -98,7 +98,7 @@ class _UserProfileImageEditorDialogState
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(appLocalizations.brightness),
-                        Text('50%'),
+                        const Text('50%'),
                       ],
                     ),
                     Slider(
@@ -116,25 +116,25 @@ class _UserProfileImageEditorDialogState
                       children: [
                         TIconButton.outlined(
                           iconData: Symbols.rotate_left_rounded,
-                          containerSize: Size.square(32),
+                          containerSize: const Size.square(32),
                           tooltip: appLocalizations.rotateLeft,
                           disabled: !enableOperations,
                         ),
                         TIconButton.outlined(
                           iconData: Symbols.rotate_right_rounded,
-                          containerSize: Size.square(32),
+                          containerSize: const Size.square(32),
                           tooltip: appLocalizations.rotateRight,
                           disabled: !enableOperations,
                         ),
                         TIconButton.outlined(
                           iconData: Symbols.flip_rounded,
-                          containerSize: Size.square(32),
+                          containerSize: const Size.square(32),
                           tooltip: appLocalizations.flipHorizontally,
                           disabled: !enableOperations,
                         ),
                         TIconButton.outlined(
                           iconData: Symbols.flip_rounded,
-                          containerSize: Size.square(32),
+                          containerSize: const Size.square(32),
                           iconRotate: pi / 180 * 90,
                           tooltip: appLocalizations.flipVertically,
                           disabled: !enableOperations,

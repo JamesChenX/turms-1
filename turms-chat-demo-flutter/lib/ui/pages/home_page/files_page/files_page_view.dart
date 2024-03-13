@@ -1,13 +1,12 @@
-import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../../domain/file/fixtures/files.dart';
 import '../../../../infra/units/file_size_extensions.dart';
 import '../../../components/index.dart';
 import '../../../components/t_date_range_picker/t_date_range_picker.dart';
+import '../../../components/t_table/t_table.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../l10n/view_models/date_format_view_models.dart';
 import '../../../themes/theme_config.dart';
@@ -42,7 +41,7 @@ class FilesPageView extends ConsumerWidget {
           const TWindowControlZone(toggleMaximizeOnDoubleTap: true),
           Center(
             child: Padding(
-              padding: ThemeConfig.paddingV8H16,
+              padding: EdgeInsets.symmetric(vertical: 16, horizontal: 8),
               child: Row(
                 children: [
                   SizedBox(
@@ -79,126 +78,55 @@ class FilesPageView extends ConsumerWidget {
     const titleTextStyle = TextStyle(
         fontStyle: FontStyle.normal, color: Color.fromARGB(255, 51, 51, 51));
     return Expanded(
-      child: DataTable2(
-          showCheckboxColumn: false,
-          columnSpacing: 30.0,
-          dataRowColor: MaterialStateProperty.resolveWith(_getDataRowColor),
-          headingRowColor:
-              MaterialStateColor.resolveWith((states) => Colors.green),
-          columns: _buildTableHeader(appLocalizations, titleTextStyle),
-          rows: _buildTableRows(
-              appLocalizations, dateFormat, secondaryTextStyle)),
-    );
-  }
-
-  List<DataColumn> _buildTableHeader(
-          AppLocalizations appLocalizations, TextStyle titleTextStyle) =>
-      <DataColumn>[
-        DataColumn2(
-          label: Text(
+      child: TTable(
+        header: TTableRow(cells: [
+          TTableDataCell(widget: Icon(Symbols.insert_drive_file_rounded)),
+          TTableDataCell(
+              widget: Text(
             appLocalizations.fileName,
             style: titleTextStyle,
-          ),
-        ),
-        DataColumn2(
-          label: Text(
+          )),
+          TTableDataCell(
+              widget: Text(
             appLocalizations.fileUploadDate,
             style: titleTextStyle,
-          ),
-        ),
-        DataColumn2(
-          label: Text(
+          )),
+          TTableDataCell(
+              widget: Text(
             appLocalizations.fileUploader,
             style: titleTextStyle,
-          ),
-        ),
-        DataColumn2(
-          label: Text(
-            appLocalizations.fileType,
-            style: titleTextStyle,
-          ),
-        ),
-        DataColumn2(
-          label: Text(
+          )),
+          TTableDataCell(
+              widget: Text(
             appLocalizations.fileSize,
             style: titleTextStyle,
-          ),
-        ),
-        DataColumn2(
-          label: Text(
-            appLocalizations.progress,
-            style: titleTextStyle,
-          ),
-        ),
-        DataColumn2(
-          label: Text(
-            appLocalizations.actions,
-            style: titleTextStyle,
-          ),
-        ),
-      ];
-
-  List<DataRow2> _buildTableRows(AppLocalizations appLocalizations,
-          DateFormat dateTimeFormat, TextStyle secondaryTextStyle) =>
-      fixtureFiles
-          .map((e) => DataRow2(
-                onTap: filesPageController.downloadOrOpen,
-                onSelectChanged: (isSelected) {},
-                cells: [
-                  DataCell(Row(
-                    children: [
-                      FileIcon(fileFormat: e.type),
-                      const SizedBox(
-                        width: 8,
-                      ),
-                      Text(e.name),
-                    ],
-                  )),
-                  DataCell(Text(dateTimeFormat.format(e.uploadDate),
-                      style: secondaryTextStyle)),
-                  DataCell(Text(e.uploader, style: secondaryTextStyle)),
-                  DataCell(Text(e.type, style: secondaryTextStyle)),
-                  DataCell(Text(e.size.toHumanReadableFileSize(),
-                      style: secondaryTextStyle)),
-                  DataCell(LinearProgressIndicator(
-                    value: 50,
-                  )),
-                  DataCell(Row(
-                    children: [
-                      TIconButton(
-                        iconData: Symbols.play_arrow_rounded,
-                        iconSize: 18,
-                        addContainer: false,
-                        tooltip: appLocalizations.downloadStart,
-                      ),
-                      const SizedBox(
-                        width: 16,
-                      ),
-                      TIconButton(
-                        iconData: Symbols.close_rounded,
-                        iconSize: 18,
-                        addContainer: false,
-                        tooltip: appLocalizations.downloadCancel,
-                      ),
-                      const SizedBox(
-                        width: 16,
-                      ),
-                      TIconButton(
-                        iconData: Symbols.folder_rounded,
-                        iconSize: 18,
-                        addContainer: false,
-                        tooltip: appLocalizations.openFolder,
-                      )
-                    ],
-                  )),
-                ],
-              ))
-          .toList();
-
-  Color? _getDataRowColor(Set<MaterialState> states) {
-    if (states.contains(MaterialState.hovered)) {
-      return const Color.fromARGB(255, 246, 246, 246);
-    }
-    return null;
+          )),
+        ]),
+        rows: fixtureFiles
+            .map((e) => TTableRow(
+                  onTap: filesPageController.downloadOrOpen,
+                  cells: [
+                    TTableDataCell(widget: FileIcon(fileFormat: e.type)),
+                    TTableDataCell(widget: Text(e.name)),
+                    TTableDataCell(
+                        widget: Text(dateFormat.format(e.uploadDate),
+                            style: secondaryTextStyle)),
+                    TTableDataCell(
+                        widget: Text(e.uploader, style: secondaryTextStyle)),
+                    TTableDataCell(
+                        widget: Text(e.size.toHumanReadableFileSize(),
+                            style: secondaryTextStyle)),
+                  ],
+                ))
+            .toList(),
+        columnOptions: [
+          TTableColumnOption(width: 0.06),
+          TTableColumnOption(width: 0.35),
+          TTableColumnOption(width: 0.20),
+          TTableColumnOption(width: 0.24),
+          TTableColumnOption(width: 0.15),
+        ],
+      ),
+    );
   }
 }

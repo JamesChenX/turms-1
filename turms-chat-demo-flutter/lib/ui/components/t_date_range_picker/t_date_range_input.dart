@@ -70,7 +70,7 @@ class _TDateRangeInputState extends ConsumerState<_TDateRangeInput> {
       mainAxisSize: MainAxisSize.min,
       children: [
         SizedBox(
-          width: 96,
+          width: 128,
           child: TTextField(
             textEditingController: _startDateInputController,
             focusNode: widget.startDateFocusNode,
@@ -86,7 +86,7 @@ class _TDateRangeInputState extends ConsumerState<_TDateRangeInput> {
           child: Icon(Symbols.arrow_forward_rounded, size: 16),
         ),
         SizedBox(
-          width: 96,
+          width: 128,
           child: TTextField(
             textEditingController: _endDateInputController,
             focusNode: widget.endDateFocusNode,

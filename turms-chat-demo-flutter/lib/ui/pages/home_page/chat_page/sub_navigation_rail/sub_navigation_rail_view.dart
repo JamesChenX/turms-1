@@ -55,10 +55,14 @@ class SubNavigationRailView extends StatelessWidget {
             Expanded(
               child: TSearchBar(
                 hintText: appLocalizations.search,
+                textEditingController:
+                    subNavigationRailController.searchBarTextEditingController,
                 transformValue: (value) {
-                  subNavigationRailController.updateSearchText(value);
+                  subNavigationRailController.onSearchTextUpdated(value);
                   return value;
                 },
+                onSubmitted: (_) =>
+                    subNavigationRailController.onSearchSubmitted(),
               ),
             ),
             const SizedBox(

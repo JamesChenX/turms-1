@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,31 +14,40 @@ import '../../../../../domain/message/models/message_delivery_status.dart';
 import '../../../../../domain/user/view_models/logged_in_user_info_view_model.dart';
 import '../../../../../domain/user/view_models/user_settings_view_model.dart';
 import '../../../../../domain/conversation/fixtures/conversations.dart';
+import '../../../../../infra/built_in_types/built_in_type_helpers.dart';
 import '../../../../../infra/notification/notification_utils.dart';
 import '../../../../../infra/random/random_utils.dart';
+import '../../../../../infra/ui/scroll_utils.dart';
+import '../../../../../infra/ui/text_utils.dart';
 import '../../../../../infra/window/window_utils.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../l10n/view_models/app_localizations_view_model.dart';
+import '../../../../themes/theme_config.dart';
 import '../chat_session_pane/message.dart';
 import '../view_models/conversations_view_model.dart';
 import '../view_models/is_conversations_initialized_view_model.dart';
 import '../view_models/selected_conversation_view_model.dart';
+import 'matched_conversation.dart';
 import 'sub_navigation_rail.dart';
 import 'sub_navigation_rail_view.dart';
 
 class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
   late FocusNode focusNode;
   late MenuController menuController;
-  late ScrollController scrollController;
+  late TextEditingController searchBarTextEditingController;
+  late ScrollController conversationTilesScrollController;
+  BuildContext? conversationTilesBuildContext;
 
   late AppLocalizations appLocalizations;
   late List<Conversation> conversations;
-  Map<String, BuildContext> conversationIdToContext = {};
+  List<StyledConversation> styledConversations = [];
   Conversation? selectedConversation;
-  Conversation? previewedConversation;
+  int? highlightedStyledConversationIndex;
   bool isConversationsInitialized = false;
   bool isConversationsLoading = false;
 
+  bool isSearchMode = false;
+  String previousSearchText = '';
   String searchText = '';
 
   @override
@@ -45,7 +55,8 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
     super.initState();
     focusNode = FocusNode();
     menuController = MenuController();
-    scrollController = ScrollController();
+    searchBarTextEditingController = TextEditingController();
+    conversationTilesScrollController = ScrollController();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (conversations.isNotEmpty) {
         return;
@@ -66,7 +77,8 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
   void dispose() {
     super.dispose();
     focusNode.dispose();
-    scrollController.dispose();
+    searchBarTextEditingController.dispose();
+    conversationTilesScrollController.dispose();
   }
 
   @override
@@ -78,35 +90,88 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
     final conversationId = selectedConversation?.id;
     if (conversationId != null &&
         previousSelectedConversationId != conversationId) {
-      final context = conversationIdToContext[conversationId];
-      if (context == null) {
-        SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-          final context = conversationIdToContext[conversationId];
-          if (context != null) {
-            Scrollable.ensureVisible(context);
-            return;
-          }
-          final conversationIndex = conversations
-              .indexWhere((element) => element.id == conversationId);
-          if (conversationIndex == -1) {
-            return;
-          }
-          final itemContext = conversationIdToContext.values.firstOrNull;
-          if (itemContext == null) {
-            return;
-          }
-          final box = itemContext.findRenderObject() as RenderBox;
-          // TODO: alignment
-          scrollController.jumpTo(box.size.height * conversationIndex);
-        });
-      } else {
-        Scrollable.ensureVisible(context);
+      final conversationIndex =
+          conversations.indexWhere((element) => element.id == conversationId);
+      if (conversationIndex >= 0) {
+        _scrollTo(conversationIndex);
       }
+    }
+
+    isSearchMode = searchText.isNotBlank;
+    if (isSearchMode) {
+      // If searching and search text doesn't change,
+      // keep displaying the snapshot of conversations of last search result
+      // because it is a weired behavior if the matched conversations change
+      // as new messages are added while searching.
+      if (searchText != previousSearchText) {
+        styledConversations =
+            conversations.expand<StyledConversation>((conversation) {
+          final nameTextSpans = TextUtils.splitText(
+              text: conversation.name,
+              searchText: searchText,
+              searchTextStyle: ThemeConfig.textStyleHighlight);
+          final matchedMessages = conversation.messages
+              .where((message) =>
+                  message.text.toLowerCase().contains(searchText.toLowerCase()))
+              .toList();
+          if (nameTextSpans.length == 1 && matchedMessages.isEmpty) {
+            return [];
+          }
+          return [
+            StyledConversation(
+              conversation: conversation,
+              matchedMessages: matchedMessages,
+              nameTextSpans: nameTextSpans,
+            )
+          ];
+        }).toList();
+        highlightedStyledConversationIndex =
+            styledConversations.isEmpty ? null : 0;
+        previousSearchText = searchText;
+      }
+      final conversationIndex = highlightedStyledConversationIndex;
+      if (conversationIndex != null) {
+        _scrollTo(conversationIndex);
+      }
+    } else {
+      styledConversations = conversations
+          .expand<StyledConversation>((conversation) => [
+                StyledConversation(
+                  conversation: conversation,
+                  matchedMessages: [],
+                  nameTextSpans: [TextSpan(text: conversation.name)],
+                )
+              ])
+          .toList();
+      previousSearchText = '';
+      highlightedStyledConversationIndex = null;
     }
     return SubNavigationRailView(this);
   }
 
+  void _scrollTo(int conversationIndex) {
+    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+      final itemContext = conversationTilesBuildContext;
+      if (itemContext == null) {
+        return;
+      }
+      final renderObject =
+          itemContext.findRenderObject() as RenderSliverFixedExtentBoxAdaptor;
+      final itemHeight = renderObject.itemExtent!;
+      ScrollUtils.ensureVisible(
+          conversationTilesScrollController,
+          renderObject.constraints.viewportMainAxisExtent,
+          itemHeight * conversationIndex,
+          itemHeight);
+    });
+  }
+
   void selectConversation(Conversation conversation) {
+    if (isSearchMode) {
+      searchBarTextEditingController.clear();
+      onSearchTextUpdated('');
+      highlightedStyledConversationIndex = null;
+    }
     conversation.unreadMessageCount = 0;
     ref.read(selectedConversationViewModel.notifier).state = conversation;
   }
@@ -212,17 +277,13 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
     conversationsViewModelRef.notifyListeners();
   }
 
-  void updateSearchText(String value) {
+  void onSearchTextUpdated(String value) {
     searchText = value.toLowerCase().trim();
     setState(() {});
   }
 
   KeyEventResult onKeyEvent(FocusNode node, KeyEvent event) {
-    final selectedConversation = this.selectedConversation;
-    if (selectedConversation == null) {
-      return KeyEventResult.ignored;
-    }
-    if (event is! KeyDownEvent) {
+    if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
       return KeyEventResult.ignored;
     }
     final isArrowUp = event.logicalKey == LogicalKeyboardKey.arrowUp;
@@ -230,15 +291,19 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
     if (!isArrowUp && !isArrowDown) {
       return KeyEventResult.ignored;
     }
-    final conversationIndex = conversations
-        .indexWhere((element) => element.id == selectedConversation.id);
+    final conversationIndex = highlightedStyledConversationIndex;
+    if (conversationIndex == null) {
+      return KeyEventResult.handled;
+    }
     if (isArrowUp) {
       if (conversationIndex > 0) {
-        selectConversation(conversations[conversationIndex - 1]);
+        highlightedStyledConversationIndex = conversationIndex - 1;
+        setState(() {});
       }
     } else {
-      if (conversationIndex < conversations.length - 1) {
-        selectConversation(conversations[conversationIndex + 1]);
+      if (conversationIndex < styledConversations.length - 1) {
+        highlightedStyledConversationIndex = conversationIndex + 1;
+        setState(() {});
       }
     }
     return KeyEventResult.handled;
@@ -246,5 +311,15 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
 
   void onPanDown(DragDownDetails details) {
     focusNode.requestFocus();
+  }
+
+  void onSearchSubmitted() {
+    final conversationIndex = highlightedStyledConversationIndex;
+    if (conversationIndex != null &&
+        conversationIndex < styledConversations.length) {
+      final conversation = styledConversations[conversationIndex];
+      selectConversation(conversation.conversation);
+    }
+    setState(() {});
   }
 }

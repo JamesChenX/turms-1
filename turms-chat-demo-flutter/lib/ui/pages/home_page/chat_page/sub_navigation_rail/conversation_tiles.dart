@@ -31,58 +31,19 @@ class _ConversationTilesState extends ConsumerState<ConversationTiles> {
   @override
   Widget build(BuildContext context) {
     final subNavigationRailController = widget.subNavigationRailController;
-    final searchText = subNavigationRailController.searchText;
-    final isSearchMode = searchText.isNotBlank;
-    // If searching and search text doesn't change,
-    // keep displaying the snapshot of conversations of last search result
-    // because it is a weired behavior if the found conversations change
-    // as new messages are added while searching.
-    List<(Conversation, List<TextSpan>, List<ChatMessage>)> parsedConversations;
-    if (isSearchMode && searchText == previousSearchText) {
-      parsedConversations = conversationsInSearchMode;
-    } else {
-      final subNavigationRailController = widget.subNavigationRailController;
-      parsedConversations = subNavigationRailController.conversations
-          .expand<(Conversation, List<TextSpan>, List<ChatMessage>)>(
-              (conversation) {
-        final nameTextSpans = TextUtils.splitText(
-            text: conversation.name,
-            searchText: searchText,
-            searchTextStyle: ThemeConfig.textStyleHighlight);
-        final matchedMessages = isSearchMode
-            ? conversation.messages
-                .where((message) => message.text
-                    .toLowerCase()
-                    .contains(searchText.toLowerCase()))
-                .toList()
-            : <ChatMessage>[];
-        if (nameTextSpans.length == 1 &&
-            matchedMessages.isEmpty &&
-            isSearchMode) {
-          return [];
-        }
-        return [(conversation, nameTextSpans, matchedMessages)];
-      }).toList();
-      if (isSearchMode) {
-        previousSearchText = searchText;
-        conversationsInSearchMode = parsedConversations;
-      } else {
-        previousSearchText = '';
-        conversationsInSearchMode = [];
-      }
-    }
     final relatedMessages =
         ref.watch(appLocalizationsViewModel).relatedMessages;
-    subNavigationRailController.conversationIdToContext.clear();
+    subNavigationRailController.conversationTilesBuildContext = null;
     // Don't use "ScrollablePositionedList" because it's buggy.
     // e.g. https://github.com/google/flutter.widgets/issues/276
-    final conversationCount = parsedConversations.length;
+    final styledConversations = subNavigationRailController.styledConversations;
+    final conversationCount = styledConversations.length;
     final conversationIdToIndex = {
       for (var i = 0; i < conversationCount; i++)
-        parsedConversations[i].$1.id: i
+        styledConversations[i].conversation.id: i
     };
     return ListView.builder(
-      controller: subNavigationRailController.scrollController,
+      controller: subNavigationRailController.conversationTilesScrollController,
       padding: EdgeInsets.zero,
       itemCount: conversationCount,
       prototypeItem: ConversationTile(
@@ -99,26 +60,31 @@ class _ConversationTilesState extends ConsumerState<ConversationTiles> {
       findChildIndexCallback: (key) =>
           conversationIdToIndex[(key as ValueKey<String>).value],
       itemBuilder: (context, index) {
-        final (conversation, nameTextSpans, matchedMessages) =
-            parsedConversations[index];
+        final styledConversation = styledConversations[index];
+        final conversation = styledConversation.conversation;
         final selectedConversationId =
             subNavigationRailController.selectedConversation?.id;
-        subNavigationRailController.conversationIdToContext[conversation.id] =
-            context;
+        subNavigationRailController.conversationTilesBuildContext ??= context;
         return ConversationTile(
           key: Key(conversation.id),
           conversation: conversation,
           selected: selectedConversationId == conversation.id,
-          isSearchMode: isSearchMode,
-          nameTextSpans: nameTextSpans,
-          messageTextSpans: isSearchMode
-              ? switch (matchedMessages.length) {
+          highlighted:
+              subNavigationRailController.highlightedStyledConversationIndex ==
+                  index,
+          isSearchMode: subNavigationRailController.isSearchMode,
+          nameTextSpans: styledConversation.nameTextSpans,
+          messageTextSpans: subNavigationRailController.isSearchMode
+              ? switch (styledConversations.length) {
                   0 => [],
                   1 => TextUtils.splitText(
-                      text: matchedMessages[0].text,
+                      text: conversation.messages[0].text,
                       searchText: subNavigationRailController.searchText,
                       searchTextStyle: ThemeConfig.textStyleHighlight),
-                  _ => [TextSpan(text: relatedMessages(matchedMessages.length))]
+                  _ => [
+                      TextSpan(
+                          text: relatedMessages(conversation.messages.length))
+                    ]
                 }
               : [],
           onTap: () {

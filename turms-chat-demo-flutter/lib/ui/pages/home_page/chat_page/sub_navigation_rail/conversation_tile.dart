@@ -22,6 +22,7 @@ class ConversationTile extends ConsumerStatefulWidget {
       required this.messageTextSpans,
       required this.isSearchMode,
       this.selected = false,
+      this.highlighted = false,
       required this.onTap});
 
   final Conversation conversation;
@@ -30,6 +31,7 @@ class ConversationTile extends ConsumerStatefulWidget {
   final bool isSearchMode;
 
   final bool selected;
+  final bool highlighted;
 
   final GestureTapCallback onTap;
 
@@ -46,9 +48,11 @@ class _ConversationTileState extends ConsumerState<ConversationTile> {
     return TListTile(
       onTap: widget.onTap,
       focused: widget.selected,
-      backgroundColor: ThemeConfig.conversationBackgroundColor,
-      focusedBackgroundColor: ThemeConfig.conversationFocusedBackgroundColor,
-      hoveredBackgroundColor: ThemeConfig.conversationHoveredBackgroundColor,
+      backgroundColor: widget.highlighted
+          ? ThemeConfig.conversationBackgroundColorHighlighted
+          : ThemeConfig.conversationBackgroundColor,
+      focusedBackgroundColor: ThemeConfig.conversationBackgroundColorFocused,
+      hoveredBackgroundColor: ThemeConfig.conversationBackgroundColorHovered,
       padding:
           // use more right padding to reserve space for scrollbar
           // TODO: adapt the padding to not hide part of text (e.g. contact name).

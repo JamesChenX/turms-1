@@ -34,8 +34,8 @@ class _ContactTileState extends State<ContactTile> {
         onTap: widget.onTap,
         focused: widget.selected,
         backgroundColor: ThemeConfig.conversationBackgroundColor,
-        focusedBackgroundColor: ThemeConfig.conversationFocusedBackgroundColor,
-        hoveredBackgroundColor: ThemeConfig.conversationHoveredBackgroundColor,
+        focusedBackgroundColor: ThemeConfig.conversationBackgroundColorFocused,
+        hoveredBackgroundColor: ThemeConfig.conversationBackgroundColorHovered,
         padding:
             // use more right padding to reserve space for scrollbar
             const EdgeInsets.only(left: 10, right: 14, top: 12, bottom: 12),

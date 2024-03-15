@@ -26,7 +26,7 @@ class RelationshipInfoTile extends ConsumerWidget {
 
     return TListTile(
         backgroundColor: ThemeConfig.conversationBackgroundColor,
-        hoveredBackgroundColor: ThemeConfig.conversationHoveredBackgroundColor,
+        hoveredBackgroundColor: ThemeConfig.conversationBackgroundColorHovered,
         padding: const EdgeInsets.symmetric(
             vertical: 12, horizontal: safeAreaPaddingHorizontal),
         child: Row(mainAxisSize: MainAxisSize.min, children: [

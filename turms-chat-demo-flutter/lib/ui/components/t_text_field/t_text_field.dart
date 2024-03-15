@@ -56,7 +56,6 @@ class TTextField extends ConsumerStatefulWidget {
 
 class _TTextFieldState extends ConsumerState<TTextField> {
   TextEditingController? textEditingController;
-  bool hasText = false;
 
   @override
   void initState() {
@@ -75,9 +74,9 @@ class _TTextFieldState extends ConsumerState<TTextField> {
   @override
   Widget build(BuildContext context) {
     final prefixIcon = widget.prefixIcon;
+    final controller = (widget.textEditingController ?? textEditingController)!;
     final showSuffixIcon = (widget.suffixIcon != null) ||
-        (widget.showDeleteButtonIfHasText && hasText);
-    final controller = widget.textEditingController ?? textEditingController;
+        (widget.showDeleteButtonIfHasText && controller.text.isNotEmpty);
     final suffixIcon = widget.suffixIcon;
     return TextField(
       controller: controller,
@@ -92,12 +91,11 @@ class _TTextFieldState extends ConsumerState<TTextField> {
       enableInteractiveSelection: widget.enableInteractiveSelection,
       expands: widget.expands,
       onChanged: (value) {
-        hasText = value.isNotEmpty;
         final transformValue = widget.transformValue;
         if (transformValue != null) {
           final result = transformValue(value);
           if (result != value) {
-            controller!.value = TextEditingValue(
+            controller.value = TextEditingValue(
               text: result,
               selection: TextSelection.collapsed(offset: result.length),
             );
@@ -129,8 +127,7 @@ class _TTextFieldState extends ConsumerState<TTextField> {
                     iconSize: 20,
                     tooltip: ref.watch(appLocalizationsViewModel).close,
                     onTap: () {
-                      controller!.clear();
-                      hasText = false;
+                      controller.clear();
                       widget.transformValue?.call('');
                       setState(() {});
                     },

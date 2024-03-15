@@ -2,19 +2,21 @@ import 'package:flutter/material.dart';
 
 import '../../themes/theme_config.dart';
 
+const defaultListTile = 64.0;
+
 class TListTile extends StatefulWidget {
   const TListTile(
       {Key? key,
-      this.height = 64,
+      this.height = defaultListTile,
       this.padding =
           const EdgeInsets.only(left: 10, right: 10, top: 12, bottom: 12),
       this.focused = false,
       // TODO: RENAME
       this.backgroundColor = ThemeConfig.conversationBackgroundColor,
       this.focusedBackgroundColor =
-          ThemeConfig.conversationFocusedBackgroundColor,
+          ThemeConfig.conversationBackgroundColorFocused,
       this.hoveredBackgroundColor =
-          ThemeConfig.conversationHoveredBackgroundColor,
+          ThemeConfig.conversationBackgroundColorHovered,
       this.mouseCursor = SystemMouseCursors.basic,
       this.onTap,
       required this.child})

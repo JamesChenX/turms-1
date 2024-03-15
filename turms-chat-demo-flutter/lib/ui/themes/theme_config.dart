@@ -124,9 +124,11 @@ class ThemeConfig {
   static const homePageBackgroundColor = Color.fromARGB(255, 245, 245, 245);
 
   static const conversationBackgroundColor = Color.fromARGB(255, 233, 233, 233);
-  static const conversationHoveredBackgroundColor =
+  static const conversationBackgroundColorHighlighted =
+      Color.fromARGB(255, 210, 210, 210);
+  static const conversationBackgroundColorHovered =
       Color.fromARGB(255, 218, 218, 218);
-  static const conversationFocusedBackgroundColor =
+  static const conversationBackgroundColorFocused =
       Color.fromARGB(255, 200, 200, 200);
 
   static const chatSessionPaneDividerColor = Color.fromARGB(255, 231, 231, 231);

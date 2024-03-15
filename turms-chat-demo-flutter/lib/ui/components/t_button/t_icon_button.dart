@@ -98,6 +98,7 @@ class TIconButton extends StatelessWidget {
         containerBorderHovered: containerBorderHovered,
         containerBorderRadius:
             containerBorderRadius ?? ThemeConfig.borderRadius4,
+        disabled: disabled,
         tooltip: tooltip,
         onTap: onTap,
         onPanDown: onPanDown,

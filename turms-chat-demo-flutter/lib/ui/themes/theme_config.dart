@@ -97,6 +97,11 @@ class ThemeConfig {
     'EmojiSymbols'
   ];
 
+  static const fileTableTitleTextStyle = TextStyle(
+      fontStyle: FontStyle.normal, color: Color.fromARGB(255, 51, 51, 51));
+  static const fileTableSecondaryTextStyle =
+      TextStyle(color: Color.fromARGB(255, 102, 102, 102));
+
   // Shadows
   static const boxShadow = [
     BoxShadow(

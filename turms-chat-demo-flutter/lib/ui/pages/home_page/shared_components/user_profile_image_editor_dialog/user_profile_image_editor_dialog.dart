@@ -1,16 +1,15 @@
 import 'dart:async';
-import 'dart:math';
-import 'dart:typed_data';
+import 'dart:ui' as ui;
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:image/image.dart' as image;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../../../domain/user/models/index.dart';
 import '../../../../../infra/io/file_utils.dart';
 import '../../../../../infra/io/io_extensions.dart';
+import '../../../../../infra/units/math_extensions.dart';
 import '../../../../components/index.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../l10n/view_models/app_localizations_view_model.dart';
@@ -32,6 +31,9 @@ class UserProfileImageEditorDialog extends ConsumerStatefulWidget {
 class _UserProfileImageEditorDialogState
     extends ConsumerState<UserProfileImageEditorDialog> {
   ImageProvider? _selectedImage;
+  bool flipX = false;
+  bool flipY = false;
+  double angle = 0;
 
   @override
   void initState() {
@@ -48,8 +50,9 @@ class _UserProfileImageEditorDialogState
   @override
   Widget build(BuildContext context) {
     final appLocalizations = ref.watch(appLocalizationsViewModel);
-    final image = _selectedImage;
-    final enableOperations = image != null;
+    final selectedImage = _selectedImage;
+    final enableOperations = selectedImage != null;
+
     return Padding(
       padding: const EdgeInsets.only(left: 16, top: 8, bottom: 16),
       child: Column(
@@ -65,7 +68,7 @@ class _UserProfileImageEditorDialogState
                 child: SizedBox(
                     width: _imageSize,
                     height: _imageSize,
-                    child: image == null
+                    child: selectedImage == null
                         ? TAvatar(
                             name: widget.user.name,
                             textSize: 125,
@@ -74,17 +77,28 @@ class _UserProfileImageEditorDialogState
                             decoration: const BoxDecoration(
                               color: Colors.black26,
                             ),
-                            child: Image(
-                              image: image,
-                              width: _imageSize,
-                              height: _imageSize,
-                              fit: BoxFit.contain,
-                              // If false, the image widget will blink
-                              // as the image loads,
-                              // while the image is loaded from the memory or filesystem,
-                              // it should be loaded very quickly.
-                              // so we set it to true to avoiding blinking.
-                              gaplessPlayback: true,
+                            child: Stack(
+                              children: [
+                                Transform.flip(
+                                  flipX: flipX,
+                                  flipY: flipY,
+                                  child: Transform.rotate(
+                                    angle: angle,
+                                    child: Image(
+                                      image: selectedImage,
+                                      width: _imageSize,
+                                      height: _imageSize,
+                                      fit: BoxFit.contain,
+                                      // If false, the image widget will blink
+                                      // as the image loads,
+                                      // while the image is loaded from the memory or filesystem,
+                                      // it should be loaded very quickly.
+                                      // so we set it to true to avoiding blinking.
+                                      gaplessPlayback: true,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           )),
               ),
@@ -119,25 +133,41 @@ class _UserProfileImageEditorDialogState
                           containerSize: const Size.square(32),
                           tooltip: appLocalizations.rotateLeft,
                           disabled: !enableOperations,
+                          onTap: () {
+                            angle -= 90.degreesToRadians();
+                            setState(() {});
+                          },
                         ),
                         TIconButton.outlined(
                           iconData: Symbols.rotate_right_rounded,
                           containerSize: const Size.square(32),
                           tooltip: appLocalizations.rotateRight,
                           disabled: !enableOperations,
+                          onTap: () {
+                            angle += 90.degreesToRadians();
+                            setState(() {});
+                          },
                         ),
                         TIconButton.outlined(
                           iconData: Symbols.flip_rounded,
                           containerSize: const Size.square(32),
                           tooltip: appLocalizations.flipHorizontally,
                           disabled: !enableOperations,
+                          onTap: () {
+                            flipX = !flipX;
+                            setState(() {});
+                          },
                         ),
                         TIconButton.outlined(
                           iconData: Symbols.flip_rounded,
                           containerSize: const Size.square(32),
-                          iconRotate: pi / 180 * 90,
+                          iconRotate: 90.degreesToRadians(),
                           tooltip: appLocalizations.flipVertically,
                           disabled: !enableOperations,
+                          onTap: () {
+                            flipY = !flipY;
+                            setState(() {});
+                          },
                         ),
                       ],
                     ),

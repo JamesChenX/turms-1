@@ -17,9 +17,7 @@ class SubNavigationRailView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => GestureDetector(
-        onPanDown: (details) {
-          subNavigationRailController.onPanDown(details);
-        },
+        onPanDown: subNavigationRailController.onPanDown,
         child: Focus(
           focusNode: subNavigationRailController.focusNode,
           canRequestFocus: true,

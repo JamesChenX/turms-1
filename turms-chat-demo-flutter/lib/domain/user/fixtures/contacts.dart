@@ -104,6 +104,8 @@ List<ContactConversation> contactConversations = [
   ]),
   // Brazil
   ContactConversation('Elis Regina', ['Como Nossos Pais']),
+  // Italy
+  ContactConversation('Piero Piccioni', ['Amore Mio Aiutami']),
   // Japan
   ContactConversation('Nujabes', ['Aruarian Dance']),
 ];

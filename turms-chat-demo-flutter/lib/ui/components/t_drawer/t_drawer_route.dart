@@ -20,10 +20,12 @@ class _TDrawerRoute<T> extends PopupRoute<T> {
   @override
   Widget buildPage(BuildContext context, Animation<double> animation,
           Animation<double> secondaryAnimation) =>
-      Material(
-        child: _TDrawerView(
-          animation: animation,
-          child: child,
+      RepaintBoundary(
+        child: Material(
+          child: _TDrawerView(
+            animation: animation,
+            child: child,
+          ),
         ),
       );
 }

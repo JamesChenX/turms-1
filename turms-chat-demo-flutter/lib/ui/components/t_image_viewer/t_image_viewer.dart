@@ -3,18 +3,13 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../../infra/env/env_vars.dart';
 import '../../themes/theme_config.dart';
 import '../t_dialog/t_dialog.dart';
 import '../t_title_bar/t_title_bar.dart';
 
 const _width = 720.0;
 const _height = 540.0;
-
-// The maximum allowed size is 4MB.
-// We should NOT use the size of the view
-// because we support zooming in the image viewer.
-const _widthInt = 2048;
-const _heightInt = 2048;
 
 class TImageViewer extends StatefulWidget {
   const TImageViewer({Key? key, required this.image}) : super(key: key);
@@ -62,8 +57,10 @@ class _TImageViewerState extends State<TImageViewer> {
                 // TODO: use adaptive image size
                 child: Image(
                   image: ResizeImage(widget.image,
-                      width: _widthInt,
-                      height: _heightInt,
+                      // We should NOT use the size of the view
+                      // because we support zooming in the image viewer.
+                      width: EnvVars.messageImageMaxCachedSizeWidth,
+                      height: EnvVars.messageImageMaxCachedSizeHeight,
                       policy: ResizeImagePolicy.fit),
                   gaplessPlayback: true,
                   fit: BoxFit.contain,

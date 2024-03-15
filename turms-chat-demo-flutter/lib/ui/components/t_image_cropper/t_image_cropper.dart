@@ -59,7 +59,7 @@ class Crop extends StatelessWidget {
   /// the shape of cropping area is re-calculated depending on [aspectRatio].
   final ImageBasedRect? initialArea;
 
-  /// conroller for control crop actions
+  /// controller for control crop actions
   final CropController? controller;
 
   /// Callback called when cropping rect changes for any reasons.
@@ -128,7 +128,6 @@ class Crop extends StatelessWidget {
     this.initialSize,
     this.initialRectBuilder,
     this.initialArea,
-    this.withCircleUi = false,
     this.controller,
     this.onMoved,
     this.onStatusChanged,

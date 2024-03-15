@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
 
 class TTableColumnOption {
-  TTableColumnOption({required this.width});
+  const TTableColumnOption({required this.width});
 
   final double width;
 }
 
 class TTableRow {
-  TTableRow({required this.cells, this.onTap, this.onDoubleTap});
+  const TTableRow(
+      {this.decoration, required this.cells, this.onTap, this.onDoubleTap});
 
+  final BoxDecoration? decoration;
   final List<TTableDataCell> cells;
   final VoidCallback? onTap;
   final VoidCallback? onDoubleTap;
 }
 
 class TTableDataCell {
-  TTableDataCell({this.alignment = Alignment.centerLeft, required this.widget});
+  const TTableDataCell(
+      {this.alignment = Alignment.centerLeft, required this.widget});
 
   final Alignment alignment;
   final Widget widget;
@@ -55,52 +58,97 @@ class TTable extends StatelessWidget {
           }
           return Column(
             children: <Widget>[
-              _buildHeader(widths),
+              _TTableRowView(
+                row: header,
+                widths: widths,
+                columnCount: count,
+              ),
               Expanded(
                 child: ListView.builder(
                   itemCount: rows.length,
-                  itemBuilder: (context, index) =>
-                      _buildDataRow(rows[index], widths),
+                  itemBuilder: (context, index) => _TTableRowView(
+                    row: rows[index],
+                    widths: widths,
+                    columnCount: count,
+                  ),
                 ),
               ),
             ],
           );
         },
       );
+}
 
-  Widget _buildHeader(List<double> widths) => Container(
-        height: 50,
-        decoration: BoxDecoration(
-          border: Border(bottom: BorderSide(color: Colors.grey[300]!)),
-        ),
-        child: Row(
-          children: List.generate(columnOptions.length,
-              (index) => _buildCell(header, index, widths[index])),
-        ),
-      );
+class _TTableRowView extends StatefulWidget {
+  const _TTableRowView(
+      {super.key,
+      required this.row,
+      required this.widths,
+      required this.columnCount});
 
-  Widget _buildDataRow(TTableRow row, List<double> widths) => SizedBox(
-        height: 50,
+  final TTableRow row;
+  final List<double> widths;
+  final int columnCount;
+
+  @override
+  State<_TTableRowView> createState() => _TTableRowViewState();
+}
+
+class _TTableRowViewState extends State<_TTableRowView> {
+  bool isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final row = widget.row;
+    final widths = widget.widths;
+    final onTap = row.onTap;
+    final onDoubleTap = row.onDoubleTap;
+    final child = MouseRegion(
+      cursor: onTap == null && onDoubleTap == null
+          ? SystemMouseCursors.basic
+          : SystemMouseCursors.click,
+      onEnter: (_) {
+        isHovered = true;
+        setState(() {});
+      },
+      onExit: (_) {
+        isHovered = false;
+        setState(() {});
+      },
+      child: GestureDetector(
+        onTap: () => onTap?.call(),
+        onDoubleTap: () => onDoubleTap?.call(),
         child: Row(
-          children: List.generate(columnOptions.length,
+          children: List.generate(widget.columnCount,
               (index) => _buildCell(row, index, widths[index])),
         ),
-      );
+      ),
+    );
+    // TODO
+    // final decoration = row.decoration;
+    final decoration =
+        isHovered ? BoxDecoration(color: Colors.grey[200]) : null;
+    return SizedBox(
+      height: 50,
+      child: decoration == null
+          ? child
+          : DecoratedBox(
+              decoration: decoration,
+              child: child,
+            ),
+    );
+  }
 
-  GestureDetector _buildCell(TTableRow row, int index, double width) {
+  Widget _buildCell(TTableRow row, int index, double width) {
     final cell = row.cells[index];
-    return GestureDetector(
-      onTap: () => row.onTap?.call(),
-      onDoubleTap: () => row.onDoubleTap?.call(),
-      child: Align(
-        alignment: cell.alignment,
-        child: SizedBox(
-          width: width,
-          child: Padding(
-            // padding: const EdgeInsets.symmetric(horizontal: 10),
-            padding: EdgeInsets.zero,
-            child: cell.widget,
-          ),
+    return Align(
+      alignment: cell.alignment,
+      child: SizedBox(
+        width: width,
+        child: Padding(
+          // padding: const EdgeInsets.symmetric(horizontal: 10),
+          padding: EdgeInsets.zero,
+          child: cell.widget,
         ),
       ),
     );

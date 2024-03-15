@@ -70,7 +70,7 @@ class _ConversationTileState extends ConsumerState<ConversationTile> {
         name: conversation.name,
         image: conversation.image,
       ),
-      if (conversation.unreadMessageCount > 0)
+      if (!widget.isSearchMode && conversation.unreadMessageCount > 0)
         Positioned(
           child: ConstrainedBox(
             constraints: const BoxConstraints.tightFor(

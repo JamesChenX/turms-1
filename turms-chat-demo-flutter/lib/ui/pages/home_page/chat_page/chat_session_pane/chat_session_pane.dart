@@ -78,6 +78,7 @@ class _ChatSessionPaneFooter extends StatefulWidget {
 }
 
 class _ChatSessionPaneFooterState extends State<_ChatSessionPaneFooter> {
+  bool isResizing = false;
   double pointerDownDy = 0;
   double height = 240;
   double baseHeight = 0;
@@ -87,9 +88,19 @@ class _ChatSessionPaneFooterState extends State<_ChatSessionPaneFooter> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Listener(
+            onPointerCancel: (event) {
+              isResizing = false;
+              setState(() {});
+            },
+            onPointerUp: (event) {
+              isResizing = false;
+              setState(() {});
+            },
             onPointerDown: (PointerDownEvent event) {
               baseHeight = height;
               pointerDownDy = event.position.dy;
+              isResizing = true;
+              setState(() {});
             },
             onPointerMove: (event) {
               final delta = pointerDownDy - event.position.dy;
@@ -100,14 +111,22 @@ class _ChatSessionPaneFooterState extends State<_ChatSessionPaneFooter> {
                 setState(() {});
               }
             },
-            child: const MouseRegion(
-              cursor: SystemMouseCursors.move,
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 4),
-                child: THorizontalDivider(
-                  color: ThemeConfig.chatSessionPaneDividerColor,
-                ),
-              ),
+            child: MouseRegion(
+              cursor: SystemMouseCursors.resizeUpDown,
+              child: isResizing
+                  ? const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 2),
+                      child: THorizontalDivider(
+                        color: ThemeConfig.primary,
+                        thickness: 5,
+                      ),
+                    )
+                  : const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 4),
+                      child: THorizontalDivider(
+                        color: ThemeConfig.chatSessionPaneDividerColor,
+                      ),
+                    ),
             ),
           ),
           ConstrainedBox(

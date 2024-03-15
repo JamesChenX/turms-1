@@ -34,6 +34,7 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
   late List<Conversation> conversations;
   Map<String, BuildContext> conversationIdToContext = {};
   Conversation? selectedConversation;
+  Conversation? previewedConversation;
   bool isConversationsInitialized = false;
   bool isConversationsLoading = false;
 

@@ -41,7 +41,7 @@ class FilesPageView extends ConsumerWidget {
           const TWindowControlZone(toggleMaximizeOnDoubleTap: true),
           Center(
             child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
               child: Row(
                 children: [
                   SizedBox(
@@ -73,60 +73,56 @@ class FilesPageView extends ConsumerWidget {
     // use "add_Hm()" instead of "add_jm()"
     // to make the string short and concise
     final dateFormat = ref.watch(dateFormatViewModel_yMdHm);
-    const secondaryTextStyle =
-        TextStyle(color: Color.fromARGB(255, 102, 102, 102));
-    const titleTextStyle = TextStyle(
-        fontStyle: FontStyle.normal, color: Color.fromARGB(255, 51, 51, 51));
     return Expanded(
       child: TTable(
         header: TTableRow(cells: [
-          TTableDataCell(widget: Icon(Symbols.insert_drive_file_rounded)),
-          TTableDataCell(
-              widget: Text(
-            appLocalizations.fileName,
-            style: titleTextStyle,
-          )),
-          TTableDataCell(
-              widget: Text(
-            appLocalizations.fileUploadDate,
-            style: titleTextStyle,
-          )),
-          TTableDataCell(
-              widget: Text(
-            appLocalizations.fileUploader,
-            style: titleTextStyle,
-          )),
-          TTableDataCell(
-              widget: Text(
-            appLocalizations.fileSize,
-            style: titleTextStyle,
-          )),
+          const TTableDataCell(widget: Icon(Symbols.insert_drive_file_rounded)),
+          _buildHeaderCell(appLocalizations.fileName),
+          _buildHeaderCell(appLocalizations.fileUploadDate),
+          _buildHeaderCell(appLocalizations.fileUploader),
+          _buildHeaderCell(appLocalizations.fileSize),
+          _buildHeaderCell(appLocalizations.progress),
         ]),
         rows: fixtureFiles
             .map((e) => TTableRow(
                   onTap: filesPageController.downloadOrOpen,
                   cells: [
                     TTableDataCell(widget: FileIcon(fileFormat: e.type)),
-                    TTableDataCell(widget: Text(e.name)),
-                    TTableDataCell(
-                        widget: Text(dateFormat.format(e.uploadDate),
-                            style: secondaryTextStyle)),
-                    TTableDataCell(
-                        widget: Text(e.uploader, style: secondaryTextStyle)),
-                    TTableDataCell(
-                        widget: Text(e.size.toHumanReadableFileSize(),
-                            style: secondaryTextStyle)),
+                    _buildTextDataCell(e.name, false),
+                    _buildTextDataCell(dateFormat.format(e.uploadDate), true),
+                    _buildTextDataCell(e.uploader, true),
+                    _buildTextDataCell(e.size.toHumanReadableFileSize(), true),
+                    const TTableDataCell(
+                        widget: Padding(
+                      padding: EdgeInsets.only(right: 16),
+                      child: LinearProgressIndicator(),
+                    )),
                   ],
                 ))
             .toList(),
         columnOptions: [
-          TTableColumnOption(width: 0.06),
-          TTableColumnOption(width: 0.35),
-          TTableColumnOption(width: 0.20),
-          TTableColumnOption(width: 0.24),
-          TTableColumnOption(width: 0.15),
+          const TTableColumnOption(width: 0.05),
+          const TTableColumnOption(width: 0.30),
+          const TTableColumnOption(width: 0.15),
+          const TTableColumnOption(width: 0.225),
+          const TTableColumnOption(width: 0.10),
+          const TTableColumnOption(width: 0.175),
         ],
       ),
     );
   }
+
+  TTableDataCell _buildHeaderCell(String title) => TTableDataCell(
+      widget: Text(title,
+          style: ThemeConfig.fileTableTitleTextStyle,
+          overflow: TextOverflow.ellipsis));
+
+  TTableDataCell _buildTextDataCell(String text, bool isSecondary) =>
+      TTableDataCell(
+          widget: Text(
+        text,
+        overflow: TextOverflow.ellipsis,
+        maxLines: 2,
+        style: isSecondary ? ThemeConfig.fileTableSecondaryTextStyle : null,
+      ));
 }

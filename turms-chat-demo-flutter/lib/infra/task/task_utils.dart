@@ -8,6 +8,18 @@ class TaskUtils {
   static final _idToCallback = <Object, Future<dynamic>>{};
   static final _idToTimer = <String, Timer>{};
 
+  /// Use [Future] to eliminate unnecessary closure context:
+  /// https://github.com/dart-lang/sdk/issues/36983
+  static Future<T> cacheFuture<T>(
+      {required Object id, required Future<T> future}) {
+    final result = _idToCallback[id];
+    if (result != null) {
+      return result as Future<T>;
+    }
+    _idToCallback[id] = future;
+    return future.whenComplete(() => _idToCallback.remove(id));
+  }
+
   static Future<T> addTask<T>(
       {required Object id, required Future<T> Function() callback}) {
     final result = _idToCallback[id];

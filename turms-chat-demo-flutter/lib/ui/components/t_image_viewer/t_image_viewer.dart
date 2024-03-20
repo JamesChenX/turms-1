@@ -65,6 +65,7 @@ class _TImageViewerState extends State<TImageViewer> {
                   gaplessPlayback: true,
                   fit: BoxFit.contain,
                   isAntiAlias: true,
+                  filterQuality: FilterQuality.high,
                 ),
               ),
             ),

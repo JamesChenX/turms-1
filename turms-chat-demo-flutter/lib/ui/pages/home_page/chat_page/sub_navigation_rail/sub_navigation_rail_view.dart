@@ -17,10 +17,7 @@ class SubNavigationRailView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => GestureDetector(
-        onPanDown: subNavigationRailController.onPanDown,
         child: Focus(
-          focusNode: subNavigationRailController.focusNode,
-          canRequestFocus: true,
           onKeyEvent: subNavigationRailController.onKeyEvent,
           child: ColoredBox(
               color: ThemeConfig.conversationBackgroundColor,
@@ -54,6 +51,7 @@ class SubNavigationRailView extends StatelessWidget {
           children: [
             Expanded(
               child: TSearchBar(
+                focusNode: subNavigationRailController.searchBarFocusNode,
                 hintText: appLocalizations.search,
                 textEditingController:
                     subNavigationRailController.searchBarTextEditingController,

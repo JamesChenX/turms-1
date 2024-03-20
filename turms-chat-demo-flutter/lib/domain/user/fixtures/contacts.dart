@@ -185,15 +185,15 @@ final contactToMessages = <Int64, List<String>>{
 
 final fixtureGroupContacts = fixtureUserContacts.indexed.map((item) {
   final (index, _) = item;
-  final memberIds = <Int64>{};
+  final members = <User>[];
   final memberCount = index + 1;
   for (var i = 0; i < memberCount; i++) {
     // TODO: oneself
-    memberIds.add(fixtureUserContacts[i].userId);
+    members.add(fixtureUserContacts[i]);
   }
   return GroupContact(
       groupId: Int64(index + 1),
-      memberIds: memberIds,
+      members: members,
       name: 'fake group name.' * 10);
 }).toList();
 

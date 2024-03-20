@@ -73,8 +73,8 @@ class _NewRelationshipRequestTileState
         // TODO: support decline
         status == RequestStatus.accepted
             ? TTextButton.outlined(
-                width: 80,
-                padding: ThemeConfig.paddingV4H8,
+                containerWidth: 80,
+                containerPadding: ThemeConfig.paddingV4H8,
                 text: appLocalizations.messages,
                 onTap: widget.onStartConversation,
               )

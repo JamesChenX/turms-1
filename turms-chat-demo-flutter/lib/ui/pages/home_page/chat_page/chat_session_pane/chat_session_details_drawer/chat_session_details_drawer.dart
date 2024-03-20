@@ -25,7 +25,7 @@ class ChatSessionDetailsDrawer extends StatelessWidget {
                 left: BorderSide(width: 1, color: ThemeConfig.borderColor),
               )),
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            padding: const EdgeInsets.only(left: 16, top: 8, right: 16),
             child: conversation is PrivateConversation
                 ? ChatSessionDetailsPrivateConversation(
                     contact: conversation.contact as UserContact,

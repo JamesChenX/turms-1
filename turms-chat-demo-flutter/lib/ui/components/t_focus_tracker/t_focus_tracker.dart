@@ -39,7 +39,7 @@ class _TFocusTrackerState extends State<TFocusTracker> {
 
   void onFocusChanged() {
     final focus = FocusManager.instance.primaryFocus;
-    if (focus == null) {
+    if (focus == null || focus.context == null) {
       removeOverlayEntry();
       return;
     }
@@ -58,24 +58,38 @@ class _TFocusTrackerState extends State<TFocusTracker> {
         top: rect.top,
         child: IgnorePointer(
           child: UnconstrainedBox(
-            child: SizedBox(
-                width: rect.width,
-                height: rect.height,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    color: Colors.black.withOpacity(0.5),
-                  ),
-                  child: Center(
+            child: Stack(
+              children: [
+                SizedBox(
+                    width: rect.width,
+                    height: rect.height,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4),
+                        color: Colors.black.withOpacity(0.3),
+                      ),
+                      child: const SizedBox.shrink(),
+                    )),
+                Positioned.fill(
+                  // The text rect size maybe larger than the box,
+                  // so we allow the text overflow.
+                  child: OverflowBox(
+                    maxWidth: double.infinity,
+                    maxHeight: double.infinity,
+                    child: Center(
                       child: Text(
-                          'parent: $parentFocusDebugLabel, focus: $focusDebugLabel',
+                          'Parent Focus: $parentFocusDebugLabel\nCurrent Focus: $focusDebugLabel',
                           style: Theme.of(context)
                               .textTheme
                               .bodyMedium!
                               .copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w700))),
-                )),
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.w700)),
+                    ),
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       );

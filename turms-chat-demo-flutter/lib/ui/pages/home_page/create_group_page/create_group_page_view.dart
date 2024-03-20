@@ -200,8 +200,8 @@ class CreateGroupPageView extends StatelessWidget {
         children: [
           TTextButton.outlined(
             text: createGroupPageController.appLocalizations.cancel,
-            padding: ThemeConfig.paddingV4H8,
-            width: 64,
+            containerPadding: ThemeConfig.paddingV4H8,
+            containerWidth: 64,
             onTap: createGroupPageController.close,
           ),
           const SizedBox(

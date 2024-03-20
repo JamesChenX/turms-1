@@ -11,6 +11,7 @@ class TIconButton extends StatelessWidget {
       this.containerSize,
       this.containerColor,
       this.containerColorHovered,
+      this.containerPadding,
       this.containerBorder,
       this.containerBorderHovered,
       this.containerBorderRadius,
@@ -65,6 +66,7 @@ class TIconButton extends StatelessWidget {
   final Size? containerSize;
   final Color? containerColor;
   final Color? containerColorHovered;
+  final EdgeInsets? containerPadding;
   final BoxBorder? containerBorder;
   final BoxBorder? containerBorderHovered;
   final BorderRadiusGeometry? containerBorderRadius;
@@ -94,6 +96,7 @@ class TIconButton extends StatelessWidget {
         containerHeight: containerSize?.height ?? 40,
         containerColor: containerColor,
         containerColorHovered: containerColorHovered,
+        containerPadding: containerPadding,
         containerBorder: containerBorder,
         containerBorderHovered: containerBorderHovered,
         containerBorderRadius:

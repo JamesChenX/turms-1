@@ -22,6 +22,7 @@ class TButton extends StatefulWidget {
       this.tooltip,
       this.onTap,
       this.onPanDown,
+      this.prefix,
       this.childHovered,
       this.childPressed,
       required this.child});
@@ -42,6 +43,7 @@ class TButton extends StatefulWidget {
   final VoidCallback? onTap;
   final GestureDragDownCallback? onPanDown;
 
+  final Widget? prefix;
   final Widget? childHovered;
   final Widget? childPressed;
   final Widget child;
@@ -61,6 +63,12 @@ class _TButtonState extends State<TButton> {
         : _isHovered
             ? widget.childHovered ?? widget.child
             : widget.child;
+    final prefix = widget.prefix;
+    if (prefix != null) {
+      child = Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [prefix, const SizedBox(width: 8), child]);
+    }
     if (widget.isLoading) {
       child = Stack(
         children: [

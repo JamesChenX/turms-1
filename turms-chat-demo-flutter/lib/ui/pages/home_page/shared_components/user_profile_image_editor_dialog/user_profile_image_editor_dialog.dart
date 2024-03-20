@@ -1,8 +1,6 @@
 import 'dart:async';
-import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
-import 'package:image/image.dart' as image;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -218,8 +216,8 @@ class _UserProfileImageEditorDialogState
             children: [
               TTextButton.outlined(
                 text: appLocalizations.cancel,
-                padding: ThemeConfig.paddingV4H8,
-                width: 72,
+                containerPadding: ThemeConfig.paddingV4H8,
+                containerWidth: 72,
                 onTap: () => Navigator.of(context).pop(),
                 // onTap: createGroupPageController.close,
               ),

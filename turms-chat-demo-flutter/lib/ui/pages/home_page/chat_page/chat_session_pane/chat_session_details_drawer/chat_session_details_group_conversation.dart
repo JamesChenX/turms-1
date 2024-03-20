@@ -20,6 +20,7 @@ class ChatSessionDetailsGroupConversation extends ConsumerWidget {
     final appLocalizations = AppLocalizations.of(context);
     const divider = THorizontalDivider();
     final intro = contact.intro;
+    final members = contact.members;
     return Column(
       children: [
         Align(
@@ -38,9 +39,8 @@ class ChatSessionDetailsGroupConversation extends ConsumerWidget {
           SizedBox(
             child: SelectionArea(
               child: Text(
-                // TODO: test
-                intro.padRight(200, '123test'),
-                maxLines: 4,
+                intro,
+                maxLines: 3,
                 overflow: TextOverflow.ellipsis,
                 style: ThemeConfig.textStyleSecondary,
               ),
@@ -64,7 +64,11 @@ class ChatSessionDetailsGroupConversation extends ConsumerWidget {
             ),
           ],
         ),
+        const SizedBox(
+          height: 4,
+        ),
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(appLocalizations.stickOnTop),
             TSwitch(
@@ -73,12 +77,20 @@ class ChatSessionDetailsGroupConversation extends ConsumerWidget {
             ),
           ],
         ),
+        const SizedBox(
+          height: 4,
+        ),
         divider,
         const SizedBox(
           height: 8,
         ),
-        TTextButton(
+        TTextButton.outlined(
+          containerPadding: ThemeConfig.paddingV4H8,
           text: appLocalizations.addNewMember,
+          prefix: Icon(
+            Symbols.person_add_rounded,
+            size: 20,
+          ),
         ),
         const SizedBox(
           height: 8,
@@ -89,24 +101,29 @@ class ChatSessionDetailsGroupConversation extends ConsumerWidget {
         ),
         Expanded(
             child: ListView.separated(
-          itemCount: 20,
-          itemBuilder: (context, index) => Row(
-            children: [
-              TAvatar(name: 'name', size: TAvatarSize.small),
-              const SizedBox(
-                width: 8,
-              ),
-              const Expanded(
-                  child: Text(
-                'a very long name, a very long name, a very long name, a very long name',
-                overflow: TextOverflow.ellipsis,
-              )),
-              const SizedBox(
-                width: 8,
-              ),
-              const Icon(Symbols.crowdsource_rounded)
-            ],
-          ),
+          // Used to not overlay on the scrollbar
+          padding: EdgeInsets.only(right: 12),
+          itemCount: members.length,
+          itemBuilder: (context, index) {
+            final member = members[index];
+            return Row(
+              children: [
+                TAvatar(name: member.name, size: TAvatarSize.small),
+                const SizedBox(
+                  width: 8,
+                ),
+                Expanded(
+                    child: Text(
+                  member.name,
+                  overflow: TextOverflow.ellipsis,
+                )),
+                const SizedBox(
+                  width: 8,
+                ),
+                const Icon(Symbols.crowdsource_rounded)
+              ],
+            );
+          },
           separatorBuilder: (BuildContext context, int index) => const SizedBox(
             height: 4,
           ),
@@ -114,8 +131,27 @@ class ChatSessionDetailsGroupConversation extends ConsumerWidget {
         const SizedBox(
           height: 8,
         ),
-        TTextButton(
-          text: appLocalizations.leaveGroup,
+        divider,
+        SizedBox(
+          width: double.infinity,
+          child: TTextButton(
+            containerPadding: EdgeInsets.symmetric(vertical: 8),
+            containerColor: Colors.transparent,
+            containerColorHovered: Colors.transparent,
+            text: appLocalizations.clearChatHistory,
+            textStyle: ThemeConfig.textStyleWarning,
+          ),
+        ),
+        divider,
+        SizedBox(
+          width: double.infinity,
+          child: TTextButton(
+            containerPadding: EdgeInsets.symmetric(vertical: 8),
+            containerColor: Colors.transparent,
+            containerColorHovered: Colors.transparent,
+            text: appLocalizations.leaveGroup,
+            textStyle: ThemeConfig.textStyleWarning,
+          ),
         )
       ],
     );

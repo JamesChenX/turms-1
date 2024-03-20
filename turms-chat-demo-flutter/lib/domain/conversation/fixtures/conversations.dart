@@ -47,7 +47,7 @@ final fixtureConversations = fixtureContacts.map((contact) {
                   : MessageDeliveryStatus.delivered);
         }).toList());
   } else if (contact is GroupContact) {
-    final memberIds = contact.memberIds.toList();
+    final memberIds = contact.members.map((member) => member.userId).toList();
     final memberCount = memberIds.length;
     final maxMessageCount = RandomUtils.nextInt() % 20;
     final messages = <ChatMessage>[];

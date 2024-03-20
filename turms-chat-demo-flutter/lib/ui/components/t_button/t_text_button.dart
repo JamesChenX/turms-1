@@ -13,6 +13,7 @@ class TTextButton extends StatelessWidget {
       this.textStyleHovered,
       this.addContainer = true,
       this.containerWidth,
+      this.containerHeight,
       this.containerColor = ThemeConfig.primary,
       this.containerColorHovered,
       EdgeInsets? containerPadding,
@@ -20,13 +21,16 @@ class TTextButton extends StatelessWidget {
       this.containerBorderHovered,
       this.isLoading = false,
       this.disabled = false,
+      this.prefix,
       this.onTap})
       : containerPadding = containerPadding ?? ThemeConfig.paddingV8H16;
 
   factory TTextButton.outlined(
           {required String text,
-          double? width,
-          EdgeInsets? padding,
+          double? containerWidth,
+          double? containerHeight,
+          EdgeInsets? containerPadding,
+          Widget? prefix,
           VoidCallback? onTap}) =>
       TTextButton(
         text: text,
@@ -35,13 +39,16 @@ class TTextButton extends StatelessWidget {
         containerBorder: Border.all(color: ThemeConfig.dividerColor),
         containerBorderHovered: Border.all(color: ThemeConfig.primary),
         containerColor: Colors.white,
-        containerWidth: width,
-        containerPadding: padding,
+        containerWidth: containerWidth,
+        containerHeight: containerHeight,
+        containerPadding: containerPadding,
+        prefix: prefix,
         onTap: onTap,
       );
 
   final bool addContainer;
   final double? containerWidth;
+  final double? containerHeight;
   final Color containerColor;
   final Color? containerColorHovered;
   final EdgeInsets containerPadding;
@@ -55,10 +62,13 @@ class TTextButton extends StatelessWidget {
   final TextStyle? textStyle;
   final TextStyle? textStyleHovered;
 
+  final Widget? prefix;
+
   @override
   Widget build(BuildContext context) => TButton(
       addContainer: addContainer,
       containerWidth: containerWidth,
+      containerHeight: containerHeight,
       containerColor: containerColor,
       containerColorHovered: containerColorHovered,
       containerPadding: containerPadding,
@@ -77,6 +87,7 @@ class TTextButton extends StatelessWidget {
           textAlign: TextAlign.center,
         ),
       ),
+      prefix: prefix,
       child: AnimatedDefaultTextStyle(
         style: textStyle ?? const TextStyle(color: Colors.white),
         duration: const Duration(milliseconds: 200),

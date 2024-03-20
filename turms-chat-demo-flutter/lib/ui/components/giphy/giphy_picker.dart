@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../l10n/view_models/app_localizations_view_model.dart';
 import '../index.dart';
+import '../t_loading_indicator/t_loading_indicator.dart';
 import 'client/client.dart';
 import 'client/models/gif.dart';
 import 'client/models/response.dart';
@@ -28,6 +29,7 @@ class GiphyPicker extends ConsumerWidget {
             ref.read(_queryTextViewModel.notifier).state = value;
           },
         ),
+        const SizedBox(height: 8.0),
         Expanded(
           child: GiphyPickerBody(
             type: GiphyType.stickers,
@@ -116,10 +118,11 @@ class _GiphyPickerBodyState extends ConsumerState<GiphyPickerBody> {
 
   @override
   Widget build(BuildContext context) {
+    final appLocalizations = ref.watch(appLocalizationsViewModel);
     final gifs = _gifs;
     if (gifs.isEmpty) {
-      return const Center(
-        child: RepaintBoundary(child: CircularProgressIndicator()),
+      return Center(
+        child: TLoadingIndicator(text: appLocalizations.loading),
       );
     }
     return GridView.builder(

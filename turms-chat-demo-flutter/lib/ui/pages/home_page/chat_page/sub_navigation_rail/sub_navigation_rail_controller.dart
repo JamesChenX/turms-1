@@ -7,13 +7,13 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../../domain/conversation/fixtures/conversations.dart';
 import '../../../../../domain/conversation/models/conversation.dart';
 import '../../../../../domain/conversation/models/group_conversation.dart';
 import '../../../../../domain/conversation/models/private_conversation.dart';
 import '../../../../../domain/message/models/message_delivery_status.dart';
 import '../../../../../domain/user/view_models/logged_in_user_info_view_model.dart';
 import '../../../../../domain/user/view_models/user_settings_view_model.dart';
-import '../../../../../domain/conversation/fixtures/conversations.dart';
 import '../../../../../infra/built_in_types/built_in_type_helpers.dart';
 import '../../../../../infra/notification/notification_utils.dart';
 import '../../../../../infra/random/random_utils.dart';
@@ -32,9 +32,9 @@ import 'sub_navigation_rail.dart';
 import 'sub_navigation_rail_view.dart';
 
 class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
-  late FocusNode focusNode;
   late MenuController menuController;
   late TextEditingController searchBarTextEditingController;
+  late FocusNode searchBarFocusNode;
   late ScrollController conversationTilesScrollController;
   BuildContext? conversationTilesBuildContext;
 
@@ -53,9 +53,29 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
   @override
   void initState() {
     super.initState();
-    focusNode = FocusNode();
     menuController = MenuController();
     searchBarTextEditingController = TextEditingController();
+    searchBarFocusNode = FocusNode()
+      ..addListener(() {
+        if (searchBarFocusNode.hasFocus) {
+          final selectedConversationId = selectedConversation?.id;
+          if (selectedConversationId == null) {
+            highlightedStyledConversationIndex = null;
+            setState(() {});
+          } else {
+            final selectedConversationIndex = styledConversations.indexWhere(
+                (conversation) =>
+                    conversation.conversation.id == selectedConversationId);
+            if (selectedConversationIndex >= 0) {
+              highlightedStyledConversationIndex = selectedConversationIndex;
+            }
+            setState(() {});
+          }
+        } else {
+          highlightedStyledConversationIndex = null;
+          setState(() {});
+        }
+      });
     conversationTilesScrollController = ScrollController();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (conversations.isNotEmpty) {
@@ -76,8 +96,8 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
   @override
   void dispose() {
     super.dispose();
-    focusNode.dispose();
     searchBarTextEditingController.dispose();
+    searchBarFocusNode.dispose();
     conversationTilesScrollController.dispose();
   }
 
@@ -129,10 +149,6 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
             styledConversations.isEmpty ? null : 0;
         previousSearchText = searchText;
       }
-      final conversationIndex = highlightedStyledConversationIndex;
-      if (conversationIndex != null) {
-        _scrollTo(conversationIndex);
-      }
     } else {
       styledConversations = conversations
           .expand<StyledConversation>((conversation) => [
@@ -144,7 +160,6 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
               ])
           .toList();
       previousSearchText = '';
-      highlightedStyledConversationIndex = null;
     }
     return SubNavigationRailView(this);
   }
@@ -170,7 +185,6 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
     if (isSearchMode) {
       searchBarTextEditingController.clear();
       onSearchTextUpdated('');
-      highlightedStyledConversationIndex = null;
     }
     conversation.unreadMessageCount = 0;
     ref.read(selectedConversationViewModel.notifier).state = conversation;
@@ -233,10 +247,10 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
           return;
         }
       } else if (conversation is GroupConversation &&
-          conversation.contact.memberIds.length > 1) {
-        final memberIds = conversation.contact.memberIds;
-        final senderId =
-            memberIds.firstWhere((memberId) => memberId != loggedInUser.userId);
+          conversation.contact.members.length > 1) {
+        final senderId = conversation.contact.members
+            .firstWhere((member) => member.userId != loggedInUser.userId)
+            .userId;
         conversation.messages.add(ChatMessage(
             messageId: RandomUtils.nextUniqueInt64(),
             senderId: senderId,
@@ -291,26 +305,33 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
     if (!isArrowUp && !isArrowDown) {
       return KeyEventResult.ignored;
     }
-    final conversationIndex = highlightedStyledConversationIndex;
-    if (conversationIndex == null) {
+    if (styledConversations.isEmpty) {
       return KeyEventResult.handled;
     }
+    final conversationIndex = highlightedStyledConversationIndex;
     if (isArrowUp) {
-      if (conversationIndex > 0) {
+      if (conversationIndex == null) {
+        highlightedStyledConversationIndex = styledConversations.length - 1;
+        setState(() {});
+      } else if (conversationIndex > 0) {
         highlightedStyledConversationIndex = conversationIndex - 1;
         setState(() {});
+      } else {
+        return KeyEventResult.handled;
       }
     } else {
-      if (conversationIndex < styledConversations.length - 1) {
+      if (conversationIndex == null) {
+        highlightedStyledConversationIndex = 0;
+        setState(() {});
+      } else if (conversationIndex < styledConversations.length - 1) {
         highlightedStyledConversationIndex = conversationIndex + 1;
         setState(() {});
+      } else {
+        return KeyEventResult.handled;
       }
     }
+    _scrollTo(highlightedStyledConversationIndex!);
     return KeyEventResult.handled;
-  }
-
-  void onPanDown(DragDownDetails details) {
-    focusNode.requestFocus();
   }
 
   void onSearchSubmitted() {

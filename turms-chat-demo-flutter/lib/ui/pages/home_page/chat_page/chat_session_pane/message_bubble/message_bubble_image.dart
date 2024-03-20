@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
-import 'package:material_symbols_icons/symbols.dart';
 import 'package:path/path.dart';
 
 import '../../../../../../infra/crypto/crypto_utils.dart';
@@ -17,7 +16,6 @@ import '../../../../../../infra/units/file_size_extensions.dart';
 import '../../../../../../infra/worker/worker_manager.dart';
 import '../../../../../components/t_image/t_image_broken.dart';
 import '../../../../../components/t_image_viewer/t_image_viewer.dart';
-import '../../../../../themes/theme_config.dart';
 
 const _imageBorderWidth = 1.0;
 
@@ -33,7 +31,7 @@ class MessageBubbleImage extends StatefulWidget {
 class _MessageBubbleImageState extends State<MessageBubbleImage> {
   late Image image;
 
-  late Future<Uint8List?> downloadFile;
+  late Future<(Uint8List, bool)?> downloadFile;
   late String originalImagePath;
   late String thumbnailImagePath;
 
@@ -60,8 +58,9 @@ class _MessageBubbleImageState extends State<MessageBubbleImage> {
               image = FileImage(originalImageFile);
             } else {
               // TODO: show a tip to let user know if the original image has been deleted.
-              image =
-                  FutureMemoryImageProvider(thumbnailImagePath, downloadFile);
+              // image =
+              //     FutureMemoryImageProvider(thumbnailImagePath, downloadFile);
+              image = MemoryImage((await downloadFile)!);
             }
             unawaited(showImageViewerDialog(context, image));
           },
@@ -74,19 +73,10 @@ class _MessageBubbleImageState extends State<MessageBubbleImage> {
         fit: BoxFit.contain,
         loadingBuilder: (context, child, loadingProgress) {
           if (loadingProgress == null) {
-            return DecoratedBox(
-                decoration: BoxDecoration(
-                    borderRadius: ThemeConfig.borderRadius4,
-                    border: Border.all(
-                        color: ThemeConfig.borderColor,
-                        width: _imageBorderWidth)),
-                child: ClipRRect(
-                  borderRadius: ThemeConfig.borderRadius4,
-                  child: Padding(
-                    padding: const EdgeInsets.all(_imageBorderWidth),
-                    child: child,
-                  ),
-                ));
+            return Padding(
+              padding: const EdgeInsets.all(_imageBorderWidth),
+              child: child,
+            );
           }
           return Center(
             child: RepaintBoundary(child: CircularProgressIndicator()),
@@ -128,7 +118,7 @@ class _MessageBubbleImageState extends State<MessageBubbleImage> {
   //       ],
   //     );
 
-  Future<Uint8List?> _fetchImage() async {
+  Future<(Uint8List, bool)?> _fetchImage() async {
     final url = widget.url;
     final urlStr = url.toString();
     final ext = extension(urlStr);
@@ -142,7 +132,8 @@ class _MessageBubbleImageState extends State<MessageBubbleImage> {
     thumbnailImagePath = outputThumbnailImagePath;
     final outputThumbnailImageFile = File(outputThumbnailImagePath);
     if (await outputThumbnailImageFile.exists()) {
-      return outputThumbnailImageFile.readAsBytes();
+      final bytes = await outputThumbnailImageFile.readAsBytes();
+      return (bytes, true);
     }
     return TaskUtils.cacheFuture(
       id: outputThumbnailImagePath,
@@ -152,48 +143,55 @@ class _MessageBubbleImageState extends State<MessageBubbleImage> {
   }
 }
 
-Future<Uint8List?> _fetchImage0(List<dynamic> args) {
+Future<(Uint8List, bool)?> _fetchImage0(List<dynamic> args) async {
   final outputOriginalImagePath = args[1] as String;
-  return HttpUtils.downloadFileIfNotExists(
+  final outputThumbnailImagePath = args[2] as String;
+  final originalImageFile = await HttpUtils.downloadFileIfNotExists(
     uri: Uri.parse(args[0] as String),
     filePath: outputOriginalImagePath,
     maxBytes: EnvVars.messageImageMaxDownloadableSizeBytes.MB,
-  ).then((originalImageFile) async {
-    if (originalImageFile == null) {
-      return null;
+  );
+  if (originalImageFile == null) {
+    return null;
+  }
+  final originalImageBytes = await originalImageFile.bytes;
+  if (originalImageBytes.isEmpty) {
+    return null;
+  }
+  // Don't resize GIF images because the "image" package
+  // is buggy for resizing GIF images.
+  // e.g. https://github.com/brendan-duncan/image/issues/588
+  // TODO: waiting for them to be fixed.
+  if (outputOriginalImagePath.endsWith('.gif')) {
+    return (originalImageBytes, false);
+  }
+  var originalImage =
+      img.decodeNamedImage(outputOriginalImagePath, originalImageBytes);
+  if (originalImage == null) {
+    return null;
+  }
+  if (originalImage.width > EnvVars.messageImageThumbnailSizeWidth ||
+      originalImage.height > EnvVars.messageImageThumbnailSizeHeight) {
+    final img.Image thumbnailImage;
+    originalImage = originalImage.convert(numChannels: 4);
+    if (originalImage.width > originalImage.height) {
+      thumbnailImage = img.copyResize(originalImage,
+          width: EnvVars.messageImageThumbnailSizeWidth,
+          maintainAspect: true,
+          interpolation: img.Interpolation.cubic);
+    } else {
+      thumbnailImage = img.copyResize(originalImage,
+          height: EnvVars.messageImageThumbnailSizeHeight,
+          maintainAspect: true,
+          interpolation: img.Interpolation.cubic);
     }
-    final originalImageBytes = await originalImageFile.bytes;
-    if (originalImageBytes.isEmpty) {
-      return null;
+    final encodedImageBytes =
+        img.encodeNamedImage(outputThumbnailImagePath, thumbnailImage);
+    if (encodedImageBytes == null) {
+      return (originalImageBytes, false);
     }
-    final originalImage =
-        img.decodeNamedImage(outputOriginalImagePath, originalImageBytes);
-    if (originalImage == null) {
-      return null;
-    }
-    final outputThumbnailImagePath = args[2] as String;
-    if (originalImage.width > EnvVars.messageImageThumbnailSizeWidth ||
-        originalImage.height > EnvVars.messageImageThumbnailSizeHeight) {
-      final img.Image thumbnailImage;
-      if (originalImage.width > originalImage.height) {
-        thumbnailImage = img.copyResize(originalImage,
-            width: EnvVars.messageImageThumbnailSizeWidth,
-            maintainAspect: true,
-            interpolation: img.Interpolation.cubic);
-      } else {
-        thumbnailImage = img.copyResize(originalImage,
-            height: EnvVars.messageImageThumbnailSizeHeight,
-            maintainAspect: true,
-            interpolation: img.Interpolation.cubic);
-      }
-      final encodedImageBytes =
-          img.encodeNamedImage(outputThumbnailImagePath, thumbnailImage);
-      if (encodedImageBytes == null) {
-        return null;
-      }
-      await File(outputThumbnailImagePath).writeAsBytes(encodedImageBytes);
-      return encodedImageBytes;
-    }
-    return originalImageBytes;
-  });
+    await File(outputThumbnailImagePath).writeAsBytes(encodedImageBytes);
+    return (encodedImageBytes, true);
+  }
+  return (originalImageBytes, false);
 }

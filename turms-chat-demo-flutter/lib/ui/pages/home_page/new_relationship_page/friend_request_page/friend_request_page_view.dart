@@ -74,8 +74,8 @@ class FriendRequestPageView extends StatelessWidget {
                   children: [
                     TTextButton.outlined(
                       text: appLocalizations.cancel,
-                      padding: ThemeConfig.paddingV4H8,
-                      width: 64,
+                      containerPadding: ThemeConfig.paddingV4H8,
+                      containerWidth: 64,
                       onTap: friendRequestPageController.close,
                     ),
                     const SizedBox(width: 16),

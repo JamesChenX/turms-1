@@ -56,6 +56,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get checkForUpdatesAutomatically => '自动检查更新';
 
   @override
+  String get clearChatHistory => '清除聊天记录';
+
+  @override
   String get close => '关闭';
 
   @override
@@ -170,6 +173,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get lightTheme => '亮主题';
+
+  @override
+  String get loading => '加载中';
 
   @override
   String get logOut => '退出登陆';

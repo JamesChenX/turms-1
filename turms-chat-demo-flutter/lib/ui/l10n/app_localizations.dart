@@ -198,6 +198,12 @@ abstract class AppLocalizations {
   /// **'Check for Updates Automatically'**
   String get checkForUpdatesAutomatically;
 
+  /// No description provided for @clearChatHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Chat History'**
+  String get clearChatHistory;
+
   /// No description provided for @close.
   ///
   /// In en, this message translates to:
@@ -425,6 +431,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Light'**
   String get lightTheme;
+
+  /// No description provided for @loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading'**
+  String get loading;
 
   /// No description provided for @logOut.
   ///

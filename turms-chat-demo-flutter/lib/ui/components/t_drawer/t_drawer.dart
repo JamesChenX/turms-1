@@ -66,6 +66,7 @@ class _TDrawerState extends State<TDrawer> with SingleTickerProviderStateMixin {
     if (animationController.status.isNotDismissed) {
       nextChild = widget.child;
     } else {
+      nextChild = null;
       currentChild = widget.child;
     }
   }

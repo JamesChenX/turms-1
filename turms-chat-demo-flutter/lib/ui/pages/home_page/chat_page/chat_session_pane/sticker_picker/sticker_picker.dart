@@ -7,6 +7,7 @@ import '../../../../../components/index.dart';
 import '../../../../../components/giphy/client/models/gif.dart';
 import '../../../../../components/giphy/giphy_picker.dart';
 import '../../../../../components/t_button/t_icon_button.dart';
+import '../../../../../components/t_divider/t_horizontal_divider.dart';
 import '../../../../../components/t_lazy_indexed_stack/t_lazy_indexed_stack.dart';
 import '../../../../../themes/theme_config.dart';
 import 'emoji_picker_pane.dart';
@@ -45,37 +46,50 @@ class _StickerPickerState extends State<StickerPicker> {
               ? Column(
                   children: [
                     Flexible(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
                         child: TLazyIndexedStack(
-                      index: switch (_currentTab) {
-                        _Tab.emoji => 0,
-                        _Tab.giphy => 1,
-                      },
-                      children: [
-                        EmojiPickerPane(
-                          onEmojiSelected: widget.onEmojiSelected,
+                          index: switch (_currentTab) {
+                            _Tab.emoji => 0,
+                            _Tab.giphy => 1,
+                          },
+                          children: [
+                            EmojiPickerPane(
+                              onEmojiSelected: widget.onEmojiSelected,
+                            ),
+                            GiphyPicker(
+                              onSelected: widget.onGiphyGifSelected,
+                            ),
+                          ],
                         ),
-                        GiphyPicker(
-                          onSelected: widget.onGiphyGifSelected,
-                        ),
-                      ],
-                    )),
-                    SizedBox(
-                      height: 50,
+                      ),
+                    ),
+                    THorizontalDivider(
+                      color: _containerColorHovered,
+                    ),
+                    Padding(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                       child: Row(
                         children: [
                           TIconButton(
                             iconData: Symbols.emoji_emotions_rounded,
-                            addContainer: false,
+                            containerSize: Size.square(32),
                             containerColorHovered: _containerColorHovered,
+                            containerPadding: EdgeInsets.zero,
                             onTap: () {
                               _currentTab = _Tab.emoji;
                               setState(() {});
                             },
                           ),
+                          const SizedBox(
+                            width: 16,
+                          ),
                           TIconButton(
                             iconData: Symbols.search_rounded,
-                            addContainer: false,
+                            containerSize: Size.square(32),
                             containerColorHovered: _containerColorHovered,
+                            containerPadding: EdgeInsets.zero,
                             onTap: () {
                               _currentTab = _Tab.giphy;
                               setState(() {});

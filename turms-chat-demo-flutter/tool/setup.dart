@@ -43,7 +43,7 @@ Future<void> generateEnvFile() async {
     ..write('  EnvVars._();\n\n');
 
   for (final line in lines) {
-    if (line.isBlank) {
+    if (line.isBlank || line.startsWith('#')) {
       continue;
     }
     final parts = line.split('=');

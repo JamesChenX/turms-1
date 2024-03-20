@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../../../../domain/user/models/contact.dart';
 import '../../../../../../infra/built_in_types/built_in_type_helpers.dart';
@@ -32,7 +33,11 @@ class ChatSessionDetailsPrivateConversation extends ConsumerWidget {
             ),
           ],
         ),
+        const SizedBox(
+          height: 4,
+        ),
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(appLocalizations.stickOnTop),
             TSwitch(
@@ -41,18 +46,35 @@ class ChatSessionDetailsPrivateConversation extends ConsumerWidget {
             ),
           ],
         ),
+        const SizedBox(
+          height: 4,
+        ),
         divider,
         const SizedBox(
           height: 8,
         ),
-        TTextButton(
+        TTextButton.outlined(
+          containerPadding: ThemeConfig.paddingV4H8,
           text: appLocalizations.addNewMember,
+          prefix: Icon(
+            Symbols.person_add_rounded,
+            size: 20,
+          ),
         ),
         const SizedBox(
           height: 8,
         ),
-        TTextButton(
-          text: appLocalizations.leaveGroup,
+        divider,
+        SizedBox(
+          width: double.infinity,
+          child: TTextButton(
+            containerPadding: EdgeInsets.symmetric(vertical: 16),
+            // addContainer: false,
+            containerColor: Colors.transparent,
+            containerColorHovered: Colors.transparent,
+            text: appLocalizations.leaveGroup,
+            textStyle: ThemeConfig.textStyleWarning,
+          ),
         )
       ],
     );

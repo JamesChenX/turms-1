@@ -75,7 +75,7 @@ class NewRelationshipPageController extends ConsumerState<NewRelationshipPage>
             groupId: num,
             name: 'a fake group name: $value' * 10,
             intro: 'a fake group intro',
-            memberIds: {},
+            members: [],
           )
         ];
     }

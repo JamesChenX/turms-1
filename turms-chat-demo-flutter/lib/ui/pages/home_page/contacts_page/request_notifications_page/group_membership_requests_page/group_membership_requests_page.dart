@@ -55,6 +55,6 @@ class _GroupMembershipRequestsPageState
         groupId: group.id,
         name: group.name,
         // TODO
-        memberIds: {}));
+        members: []));
   }
 }

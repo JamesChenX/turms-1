@@ -3,7 +3,7 @@ part of 'contact.dart';
 class GroupContact extends Contact {
   GroupContact(
       {required this.groupId,
-      required this.memberIds,
+      required this.members,
       required super.name,
       super.intro,
       super.imageUrl,
@@ -13,5 +13,5 @@ class GroupContact extends Contact {
   @override
   final String id;
   final Int64 groupId;
-  final Set<Int64> memberIds;
+  final List<User> members;
 }

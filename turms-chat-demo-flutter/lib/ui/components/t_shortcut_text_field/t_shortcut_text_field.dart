@@ -156,7 +156,7 @@ class _TShortcutTextFieldState extends ConsumerState<TShortcutTextField> {
           _textEditingController.text =
               ref.read(appLocalizationsViewModel).none;
           widget.onShortcutChanged([]);
-        } else if (_keys.any((element) => element.isModifier) ||
+        } else if (_keys.any((element) => element.isModifier) &&
             _keys.any((element) => !element.isModifier)) {
           widget.onShortcutChanged(_keys);
         } else {

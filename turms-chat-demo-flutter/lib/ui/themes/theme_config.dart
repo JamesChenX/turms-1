@@ -77,6 +77,7 @@ class ThemeConfig {
 
   // Typography
   static const textStyleSecondary = TextStyle(color: textColorSecondary);
+  static const textStyleWarning = TextStyle(color: Colors.red);
   static const textStyleTitle = TextStyle(fontWeight: FontWeight.w800);
   static const textStyleHighlight = TextStyle(color: Colors.red);
   static final emojiFontFamily = switch (defaultTargetPlatform) {

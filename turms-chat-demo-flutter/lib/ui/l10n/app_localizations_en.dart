@@ -56,6 +56,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get checkForUpdatesAutomatically => 'Check for Updates Automatically';
 
   @override
+  String get clearChatHistory => 'Clear Chat History';
+
+  @override
   String get close => 'Close';
 
   @override
@@ -170,6 +173,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get lightTheme => 'Light';
+
+  @override
+  String get loading => 'Loading';
 
   @override
   String get logOut => 'Log Out';

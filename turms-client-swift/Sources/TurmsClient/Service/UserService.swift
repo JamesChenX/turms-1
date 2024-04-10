@@ -304,6 +304,36 @@ public class UserService {
             }
     }
 
+    public func searchUserProfiles(name: String,
+                                   highlight: Bool = false,
+                                   skip: Int32? = nil,
+                                   limit: Int32? = nil) -> Promise<Response<[UserInfo]>>
+    {
+        if name.isEmpty {
+            return Promise.value(Response.emptyArray())
+        }
+        return turmsClient.driver
+            .send {
+                $0.queryUserProfilesRequest = .with {
+                    $0.name = name
+                    if highlight {
+                        $0.fieldsToHighlight = [1]
+                    }
+                    if let v = skip {
+                        $0.skip = v
+                    }
+                    if let v = limit {
+                        $0.limit = v
+                    }
+                }
+            }
+            .map {
+                try $0.toResponse {
+                    $0.userInfosWithVersion.userInfos
+                }
+            }
+    }
+
     /// Find nearby users.
     ///
     /// - Parameters:

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
@@ -16,6 +17,9 @@ import '../../../../../../infra/units/file_size_extensions.dart';
 import '../../../../../../infra/worker/worker_manager.dart';
 import '../../../../../components/t_image/t_image_broken.dart';
 import '../../../../../components/t_image_viewer/t_image_viewer.dart';
+import '../../../../../themes/theme_config.dart';
+import '../media_fetching_status.dart';
+import '../message_media_file.dart';
 
 const _imageBorderWidth = 1.0;
 
@@ -39,7 +43,7 @@ class _MessageBubbleImageState extends State<MessageBubbleImage> {
   void initState() {
     super.initState();
 
-    downloadFile = _fetchImage();
+    unawaited(_initImage());
   }
 
   @override
@@ -73,34 +77,41 @@ class _MessageBubbleImageState extends State<MessageBubbleImage> {
         fit: BoxFit.contain,
         loadingBuilder: (context, child, loadingProgress) {
           if (loadingProgress == null) {
-            return Padding(
-              padding: const EdgeInsets.all(_imageBorderWidth),
-              child: child,
-            );
+            return DecoratedBox(
+                decoration: BoxDecoration(
+                    borderRadius: ThemeConfig.borderRadius4,
+                    border: Border.all(
+                        color: ThemeConfig.borderColor,
+                        width: _imageBorderWidth)),
+                child: ClipRRect(
+                  borderRadius: ThemeConfig.borderRadius4,
+                  child: Padding(
+                    padding: const EdgeInsets.all(_imageBorderWidth),
+                    child: child,
+                  ),
+                ));
           }
-          return Center(
-            child: RepaintBoundary(child: CircularProgressIndicator()),
+          return Stack(
+            fit: StackFit.expand,
+            children: [
+              SizedBox(
+                width: EnvVars.messageImageThumbnailSizeWidth.toDouble(),
+                height: EnvVars.messageImageThumbnailSizeHeight.toDouble(),
+                child: const DecoratedBox(
+                  decoration: BoxDecoration(color: Colors.black12),
+                ),
+              ),
+              const Center(
+                child: RepaintBoundary(child: CupertinoActivityIndicator()),
+              )
+            ],
           );
-          // return const Stack(
-          //   fit: StackFit.expand,
-          //   children: [
-          //     SizedBox(
-          //       width: maxWidth,
-          //       height: maxHeight,
-          //       child: DecoratedBox(
-          //         decoration: BoxDecoration(color: Colors.black12),
-          //       ),
-          //     ),
-          //     Center(
-          //       child: RepaintBoundary(child: CircularProgressIndicator()),
-          //     )
-          //   ],
-          // );
         },
         errorBuilder: (context, error, stackTrace) => _buildError(),
       );
 
 // todo: click to download
+  // handle different cases
   Widget _buildError() => const TImageBroken();
 
   // Stack _buildError() => Stack(
@@ -118,7 +129,7 @@ class _MessageBubbleImageState extends State<MessageBubbleImage> {
   //       ],
   //     );
 
-  Future<(Uint8List, bool)?> _fetchImage() async {
+  Future<void> _initImage() async {
     final url = widget.url;
     final urlStr = url.toString();
     final ext = extension(urlStr);
@@ -133,17 +144,19 @@ class _MessageBubbleImageState extends State<MessageBubbleImage> {
     final outputThumbnailImageFile = File(outputThumbnailImagePath);
     if (await outputThumbnailImageFile.exists()) {
       final bytes = await outputThumbnailImageFile.readAsBytes();
-      return (bytes, true);
+      downloadFile = Future.value((bytes, true));
+    } else {
+      downloadFile = TaskUtils.cacheFuture(
+        id: outputThumbnailImagePath,
+        future: WorkerManager.schedule(_fetchImage0,
+            [url, outputOriginalImagePath, outputThumbnailImagePath]),
+      );
     }
-    return TaskUtils.cacheFuture(
-      id: outputThumbnailImagePath,
-      future: WorkerManager.schedule(_fetchImage0,
-          [url, outputOriginalImagePath, outputThumbnailImagePath]),
-    );
   }
 }
 
-Future<(Uint8List, bool)?> _fetchImage0(List<dynamic> args) async {
+Future<(MessageMediaFile, MediaFetchingStatus)> _fetchImage0(
+    List<dynamic> args) async {
   final outputOriginalImagePath = args[1] as String;
   final outputThumbnailImagePath = args[2] as String;
   final originalImageFile = await HttpUtils.downloadFileIfNotExists(

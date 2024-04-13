@@ -74,7 +74,7 @@ class HttpUtils {
     final response = await http.Client().send(http.Request(method, uri));
     final contentLength = response.contentLength;
     if (contentLength != null && contentLength > maxBytes) {
-      throw Exception(
+      throw FileTooLargeException(
           'File is too large. Max: $maxBytes. Actual: $contentLength');
     }
     var received = 0;

@@ -19,7 +19,7 @@ package im.turms.gateway.access.admin.throttle;
 
 import org.springframework.stereotype.Component;
 
-import im.turms.server.common.access.admin.throttle.BaseAdminApiRateLimitingManager;
+import im.turms.server.common.access.admin.api.BaseAdminApiRateLimitingManager;
 import im.turms.server.common.infra.property.TurmsPropertiesManager;
 import im.turms.server.common.infra.task.TaskManager;
 

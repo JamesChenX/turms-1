@@ -41,8 +41,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import reactor.core.publisher.Mono;
 
-import im.turms.server.common.domain.admin.po.Admin;
 import im.turms.server.common.domain.admin.po.AdminRole;
+import im.turms.server.common.domain.admin.po.AdminUser;
 import im.turms.server.common.domain.user.po.User;
 import im.turms.server.common.infra.cluster.node.Node;
 import im.turms.server.common.infra.collection.CollectionUtil;
@@ -228,7 +228,8 @@ public class MongoCollectionInitializer implements IMongoCollectionInitializer {
      * @return True if all collections have existed
      */
     private Mono<Boolean> createCollectionsIfNotExist() {
-        return PublisherUtil.areAllTrue(adminMongoClient.createCollectionIfNotExists(Admin.class),
+        return PublisherUtil.areAllTrue(
+                adminMongoClient.createCollectionIfNotExists(AdminUser.class),
                 adminMongoClient.createCollectionIfNotExists(AdminRole.class),
 
                 groupMongoClient.createCollectionIfNotExists(Group.class),
@@ -305,7 +306,7 @@ public class MongoCollectionInitializer implements IMongoCollectionInitializer {
         };
         BiPredicate<Class<?>, Field> customIndexFilter = (entityClass, field) -> {
             String fieldName = field.getName();
-            if (entityClass == Admin.class) {
+            if (entityClass == AdminUser.class) {
                 return isCustomIndexEnabled.test(fieldName,
                         mongoProperties.getAdmin()
                                 .getOptionalIndex()

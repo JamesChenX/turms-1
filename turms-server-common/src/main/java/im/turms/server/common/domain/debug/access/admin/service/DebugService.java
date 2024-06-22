@@ -35,7 +35,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import im.turms.server.common.access.common.ResponseStatusCode;
-import im.turms.server.common.domain.debug.access.admin.dto.request.CreateMethodCallDTO;
+import im.turms.server.common.domain.debug.access.admin.dto.request.CreateMethodCallsRequestDTO;
 import im.turms.server.common.infra.cluster.node.NodeType;
 import im.turms.server.common.infra.collection.CollectionUtil;
 import im.turms.server.common.infra.exception.ResponseException;
@@ -101,7 +101,7 @@ public class DebugService {
             @Nullable String beanName,
             @Nullable String className,
             String methodName,
-            @Nullable List<CreateMethodCallDTO.ParamDTO> params) {
+            @Nullable List<CreateMethodCallsRequestDTO.ParamDTO> params) {
         // 1. Validate inputs
         try {
             Validator.notNull(methodName, "methodName");
@@ -163,10 +163,7 @@ public class DebugService {
         try {
             returnValue = methodToCall.invoke(receiver, arguments);
         } catch (Exception e) {
-            return Mono.error(ResponseException.get(ResponseStatusCode.ILLEGAL_ARGUMENT,
-                    "Failed to invoke the method: "
-                            + ClassUtil.getMethodSignature(methodToCall),
-                    e));
+            return Mono.error(e);
         }
         // 7. Parse and return value
         return switch (returnValue) {
@@ -248,7 +245,7 @@ public class DebugService {
     }
 
     private Object[] prepareArguments(
-            @Nullable List<CreateMethodCallDTO.ParamDTO> inputParams,
+            @Nullable List<CreateMethodCallsRequestDTO.ParamDTO> inputParams,
             Method methodToCall) {
         Parameter[] parameters = methodToCall.getParameters();
         int paramCount = parameters.length;
@@ -273,7 +270,7 @@ public class DebugService {
                 nameToParam.put(parameter.getName(), Pair.of(i, parameter));
             }
             for (int i = 0; i < inputParamCount; i++) {
-                CreateMethodCallDTO.ParamDTO param = inputParams.get(i);
+                CreateMethodCallsRequestDTO.ParamDTO param = inputParams.get(i);
                 String name = param.name();
                 if (name == null) {
                     throw ResponseException.get(ResponseStatusCode.ILLEGAL_ARGUMENT,
@@ -299,7 +296,7 @@ public class DebugService {
             }
         } else {
             for (int i = 0; i < inputParamCount; i++) {
-                CreateMethodCallDTO.ParamDTO param = inputParams.get(i);
+                CreateMethodCallsRequestDTO.ParamDTO param = inputParams.get(i);
                 Class<?> parameterType = parameters[i].getType();
                 arguments[i] = parseArg(parameterType, param.value());
             }
@@ -308,7 +305,7 @@ public class DebugService {
     }
 
     @Nullable
-    private Object parseArg(Class parameterType, Object arg) {
+    private Object parseArg(Class parameterType, @Nullable Object arg) {
         Class parameterClassToDetect = parameterType;
         if (parameterType.isPrimitive()) {
             if (arg == null) {

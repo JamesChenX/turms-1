@@ -56,8 +56,15 @@ public final class AdminRole extends BaseEntity {
     @Field(Fields.PERMISSIONS)
     private final Set<AdminPermission> permissions;
 
+//    @Field(Fields.PERMISSION_INCLUDES)
+//    private final Set<String> permissionIncludes;
+//
+//    @Field(Fields.PERMISSION_EXCLUDES)
+//    private final Set<String> permissionExcludes;
+
     /**
-     * Only the higher-ranking admins can add/delete/update lower-ranking admins' information.
+     * TODO: reverse. Only the higher-ranking admins can add/delete/update lower-ranking admins'
+     * information.
      */
     @Field(Fields.RANK)
     private final Integer rank;
@@ -68,6 +75,8 @@ public final class AdminRole extends BaseEntity {
     public static final class Fields {
         public static final String NAME = "n";
         public static final String PERMISSIONS = "perm";
+        public static final String PERMISSION_INCLUDES = "permi";
+        public static final String PERMISSION_EXCLUDES = "perme";
         public static final String RANK = "rank";
         public static final String CREATION_DATE = "cd";
 

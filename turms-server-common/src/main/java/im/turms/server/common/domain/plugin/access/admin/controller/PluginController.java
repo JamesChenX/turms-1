@@ -18,34 +18,39 @@
 package im.turms.server.common.domain.plugin.access.admin.controller;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import jakarta.annotation.Nullable;
 
+import org.springframework.context.ApplicationContext;
 import reactor.core.publisher.Mono;
 
-import im.turms.server.common.access.admin.dto.response.HttpHandlerResult;
-import im.turms.server.common.access.admin.dto.response.ResponseDTO;
-import im.turms.server.common.access.admin.dto.response.UpdateResultDTO;
+import im.turms.server.common.access.admin.api.ApiConst;
+import im.turms.server.common.access.admin.api.ApiController;
+import im.turms.server.common.access.admin.api.ApiEndpoint;
+import im.turms.server.common.access.admin.api.ApiEndpointAction;
+import im.turms.server.common.access.admin.api.BaseApiController;
+import im.turms.server.common.access.admin.api.HttpResponseException;
+import im.turms.server.common.access.admin.api.response.DeleteResultDTO;
+import im.turms.server.common.access.admin.api.response.HttpHandlerResult;
+import im.turms.server.common.access.admin.api.response.ResponseDTO;
+import im.turms.server.common.access.admin.api.response.UpdateResultDTO;
 import im.turms.server.common.access.admin.permission.AdminPermission;
-import im.turms.server.common.access.admin.permission.RequiredPermission;
-import im.turms.server.common.access.admin.web.HttpResponseException;
-import im.turms.server.common.access.admin.web.MediaTypeConst;
-import im.turms.server.common.access.admin.web.MultipartFile;
-import im.turms.server.common.access.admin.web.annotation.DeleteMapping;
-import im.turms.server.common.access.admin.web.annotation.FormData;
-import im.turms.server.common.access.admin.web.annotation.GetMapping;
-import im.turms.server.common.access.admin.web.annotation.PostMapping;
-import im.turms.server.common.access.admin.web.annotation.PutMapping;
-import im.turms.server.common.access.admin.web.annotation.QueryParam;
-import im.turms.server.common.access.admin.web.annotation.RequestBody;
-import im.turms.server.common.access.admin.web.annotation.RestController;
 import im.turms.server.common.access.common.ResponseStatusCode;
-import im.turms.server.common.domain.plugin.access.admin.dto.request.AddJsPluginDTO;
-import im.turms.server.common.domain.plugin.access.admin.dto.request.UpdatePluginDTO;
+import im.turms.server.common.domain.common.access.dto.FileDTO;
+import im.turms.server.common.domain.plugin.access.admin.dto.request.CreateJavaPluginsRequestDTO;
+import im.turms.server.common.domain.plugin.access.admin.dto.request.CreateJavaScriptPluginsRequestDTO;
+import im.turms.server.common.domain.plugin.access.admin.dto.request.DeletePluginsRequestDTO;
+import im.turms.server.common.domain.plugin.access.admin.dto.request.QueryPluginsRequestDTO;
+import im.turms.server.common.domain.plugin.access.admin.dto.request.UpdatePluginsRequestDTO;
+import im.turms.server.common.domain.plugin.access.admin.dto.response.CreatePluginsResponseDTO;
 import im.turms.server.common.domain.plugin.access.admin.dto.response.ExtensionDTO;
 import im.turms.server.common.domain.plugin.access.admin.dto.response.PluginDTO;
+import im.turms.server.common.domain.plugin.access.admin.dto.response.QueryPluginsResponseDTO;
 import im.turms.server.common.infra.collection.CollectionUtil;
+import im.turms.server.common.infra.io.FileHolder;
 import im.turms.server.common.infra.plugin.ExtensionPoint;
 import im.turms.server.common.infra.plugin.IncompatibleServerException;
 import im.turms.server.common.infra.plugin.InvalidPluginException;
@@ -60,93 +65,105 @@ import im.turms.server.common.infra.plugin.UnsupportedSaveOperationException;
 /**
  * @author James Chen
  */
-@RestController("plugins")
-public class PluginController {
+@ApiController(ApiConst.RESOURCE_PATH_COMMON_PLUGIN)
+public class PluginController extends BaseApiController {
 
     private final PluginManager pluginManager;
 
-    public PluginController(PluginManager pluginManager) {
+    public PluginController(ApplicationContext context, PluginManager pluginManager) {
+        super(context);
         this.pluginManager = pluginManager;
     }
 
-    @GetMapping
-    @RequiredPermission(AdminPermission.PLUGIN_QUERY)
-    public HttpHandlerResult<ResponseDTO<Collection<PluginDTO>>> getPlugins(
-            @QueryParam(required = false) Set<String> ids) {
-        Collection<Plugin> plugins = CollectionUtil.isEmpty(ids)
-                ? pluginManager.getPlugins()
-                : pluginManager.getPlugins(ids);
-        List<PluginDTO> pluginInfoList = new ArrayList<>(plugins.size());
-        for (Plugin plugin : plugins) {
-            List<TurmsExtension> extensions = plugin.extensions();
-            List<ExtensionDTO> extensionDTOs = new ArrayList<>(extensions.size());
-            for (TurmsExtension extension : extensions) {
-                List<Class<? extends ExtensionPoint>> classes =
-                        pluginManager.getExtensionPoints(extension);
-                List<String> classNames = new ArrayList<>(classes.size());
-                for (Class<? extends ExtensionPoint> clazz : classes) {
-                    classNames.add(clazz.getName());
+    @ApiEndpoint(
+            action = ApiEndpointAction.QUERY,
+            requiredPermissions = AdminPermission.PLUGIN_QUERY)
+    public ResponseDTO<QueryPluginsResponseDTO> queryPlugins(
+            @Nullable QueryPluginsRequestDTO request) {
+        List<Plugin> plugins;
+        if (request == null) {
+            plugins = CollectionUtil.sort(pluginManager.getPlugins());
+        } else {
+            if (request.hasFilter()) {
+                LinkedHashSet<String> ids = request.filter()
+                        .ids();
+                if (ids == null) {
+                    plugins = CollectionUtil.sort(pluginManager.getPlugins());
+                } else if (ids.isEmpty()) {
+                    return ResponseDTO.of(QueryPluginsResponseDTO.of(Collections.emptyList()));
+                } else {
+                    plugins = CollectionUtil.sort(pluginManager.getPlugins(ids));
                 }
-                extensionDTOs.add(new ExtensionDTO(
-                        extension.getClass()
-                                .getName(),
-                        extension.isStarted(),
-                        extension.isRunning(),
-                        classNames));
+            } else {
+                plugins = CollectionUtil.sort(pluginManager.getPlugins());
             }
-            PluginDescriptor descriptor = plugin.descriptor();
-            pluginInfoList.add(new PluginDTO(
-                    descriptor.getId(),
-                    descriptor.getVersion(),
-                    descriptor.getProvider(),
-                    descriptor.getLicense(),
-                    descriptor.getDescription(),
-                    extensionDTOs));
+            plugins = applySkipAndLimit(request, plugins);
         }
-        return HttpHandlerResult.okIfTruthy(pluginInfoList);
+        List<PluginDTO> pluginInfoList = CollectionUtil.transformAsList(plugins, this::plugin2dto);
+        return ResponseDTO.of(QueryPluginsResponseDTO.of(pluginInfoList));
     }
 
-    @PutMapping
-    @RequiredPermission(AdminPermission.PLUGIN_UPDATE)
-    public Mono<HttpHandlerResult<ResponseDTO<UpdateResultDTO>>> updatePlugins(
-            Set<String> ids,
-            @RequestBody UpdatePluginDTO updatePluginDTO) {
-        UpdatePluginDTO.PluginStatus status = updatePluginDTO.status();
+    @ApiEndpoint(
+            action = ApiEndpointAction.UPDATE,
+            requiredPermissions = AdminPermission.PLUGIN_UPDATE)
+    public Mono<ResponseDTO<UpdateResultDTO>> updatePlugins(UpdatePluginsRequestDTO request) {
+        UpdatePluginsRequestDTO.UpdateDTO update = request.update();
+        UpdatePluginsRequestDTO.UpdateDTO.PluginStatus status = update.status();
         if (status == null) {
-            return HttpHandlerResult.okIfTruthy(Mono.just(UpdateResultDTO.NONE));
+            return ResponseDTO.updateResult0Mono();
         }
-        Mono<Integer> count = switch (status) {
-            case STARTED -> pluginManager.startPlugins(ids);
-            case STOPPED -> pluginManager.stopPlugins(ids);
-            case RESUMED -> pluginManager.resumePlugins(ids);
-            case PAUSED -> pluginManager.pausePlugins(ids);
-        };
-        return HttpHandlerResult.updateResultByIntegerMono(count);
+        Mono<Integer> count;
+        if (request.updateAll()) {
+            count = switch (status) {
+                case STARTED -> pluginManager.startPlugins();
+                case STOPPED -> pluginManager.stopPlugins();
+                case RESUMED -> pluginManager.resumePlugins();
+                case PAUSED -> pluginManager.pausePlugins();
+            };
+        } else {
+            Set<String> ids = request.filter()
+                    .ids();
+            if (ids.isEmpty()) {
+                return ResponseDTO.updateResult0Mono();
+            }
+            count = switch (status) {
+                case STARTED -> pluginManager.startPlugins(ids);
+                case STOPPED -> pluginManager.stopPlugins(ids);
+                case RESUMED -> pluginManager.resumePlugins(ids);
+                case PAUSED -> pluginManager.pausePlugins(ids);
+            };
+        }
+        return ResponseDTO.updateResultFromIntegerMono(count);
     }
 
-    @PostMapping("java")
-    @RequiredPermission(AdminPermission.PLUGIN_CREATE)
-    public HttpHandlerResult<ResponseDTO<Void>> createJavaPlugins(
-            boolean save,
-            @FormData(
-                    contentType = MediaTypeConst.APPLICATION_JAVA_ARCHIVE) List<MultipartFile> files) {
+    @ApiEndpoint(
+            value = "java",
+            action = ApiEndpointAction.CREATE,
+            requiredPermissions = AdminPermission.PLUGIN_CREATE)
+    public ResponseDTO<CreatePluginsResponseDTO> createJavaPlugins(
+            CreateJavaPluginsRequestDTO request) {
         try {
-            pluginManager.loadJavaPlugins(files, save);
+            List<FileHolder> fileHolders =
+                    CollectionUtil.transformAsList(request.records(), FileDTO::fileHolder);
+            List<Plugin> plugins = pluginManager.loadJavaPlugins(fileHolders, request.save());
+            List<PluginDTO> pluginInfoList =
+                    CollectionUtil.transformAsList(plugins, this::plugin2dto);
+            return ResponseDTO.of(CreatePluginsResponseDTO.of(pluginInfoList));
         } catch (IncompatibleServerException | InvalidPluginSourceException
                 | InvalidPluginException e) {
             throw new HttpResponseException(ResponseStatusCode.ILLEGAL_ARGUMENT, e);
         } catch (UnsupportedSaveOperationException e) {
             throw new HttpResponseException(ResponseStatusCode.SAVING_JAVA_PLUGIN_IS_DISABLED, e);
         }
-        return HttpHandlerResult.RESPONSE_OK;
     }
 
-    @PostMapping("js")
-    @RequiredPermission(AdminPermission.PLUGIN_CREATE)
-    public HttpHandlerResult<ResponseDTO<Void>> createJsPlugins(
-            boolean save,
-            @RequestBody AddJsPluginDTO addJsPluginDTO) {
-        List<JsPluginScript> scripts = addJsPluginDTO.scripts();
+    @ApiEndpoint(
+            value = "javascript",
+            action = ApiEndpointAction.CREATE,
+            requiredPermissions = AdminPermission.PLUGIN_CREATE)
+    public ResponseDTO<CreatePluginsResponseDTO> createJsPlugins(
+            CreateJavaScriptPluginsRequestDTO request) {
+        List<JsPluginScript> scripts = request.scripts();
         try {
             pluginManager.loadJsPlugins(scripts, save);
         } catch (IncompatibleServerException | InvalidPluginSourceException
@@ -162,12 +179,48 @@ public class PluginController {
         return HttpHandlerResult.RESPONSE_OK;
     }
 
-    @DeleteMapping
-    @RequiredPermission(AdminPermission.PLUGIN_DELETE)
-    public Mono<HttpHandlerResult<ResponseDTO<Void>>> deletePlugins(
-            Set<String> ids,
-            boolean deleteLocalFiles) {
-        return HttpHandlerResult.okIfTruthy(pluginManager.deletePlugins(ids, deleteLocalFiles));
+    @ApiEndpoint(
+            action = ApiEndpointAction.DELETE,
+            requiredPermissions = AdminPermission.PLUGIN_DELETE)
+    public Mono<ResponseDTO<DeleteResultDTO>> deletePlugins(DeletePluginsRequestDTO request) {
+        if (request.deleteAll()) {
+            return ResponseDTO.deleteResultFromIntegerMono(
+                    pluginManager.deletePlugins(request.deleteLocalFiles()));
+        }
+        LinkedHashSet<String> ids = request.filter()
+                .ids();
+        if (ids.isEmpty()) {
+            return ResponseDTO.deleteResult0Mono();
+        }
+        return ResponseDTO.deleteResultFromIntegerMono(
+                pluginManager.deletePlugins(ids, request.deleteLocalFiles()));
+    }
+
+    private PluginDTO plugin2dto(Plugin plugin) {
+        List<TurmsExtension> extensions = plugin.extensions();
+        List<ExtensionDTO> extensionDTOs = new ArrayList<>(extensions.size());
+        for (TurmsExtension extension : extensions) {
+            List<Class<? extends ExtensionPoint>> classes =
+                    pluginManager.getExtensionPoints(extension);
+            List<String> classNames = new ArrayList<>(classes.size());
+            for (Class<? extends ExtensionPoint> clazz : classes) {
+                classNames.add(clazz.getName());
+            }
+            extensionDTOs.add(new ExtensionDTO(
+                    extension.getClass()
+                            .getName(),
+                    extension.isStarted(),
+                    extension.isRunning(),
+                    classNames));
+        }
+        PluginDescriptor descriptor = plugin.descriptor();
+        return new PluginDTO(
+                descriptor.getId(),
+                descriptor.getVersion(),
+                descriptor.getProvider(),
+                descriptor.getLicense(),
+                descriptor.getDescription(),
+                extensionDTOs);
     }
 
 }

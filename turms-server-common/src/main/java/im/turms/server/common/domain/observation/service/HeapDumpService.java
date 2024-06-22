@@ -27,8 +27,7 @@ import jakarta.annotation.Nullable;
 import com.sun.management.HotSpotDiagnosticMXBean;
 import org.springframework.stereotype.Service;
 
-import im.turms.server.common.access.admin.web.HttpResponseException;
-import im.turms.server.common.access.admin.web.annotation.GetMapping;
+import im.turms.server.common.access.admin.api.HttpResponseException;
 import im.turms.server.common.access.common.ResponseStatusCode;
 import im.turms.server.common.infra.context.TurmsApplicationContext;
 import im.turms.server.common.infra.io.FileResource;
@@ -58,8 +57,7 @@ public class HeapDumpService {
         bean = ManagementFactory.getPlatformMXBean(HotSpotDiagnosticMXBean.class);
     }
 
-    @GetMapping
-    public FileResource heapDump(boolean live) {
+    public FileResource generateHeapDump(boolean live) {
         FileResource heap;
         synchronized (this) {
             if (exportingFile != null) {
@@ -68,13 +66,13 @@ public class HeapDumpService {
                         ResponseStatusCode.CLIENT_REQUESTS_TOO_FREQUENT,
                         "A heap dump file is being exported");
             }
-            heap = dumpHeap(live);
+            heap = generateHeapDump0(live);
             exportingFile = heap;
         }
         return heap;
     }
 
-    private FileResource dumpHeap(boolean live) {
+    private FileResource generateHeapDump0(boolean live) {
         Path tempFile = FileUtil.createTempFile(dir,
                 TEMP_HEAP_DUMP_FILE_ID.getAndIncrement()
                         + ".hprof")

@@ -34,6 +34,8 @@ public record ThrowableInfo(
 ) {
     public static ThrowableInfo get(Throwable throwable) {
         return switch (throwable) {
+            case IllegalArgumentException e ->
+                new ThrowableInfo(ResponseStatusCode.ILLEGAL_ARGUMENT, e.getMessage());
             case ResponseException e -> new ThrowableInfo(e.getCode(), e.getReason());
             case RpcException e -> new ThrowableInfo(e.getStatusCode(), e.getMessage());
             // We consider DuplicateKeyException as a client error here,

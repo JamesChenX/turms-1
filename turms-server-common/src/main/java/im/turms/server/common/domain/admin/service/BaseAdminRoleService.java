@@ -49,6 +49,8 @@ public abstract class BaseAdminRoleService {
             ADMIN_ROLE_ROOT_ID,
             "ROOT",
             AdminPermission.ALL,
+            null,
+            null,
             Integer.MAX_VALUE,
             DateConst.EPOCH);
 
@@ -126,14 +128,23 @@ public abstract class BaseAdminRoleService {
                 : Mono.just(role.getPermissions());
     }
 
-    public Mono<Boolean> hasPermission(@NotNull Long roleId, @NotNull AdminPermission permission) {
+    public Mono<Boolean> hasPermission(
+            @NotNull Long roleId,
+            @NotNull AdminPermission[] requiredPermissions) {
         try {
             Validator.notNull(roleId, "roleId");
-            Validator.notNull(permission, "permission");
+            Validator.notNull(requiredPermissions, "requiredPermissions");
         } catch (ResponseException e) {
             return Mono.error(e);
         }
-        return queryPermissions(roleId).map(permissions -> permissions.contains(permission))
+        return queryPermissions(roleId).map(permissions -> {
+            for (AdminPermission requiredPermission : requiredPermissions) {
+                if (!permissions.contains(requiredPermission)) {
+                    return false;
+                }
+            }
+            return true;
+        })
                 .defaultIfEmpty(false);
     }
 

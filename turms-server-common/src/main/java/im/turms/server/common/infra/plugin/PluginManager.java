@@ -52,13 +52,13 @@ import reactor.netty.http.client.HttpClient;
 import reactor.netty.resources.ConnectionProvider;
 import reactor.netty.transport.ProxyProvider;
 
-import im.turms.server.common.access.admin.web.MultipartFile;
 import im.turms.server.common.infra.cluster.node.NodeType;
 import im.turms.server.common.infra.codec.Base16Util;
 import im.turms.server.common.infra.collection.CollectionUtil;
 import im.turms.server.common.infra.context.JobShutdownOrder;
 import im.turms.server.common.infra.context.TurmsApplicationContext;
 import im.turms.server.common.infra.exception.FeatureDisabledException;
+import im.turms.server.common.infra.io.FileHolder;
 import im.turms.server.common.infra.io.FileUtil;
 import im.turms.server.common.infra.io.InputOutputException;
 import im.turms.server.common.infra.lang.ClassUtil;
@@ -360,12 +360,13 @@ public class PluginManager implements ApplicationListener<ContextRefreshedEvent>
                 .then();
     }
 
-    public void loadJavaPlugins(List<MultipartFile> files, boolean save) {
+    public List<Plugin> loadJavaPlugins(List<FileHolder> files, boolean save) {
         if (!allowSaveJavaPlugins && save) {
             throw new FeatureDisabledException(
                     "Cannot save Java plugins since it has been disabled");
         }
-        for (MultipartFile file : files) {
+        List<Plugin> plugins = new ArrayList<>(files.size());
+        for (FileHolder file : files) {
             String fileName = file.name();
             ZipFile zipFile;
             File jarFile;
@@ -426,8 +427,10 @@ public class PluginManager implements ApplicationListener<ContextRefreshedEvent>
                                 + ") because it is not a Java plugin JAR file");
             }
             Plugin plugin = JavaPluginFactory.create(descriptor, nodeType, context);
+            plugins.add(plugin);
             initAndRegisterPlugin(plugin);
         }
+        return plugins;
     }
 
     private void loadJavaPlugins(List<ZipFile> zipFiles) {
@@ -593,8 +596,17 @@ public class PluginManager implements ApplicationListener<ContextRefreshedEvent>
                 .thenReturn(plugins.size());
     }
 
+    public Mono<Integer> resumePlugins() {
+        Collection<Plugin> plugins = pluginRepository.getPlugins();
+        return resumePlugins(plugins);
+    }
+
     public Mono<Integer> resumePlugins(Set<String> ids) {
         List<Plugin> plugins = pluginRepository.getPlugins(ids);
+        return resumePlugins(plugins);
+    }
+
+    public Mono<Integer> resumePlugins(Collection<Plugin> plugins) {
         List<Mono<Void>> resumeMonos = new ArrayList<>(plugins.size());
         for (Plugin plugin : plugins) {
             resumeMonos.add(plugin.resume());
@@ -605,8 +617,17 @@ public class PluginManager implements ApplicationListener<ContextRefreshedEvent>
                 .thenReturn(plugins.size());
     }
 
+    public Mono<Integer> pausePlugins() {
+        Collection<Plugin> plugins = pluginRepository.getPlugins();
+        return pausePlugins(plugins);
+    }
+
     public Mono<Integer> pausePlugins(Set<String> ids) {
         List<Plugin> plugins = pluginRepository.getPlugins(ids);
+        return pausePlugins(plugins);
+    }
+
+    public Mono<Integer> pausePlugins(Collection<Plugin> plugins) {
         List<Mono<Void>> pauseMonos = new ArrayList<>(plugins.size());
         for (Plugin plugin : plugins) {
             pauseMonos.add(plugin.pause());
@@ -617,24 +638,35 @@ public class PluginManager implements ApplicationListener<ContextRefreshedEvent>
                 .thenReturn(plugins.size());
     }
 
-    public Mono<Void> deletePlugins(Set<String> ids, boolean deleteLocalFiles) {
+    public Mono<Integer> deletePlugins(boolean deleteLocalFiles) {
+        List<Plugin> plugins = pluginRepository.removePlugins();
+        return deletePlugins0(plugins, deleteLocalFiles);
+    }
+
+    public Mono<Integer> deletePlugins(Set<String> ids, boolean deleteLocalFiles) {
         List<Plugin> plugins = pluginRepository.removePlugins(ids);
-        return stopPlugins(plugins).then(Mono.fromRunnable(() -> {
-            if (!deleteLocalFiles) {
-                return;
-            }
-            for (Plugin plugin : plugins) {
-                try {
-                    Path path = plugin.descriptor()
-                            .getPath();
-                    if (path != null) {
-                        Files.deleteIfExists(path);
+        return deletePlugins0(plugins, deleteLocalFiles);
+    }
+
+    private Mono<Integer> deletePlugins0(List<Plugin> plugins, boolean deleteLocalFiles) {
+        Mono<Integer> stopPlugins = stopPlugins(plugins);
+        if (deleteLocalFiles) {
+            stopPlugins = stopPlugins.map(count -> {
+                for (Plugin plugin : plugins) {
+                    try {
+                        Path path = plugin.descriptor()
+                                .getPath();
+                        if (path != null) {
+                            Files.deleteIfExists(path);
+                        }
+                    } catch (Exception e) {
+                        // ignored
                     }
-                } catch (Exception e) {
-                    // ignored
                 }
-            }
-        }));
+                return count;
+            });
+        }
+        return stopPlugins;
     }
 
     public <T extends ExtensionPoint> boolean hasRunningExtensions(Class<T> extensionPointClass) {

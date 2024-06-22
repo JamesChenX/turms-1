@@ -23,22 +23,26 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.context.ApplicationContext;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import im.turms.server.common.access.admin.dto.response.DeleteResultDTO;
-import im.turms.server.common.access.admin.dto.response.HttpHandlerResult;
-import im.turms.server.common.access.admin.dto.response.PaginationDTO;
-import im.turms.server.common.access.admin.dto.response.ResponseDTO;
-import im.turms.server.common.access.admin.dto.response.UpdateResultDTO;
+import im.turms.server.common.access.admin.api.ApiConst;
+import im.turms.server.common.access.admin.api.ApiController;
+import im.turms.server.common.access.admin.api.ApiEndpoint;
+import im.turms.server.common.access.admin.api.ApiEndpointAction;
+import im.turms.server.common.access.admin.api.Request;
+import im.turms.server.common.access.admin.api.annotation.AdminApiController;
+import im.turms.server.common.access.admin.api.annotation.DeleteMapping;
+import im.turms.server.common.access.admin.api.annotation.GetMapping;
+import im.turms.server.common.access.admin.api.annotation.PutMapping;
+import im.turms.server.common.access.admin.api.annotation.QueryParam;
+import im.turms.server.common.access.admin.api.response.DeleteResultDTO;
+import im.turms.server.common.access.admin.api.response.HttpHandlerResult;
+import im.turms.server.common.access.admin.api.response.PaginationDTO;
+import im.turms.server.common.access.admin.api.response.ResponseDTO;
+import im.turms.server.common.access.admin.api.response.UpdateResultDTO;
 import im.turms.server.common.access.admin.permission.RequiredPermission;
-import im.turms.server.common.access.admin.web.annotation.DeleteMapping;
-import im.turms.server.common.access.admin.web.annotation.GetMapping;
-import im.turms.server.common.access.admin.web.annotation.PostMapping;
-import im.turms.server.common.access.admin.web.annotation.PutMapping;
-import im.turms.server.common.access.admin.web.annotation.QueryParam;
-import im.turms.server.common.access.admin.web.annotation.RequestBody;
-import im.turms.server.common.access.admin.web.annotation.RestController;
 import im.turms.server.common.domain.user.po.User;
 import im.turms.server.common.infra.property.TurmsPropertiesManager;
 import im.turms.server.common.infra.time.DateRange;
@@ -58,24 +62,24 @@ import static im.turms.server.common.access.admin.permission.AdminPermission.USE
 /**
  * @author James Chen
  */
-@RestController("users")
+@ApiController(ApiConst.RESOURCE_PATH_SERVICE_BUSINESS_USER)
 public class UserController extends BaseController {
 
     private final UserService userService;
     private final MessageService messageService;
 
     public UserController(
+            ApplicationContext context,
             TurmsPropertiesManager propertiesManager,
             UserService userService,
             MessageService messageService) {
-        super(propertiesManager);
+        super(context, propertiesManager);
         this.userService = userService;
         this.messageService = messageService;
     }
 
-    @PostMapping
-    @RequiredPermission(USER_CREATE)
-    public Mono<HttpHandlerResult<ResponseDTO<User>>> addUser(@RequestBody AddUserDTO addUserDTO) {
+    @ApiEndpoint(action = ApiEndpointAction.CREATE, requiredPermissions = USER_CREATE)
+    public Mono<ResponseDTO<User>> addUser(@Request AddUserDTO addUserDTO) {
         Mono<User> addUser = userService.addUser(addUserDTO.id(),
                 addUserDTO.password(),
                 addUserDTO.name(),
@@ -88,9 +92,8 @@ public class UserController extends BaseController {
         return HttpHandlerResult.okIfTruthy(addUser);
     }
 
-    @GetMapping
-    @RequiredPermission(USER_QUERY)
-    public Mono<HttpHandlerResult<ResponseDTO<Collection<User>>>> queryUsers(
+    @ApiEndpoint(action = ApiEndpointAction.QUERY, requiredPermissions = USER_QUERY)
+    public Mono<ResponseDTO<Collection<User>>> queryUsers(
             @QueryParam(required = false) Set<Long> ids,
             @QueryParam(required = false) Date registrationDateStart,
             @QueryParam(required = false) Date registrationDateEnd,
@@ -98,7 +101,7 @@ public class UserController extends BaseController {
             @QueryParam(required = false) Date deletionDateEnd,
             @QueryParam(required = false) Boolean isActive,
             @QueryParam(required = false) Integer size) {
-        size = getPageSize(size);
+        size = getLimit(size);
         Flux<User> usersFlux = userService.queryUsers(ids,
                 DateRange.of(registrationDateStart, registrationDateEnd),
                 DateRange.of(deletionDateStart, deletionDateEnd),
@@ -109,35 +112,37 @@ public class UserController extends BaseController {
         return HttpHandlerResult.okIfTruthy(usersFlux);
     }
 
-    @GetMapping("page")
-    @RequiredPermission(USER_QUERY)
-    public Mono<HttpHandlerResult<ResponseDTO<PaginationDTO<User>>>> queryUsers(
-            @QueryParam(required = false) Set<Long> ids,
-            @QueryParam(required = false) Date registrationDateStart,
-            @QueryParam(required = false) Date registrationDateEnd,
-            @QueryParam(required = false) Date deletionDateStart,
-            @QueryParam(required = false) Date deletionDateEnd,
-            @QueryParam(required = false) Boolean isActive,
-            int page,
-            @QueryParam(required = false) Integer size) {
-        size = getPageSize(size);
-        Mono<Long> count = userService.countUsers(ids,
-                DateRange.of(registrationDateStart, registrationDateEnd),
-                DateRange.of(deletionDateStart, deletionDateEnd),
-                isActive);
-        Flux<User> usersFlux = userService.queryUsers(ids,
-                DateRange.of(registrationDateStart, registrationDateEnd),
-                DateRange.of(deletionDateStart, deletionDateEnd),
-                isActive,
-                page,
-                size,
-                true);
-        return HttpHandlerResult.page(count, usersFlux);
-    }
+//    @GetMapping("page")
+//    @RequiredPermission(USER_QUERY)
+//    public Mono<HttpHandlerResult<ResponseDTO<PaginationDTO<User>>>> queryUsers(
+//            @QueryParam(required = false) Set<Long> ids,
+//            @QueryParam(required = false) Date registrationDateStart,
+//            @QueryParam(required = false) Date registrationDateEnd,
+//            @QueryParam(required = false) Date deletionDateStart,
+//            @QueryParam(required = false) Date deletionDateEnd,
+//            @QueryParam(required = false) Boolean isActive,
+//            int page,
+//            @QueryParam(required = false) Integer size) {
+//        size = getLimit(size);
+//        Mono<Long> count = userService.countUsers(ids,
+//                DateRange.of(registrationDateStart, registrationDateEnd),
+//                DateRange.of(deletionDateStart, deletionDateEnd),
+//                isActive);
+//        Flux<User> usersFlux = userService.queryUsers(ids,
+//                DateRange.of(registrationDateStart, registrationDateEnd),
+//                DateRange.of(deletionDateStart, deletionDateEnd),
+//                isActive,
+//                page,
+//                size,
+//                true);
+//        return HttpHandlerResult.page(count, usersFlux);
+//    }
 
-    @GetMapping("count")
-    @RequiredPermission(USER_QUERY)
-    public Mono<HttpHandlerResult<ResponseDTO<UserStatisticsDTO>>> countUsers(
+    @ApiEndpoint(
+            value = "statistic",
+            action = ApiEndpointAction.QUERY,
+            requiredPermissions = USER_QUERY)
+    public Mono<ResponseDTO<UserStatisticsDTO>> countUsers(
             @QueryParam(required = false) Date registeredStartDate,
             @QueryParam(required = false) Date registeredEndDate,
             @QueryParam(required = false) Date deletedStartDate,
@@ -194,11 +199,10 @@ public class UserController extends BaseController {
                 .then(Mono.fromCallable(builder::build)));
     }
 
-    @PutMapping
-    @RequiredPermission(USER_UPDATE)
-    public Mono<HttpHandlerResult<ResponseDTO<UpdateResultDTO>>> updateUser(
+    @ApiEndpoint(action = ApiEndpointAction.UPDATE, requiredPermissions = USER_UPDATE)
+    public Mono<ResponseDTO<UpdateResultDTO>> updateUser(
             Set<Long> ids,
-            @RequestBody UpdateUserDTO updateUserDTO) {
+            @Request UpdateUserDTO updateUserDTO) {
         Mono<UpdateResultDTO> updateMono = userService
                 .updateUsers(ids,
                         updateUserDTO.password(),
@@ -209,17 +213,16 @@ public class UserController extends BaseController {
                         updateUserDTO.permissionGroupId(),
                         updateUserDTO.registrationDate(),
                         updateUserDTO.isActive())
-                .map(UpdateResultDTO::get);
+                .map(UpdateResultDTO::from);
         return HttpHandlerResult.okIfTruthy(updateMono);
     }
 
-    @DeleteMapping
-    @RequiredPermission(USER_DELETE)
-    public Mono<HttpHandlerResult<ResponseDTO<DeleteResultDTO>>> deleteUsers(
+    @ApiEndpoint(action = ApiEndpointAction.DELETE, requiredPermissions = USER_DELETE)
+    public Mono<ResponseDTO<DeleteResultDTO>> deleteUsers(
             Set<Long> ids,
             @QueryParam(required = false) Boolean deleteLogically) {
         Mono<DeleteResultDTO> deleteMono = userService.deleteUsers(ids, deleteLogically)
-                .map(DeleteResultDTO::get);
+                .map(DeleteResultDTO::from);
         return HttpHandlerResult.okIfTruthy(deleteMono);
     }
 

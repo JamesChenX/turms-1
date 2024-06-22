@@ -114,6 +114,11 @@ public class SharedConfigService implements ClusterService {
                 .thenReturn(record);
     }
 
+    public <T> Mono<List<T>> insertAllOfSameType(List<T> records) {
+        return mongoClient.insertAllOfSameType(records)
+                .thenReturn(records);
+    }
+
     public <T> Mono<T> insertOrGet(T record) {
         return mongoClient.insert(record)
                 .thenReturn(record)

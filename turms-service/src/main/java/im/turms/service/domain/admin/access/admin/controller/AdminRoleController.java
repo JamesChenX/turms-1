@@ -17,122 +17,143 @@
 
 package im.turms.service.domain.admin.access.admin.controller;
 
-import java.util.Collection;
-import java.util.Set;
+import java.util.LinkedHashSet;
+import java.util.List;
+import jakarta.annotation.Nullable;
 
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
+import org.springframework.context.ApplicationContext;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import im.turms.server.common.access.admin.dto.response.DeleteResultDTO;
-import im.turms.server.common.access.admin.dto.response.HttpHandlerResult;
-import im.turms.server.common.access.admin.dto.response.PaginationDTO;
-import im.turms.server.common.access.admin.dto.response.ResponseDTO;
-import im.turms.server.common.access.admin.dto.response.UpdateResultDTO;
+import im.turms.server.common.access.admin.api.ApiConst;
+import im.turms.server.common.access.admin.api.ApiController;
+import im.turms.server.common.access.admin.api.ApiEndpoint;
+import im.turms.server.common.access.admin.api.ApiEndpointAction;
+import im.turms.server.common.access.admin.api.RequestContext;
+import im.turms.server.common.access.admin.api.response.DeleteResultDTO;
+import im.turms.server.common.access.admin.api.response.HttpHandlerResult;
+import im.turms.server.common.access.admin.api.response.ResponseDTO;
+import im.turms.server.common.access.admin.api.response.UpdateResultDTO;
 import im.turms.server.common.access.admin.permission.AdminPermission;
-import im.turms.server.common.access.admin.permission.RequiredPermission;
-import im.turms.server.common.access.admin.web.RequestContext;
-import im.turms.server.common.access.admin.web.annotation.DeleteMapping;
-import im.turms.server.common.access.admin.web.annotation.GetMapping;
-import im.turms.server.common.access.admin.web.annotation.PostMapping;
-import im.turms.server.common.access.admin.web.annotation.PutMapping;
-import im.turms.server.common.access.admin.web.annotation.QueryParam;
-import im.turms.server.common.access.admin.web.annotation.RequestBody;
-import im.turms.server.common.access.admin.web.annotation.RestController;
 import im.turms.server.common.domain.admin.po.AdminRole;
 import im.turms.server.common.infra.property.TurmsPropertiesManager;
-import im.turms.service.domain.admin.access.admin.dto.request.AddAdminRoleDTO;
-import im.turms.service.domain.admin.access.admin.dto.request.UpdateAdminRoleDTO;
+import im.turms.service.domain.admin.access.admin.dto.request.CreateAdminRolesRequestDTO;
+import im.turms.service.domain.admin.access.admin.dto.request.DeleteAdminRolesRequestDTO;
+import im.turms.service.domain.admin.access.admin.dto.request.QueryAdminRolesRequestDTO;
+import im.turms.service.domain.admin.access.admin.dto.request.UpdateAdminRolesRequestDTO;
+import im.turms.service.domain.admin.access.admin.dto.response.CreateAdminRolesResponseDTO;
+import im.turms.service.domain.admin.access.admin.dto.response.QueryAdminRolesResponseDTO;
 import im.turms.service.domain.admin.service.AdminRoleService;
 import im.turms.service.domain.common.access.admin.controller.BaseController;
 
 /**
  * @author James Chen
  */
-@RestController("admins/roles")
+@ApiController(ApiConst.RESOURCE_PATH_COMMON_ADMIN_ROLE)
 public class AdminRoleController extends BaseController {
 
     private final AdminRoleService adminRoleService;
 
     public AdminRoleController(
+            ApplicationContext context,
             TurmsPropertiesManager propertiesManager,
             AdminRoleService adminRoleService) {
-        super(propertiesManager);
+        super(context, propertiesManager);
         this.adminRoleService = adminRoleService;
     }
 
-    @PostMapping
-    @RequiredPermission(AdminPermission.ADMIN_ROLE_CREATE)
-    public Mono<HttpHandlerResult<ResponseDTO<AdminRole>>> addAdminRole(
+    @ApiEndpoint(
+            action = ApiEndpointAction.CREATE,
+            requiredPermissions = AdminPermission.ADMIN_ROLE_CREATE)
+    public Mono<ResponseDTO<CreateAdminRolesResponseDTO>> createAdminRoles(
             RequestContext requestContext,
-            @RequestBody AddAdminRoleDTO addAdminRoleDTO) {
-        Mono<AdminRole> adminRoleMono =
-                adminRoleService.authAndAddAdminRole(requestContext.getAccount(),
-                        addAdminRoleDTO.id(),
-                        addAdminRoleDTO.name(),
-                        addAdminRoleDTO.permissions() == null
-                                ? null
-                                : AdminPermission.matchPermissions(addAdminRoleDTO.permissions()),
-                        addAdminRoleDTO.rank());
-        return HttpHandlerResult.okIfTruthy(adminRoleMono);
+            CreateAdminRolesRequestDTO request) {
+        Mono<List<AdminRole>> adminRolesMono = adminRoleService
+                .authAndCreateAdminRoles(requestContext.getAdminUserAccount(), request.records());
+        return ResponseDTO.of(adminRolesMono.map(CreateAdminRolesResponseDTO::from));
     }
 
-    @GetMapping
-    @RequiredPermission(AdminPermission.ADMIN_ROLE_QUERY)
-    public Mono<HttpHandlerResult<ResponseDTO<Collection<AdminRole>>>> queryAdminRoles(
-            @QueryParam(required = false) Set<Long> ids,
-            @QueryParam(required = false) Set<String> names,
-            @QueryParam(required = false) Set<AdminPermission> includedPermissions,
-            @QueryParam(required = false) Set<Integer> ranks,
-            @QueryParam(required = false) Integer size) {
-        size = getPageSize(size);
-        Flux<AdminRole> adminRolesFlux =
-                adminRoleService.queryAdminRoles(ids, names, includedPermissions, ranks, 0, size);
-        return HttpHandlerResult.okIfTruthy(adminRolesFlux);
-    }
-
-    @GetMapping("page")
-    @RequiredPermission(AdminPermission.ADMIN_ROLE_QUERY)
-    public Mono<HttpHandlerResult<ResponseDTO<PaginationDTO<AdminRole>>>> queryAdminRoles(
-            @QueryParam(required = false) Set<Long> ids,
-            @QueryParam(required = false) Set<String> names,
-            @QueryParam(required = false) Set<AdminPermission> includedPermissions,
-            @QueryParam(required = false) Set<Integer> ranks,
-            int page,
-            @QueryParam(required = false) Integer size) {
-        size = getPageSize(size);
+    @ApiEndpoint(
+            action = ApiEndpointAction.QUERY,
+            requiredPermissions = AdminPermission.ADMIN_ROLE_QUERY)
+    public Mono<ResponseDTO<QueryAdminRolesResponseDTO>> queryAdminRoles(
+            @Nullable QueryAdminRolesRequestDTO request) {
+        if (request == null) {
+            // TODO: use aggregation.
+            Mono<Long> count = adminRoleService.countAdminRoles(null, null, null, null);
+            Flux<AdminRole> adminRoleFlux =
+                    adminRoleService.queryAdminRoles(null, null, null, null, null, getLimit());
+            return ResponseDTO.of(QueryAdminRolesResponseDTO.from(count, adminRoleFlux));
+        } else if (!request.hasFilter()) {
+            Mono<Long> count = adminRoleService.countAdminRoles(null, null, null, null);
+            Flux<AdminRole> adminRoleFlux = adminRoleService.queryAdminRoles(null,
+                    null,
+                    null,
+                    null,
+                    request.skip(),
+                    getLimit(request.limit()));
+            return ResponseDTO.of(QueryAdminRolesResponseDTO.from(count, adminRoleFlux));
+        }
+        QueryAdminRolesRequestDTO.FilterDTO filter = request.filter();
+        LinkedHashSet<Long> ids = filter.ids();
+        LinkedHashSet<String> names = filter.names();
+        LinkedHashSet<AdminPermission> includedPermissions = filter.includedPermissions();
+        LinkedHashSet<Integer> ranks = filter.ranks();
         Mono<Long> count = adminRoleService.countAdminRoles(ids, names, includedPermissions, ranks);
-        Flux<AdminRole> adminRolesFlux = adminRoleService
-                .queryAdminRoles(ids, names, includedPermissions, ranks, page, size);
-        return HttpHandlerResult.page(count, adminRolesFlux);
+        Flux<AdminRole> adminRoleFlux = adminRoleService.queryAdminRoles(ids,
+                names,
+                includedPermissions,
+                ranks,
+                request.skip(),
+                getLimit(request.limit()));
+        return ResponseDTO.of(QueryAdminRolesResponseDTO.from(count, adminRoleFlux));
     }
 
-    @PutMapping
-    @RequiredPermission(AdminPermission.ADMIN_ROLE_UPDATE)
-    public Mono<HttpHandlerResult<ResponseDTO<UpdateResultDTO>>> updateAdminRole(
+    @ApiEndpoint(
+            action = ApiEndpointAction.UPDATE,
+            requiredPermissions = AdminPermission.ADMIN_ROLE_UPDATE)
+    public Mono<ResponseDTO<UpdateResultDTO>> updateAdminRole(
             RequestContext requestContext,
-            Set<Long> ids,
-            @RequestBody UpdateAdminRoleDTO updateAdminRoleDTO) {
-        Mono<UpdateResult> updateMono = adminRoleService.authAndUpdateAdminRole(
-                requestContext.getAccount(),
-                ids,
-                updateAdminRoleDTO.name(),
-                updateAdminRoleDTO.permissions() == null
-                        ? null
-                        : AdminPermission.matchPermissions(updateAdminRoleDTO.permissions()),
-                updateAdminRoleDTO.rank());
+            UpdateAdminRolesRequestDTO request) {
+        UpdateAdminRolesRequestDTO.FilterDTO filter = request.filter();
+        Mono<UpdateResult> updateMono =
+                adminRoleService.authAndUpdateAdminRoles(requestContext.getAdminUserAccount(),
+                        request.hasFilter()
+                                ? request.filter()
+                                        .ids()
+                                : null,
+                        request.name(),
+                        request.permissions() == null
+                                ? null
+                                : AdminPermission.matchPermissions(request.permissions()),
+                        request.rank());
         return HttpHandlerResult.updateResult(updateMono);
     }
 
-    @DeleteMapping
-    @RequiredPermission(AdminPermission.ADMIN_ROLE_DELETE)
-    public Mono<HttpHandlerResult<ResponseDTO<DeleteResultDTO>>> deleteAdminRoles(
+    @ApiEndpoint(
+            action = ApiEndpointAction.DELETE,
+            requiredPermissions = AdminPermission.ADMIN_ROLE_DELETE)
+    public Mono<ResponseDTO<DeleteResultDTO>> deleteAdminRoles(
             RequestContext requestContext,
-            Set<Long> ids) {
-        Mono<DeleteResult> deleteMono =
-                adminRoleService.authAndDeleteAdminRoles(requestContext.getAccount(), ids);
-        return HttpHandlerResult.deleteResult(deleteMono);
+            DeleteAdminRolesRequestDTO request) {
+        Mono<DeleteResult> deleteMono;
+        if (request.hasFilter()) {
+            LinkedHashSet<Long> ids = request.filter()
+                    .ids();
+            if (ids == null) {
+                deleteMono = adminRoleService
+                        .authAndDeleteAdminRoles(requestContext.getAdminUserAccount(), null);
+            } else {
+                deleteMono = adminRoleService
+                        .authAndDeleteAdminRoles(requestContext.getAdminUserAccount(), ids);
+            }
+        } else {
+            deleteMono = adminRoleService
+                    .authAndDeleteAdminRoles(requestContext.getAdminUserAccount(), null);
+        }
+        return ResponseDTO.deleteResult(deleteMono);
     }
 
 }

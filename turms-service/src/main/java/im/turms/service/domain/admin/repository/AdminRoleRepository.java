@@ -17,6 +17,7 @@
 
 package im.turms.service.domain.admin.repository;
 
+import java.util.Collection;
 import java.util.Set;
 import jakarta.annotation.Nullable;
 
@@ -86,15 +87,16 @@ public class AdminRoleRepository extends BaseRepository<AdminRole, Long> {
             @Nullable Set<String> names,
             @Nullable Set<AdminPermission> includedPermissions,
             @Nullable Set<Integer> ranks,
-            @Nullable Integer page,
-            @Nullable Integer size) {
+            @Nullable Integer skip,
+            @Nullable Integer limit) {
         Filter filter = Filter.newBuilder(4)
                 .inIfNotNull(DomainFieldName.ID, roleIds)
                 .inIfNotNull(AdminRole.Fields.NAME, names)
                 .inIfNotNullForEnumStrings(AdminRole.Fields.PERMISSIONS, includedPermissions)
                 .inIfNotNull(AdminRole.Fields.RANK, ranks);
         QueryOptions options = QueryOptions.newBuilder(2)
-                .paginateIfNotNull(page, size);
+                .skipIfNotNull(skip)
+                .limitIfNotNull(limit);
         return mongoClient.findMany(entityClass, filter, options);
     }
 
@@ -103,6 +105,15 @@ public class AdminRoleRepository extends BaseRepository<AdminRole, Long> {
                 .eq(DomainFieldName.ID, roleId);
         QueryOptions options = QueryOptions.newBuilder(1)
                 .include(AdminRole.Fields.RANK);
+        return mongoClient.findOne(entityClass, filter, options)
+                .map(AdminRole::getRank);
+    }
+
+    public Mono<Integer> findHighestRank(Collection<Long> roleIds) {
+        Filter filter = Filter.newBuilder(1)
+                .in(DomainFieldName.ID, roleIds);
+        QueryOptions options = QueryOptions.newBuilder(1)
+                .sort(false, AdminRole.Fields.RANK);
         return mongoClient.findOne(entityClass, filter, options)
                 .map(AdminRole::getRank);
     }

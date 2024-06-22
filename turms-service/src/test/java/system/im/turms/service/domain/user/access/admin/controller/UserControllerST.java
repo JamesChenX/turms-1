@@ -22,7 +22,7 @@ import java.util.Collection;
 import helper.SpringAwareIntegrationTest;
 import org.junit.jupiter.api.Test;
 
-import im.turms.server.common.access.admin.dto.response.ResponseDTO;
+import im.turms.server.common.access.admin.api.response.ResponseDTO;
 import im.turms.server.common.domain.user.po.User;
 
 import static org.assertj.core.api.Assertions.assertThat;

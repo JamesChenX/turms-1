@@ -21,9 +21,11 @@ import java.nio.charset.StandardCharsets;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufs;
+import io.netty.buffer.EmptyByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.buffer.RefCntCorrectorByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.buffer.UnpooledByteBufAllocator;
 
 import im.turms.server.common.infra.lang.NumberFormatter;
 import im.turms.server.common.infra.lang.StringUtil;
@@ -32,6 +34,9 @@ import im.turms.server.common.infra.lang.StringUtil;
  * @author James Chen
  */
 public final class ByteBufUtil {
+
+    public static final EmptyByteBuf EMPTY_BUFFER =
+            new EmptyByteBuf(UnpooledByteBufAllocator.DEFAULT);
 
     private static final int BYTE_CACHE_SIZE = Byte.MAX_VALUE + 1;
     private static final int INTEGER_CACHE_SIZE = Byte.MAX_VALUE + 1;

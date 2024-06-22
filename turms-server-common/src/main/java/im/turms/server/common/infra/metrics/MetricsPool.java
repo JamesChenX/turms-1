@@ -21,11 +21,12 @@ import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableSet;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import jakarta.annotation.Nullable;
 
@@ -36,7 +37,6 @@ import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import org.eclipse.collections.impl.factory.Sets;
 
-import im.turms.server.common.infra.collection.CollectionUtil;
 import im.turms.server.common.infra.lang.AsciiCode;
 import im.turms.server.common.infra.lang.Pair;
 import im.turms.server.common.infra.lang.StringUtil;
@@ -57,24 +57,21 @@ public class MetricsPool {
         this.registry = registry;
     }
 
-    public Set<String> collectNames() {
-        return collectNames(registry);
+    public NavigableSet<String> collectSortedNames() {
+        return collectSortedNames(registry);
     }
 
     public Collection<Meter> findAllMeters() {
         return getIdToMeterMap().values();
     }
 
-    public List<Meter> findFirstMatchingMeters(String name, List<String> tags) {
+    public List<Meter> findFirstMatchingMeters(String name, Collection<String> tags) {
         return findFirstMatchingMeters(registry, name, parseTags(tags));
     }
 
     public Map<String, Double> getMeasurements(Meter meter) {
         Iterable<Measurement> measures = meter.measure();
-        Map<String, Double> measurements =
-                measures instanceof Collection<Measurement> measurementCollection
-                        ? CollectionUtil.newMapWithExpectedSize(measurementCollection.size())
-                        : new HashMap<>(8);
+        Map<String, Double> measurements = new TreeMap<>();
         for (Measurement measurement : measures) {
             String tag = measurement.getStatistic()
                     .getTagValueRepresentation();
@@ -84,7 +81,7 @@ public class MetricsPool {
     }
 
     public Map<String, Set<String>> getAvailableTags(Collection<Meter> meters) {
-        Map<String, Set<String>> availableTags = new HashMap<>();
+        Map<String, Set<String>> availableTags = new TreeMap<>();
         for (Meter meter : meters) {
             for (Tag tag : meter.getId()
                     .getTagsAsIterable()) {
@@ -100,11 +97,11 @@ public class MetricsPool {
      * Internal Implementations
      */
 
-    private Set<String> collectNames(MeterRegistry registry) {
-        Set<String> names = new TreeSet<>();
+    private TreeSet<String> collectSortedNames(MeterRegistry registry) {
+        TreeSet<String> names = new TreeSet<>();
         if (registry instanceof CompositeMeterRegistry compositeMeterRegistry) {
             for (MeterRegistry meterRegistry : compositeMeterRegistry.getRegistries()) {
-                names.addAll(collectNames(meterRegistry));
+                names.addAll(collectSortedNames(meterRegistry));
             }
         } else {
             Map<Meter.Id, Meter> idToMeter = getIdToMeterMap();
@@ -124,7 +121,7 @@ public class MetricsPool {
         }
     }
 
-    private List<Tag> parseTags(List<String> tags) {
+    private List<Tag> parseTags(Collection<String> tags) {
         if (tags == null) {
             return Collections.emptyList();
         }

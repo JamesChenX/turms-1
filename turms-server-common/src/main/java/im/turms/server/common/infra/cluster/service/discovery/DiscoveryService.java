@@ -36,11 +36,11 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import jakarta.annotation.Nullable;
-import jakarta.validation.constraints.NotNull;
 
 import com.mongodb.client.model.changestream.FullDocument;
 import com.mongodb.client.model.changestream.UpdateDescription;
 import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.UpdateResult;
 import lombok.Getter;
 import org.bson.BsonValue;
 import reactor.core.publisher.Flux;
@@ -48,6 +48,7 @@ import reactor.core.publisher.Mono;
 
 import im.turms.server.common.access.common.ResponseStatusCode;
 import im.turms.server.common.infra.address.BaseServiceAddressManager;
+import im.turms.server.common.infra.cluster.node.NodeRole;
 import im.turms.server.common.infra.cluster.node.NodeType;
 import im.turms.server.common.infra.cluster.node.NodeVersion;
 import im.turms.server.common.infra.cluster.service.ClusterService;
@@ -62,7 +63,7 @@ import im.turms.server.common.infra.cluster.service.rpc.RpcService;
 import im.turms.server.common.infra.collection.CollectionUtil;
 import im.turms.server.common.infra.collection.CollectorUtil;
 import im.turms.server.common.infra.exception.ResponseException;
-import im.turms.server.common.infra.exception.ResponseExceptionPublisherPool;
+import im.turms.server.common.infra.exception.WriteRecordsException;
 import im.turms.server.common.infra.lang.MathUtil;
 import im.turms.server.common.infra.lang.StringUtil;
 import im.turms.server.common.infra.logging.core.logger.Logger;
@@ -73,6 +74,7 @@ import im.turms.server.common.infra.thread.NamedThreadFactory;
 import im.turms.server.common.infra.thread.ThreadNameConst;
 import im.turms.server.common.infra.time.DurationConst;
 import im.turms.server.common.storage.mongo.operation.option.Filter;
+import im.turms.server.common.storage.mongo.operation.option.QueryOptions;
 import im.turms.server.common.storage.mongo.operation.option.Update;
 
 /**
@@ -709,28 +711,57 @@ public class DiscoveryService implements ClusterService {
     // Registration
 
     public Mono<Void> registerMember(Member member) {
+        try {
+            validateNewMember(member);
+        } catch (Exception e) {
+            return Mono.error(e);
+        }
+        return sharedConfigService.insert(member)
+                .then();
+    }
+
+    public Mono<Void> registerMembers(List<Member> members) {
+        int count = members.size();
+        for (int i = 0; i < count; i++) {
+            Member member = members.get(i);
+            try {
+                validateNewMember(member);
+            } catch (Exception e) {
+                return Mono.error(new WriteRecordsException(i, e));
+            }
+        }
+        return sharedConfigService.insertAllOfSameType(members)
+                .then();
+    }
+
+    private void validateNewMember(Member member) {
+        NodeType nodeType = member.getNodeType();
+        if (nodeType != NodeType.SERVICE && member.isLeaderEligible()) {
+            throw new IllegalArgumentException(
+                    "Only "
+                            + NodeType.SERVICE.getDisplayName()
+                            + " servers can be the leader");
+        }
         boolean noClusterId = member.getClusterId() == null;
         boolean noNodeId = member.getNodeId() == null;
         if (noClusterId) {
             if (noNodeId) {
-                return Mono.error(new IllegalArgumentException(
+                throw new IllegalArgumentException(
                         "Failed to register the member ("
                                 + member
-                                + ") because both the cluster ID and the node ID are missing"));
+                                + ") because both the cluster ID and the node ID are missing");
             } else {
-                return Mono.error(new IllegalArgumentException(
+                throw new IllegalArgumentException(
                         "Failed to register the member ("
                                 + member
-                                + ") because the cluster ID is missing"));
+                                + ") because the cluster ID is missing");
             }
         } else if (noNodeId) {
-            return Mono.error(new IllegalArgumentException(
+            throw new IllegalArgumentException(
                     "Failed to register the member ("
                             + member
-                            + ") because the node ID is missing"));
+                            + ") because the node ID is missing");
         }
-        return sharedConfigService.insert(member)
-                .then();
     }
 
     public Mono<Long> unregisterMembers(Set<String> nodeIds) {
@@ -741,21 +772,58 @@ public class DiscoveryService implements ClusterService {
                 .map(DeleteResult::getDeletedCount);
     }
 
-    public Mono<Void> updateMemberInfo(
-            @NotNull String id,
+    public Mono<Long> unregisterMembers() {
+        Member localMember = getLocalMember();
+        Filter filter = Filter.newBuilder(1)
+                .eq(Member.ID_CLUSTER_ID, localMember.getClusterId());
+        return sharedConfigService.remove(Member.class, filter)
+                .map(DeleteResult::getDeletedCount);
+    }
+
+    public Mono<Long> updateMembersInfo(
+            @Nullable Collection<String> ids,
             @Nullable String zone,
             @Nullable String name,
             @Nullable Boolean isSeed,
             @Nullable Boolean isLeaderEligible,
             @Nullable Boolean isActive,
             @Nullable Integer priority) {
-        Member member = allKnownMembers.get(id);
-        if (member == null) {
-            return ResponseExceptionPublisherPool.noContent();
+        boolean setIsLeaderEligibleTrue = Boolean.TRUE.equals(isLeaderEligible);
+        Collection<String> nodeIds;
+        if (ids == null) {
+            nodeIds = allKnownMembers.keySet();
+        } else if (ids.isEmpty()) {
+            return Mono.empty();
+        } else {
+            if (setIsLeaderEligibleTrue) {
+                int i = 0;
+                for (String id : ids) {
+                    Member member = allKnownMembers.get(id);
+                    if (member == null || !isQualifiedToBeLeader(member)) {
+                        return Mono.error(new WriteRecordsException(
+                                i,
+                                ResponseException.get(ResponseStatusCode.ILLEGAL_ARGUMENT,
+                                        "The member ("
+                                                + id
+                                                + ") is not eligible to be the leader")));
+                    }
+                    i++;
+                }
+            }
+            nodeIds = ids;
         }
-        Filter filter = Filter.newBuilder(2)
-                .eq(Member.ID_CLUSTER_ID, getLocalMember().getClusterId())
-                .eq(Member.ID_NODE_ID, id);
+        Filter filter;
+        if (setIsLeaderEligibleTrue) {
+            filter = Filter.newBuilder(4)
+                    .eq(Member.ID_CLUSTER_ID, getLocalMember().getClusterId())
+                    .in(Member.ID_NODE_ID, nodeIds)
+                    .eq(Member.Fields.nodeType, NodeType.SERVICE)
+                    .eq(Member.STATUS_IS_ACTIVE, true);
+        } else {
+            filter = Filter.newBuilder(2)
+                    .eq(Member.ID_CLUSTER_ID, getLocalMember().getClusterId())
+                    .in(Member.ID_NODE_ID, nodeIds);
+        }
         Update update = Update.newBuilder(6)
                 .setIfNotNull(Member.Fields.zone, zone)
                 .setIfNotNull(Member.Fields.name, name)
@@ -763,9 +831,10 @@ public class DiscoveryService implements ClusterService {
                 .setIfNotNull(Member.Fields.isLeaderEligible, isLeaderEligible)
                 .setIfNotNull(Member.STATUS_IS_ACTIVE, isActive)
                 .setIfNotNull(Member.Fields.priority, priority);
-        // Note that we just need to update the member info in the config server
-        // and the listener to the change stream will do remaining jobs.
-        return sharedConfigService.upsert(filter, update, member);
+        // Note that we just need to update the member info in the config server,
+        // and the listener to the change stream will do the remaining jobs.
+        return sharedConfigService.updateMany(Member.class, filter, update)
+                .map(UpdateResult::getModifiedCount);
     }
 
     // Event
@@ -876,4 +945,37 @@ public class DiscoveryService implements ClusterService {
                 .getNodeId());
     }
 
+    public Mono<List<Member>> findMembers(
+            @Nullable Collection<String> ids,
+            @Nullable NodeRole role,
+            @Nullable Integer skip,
+            @Nullable Integer limit) {
+        if (ids != null && ids.isEmpty()) {
+            return PublisherPool.emptyList();
+        }
+        if (role == NodeRole.LEADER) {
+            if ((skip != null && skip > 0) || (limit != null && limit > 0)) {
+                return PublisherPool.emptyList();
+            }
+            return sharedConfigService.findOne(Leader.class,
+                    Filter.newBuilder(1)
+                            .eq(Leader.Fields.clusterId, getLocalMember().getClusterId()))
+                    .flatMap(l -> sharedConfigService.findOne(Member.class,
+                            Filter.newBuilder(2)
+                                    .eq(Member.ID_CLUSTER_ID, l.getClusterId())
+                                    .eq(Member.ID_NODE_ID, l.getNodeId()))
+                            .map(Collections::singletonList))
+                    .switchIfEmpty(PublisherPool.emptyList());
+        } else {
+            QueryOptions queryOptions = QueryOptions.newBuilder()
+                    .skipIfNotNull(skip)
+                    .limitIfNotNull(limit);
+            if (role == NodeRole.FOLLOWER) {
+
+            }
+        }
+        Filter filter = Filter.newBuilder(4)
+                .inIfNotNull(Member.ID_NODE_ID, ids);
+        return sharedConfigService.find(Member.class, filter, queryOptions);
+    }
 }

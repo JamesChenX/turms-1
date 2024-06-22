@@ -20,7 +20,6 @@ package im.turms.plugin.antispam;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,7 +27,6 @@ import jakarta.annotation.Nullable;
 
 import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.Message;
-import lombok.Getter;
 import reactor.core.publisher.Mono;
 
 import im.turms.plugin.antispam.controller.ContentModerationController;
@@ -44,12 +42,12 @@ import im.turms.plugin.antispam.property.TextType;
 import im.turms.plugin.antispam.property.UnwantedWordHandleStrategy;
 import im.turms.server.common.access.client.dto.request.TurmsRequest;
 import im.turms.server.common.access.common.ResponseStatusCode;
+import im.turms.server.common.infra.collection.FastEnumMap;
 import im.turms.server.common.infra.exception.ResponseException;
 import im.turms.server.common.infra.lang.Pair;
 import im.turms.server.common.infra.plugin.ExtensionPointMethod;
 import im.turms.server.common.infra.plugin.TurmsExtension;
 import im.turms.server.common.infra.test.VisibleForTesting;
-import im.turms.server.common.infra.validation.Validator;
 import im.turms.service.access.servicerequest.dto.ClientRequest;
 import im.turms.service.infra.plugin.extension.ClientRequestTransformer;
 
@@ -102,7 +100,7 @@ public class AntiSpamHandler extends TurmsExtension implements ClientRequestTran
                     buildTrie(properties.getDictParsing(), textPreprocessor));
             textTypeToProperties = createTextTypeToPropertiesMap(properties.getTextTypes(),
                     properties.getSilentIllegalTextTypes());
-            registerController(new ContentModerationController(this));
+            registerController(new ContentModerationController(getContext(), this));
         }
         return Mono.empty();
     }
@@ -110,15 +108,15 @@ public class AntiSpamHandler extends TurmsExtension implements ClientRequestTran
     private Map<TurmsRequest.KindCase, TextTypeProperties> createTextTypeToPropertiesMap(
             Set<TextType> textTypes,
             Set<TextType> silentIllegalTextTypes) {
-        Map<TurmsRequest.KindCase, TextTypeProperties> map =
-                new IdentityHashMap<>(textTypes.size());
+        Map<TurmsRequest.KindCase, TextTypeProperties> textTypeToProperties =
+                new FastEnumMap<>(TurmsRequest.KindCase.class);
         for (TextType textType : textTypes) {
-            TextTypeProperties properties = map.get(textType.getType());
+            TextTypeProperties properties = textTypeToProperties.get(textType.getType());
             boolean rejectSilently = silentIllegalTextTypes.contains(textType);
             List<RequestField> fields;
             if (properties == null) {
                 fields = new ArrayList<>(4);
-                map.put(textType.getType(),
+                textTypeToProperties.put(textType.getType(),
                         new TextTypeProperties(textType.getRequestFieldDescriptor(), fields));
             } else {
                 fields = properties.fields;
@@ -128,7 +126,7 @@ public class AntiSpamHandler extends TurmsExtension implements ClientRequestTran
                     textType.getSubfieldDescriptor(),
                     rejectSilently));
         }
-        return map;
+        return textTypeToProperties;
     }
 
     public void updateTrie(String binFilePath) {
@@ -249,6 +247,7 @@ public class AntiSpamHandler extends TurmsExtension implements ClientRequestTran
         return Mono.just(clientRequest);
     }
 
+    @Nullable
     private RuntimeException rejectRequestIfFindUnwantedWord(
             boolean shouldRejectSilently,
             String text) {
@@ -268,11 +267,19 @@ public class AntiSpamHandler extends TurmsExtension implements ClientRequestTran
     }
 
     public Pair<String, List<String>> detectUnwantedWords(
-            String text,
+            @Nullable String text,
             @Nullable Integer maxNumberOfUnwantedWordsToReturn,
             @Nullable Byte mask) {
-        Validator.notNull(text, "text");
         if (!enabled) {
+            if (text == null) {
+                return Pair.of("", Collections.emptyList());
+            }
+            return Pair.of(text, Collections.emptyList());
+        }
+        if (text == null) {
+            return Pair.of("", Collections.emptyList());
+        }
+        if (text.isBlank()) {
             return Pair.of(text, Collections.emptyList());
         }
         String maskedText = mask == null

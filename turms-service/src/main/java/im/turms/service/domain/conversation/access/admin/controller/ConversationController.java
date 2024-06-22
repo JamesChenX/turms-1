@@ -21,28 +21,33 @@ import java.util.List;
 import java.util.Set;
 
 import com.mongodb.client.result.DeleteResult;
+import org.springframework.context.ApplicationContext;
 import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import im.turms.server.common.access.admin.dto.response.DeleteResultDTO;
-import im.turms.server.common.access.admin.dto.response.HttpHandlerResult;
-import im.turms.server.common.access.admin.dto.response.ResponseDTO;
+import im.turms.server.common.access.admin.api.ApiConst;
+import im.turms.server.common.access.admin.api.ApiController;
+import im.turms.server.common.access.admin.api.ApiEndpoint;
+import im.turms.server.common.access.admin.api.ApiEndpointAction;
+import im.turms.server.common.access.admin.api.Request;
+import im.turms.server.common.access.admin.api.annotation.DeleteMapping;
+import im.turms.server.common.access.admin.api.annotation.PutMapping;
+import im.turms.server.common.access.admin.api.annotation.QueryParam;
+import im.turms.server.common.access.admin.api.response.DeleteResultDTO;
+import im.turms.server.common.access.admin.api.response.HttpHandlerResult;
+import im.turms.server.common.access.admin.api.response.ResponseDTO;
+import im.turms.server.common.access.admin.api.response.UpdateResultDTO;
 import im.turms.server.common.access.admin.permission.AdminPermission;
 import im.turms.server.common.access.admin.permission.RequiredPermission;
-import im.turms.server.common.access.admin.web.annotation.DeleteMapping;
-import im.turms.server.common.access.admin.web.annotation.GetMapping;
-import im.turms.server.common.access.admin.web.annotation.PutMapping;
-import im.turms.server.common.access.admin.web.annotation.QueryParam;
-import im.turms.server.common.access.admin.web.annotation.RequestBody;
-import im.turms.server.common.access.admin.web.annotation.RestController;
 import im.turms.server.common.infra.collection.CollectionUtil;
 import im.turms.server.common.infra.collection.CollectorUtil;
 import im.turms.server.common.infra.property.TurmsPropertiesManager;
 import im.turms.server.common.infra.reactor.PublisherPool;
 import im.turms.server.common.storage.mongo.operation.OperationResultConvertor;
 import im.turms.service.domain.common.access.admin.controller.BaseController;
-import im.turms.service.domain.conversation.access.admin.dto.request.UpdateConversationDTO;
+import im.turms.service.domain.conversation.access.admin.dto.request.QueryConversationsRequest;
+import im.turms.service.domain.conversation.access.admin.dto.request.UpdateConversationsRequestDTO;
 import im.turms.service.domain.conversation.access.admin.dto.response.ConversationsDTO;
 import im.turms.service.domain.conversation.po.GroupConversation;
 import im.turms.service.domain.conversation.po.PrivateConversation;
@@ -52,24 +57,24 @@ import im.turms.service.storage.mongo.OperationResultPublisherPool;
 /**
  * @author James Chen
  */
-@RestController("conversations")
+@ApiController(ApiConst.RESOURCE_PATH_SERVICE_BUSINESS_CONVERSATION)
 public class ConversationController extends BaseController {
 
     private final ConversationService conversationService;
 
     public ConversationController(
+            ApplicationContext context,
             TurmsPropertiesManager propertiesManager,
             ConversationService conversationService) {
-        super(propertiesManager);
+        super(context, propertiesManager);
         this.conversationService = conversationService;
     }
 
-    @GetMapping
-    @RequiredPermission(AdminPermission.CONVERSATION_QUERY)
-    public Mono<HttpHandlerResult<ResponseDTO<ConversationsDTO>>> queryConversations(
-            @QueryParam(required = false) List<PrivateConversation.Key> privateConversationKeys,
-            @QueryParam(required = false) Set<Long> ownerIds,
-            @QueryParam(required = false) Set<Long> groupIds) {
+    @ApiEndpoint(
+            action = ApiEndpointAction.QUERY,
+            requiredPermissions = AdminPermission.CONVERSATION_QUERY)
+    public Mono<ResponseDTO<ConversationsDTO>> queryConversations(
+            @Request QueryConversationsRequest request) {
         Flux<PrivateConversation> privateConversationsFlux;
         int privateConversationsSize = 0;
         if (CollectionUtil.isEmpty(privateConversationKeys)) {
@@ -95,9 +100,10 @@ public class ConversationController extends BaseController {
         return HttpHandlerResult.okIfTruthy(conversationsMono);
     }
 
-    @DeleteMapping
-    @RequiredPermission(AdminPermission.CONVERSATION_DELETE)
-    public Mono<HttpHandlerResult<ResponseDTO<DeleteResultDTO>>> deleteConversations(
+    @ApiEndpoint(
+            action = ApiEndpointAction.DELETE,
+            requiredPermissions = AdminPermission.CONVERSATION_DELETE)
+    public Mono<ResponseDTO<DeleteResultDTO>> deleteConversations(
             @QueryParam(required = false) List<PrivateConversation.Key> privateConversationKeys,
             @QueryParam(required = false) Set<Long> ownerIds,
             @QueryParam(required = false) Set<Long> groupIds) {
@@ -118,24 +124,22 @@ public class ConversationController extends BaseController {
         return HttpHandlerResult.deleteResult(resultMono);
     }
 
-    @PutMapping
-    @RequiredPermission(AdminPermission.CONVERSATION_UPDATE)
-    public Mono<HttpHandlerResult<ResponseDTO<Void>>> updateConversations(
-            @QueryParam(required = false) List<PrivateConversation.Key> privateConversationKeys,
-            @QueryParam(
-                    required = false) List<GroupConversation.GroupConversionMemberKey> groupConversationMemberKeys,
-            @RequestBody UpdateConversationDTO updateConversationDTO) {
+    @ApiEndpoint(
+            action = ApiEndpointAction.UPDATE,
+            requiredPermissions = AdminPermission.CONVERSATION_UPDATE)
+    public Mono<ResponseDTO<UpdateResultDTO>> updateConversations(
+            @Request UpdateConversationsRequestDTO request) {
         Mono<Void> updatePrivateConversions = CollectionUtil.isEmpty(privateConversationKeys)
                 ? Mono.empty()
                 : conversationService.upsertPrivateConversationsReadDate(
                         CollectionUtil.newSet(privateConversationKeys),
-                        updateConversationDTO.readDate());
+                        request.readDate());
         Mono<Void> updateGroupConversationsMono =
                 CollectionUtil.isEmpty(groupConversationMemberKeys)
                         ? Mono.empty()
                         : conversationService.upsertGroupConversationsReadDate(
                                 CollectionUtil.newSet(groupConversationMemberKeys),
-                                updateConversationDTO.readDate());
+                                request.readDate());
         return Mono.whenDelayError(updatePrivateConversions, updateGroupConversationsMono)
                 .thenReturn(HttpHandlerResult.RESPONSE_OK);
     }

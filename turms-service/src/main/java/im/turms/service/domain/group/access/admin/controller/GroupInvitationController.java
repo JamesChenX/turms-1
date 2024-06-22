@@ -21,28 +21,31 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 
+import org.springframework.context.ApplicationContext;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import im.turms.server.common.access.admin.dto.response.DeleteResultDTO;
-import im.turms.server.common.access.admin.dto.response.HttpHandlerResult;
-import im.turms.server.common.access.admin.dto.response.PaginationDTO;
-import im.turms.server.common.access.admin.dto.response.ResponseDTO;
-import im.turms.server.common.access.admin.dto.response.UpdateResultDTO;
+import im.turms.server.common.access.admin.api.ApiConst;
+import im.turms.server.common.access.admin.api.ApiController;
+import im.turms.server.common.access.admin.api.ApiEndpoint;
+import im.turms.server.common.access.admin.api.ApiEndpointAction;
+import im.turms.server.common.access.admin.api.Request;
+import im.turms.server.common.access.admin.api.annotation.DeleteMapping;
+import im.turms.server.common.access.admin.api.annotation.GetMapping;
+import im.turms.server.common.access.admin.api.annotation.PutMapping;
+import im.turms.server.common.access.admin.api.annotation.QueryParam;
+import im.turms.server.common.access.admin.api.response.DeleteResultDTO;
+import im.turms.server.common.access.admin.api.response.HttpHandlerResult;
+import im.turms.server.common.access.admin.api.response.PaginationDTO;
+import im.turms.server.common.access.admin.api.response.ResponseDTO;
+import im.turms.server.common.access.admin.api.response.UpdateResultDTO;
 import im.turms.server.common.access.admin.permission.RequiredPermission;
-import im.turms.server.common.access.admin.web.annotation.DeleteMapping;
-import im.turms.server.common.access.admin.web.annotation.GetMapping;
-import im.turms.server.common.access.admin.web.annotation.PostMapping;
-import im.turms.server.common.access.admin.web.annotation.PutMapping;
-import im.turms.server.common.access.admin.web.annotation.QueryParam;
-import im.turms.server.common.access.admin.web.annotation.RequestBody;
-import im.turms.server.common.access.admin.web.annotation.RestController;
 import im.turms.server.common.access.client.dto.constant.RequestStatus;
 import im.turms.server.common.infra.property.TurmsPropertiesManager;
 import im.turms.server.common.infra.time.DateRange;
 import im.turms.service.domain.common.access.admin.controller.BaseController;
 import im.turms.service.domain.group.access.admin.dto.request.AddGroupInvitationDTO;
-import im.turms.service.domain.group.access.admin.dto.request.UpdateGroupInvitationDTO;
+import im.turms.service.domain.group.access.admin.dto.request.UpdateGroupInvitationsRequestDTO;
 import im.turms.service.domain.group.access.admin.dto.response.GroupInvitationDTO;
 import im.turms.service.domain.group.service.GroupInvitationService;
 
@@ -54,22 +57,22 @@ import static im.turms.server.common.access.admin.permission.AdminPermission.GRO
 /**
  * @author James Chen
  */
-@RestController("groups/invitations")
+@ApiController(ApiConst.RESOURCE_PATH_SERVICE_BUSINESS_GROUP_INVITATION)
 public class GroupInvitationController extends BaseController {
 
     private final GroupInvitationService groupInvitationService;
 
     public GroupInvitationController(
+            ApplicationContext context,
             TurmsPropertiesManager propertiesManager,
             GroupInvitationService groupInvitationService) {
-        super(propertiesManager);
+        super(context, propertiesManager);
         this.groupInvitationService = groupInvitationService;
     }
 
-    @PostMapping
-    @RequiredPermission(GROUP_INVITATION_CREATE)
-    public Mono<HttpHandlerResult<ResponseDTO<GroupInvitationDTO>>> addGroupInvitation(
-            @RequestBody AddGroupInvitationDTO addGroupInvitationDTO) {
+    @ApiEndpoint(action = ApiEndpointAction.CREATE, requiredPermissions = GROUP_INVITATION_CREATE)
+    public Mono<ResponseDTO<GroupInvitationDTO>> addGroupInvitation(
+            @Request AddGroupInvitationDTO addGroupInvitationDTO) {
         Mono<GroupInvitationDTO> createMono = groupInvitationService
                 .createGroupInvitation(addGroupInvitationDTO.id(),
                         addGroupInvitationDTO.groupId(),
@@ -85,9 +88,8 @@ public class GroupInvitationController extends BaseController {
         return HttpHandlerResult.okIfTruthy(createMono);
     }
 
-    @GetMapping
-    @RequiredPermission(GROUP_INVITATION_QUERY)
-    public Mono<HttpHandlerResult<ResponseDTO<Collection<GroupInvitationDTO>>>> queryGroupInvitations(
+    @ApiEndpoint(action = ApiEndpointAction.QUERY, requiredPermissions = GROUP_INVITATION_QUERY)
+    public Mono<ResponseDTO<Collection<GroupInvitationDTO>>> queryGroupInvitations(
             @QueryParam(required = false) Set<Long> ids,
             @QueryParam(required = false) Set<Long> groupIds,
             @QueryParam(required = false) Set<Long> inviterIds,
@@ -100,7 +102,7 @@ public class GroupInvitationController extends BaseController {
             @QueryParam(required = false) Date expirationDateStart,
             @QueryParam(required = false) Date expirationDateEnd,
             @QueryParam(required = false) Integer size) {
-        size = getPageSize(size);
+        size = getLimit(size);
         Flux<GroupInvitationDTO> invitationFlux = groupInvitationService
                 .queryInvitations(ids,
                         groupIds,
@@ -118,71 +120,69 @@ public class GroupInvitationController extends BaseController {
         return HttpHandlerResult.okIfTruthy(invitationFlux);
     }
 
-    @GetMapping("page")
-    @RequiredPermission(GROUP_INVITATION_QUERY)
-    public Mono<HttpHandlerResult<ResponseDTO<PaginationDTO<GroupInvitationDTO>>>> queryGroupInvitations(
-            @QueryParam(required = false) Set<Long> ids,
-            @QueryParam(required = false) Set<Long> groupIds,
-            @QueryParam(required = false) Set<Long> inviterIds,
-            @QueryParam(required = false) Set<Long> inviteeIds,
-            @QueryParam(required = false) Set<RequestStatus> statuses,
-            @QueryParam(required = false) Date creationDateStart,
-            @QueryParam(required = false) Date creationDateEnd,
-            @QueryParam(required = false) Date responseDateStart,
-            @QueryParam(required = false) Date responseDateEnd,
-            @QueryParam(required = false) Date expirationDateStart,
-            @QueryParam(required = false) Date expirationDateEnd,
-            int page,
-            @QueryParam(required = false) Integer size) {
-        size = getPageSize(size);
-        Mono<Long> count = groupInvitationService.countInvitations(ids,
-                groupIds,
-                inviterIds,
-                inviteeIds,
-                statuses,
-                DateRange.of(creationDateStart, creationDateEnd),
-                DateRange.of(responseDateStart, responseDateEnd),
-                DateRange.of(expirationDateStart, expirationDateEnd));
-        Flux<GroupInvitationDTO> invitationFlux = groupInvitationService
-                .queryInvitations(ids,
-                        groupIds,
-                        inviterIds,
-                        inviteeIds,
-                        statuses,
-                        DateRange.of(creationDateStart, creationDateEnd),
-                        DateRange.of(responseDateStart, responseDateEnd),
-                        DateRange.of(expirationDateStart, expirationDateEnd),
-                        page,
-                        size)
-                .map(invitation -> new GroupInvitationDTO(
-                        invitation,
-                        groupInvitationService.getEntityExpirationDate()));
-        return HttpHandlerResult.page(count, invitationFlux);
-    }
+//    @GetMapping("page")
+//    @RequiredPermission(GROUP_INVITATION_QUERY)
+//    public Mono<HttpHandlerResult<ResponseDTO<PaginationDTO<GroupInvitationDTO>>>> queryGroupInvitations(
+//            @QueryParam(required = false) Set<Long> ids,
+//            @QueryParam(required = false) Set<Long> groupIds,
+//            @QueryParam(required = false) Set<Long> inviterIds,
+//            @QueryParam(required = false) Set<Long> inviteeIds,
+//            @QueryParam(required = false) Set<RequestStatus> statuses,
+//            @QueryParam(required = false) Date creationDateStart,
+//            @QueryParam(required = false) Date creationDateEnd,
+//            @QueryParam(required = false) Date responseDateStart,
+//            @QueryParam(required = false) Date responseDateEnd,
+//            @QueryParam(required = false) Date expirationDateStart,
+//            @QueryParam(required = false) Date expirationDateEnd,
+//            int page,
+//            @QueryParam(required = false) Integer size) {
+//        size = getLimit(size);
+//        Mono<Long> count = groupInvitationService.countInvitations(ids,
+//                groupIds,
+//                inviterIds,
+//                inviteeIds,
+//                statuses,
+//                DateRange.of(creationDateStart, creationDateEnd),
+//                DateRange.of(responseDateStart, responseDateEnd),
+//                DateRange.of(expirationDateStart, expirationDateEnd));
+//        Flux<GroupInvitationDTO> invitationFlux = groupInvitationService
+//                .queryInvitations(ids,
+//                        groupIds,
+//                        inviterIds,
+//                        inviteeIds,
+//                        statuses,
+//                        DateRange.of(creationDateStart, creationDateEnd),
+//                        DateRange.of(responseDateStart, responseDateEnd),
+//                        DateRange.of(expirationDateStart, expirationDateEnd),
+//                        page,
+//                        size)
+//                .map(invitation -> new GroupInvitationDTO(
+//                        invitation,
+//                        groupInvitationService.getEntityExpirationDate()));
+//        return HttpHandlerResult.page(count, invitationFlux);
+//    }
 
-    @PutMapping
-    @RequiredPermission(GROUP_INVITATION_UPDATE)
-    public Mono<HttpHandlerResult<ResponseDTO<UpdateResultDTO>>> updateGroupInvitations(
+    @ApiEndpoint(action = ApiEndpointAction.UPDATE, requiredPermissions = GROUP_INVITATION_UPDATE)
+    public Mono<ResponseDTO<UpdateResultDTO>> updateGroupInvitations(
             Set<Long> ids,
-            @RequestBody UpdateGroupInvitationDTO updateGroupInvitationDTO) {
+            @Request UpdateGroupInvitationsRequestDTO request) {
         Mono<UpdateResultDTO> updateMono = groupInvitationService
                 .updateInvitations(ids,
-                        updateGroupInvitationDTO.inviterId(),
-                        updateGroupInvitationDTO.inviteeId(),
-                        updateGroupInvitationDTO.content(),
-                        updateGroupInvitationDTO.status(),
-                        updateGroupInvitationDTO.creationDate(),
-                        updateGroupInvitationDTO.responseDate())
-                .map(UpdateResultDTO::get);
+                        request.inviterId(),
+                        request.inviteeId(),
+                        request.content(),
+                        request.status(),
+                        request.creationDate(),
+                        request.responseDate())
+                .map(UpdateResultDTO::from);
         return HttpHandlerResult.okIfTruthy(updateMono);
     }
 
-    @DeleteMapping
-    @RequiredPermission(GROUP_INVITATION_DELETE)
-    public Mono<HttpHandlerResult<ResponseDTO<DeleteResultDTO>>> deleteGroupInvitations(
+    @ApiEndpoint(action = ApiEndpointAction.DELETE, requiredPermissions = GROUP_INVITATION_DELETE)
+    public Mono<ResponseDTO<DeleteResultDTO>> deleteGroupInvitations(
             @QueryParam(required = false) Set<Long> ids) {
         Mono<DeleteResultDTO> deleteMono = groupInvitationService.deleteInvitations(ids)
-                .map(DeleteResultDTO::get);
+                .map(DeleteResultDTO::from);
         return HttpHandlerResult.okIfTruthy(deleteMono);
     }
 

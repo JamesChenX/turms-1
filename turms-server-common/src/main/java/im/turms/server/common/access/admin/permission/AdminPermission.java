@@ -31,6 +31,10 @@ import im.turms.server.common.infra.lang.StringUtil;
  * @author James Chen
  */
 public enum AdminPermission {
+    // region node - application
+    APPLICATION_STATUS(Groups.APPLICATION_STATUS),
+    // endregion
+
     FLIGHT_RECORDING_CREATE(Groups.FLIGHT_RECORDING),
     FLIGHT_RECORDING_DELETE(Groups.FLIGHT_RECORDING),
     FLIGHT_RECORDING_UPDATE(Groups.FLIGHT_RECORDING),
@@ -115,16 +119,16 @@ public enum AdminPermission {
     // endregion
 
     // region business - statistics
-    STATISTICS_USER_QUERY(Groups.STATISTICS),
-    STATISTICS_GROUP_QUERY(Groups.STATISTICS),
-    STATISTICS_MESSAGE_QUERY(Groups.STATISTICS),
+    STATISTIC_USER_QUERY(Groups.STATISTICS),
+    STATISTIC_GROUP_QUERY(Groups.STATISTICS),
+    STATISTIC_MESSAGE_QUERY(Groups.STATISTICS),
     // endregion
 
     // region admin
-    ADMIN_CREATE(Groups.ADMIN),
-    ADMIN_DELETE(Groups.ADMIN),
-    ADMIN_UPDATE(Groups.ADMIN),
-    ADMIN_QUERY(Groups.ADMIN),
+    ADMIN_ACCOUNT_CREATE(Groups.ADMIN_ACCOUNT),
+    ADMIN_ACCOUNT_DELETE(Groups.ADMIN_ACCOUNT),
+    ADMIN_ACCOUNT_UPDATE(Groups.ADMIN_ACCOUNT),
+    ADMIN_ACCOUNT_QUERY(Groups.ADMIN_ACCOUNT),
 
     ADMIN_ROLE_CREATE(Groups.ADMIN_ROLE),
     ADMIN_ROLE_DELETE(Groups.ADMIN_ROLE),
@@ -151,7 +155,6 @@ public enum AdminPermission {
     CLUSTER_MEMBER_QUERY(Groups.CLUSTER_MEMBER),
 
     CLUSTER_LEADER_UPDATE(Groups.CLUSTER_LEADER),
-    CLUSTER_LEADER_QUERY(Groups.CLUSTER_LEADER),
 
     CLUSTER_SETTING_UPDATE(Groups.CLUSTER_SETTING),
     CLUSTER_SETTING_QUERY(Groups.CLUSTER_SETTING),
@@ -165,11 +168,7 @@ public enum AdminPermission {
     // endregion
 
     // region node - log
-    LOG_QUERY(Groups.LOG),
-    // endregion
-
-    // region node - others
-    SHUTDOWN(Groups.LIFECYCLE);
+    LOG_QUERY(Groups.LOG);
     // endregion
 
     public static final String SUFFIX_CREATE = "_CREATE";
@@ -216,6 +215,8 @@ public enum AdminPermission {
     }
 
     private static class Groups {
+        private static final String APPLICATION_STATUS = "APPLICATION_STATUS";
+
         private static final String FLIGHT_RECORDING = "FLIGHT_RECORDING";
 
         private static final String USER = "USER";
@@ -241,7 +242,7 @@ public enum AdminPermission {
 
         private static final String STATISTICS = "STATISTICS";
 
-        private static final String ADMIN = "ADMIN";
+        private static final String ADMIN_ACCOUNT = "ADMIN_ACCOUNT";
         private static final String ADMIN_ROLE = "ADMIN_ROLE";
         private static final String ADMIN_PERMISSION = "ADMIN_PERMISSION";
 
@@ -255,7 +256,5 @@ public enum AdminPermission {
         private static final String PLUGIN = "PLUGIN";
 
         private static final String LOG = "LOG";
-
-        private static final String LIFECYCLE = "LIFECYCLE";
     }
 }

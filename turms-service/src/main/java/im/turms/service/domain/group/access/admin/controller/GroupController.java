@@ -24,22 +24,25 @@ import java.util.List;
 import java.util.Set;
 
 import com.mongodb.client.result.UpdateResult;
+import org.springframework.context.ApplicationContext;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import im.turms.server.common.access.admin.dto.response.DeleteResultDTO;
-import im.turms.server.common.access.admin.dto.response.HttpHandlerResult;
-import im.turms.server.common.access.admin.dto.response.PaginationDTO;
-import im.turms.server.common.access.admin.dto.response.ResponseDTO;
-import im.turms.server.common.access.admin.dto.response.UpdateResultDTO;
+import im.turms.server.common.access.admin.api.ApiConst;
+import im.turms.server.common.access.admin.api.ApiController;
+import im.turms.server.common.access.admin.api.ApiEndpoint;
+import im.turms.server.common.access.admin.api.ApiEndpointAction;
+import im.turms.server.common.access.admin.api.Request;
+import im.turms.server.common.access.admin.api.annotation.DeleteMapping;
+import im.turms.server.common.access.admin.api.annotation.GetMapping;
+import im.turms.server.common.access.admin.api.annotation.PutMapping;
+import im.turms.server.common.access.admin.api.annotation.QueryParam;
+import im.turms.server.common.access.admin.api.response.DeleteResultDTO;
+import im.turms.server.common.access.admin.api.response.HttpHandlerResult;
+import im.turms.server.common.access.admin.api.response.PaginationDTO;
+import im.turms.server.common.access.admin.api.response.ResponseDTO;
+import im.turms.server.common.access.admin.api.response.UpdateResultDTO;
 import im.turms.server.common.access.admin.permission.RequiredPermission;
-import im.turms.server.common.access.admin.web.annotation.DeleteMapping;
-import im.turms.server.common.access.admin.web.annotation.GetMapping;
-import im.turms.server.common.access.admin.web.annotation.PostMapping;
-import im.turms.server.common.access.admin.web.annotation.PutMapping;
-import im.turms.server.common.access.admin.web.annotation.QueryParam;
-import im.turms.server.common.access.admin.web.annotation.RequestBody;
-import im.turms.server.common.access.admin.web.annotation.RestController;
 import im.turms.server.common.infra.property.TurmsPropertiesManager;
 import im.turms.server.common.infra.time.DateRange;
 import im.turms.server.common.infra.time.DivideBy;
@@ -59,25 +62,24 @@ import static im.turms.server.common.access.admin.permission.AdminPermission.GRO
 /**
  * @author James Chen
  */
-@RestController("groups")
+@ApiController(ApiConst.RESOURCE_PATH_SERVICE_BUSINESS_GROUP)
 public class GroupController extends BaseController {
 
     private final GroupService groupService;
     private final MessageService messageService;
 
     public GroupController(
+            ApplicationContext context,
             TurmsPropertiesManager propertiesManager,
             GroupService groupService,
             MessageService messageService) {
-        super(propertiesManager);
+        super(context, propertiesManager);
         this.groupService = groupService;
         this.messageService = messageService;
     }
 
-    @PostMapping
-    @RequiredPermission(GROUP_CREATE)
-    public Mono<HttpHandlerResult<ResponseDTO<Group>>> addGroup(
-            @RequestBody AddGroupDTO addGroupDTO) {
+    @ApiEndpoint(action = ApiEndpointAction.CREATE, requiredPermissions = GROUP_CREATE)
+    public Mono<ResponseDTO<Group>> addGroup(@Request AddGroupDTO addGroupDTO) {
         Long ownerId = addGroupDTO.ownerId();
         Mono<Group> createdGroup = groupService.authAndCreateGroup(addGroupDTO.creatorId(),
                 ownerId == null
@@ -95,9 +97,8 @@ public class GroupController extends BaseController {
         return HttpHandlerResult.okIfTruthy(createdGroup);
     }
 
-    @GetMapping
-    @RequiredPermission(GROUP_QUERY)
-    public Mono<HttpHandlerResult<ResponseDTO<Collection<Group>>>> queryGroups(
+    @ApiEndpoint(action = ApiEndpointAction.QUERY, requiredPermissions = GROUP_QUERY)
+    public Mono<ResponseDTO<Collection<Group>>> queryGroups(
             @QueryParam(required = false) Set<Long> ids,
             @QueryParam(required = false) Set<Long> typeIds,
             @QueryParam(required = false) Set<Long> creatorIds,
@@ -113,7 +114,7 @@ public class GroupController extends BaseController {
             @QueryParam(required = false) Date muteEndDateEnd,
             @QueryParam(required = false) Set<Long> memberIds,
             @QueryParam(required = false) Integer size) {
-        size = getPageSize(size);
+        size = getLimit(size);
         Flux<Group> groupsFlux = groupService.queryGroups(ids,
                 typeIds,
                 creatorIds,
@@ -128,58 +129,61 @@ public class GroupController extends BaseController {
                 size);
         return HttpHandlerResult.okIfTruthy(groupsFlux);
     }
+//
+//    @GetMapping("page")
+//    @RequiredPermission(GROUP_QUERY)
+//    public Mono<HttpHandlerResult<ResponseDTO<PaginationDTO<Group>>>> queryGroups(
+//            @QueryParam(required = false) Set<Long> ids,
+//            @QueryParam(required = false) Set<Long> typeIds,
+//            @QueryParam(required = false) Set<Long> creatorIds,
+//            @QueryParam(required = false) Set<Long> ownerIds,
+//            @QueryParam(required = false) Boolean isActive,
+//            @QueryParam(required = false) Date creationDateStart,
+//            @QueryParam(required = false) Date creationDateEnd,
+//            @QueryParam(required = false) Date deletionDateStart,
+//            @QueryParam(required = false) Date deletionDateEnd,
+//            @QueryParam(required = false) Date lastUpdatedDateStart,
+//            @QueryParam(required = false) Date lastUpdatedDateEnd,
+//            @QueryParam(required = false) Date muteEndDateStart,
+//            @QueryParam(required = false) Date muteEndDateEnd,
+//            @QueryParam(required = false) Set<Long> memberIds,
+//            int page,
+//            @QueryParam(required = false) Integer size) {
+//        size = getLimit(size);
+//        DateRange creationDateRange = DateRange.of(creationDateStart, creationDateEnd);
+//        DateRange deletionDateRange = DateRange.of(deletionDateStart, deletionDateEnd);
+//        DateRange lastUpdatedDateRange = DateRange.of(lastUpdatedDateStart, lastUpdatedDateEnd);
+//        DateRange muteEndDateRange = DateRange.of(muteEndDateStart, muteEndDateEnd);
+//        Mono<Long> count = groupService.countGroups(ids,
+//                typeIds,
+//                creatorIds,
+//                ownerIds,
+//                isActive,
+//                creationDateRange,
+//                deletionDateRange,
+//                lastUpdatedDateRange,
+//                muteEndDateRange,
+//                memberIds);
+//        Flux<Group> groupsFlux = groupService.queryGroups(ids,
+//                typeIds,
+//                creatorIds,
+//                ownerIds,
+//                isActive,
+//                creationDateRange,
+//                deletionDateRange,
+//                lastUpdatedDateRange,
+//                muteEndDateRange,
+//                memberIds,
+//                page,
+//                size);
+//        return HttpHandlerResult.page(count, groupsFlux);
+//    }
 
-    @GetMapping("page")
-    @RequiredPermission(GROUP_QUERY)
-    public Mono<HttpHandlerResult<ResponseDTO<PaginationDTO<Group>>>> queryGroups(
-            @QueryParam(required = false) Set<Long> ids,
-            @QueryParam(required = false) Set<Long> typeIds,
-            @QueryParam(required = false) Set<Long> creatorIds,
-            @QueryParam(required = false) Set<Long> ownerIds,
-            @QueryParam(required = false) Boolean isActive,
-            @QueryParam(required = false) Date creationDateStart,
-            @QueryParam(required = false) Date creationDateEnd,
-            @QueryParam(required = false) Date deletionDateStart,
-            @QueryParam(required = false) Date deletionDateEnd,
-            @QueryParam(required = false) Date lastUpdatedDateStart,
-            @QueryParam(required = false) Date lastUpdatedDateEnd,
-            @QueryParam(required = false) Date muteEndDateStart,
-            @QueryParam(required = false) Date muteEndDateEnd,
-            @QueryParam(required = false) Set<Long> memberIds,
-            int page,
-            @QueryParam(required = false) Integer size) {
-        size = getPageSize(size);
-        DateRange creationDateRange = DateRange.of(creationDateStart, creationDateEnd);
-        DateRange deletionDateRange = DateRange.of(deletionDateStart, deletionDateEnd);
-        DateRange lastUpdatedDateRange = DateRange.of(lastUpdatedDateStart, lastUpdatedDateEnd);
-        DateRange muteEndDateRange = DateRange.of(muteEndDateStart, muteEndDateEnd);
-        Mono<Long> count = groupService.countGroups(ids,
-                typeIds,
-                creatorIds,
-                ownerIds,
-                isActive,
-                creationDateRange,
-                deletionDateRange,
-                lastUpdatedDateRange,
-                muteEndDateRange,
-                memberIds);
-        Flux<Group> groupsFlux = groupService.queryGroups(ids,
-                typeIds,
-                creatorIds,
-                ownerIds,
-                isActive,
-                creationDateRange,
-                deletionDateRange,
-                lastUpdatedDateRange,
-                muteEndDateRange,
-                memberIds,
-                page,
-                size);
-        return HttpHandlerResult.page(count, groupsFlux);
-    }
-
-    @GetMapping("count")
-    public Mono<HttpHandlerResult<ResponseDTO<GroupStatisticsDTO>>> countGroups(
+    @ApiEndpoint(
+            value = "statistic",
+            action = ApiEndpointAction.QUERY,
+            requiredPermissions = GROUP_QUERY)
+    public Mono<ResponseDTO<GroupStatisticsDTO>> countGroups(
             @QueryParam(required = false) Date createdStartDate,
             @QueryParam(required = false) Date createdEndDate,
             @QueryParam(required = false) Date deletedStartDate,
@@ -230,11 +234,10 @@ public class GroupController extends BaseController {
                 .then(Mono.fromCallable(builder::build)));
     }
 
-    @PutMapping
-    @RequiredPermission(GROUP_UPDATE)
-    public Mono<HttpHandlerResult<ResponseDTO<UpdateResultDTO>>> updateGroups(
+    @ApiEndpoint(action = ApiEndpointAction.UPDATE, requiredPermissions = GROUP_UPDATE)
+    public Mono<ResponseDTO<UpdateResultDTO>> updateGroups(
             Set<Long> ids,
-            @RequestBody UpdateGroupDTO updateGroupDTO) {
+            @Request UpdateGroupDTO updateGroupDTO) {
         Long successorId = updateGroupDTO.successorId();
         Mono<UpdateResult> updateMono = successorId == null
                 ? groupService.updateGroupsInformation(ids,
@@ -256,14 +259,13 @@ public class GroupController extends BaseController {
         return HttpHandlerResult.updateResult(updateMono);
     }
 
-    @DeleteMapping
-    @RequiredPermission(GROUP_DELETE)
-    public Mono<HttpHandlerResult<ResponseDTO<DeleteResultDTO>>> deleteGroups(
+    @ApiEndpoint(action = ApiEndpointAction.DELETE, requiredPermissions = GROUP_DELETE)
+    public Mono<ResponseDTO<DeleteResultDTO>> deleteGroups(
             @QueryParam(required = false) Set<Long> ids,
             @QueryParam(required = false) Boolean deleteLogically) {
         Mono<DeleteResultDTO> deleted =
                 groupService.deleteGroupsAndGroupMembers(ids, deleteLogically)
-                        .map(DeleteResultDTO::get);
+                        .map(DeleteResultDTO::from);
         return HttpHandlerResult.okIfTruthy(deleted);
     }
 

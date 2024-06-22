@@ -24,8 +24,8 @@ import com.mongodb.connection.ClusterType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import im.turms.server.common.domain.admin.po.Admin;
 import im.turms.server.common.domain.admin.po.AdminRole;
+import im.turms.server.common.domain.admin.po.AdminUser;
 import im.turms.server.common.domain.user.po.User;
 import im.turms.server.common.infra.context.TurmsApplicationContext;
 import im.turms.server.common.infra.property.TurmsPropertiesManager;
@@ -77,7 +77,7 @@ public class MongoConfig extends BaseMongoConfig {
         AdminMongoProperties.WriteConcernProperties writeConcern = properties.getWriteConcern();
         TurmsMongoClient mongoClient = getMongoClient(properties, "admin", Collections.emptySet());
         mongoClient.registerEntitiesByOptions(
-                MongoCollectionOptions.of(Admin.class, writeConcern.getAdmin()),
+                MongoCollectionOptions.of(AdminUser.class, writeConcern.getAdmin()),
                 MongoCollectionOptions.of(AdminRole.class, writeConcern.getAdminRole()));
         return mongoClient;
     }

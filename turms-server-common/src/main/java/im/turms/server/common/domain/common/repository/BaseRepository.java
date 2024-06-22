@@ -27,6 +27,7 @@ import com.mongodb.client.model.changestream.FullDocument;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import com.mongodb.reactivestreams.client.ClientSession;
+import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -37,6 +38,8 @@ import im.turms.server.common.storage.mongo.operation.option.QueryOptions;
 
 /**
  * @author James Chen
+ * @implNote We don't call it "Repository" to not conflict with {@link Repository}, which is used
+ *           frequently.
  */
 public abstract class BaseRepository<T, K> {
 

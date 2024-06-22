@@ -18,32 +18,28 @@
 package im.turms.service.domain.group.access.admin.controller;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
+import org.springframework.context.ApplicationContext;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import im.turms.server.common.access.admin.dto.response.DeleteResultDTO;
-import im.turms.server.common.access.admin.dto.response.HttpHandlerResult;
-import im.turms.server.common.access.admin.dto.response.PaginationDTO;
-import im.turms.server.common.access.admin.dto.response.ResponseDTO;
-import im.turms.server.common.access.admin.dto.response.UpdateResultDTO;
-import im.turms.server.common.access.admin.permission.RequiredPermission;
-import im.turms.server.common.access.admin.web.annotation.DeleteMapping;
-import im.turms.server.common.access.admin.web.annotation.GetMapping;
-import im.turms.server.common.access.admin.web.annotation.PostMapping;
-import im.turms.server.common.access.admin.web.annotation.PutMapping;
-import im.turms.server.common.access.admin.web.annotation.QueryParam;
-import im.turms.server.common.access.admin.web.annotation.RequestBody;
-import im.turms.server.common.access.admin.web.annotation.RestController;
+import im.turms.server.common.access.admin.api.ApiConst;
+import im.turms.server.common.access.admin.api.ApiController;
+import im.turms.server.common.access.admin.api.ApiEndpoint;
+import im.turms.server.common.access.admin.api.ApiEndpointAction;
+import im.turms.server.common.access.admin.api.Request;
+import im.turms.server.common.access.admin.api.response.DeleteResultDTO;
+import im.turms.server.common.access.admin.api.response.HttpHandlerResult;
+import im.turms.server.common.access.admin.api.response.ResponseDTO;
+import im.turms.server.common.access.admin.api.response.UpdateResultDTO;
 import im.turms.server.common.infra.collection.CollectionUtil;
 import im.turms.server.common.infra.property.TurmsPropertiesManager;
 import im.turms.server.common.infra.time.DateRange;
 import im.turms.service.domain.common.access.admin.controller.BaseController;
 import im.turms.service.domain.group.access.admin.dto.request.AddGroupBlockedUserDTO;
-import im.turms.service.domain.group.access.admin.dto.request.UpdateGroupBlockedUserDTO;
+import im.turms.service.domain.group.access.admin.dto.request.QueryGroupBlockedUsersRequestDTO;
+import im.turms.service.domain.group.access.admin.dto.request.UpdateGroupBlockedUsersRequestDTO;
 import im.turms.service.domain.group.po.GroupBlockedUser;
 import im.turms.service.domain.group.service.GroupBlocklistService;
 
@@ -55,22 +51,22 @@ import static im.turms.server.common.access.admin.permission.AdminPermission.GRO
 /**
  * @author James Chen
  */
-@RestController("groups/blocked-users")
+@ApiController(ApiConst.RESOURCE_PATH_SERVICE_BUSINESS_GROUP_BLOCKED_USER)
 public class GroupBlocklistController extends BaseController {
 
     private final GroupBlocklistService groupBlocklistService;
 
     public GroupBlocklistController(
+            ApplicationContext context,
             TurmsPropertiesManager propertiesManager,
             GroupBlocklistService groupBlocklistService) {
-        super(propertiesManager);
+        super(context, propertiesManager);
         this.groupBlocklistService = groupBlocklistService;
     }
 
-    @PostMapping
-    @RequiredPermission(GROUP_BLOCKLIST_CREATE)
-    public Mono<HttpHandlerResult<ResponseDTO<GroupBlockedUser>>> addGroupBlockedUser(
-            @RequestBody AddGroupBlockedUserDTO addGroupBlockedUserDTO) {
+    @ApiEndpoint(action = ApiEndpointAction.CREATE, requiredPermissions = GROUP_BLOCKLIST_CREATE)
+    public Mono<ResponseDTO<GroupBlockedUser>> addGroupBlockedUser(
+            @Request AddGroupBlockedUserDTO addGroupBlockedUserDTO) {
         Mono<GroupBlockedUser> createMono =
                 groupBlocklistService.addBlockedUser(addGroupBlockedUserDTO.groupId(),
                         addGroupBlockedUserDTO.userId(),
@@ -79,16 +75,10 @@ public class GroupBlocklistController extends BaseController {
         return HttpHandlerResult.okIfTruthy(createMono);
     }
 
-    @GetMapping
-    @RequiredPermission(GROUP_BLOCKLIST_QUERY)
-    public Mono<HttpHandlerResult<ResponseDTO<Collection<GroupBlockedUser>>>> queryGroupBlockedUsers(
-            @QueryParam(required = false) Set<Long> groupIds,
-            @QueryParam(required = false) Set<Long> userIds,
-            @QueryParam(required = false) Date blockDateStart,
-            @QueryParam(required = false) Date blockDateEnd,
-            @QueryParam(required = false) Set<Long> requesterIds,
-            @QueryParam(required = false) Integer size) {
-        size = getPageSize(size);
+    @ApiEndpoint(action = ApiEndpointAction.QUERY, requiredPermissions = GROUP_BLOCKLIST_QUERY)
+    public Mono<ResponseDTO<Collection<GroupBlockedUser>>> queryGroupBlockedUsers(
+            QueryGroupBlockedUsersRequestDTO request) {
+        size = getLimit(size);
         Flux<GroupBlockedUser> userFlux = groupBlocklistService.queryBlockedUsers(groupIds,
                 userIds,
                 DateRange.of(blockDateStart, blockDateEnd),
@@ -98,50 +88,48 @@ public class GroupBlocklistController extends BaseController {
         return HttpHandlerResult.okIfTruthy(userFlux);
     }
 
-    @GetMapping("page")
-    @RequiredPermission(GROUP_BLOCKLIST_QUERY)
-    public Mono<HttpHandlerResult<ResponseDTO<PaginationDTO<GroupBlockedUser>>>> queryGroupBlockedUsers(
-            @QueryParam(required = false) Set<Long> groupIds,
-            @QueryParam(required = false) Set<Long> userIds,
-            @QueryParam(required = false) Date blockDateStart,
-            @QueryParam(required = false) Date blockDateEnd,
-            @QueryParam(required = false) Set<Long> requesterIds,
-            int page,
-            @QueryParam(required = false) Integer size) {
-        size = getPageSize(size);
-        Mono<Long> count = groupBlocklistService.countBlockedUsers(groupIds,
-                userIds,
-                DateRange.of(blockDateStart, blockDateEnd),
-                requesterIds);
-        Flux<GroupBlockedUser> userFlux = groupBlocklistService.queryBlockedUsers(groupIds,
-                userIds,
-                DateRange.of(blockDateStart, blockDateEnd),
-                requesterIds,
-                page,
-                size);
-        return HttpHandlerResult.page(count, userFlux);
-    }
+//    @GetMapping("page")
+//    @RequiredPermission(GROUP_BLOCKLIST_QUERY)
+//    public Mono<HttpHandlerResult<ResponseDTO<PaginationDTO<GroupBlockedUser>>>> queryGroupBlockedUsers(
+//            @QueryParam(required = false) Set<Long> groupIds,
+//            @QueryParam(required = false) Set<Long> userIds,
+//            @QueryParam(required = false) Date blockDateStart,
+//            @QueryParam(required = false) Date blockDateEnd,
+//            @QueryParam(required = false) Set<Long> requesterIds,
+//            int page,
+//            @QueryParam(required = false) Integer size) {
+//        size = getLimit(size);
+//        Mono<Long> count = groupBlocklistService.countBlockedUsers(groupIds,
+//                userIds,
+//                DateRange.of(blockDateStart, blockDateEnd),
+//                requesterIds);
+//        Flux<GroupBlockedUser> userFlux = groupBlocklistService.queryBlockedUsers(groupIds,
+//                userIds,
+//                DateRange.of(blockDateStart, blockDateEnd),
+//                requesterIds,
+//                page,
+//                size);
+//        return HttpHandlerResult.page(count, userFlux);
+//    }
 
-    @PutMapping
-    @RequiredPermission(GROUP_BLOCKLIST_UPDATE)
-    public Mono<HttpHandlerResult<ResponseDTO<UpdateResultDTO>>> updateGroupBlockedUsers(
+    @ApiEndpoint(action = ApiEndpointAction.UPDATE, requiredPermissions = GROUP_BLOCKLIST_UPDATE)
+    public Mono<ResponseDTO<UpdateResultDTO>> updateGroupBlockedUsers(
             List<GroupBlockedUser.Key> keys,
-            @RequestBody UpdateGroupBlockedUserDTO updateGroupBlockedUserDTO) {
+            @Request UpdateGroupBlockedUsersRequestDTO request) {
         Mono<UpdateResultDTO> updateMono = groupBlocklistService
                 .updateBlockedUsers(CollectionUtil.newSet(keys),
-                        updateGroupBlockedUserDTO.blockDate(),
-                        updateGroupBlockedUserDTO.requesterId())
-                .map(UpdateResultDTO::get);
+                        request.blockDate(),
+                        request.requesterId())
+                .map(UpdateResultDTO::from);
         return HttpHandlerResult.okIfTruthy(updateMono);
     }
 
-    @DeleteMapping
-    @RequiredPermission(GROUP_BLOCKLIST_DELETE)
-    public Mono<HttpHandlerResult<ResponseDTO<DeleteResultDTO>>> deleteGroupBlockedUsers(
+    @ApiEndpoint(action = ApiEndpointAction.DELETE, requiredPermissions = GROUP_BLOCKLIST_DELETE)
+    public Mono<ResponseDTO<DeleteResultDTO>> deleteGroupBlockedUsers(
             List<GroupBlockedUser.Key> keys) {
         Mono<DeleteResultDTO> deleteMono =
                 groupBlocklistService.deleteBlockedUsers(CollectionUtil.newSet(keys))
-                        .map(DeleteResultDTO::get);
+                        .map(DeleteResultDTO::from);
         return HttpHandlerResult.okIfTruthy(deleteMono);
     }
 

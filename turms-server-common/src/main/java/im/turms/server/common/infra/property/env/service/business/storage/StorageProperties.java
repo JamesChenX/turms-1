@@ -23,7 +23,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
-import im.turms.server.common.access.admin.web.MediaTypeConst;
+import im.turms.server.common.infra.http.MediaTypeConst;
 
 /**
  * There properties are "recommended" and optional for plugin providers to implement

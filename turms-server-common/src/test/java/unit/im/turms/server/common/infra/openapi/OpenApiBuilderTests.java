@@ -26,10 +26,10 @@ import io.netty.handler.codec.http.HttpMethod;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 
-import im.turms.server.common.access.admin.dto.response.ResponseDTO;
-import im.turms.server.common.access.admin.web.ApiEndpoint;
-import im.turms.server.common.access.admin.web.ApiEndpointKey;
-import im.turms.server.common.access.admin.web.MethodParameterInfo;
+import im.turms.server.common.access.admin.api.ApiEndpointInfo;
+import im.turms.server.common.access.admin.api.ApiEndpointKey;
+import im.turms.server.common.access.admin.api.ApiEndpointParameter;
+import im.turms.server.common.access.admin.api.response.ResponseDTO;
 import im.turms.server.common.infra.openapi.OpenApiBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,7 +49,7 @@ class OpenApiBuilderTests {
         String serverUrl = "my-url";
         String path = "/my-path";
         ApiEndpointKey endpointKey = new ApiEndpointKey(path, HttpMethod.GET);
-        MethodParameterInfo parameterInfo = new MethodParameterInfo(
+        ApiEndpointParameter parameterInfo = new ApiEndpointParameter(
                 "method-name",
                 ResponseDTO.class,
                 null,
@@ -64,11 +64,11 @@ class OpenApiBuilderTests {
                 true);
         Method method = mock(Method.class);
         when(method.getGenericReturnType()).thenReturn(ResponseDTO.class);
-        ApiEndpoint endpoint = new ApiEndpoint(
+        ApiEndpointInfo endpoint = new ApiEndpointInfo(
                 new Object(),
                 method,
                 HttpMethod.GET,
-                new MethodParameterInfo[]{parameterInfo},
+                new ApiEndpointParameter[]{parameterInfo},
                 "media",
                 null,
                 null);

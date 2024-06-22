@@ -73,11 +73,11 @@ public final class CsvReporter {
     private CsvReporter() {
     }
 
-    public static ByteBuf scrape(MetricsPool pool, Set<String> names) {
+    public static ByteBuf scrape(MetricsPool pool, @Nullable Set<String> names) {
         List<IdAndMeasure> measures = getSortedMeasurements(pool.findAllMeters(), names);
         ByteBuf buffer = null;
         try {
-            buffer = PooledByteBufAllocator.DEFAULT.directBuffer(measures.size() * 64);
+            buffer = PooledByteBufAllocator.DEFAULT.directBuffer(measures.size() << 6);
             buffer.writeBytes(TITLE);
             for (Iterator<IdAndMeasure> iterator = measures.iterator(); iterator.hasNext();) {
                 IdAndMeasure entry = iterator.next();
@@ -157,7 +157,7 @@ public final class CsvReporter {
         return tagJoiner.toString();
     }
 
-    private static record IdAndMeasure(
+    private record IdAndMeasure(
             Meter.Id id,
             Measurement measurement
     ) {

@@ -29,8 +29,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
 
-import im.turms.server.common.domain.admin.po.Admin;
 import im.turms.server.common.domain.admin.po.AdminRole;
+import im.turms.server.common.domain.admin.po.AdminUser;
 import im.turms.server.common.domain.user.po.User;
 import im.turms.server.common.infra.collection.CollectorUtil;
 import im.turms.server.common.infra.property.env.service.env.database.TurmsMongoProperties;
@@ -62,7 +62,7 @@ class MongoCollectionInitializerIT extends SpringAwareIntegrationTest {
 
     static final List<Class<?>> MODEL_CLASSES = List.of(
             // Admin
-            Admin.class,
+            AdminUser.class,
             AdminRole.class,
             // Group
             Group.class,

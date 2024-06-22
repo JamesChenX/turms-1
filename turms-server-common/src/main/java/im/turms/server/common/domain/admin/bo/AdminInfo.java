@@ -21,7 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
-import im.turms.server.common.domain.admin.po.Admin;
+import im.turms.server.common.domain.admin.po.AdminUser;
 
 /**
  * @author James Chen
@@ -30,6 +30,6 @@ import im.turms.server.common.domain.admin.po.Admin;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public final class AdminInfo {
-    private final Admin admin;
+    private final AdminUser adminUser;
     private String rawPassword;
 }

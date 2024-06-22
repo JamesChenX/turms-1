@@ -36,9 +36,9 @@ import reactor.netty.http.client.HttpClient;
 import reactor.test.StepVerifier;
 
 import im.turms.plugin.minio.properties.MinioStorageProperties;
-import im.turms.server.common.access.admin.web.MediaType;
-import im.turms.server.common.access.admin.web.MediaTypeConst;
 import im.turms.server.common.infra.cluster.node.Node;
+import im.turms.server.common.infra.http.MediaType;
+import im.turms.server.common.infra.http.MediaTypeConst;
 import im.turms.server.common.infra.property.TurmsProperties;
 import im.turms.server.common.infra.property.TurmsPropertiesManager;
 import im.turms.server.common.infra.property.env.service.ServiceProperties;

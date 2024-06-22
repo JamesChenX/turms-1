@@ -18,6 +18,7 @@
 package im.turms.server.common.infra.cluster.service.config.entity.discovery;
 
 import java.util.Date;
+import jakarta.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
@@ -95,10 +96,13 @@ public final class Member {
 
     private String memberHost;
     private final Integer memberPort;
-
+    @Nullable
     private String adminApiAddress;
+    @Nullable
     private String wsAddress;
+    @Nullable
     private String tcpAddress;
+    @Nullable
     private String udpAddress;
 
     private final MemberStatus status;
@@ -116,10 +120,10 @@ public final class Member {
             Integer priority,
             String memberHost,
             Integer memberPort,
-            String adminApiAddress,
-            String wsAddress,
-            String tcpAddress,
-            String udpAddress,
+            @Nullable String adminApiAddress,
+            @Nullable String wsAddress,
+            @Nullable String tcpAddress,
+            @Nullable String udpAddress,
             MemberStatus status) {
         this.key = key;
         this.zone = zone;
@@ -152,10 +156,10 @@ public final class Member {
             Integer priority,
             String memberHost,
             Integer memberPort,
-            String adminApiAddress,
-            String wsAddress,
-            String tcpAddress,
-            String udpAddress,
+            @Nullable String adminApiAddress,
+            @Nullable String wsAddress,
+            @Nullable String tcpAddress,
+            @Nullable String udpAddress,
             boolean hasJoinedCluster,
             boolean isActive,
             boolean isHealthy) {
@@ -186,21 +190,21 @@ public final class Member {
     }
 
     public void updateIfNotNull(
-            String zone,
-            String name,
-            Boolean isSeed,
-            Boolean isLeaderEligible,
-            Integer priority,
-            String memberHost,
-            String adminApiAddress,
-            String wsAddress,
-            String tcpAddress,
-            String udpAddress,
+            @Nullable String zone,
+            @Nullable String name,
+            @Nullable Boolean isSeed,
+            @Nullable Boolean isLeaderEligible,
+            @Nullable Integer priority,
+            @Nullable String memberHost,
+            @Nullable String adminApiAddress,
+            @Nullable String wsAddress,
+            @Nullable String tcpAddress,
+            @Nullable String udpAddress,
             // Status
-            Boolean hasJoinedCluster,
-            Boolean isActive,
-            Boolean isHealthy,
-            Date lastHeartbeatDate) {
+            @Nullable Boolean hasJoinedCluster,
+            @Nullable Boolean isActive,
+            @Nullable Boolean isHealthy,
+            @Nullable Date lastHeartbeatDate) {
         if (zone != null) {
             this.zone = zone;
         }

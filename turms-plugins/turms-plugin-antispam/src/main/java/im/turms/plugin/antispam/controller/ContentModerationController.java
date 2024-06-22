@@ -17,74 +17,76 @@
 
 package im.turms.plugin.antispam.controller;
 
+import java.util.Collections;
 import java.util.List;
+import jakarta.annotation.Nullable;
+
+import org.springframework.context.ApplicationContext;
 
 import im.turms.plugin.antispam.AntiSpamHandler;
 import im.turms.plugin.antispam.core.exception.CorruptedTrieDataException;
-import im.turms.plugin.antispam.dto.TextDetectResultDTO;
-import im.turms.server.common.access.admin.dto.response.HttpHandlerResult;
-import im.turms.server.common.access.admin.dto.response.ResponseDTO;
-import im.turms.server.common.access.admin.dto.response.UpdateResultDTO;
-import im.turms.server.common.access.admin.web.MultipartFile;
-import im.turms.server.common.access.admin.web.annotation.FormData;
-import im.turms.server.common.access.admin.web.annotation.GetMapping;
-import im.turms.server.common.access.admin.web.annotation.PostMapping;
-import im.turms.server.common.access.admin.web.annotation.QueryParam;
-import im.turms.server.common.access.admin.web.annotation.RestController;
+import im.turms.plugin.antispam.dto.DetectTextResultRequestDTO;
+import im.turms.plugin.antispam.dto.DetectTextResultResponseDTO;
+import im.turms.plugin.antispam.dto.UpdateTextTrieRequestDTO;
+import im.turms.server.common.access.admin.api.ApiController;
+import im.turms.server.common.access.admin.api.ApiEndpoint;
+import im.turms.server.common.access.admin.api.ApiEndpointAction;
+import im.turms.server.common.access.admin.api.BaseApiController;
+import im.turms.server.common.access.admin.api.response.ResponseDTO;
+import im.turms.server.common.access.admin.api.response.UpdateResultDTO;
 import im.turms.server.common.access.common.ResponseStatusCode;
+import im.turms.server.common.domain.common.access.dto.FileDTO;
 import im.turms.server.common.infra.exception.ResponseException;
 import im.turms.server.common.infra.exception.ThrowableUtil;
+import im.turms.server.common.infra.exception.WriteRecordsException;
+import im.turms.server.common.infra.io.FileHolder;
 import im.turms.server.common.infra.lang.Pair;
 
 /**
  * @author James Chen
  */
-@RestController("content-moderation")
-public class ContentModerationController {
+@ApiController("content-moderation")
+public class ContentModerationController extends BaseApiController {
 
     private final AntiSpamHandler antiSpamHandler;
 
-    public ContentModerationController(AntiSpamHandler antiSpamHandler) {
+    public ContentModerationController(
+            ApplicationContext context,
+            AntiSpamHandler antiSpamHandler) {
+        super(context);
         this.antiSpamHandler = antiSpamHandler;
     }
 
-    @GetMapping("text")
-    HttpHandlerResult<ResponseDTO<TextDetectResultDTO>> detectUnwantedWords(
-            @QueryParam String text,
-            @QueryParam(required = false) Integer maxUnwantedWordCount,
-            @QueryParam(required = false) Byte mask) {
-        Pair<String, List<String>> result =
-                antiSpamHandler.detectUnwantedWords(text, maxUnwantedWordCount, mask);
-        return HttpHandlerResult
-                .okIfTruthy(new TextDetectResultDTO(result.first(), result.second()));
+    @ApiEndpoint(value = "text", action = ApiEndpointAction.QUERY)
+    ResponseDTO<DetectTextResultResponseDTO> detectUnwantedWords(
+            @Nullable DetectTextResultRequestDTO request) {
+        if (request == null) {
+            return ResponseDTO.of(new DetectTextResultResponseDTO("", Collections.emptyList()));
+        }
+        Pair<String, List<String>> result = antiSpamHandler.detectUnwantedWords(request.text(),
+                request.maxUnwantedWordCount(),
+                request.mask());
+        return ResponseDTO.of(new DetectTextResultResponseDTO(result.first(), result.second()));
     }
 
-    @PostMapping("text/tries")
-    HttpHandlerResult<ResponseDTO<UpdateResultDTO>> updateTextTrie(
-            @FormData List<MultipartFile> files) {
-        int count = files.size();
-        return switch (count) {
-            case 0 -> HttpHandlerResult.updateResult(0);
-            case 1 -> {
-                MultipartFile file = files.getFirst();
-                String binFilePath = file.file()
-                        .toPath()
-                        .toAbsolutePath()
-                        .normalize()
-                        .toString();
-                try {
-                    antiSpamHandler.updateTrie(binFilePath);
-                } catch (Exception e) {
-                    if (ThrowableUtil.contains(e, CorruptedTrieDataException.class)) {
-                        throw ResponseException.get(ResponseStatusCode.ILLEGAL_ARGUMENT,
-                                e.getMessage());
-                    }
-                    throw e;
-                }
-                yield HttpHandlerResult.updateResult(1);
+    @ApiEndpoint(value = "text/trie", action = ApiEndpointAction.UPDATE)
+    ResponseDTO<UpdateResultDTO> updateTextTrie(UpdateTextTrieRequestDTO request) {
+        FileDTO trieFile = request.update()
+                .trie();
+        FileHolder file = trieFile.fileHolder();
+        String binFilePath = file.file()
+                .toPath()
+                .toAbsolutePath()
+                .normalize()
+                .toString();
+        try {
+            antiSpamHandler.updateTrie(binFilePath);
+        } catch (Exception e) {
+            if (ThrowableUtil.contains(e, CorruptedTrieDataException.class)) {
+                throw ResponseException.get(ResponseStatusCode.ILLEGAL_ARGUMENT, e.getMessage());
             }
-            default -> throw ResponseException.get(ResponseStatusCode.ILLEGAL_ARGUMENT,
-                    "The number of files must be 0 or 1");
-        };
+            throw new WriteRecordsException(0, e);
+        }
+        return ResponseDTO.updateResult1();
     }
 }

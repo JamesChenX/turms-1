@@ -19,17 +19,17 @@ package im.turms.server.common.domain.plugin.access.admin.dto.response;
 
 import java.util.List;
 
-import im.turms.server.common.domain.common.access.dto.ControllerDTO;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * @author James Chen
  */
 public record PluginDTO(
-        String id,
-        String version,
-        String provider,
-        String license,
-        String description,
-        List<ExtensionDTO> extensions
-) implements ControllerDTO {
+        @Schema(description = "The ID") String id,
+        @Schema(description = "The version") String version,
+        @Schema(description = "The provider") String provider,
+        @Schema(description = "The license") String license,
+        @Schema(description = "The description") String description,
+        @Schema(description = "The extensions") List<ExtensionDTO> extensions
+) {
 }

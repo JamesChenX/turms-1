@@ -23,22 +23,25 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.context.ApplicationContext;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import im.turms.server.common.access.admin.dto.response.DeleteResultDTO;
-import im.turms.server.common.access.admin.dto.response.HttpHandlerResult;
-import im.turms.server.common.access.admin.dto.response.PaginationDTO;
-import im.turms.server.common.access.admin.dto.response.ResponseDTO;
-import im.turms.server.common.access.admin.dto.response.UpdateResultDTO;
+import im.turms.server.common.access.admin.api.ApiConst;
+import im.turms.server.common.access.admin.api.ApiController;
+import im.turms.server.common.access.admin.api.ApiEndpoint;
+import im.turms.server.common.access.admin.api.ApiEndpointAction;
+import im.turms.server.common.access.admin.api.Request;
+import im.turms.server.common.access.admin.api.annotation.DeleteMapping;
+import im.turms.server.common.access.admin.api.annotation.GetMapping;
+import im.turms.server.common.access.admin.api.annotation.PutMapping;
+import im.turms.server.common.access.admin.api.annotation.QueryParam;
+import im.turms.server.common.access.admin.api.response.DeleteResultDTO;
+import im.turms.server.common.access.admin.api.response.HttpHandlerResult;
+import im.turms.server.common.access.admin.api.response.PaginationDTO;
+import im.turms.server.common.access.admin.api.response.ResponseDTO;
+import im.turms.server.common.access.admin.api.response.UpdateResultDTO;
 import im.turms.server.common.access.admin.permission.RequiredPermission;
-import im.turms.server.common.access.admin.web.annotation.DeleteMapping;
-import im.turms.server.common.access.admin.web.annotation.GetMapping;
-import im.turms.server.common.access.admin.web.annotation.PostMapping;
-import im.turms.server.common.access.admin.web.annotation.PutMapping;
-import im.turms.server.common.access.admin.web.annotation.QueryParam;
-import im.turms.server.common.access.admin.web.annotation.RequestBody;
-import im.turms.server.common.access.admin.web.annotation.RestController;
 import im.turms.server.common.infra.collection.CollectionUtil;
 import im.turms.server.common.infra.property.TurmsPropertiesManager;
 import im.turms.server.common.infra.recycler.ListRecycler;
@@ -62,25 +65,24 @@ import static im.turms.server.common.domain.user.constant.UserConst.DEFAULT_RELA
 /**
  * @author James Chen
  */
-@RestController("users/relationships")
+@ApiController(ApiConst.RESOURCE_PATH_SERVICE_BUSINESS_USER_RELATIONSHIP_GROUP_RELATIONSHIP)
 public class UserRelationshipController extends BaseController {
 
     private final UserRelationshipService userRelationshipService;
     private final UserRelationshipGroupService userRelationshipGroupService;
 
     public UserRelationshipController(
+            ApplicationContext context,
             TurmsPropertiesManager propertiesManager,
             UserRelationshipService userRelationshipService,
             UserRelationshipGroupService userRelationshipGroupService) {
-        super(propertiesManager);
+        super(context, propertiesManager);
         this.userRelationshipService = userRelationshipService;
         this.userRelationshipGroupService = userRelationshipGroupService;
     }
 
-    @PostMapping
-    @RequiredPermission(USER_RELATIONSHIP_CREATE)
-    public Mono<HttpHandlerResult<ResponseDTO<Void>>> addRelationship(
-            @RequestBody AddRelationshipDTO addRelationshipDTO) {
+    @ApiEndpoint(action = ApiEndpointAction.CREATE, requiredPermissions = USER_RELATIONSHIP_CREATE)
+    public Mono<ResponseDTO<Void>> addRelationship(@Request AddRelationshipDTO addRelationshipDTO) {
         Mono<UpsertRelationshipResult> upsertMono =
                 userRelationshipService.upsertOneSidedRelationship(addRelationshipDTO.ownerId(),
                         addRelationshipDTO.relatedUserId(),
@@ -94,9 +96,8 @@ public class UserRelationshipController extends BaseController {
         return upsertMono.thenReturn(HttpHandlerResult.RESPONSE_OK);
     }
 
-    @GetMapping
-    @RequiredPermission(USER_RELATIONSHIP_QUERY)
-    public Mono<HttpHandlerResult<ResponseDTO<Collection<UserRelationshipDTO>>>> queryRelationships(
+    @ApiEndpoint(action = ApiEndpointAction.QUERY, requiredPermissions = USER_RELATIONSHIP_QUERY)
+    public Mono<ResponseDTO<Collection<UserRelationshipDTO>>> queryRelationships(
             @QueryParam(required = false) Set<Long> ownerIds,
             @QueryParam(required = false) Set<Long> relatedUserIds,
             @QueryParam(required = false) Set<Integer> groupIndexes,
@@ -105,7 +106,7 @@ public class UserRelationshipController extends BaseController {
             @QueryParam(required = false) Date establishmentDateEnd,
             @QueryParam(required = false) Integer size,
             boolean withGroupIndexes) {
-        size = getPageSize(size);
+        size = getLimit(size);
         Flux<UserRelationship> relationshipsFlux =
                 userRelationshipService.queryRelationships(ownerIds,
                         relatedUserIds,
@@ -118,54 +119,51 @@ public class UserRelationshipController extends BaseController {
         return HttpHandlerResult.okIfTruthy(dtoFlux);
     }
 
-    @GetMapping("page")
-    @RequiredPermission(USER_RELATIONSHIP_QUERY)
-    public Mono<HttpHandlerResult<ResponseDTO<PaginationDTO<UserRelationshipDTO>>>> queryRelationships(
-            @QueryParam(required = false) Set<Long> ownerIds,
-            @QueryParam(required = false) Set<Long> relatedUserIds,
-            @QueryParam(required = false) Set<Integer> groupIndexes,
-            @QueryParam(required = false) Boolean isBlocked,
-            @QueryParam(required = false) Date establishmentDateStart,
-            @QueryParam(required = false) Date establishmentDateEnd,
-            int page,
-            @QueryParam(required = false) Integer size,
-            boolean withGroupIndexes) {
-        size = getPageSize(size);
-        Mono<Long> count = userRelationshipService
-                .countRelationships(ownerIds, relatedUserIds, groupIndexes, isBlocked);
-        Flux<UserRelationship> relationshipsFlux =
-                userRelationshipService.queryRelationships(ownerIds,
-                        relatedUserIds,
-                        groupIndexes,
-                        isBlocked,
-                        DateRange.of(establishmentDateStart, establishmentDateEnd),
-                        page,
-                        size);
-        Flux<UserRelationshipDTO> dtoFlux = relationship2dto(withGroupIndexes, relationshipsFlux);
-        return HttpHandlerResult.page(count, dtoFlux);
-    }
+//    @GetMapping("page")
+//    @RequiredPermission(USER_RELATIONSHIP_QUERY)
+//    public Mono<HttpHandlerResult<ResponseDTO<PaginationDTO<UserRelationshipDTO>>>> queryRelationships(
+//            @QueryParam(required = false) Set<Long> ownerIds,
+//            @QueryParam(required = false) Set<Long> relatedUserIds,
+//            @QueryParam(required = false) Set<Integer> groupIndexes,
+//            @QueryParam(required = false) Boolean isBlocked,
+//            @QueryParam(required = false) Date establishmentDateStart,
+//            @QueryParam(required = false) Date establishmentDateEnd,
+//            int page,
+//            @QueryParam(required = false) Integer size,
+//            boolean withGroupIndexes) {
+//        size = getLimit(size);
+//        Mono<Long> count = userRelationshipService
+//                .countRelationships(ownerIds, relatedUserIds, groupIndexes, isBlocked);
+//        Flux<UserRelationship> relationshipsFlux =
+//                userRelationshipService.queryRelationships(ownerIds,
+//                        relatedUserIds,
+//                        groupIndexes,
+//                        isBlocked,
+//                        DateRange.of(establishmentDateStart, establishmentDateEnd),
+//                        page,
+//                        size);
+//        Flux<UserRelationshipDTO> dtoFlux = relationship2dto(withGroupIndexes, relationshipsFlux);
+//        return HttpHandlerResult.page(count, dtoFlux);
+//    }
 
-    @PutMapping
-    @RequiredPermission(USER_RELATIONSHIP_UPDATE)
-    public Mono<HttpHandlerResult<ResponseDTO<UpdateResultDTO>>> updateRelationships(
+    @ApiEndpoint(action = ApiEndpointAction.UPDATE, requiredPermissions = USER_RELATIONSHIP_UPDATE)
+    public Mono<ResponseDTO<UpdateResultDTO>> updateRelationships(
             List<UserRelationship.Key> keys,
-            @RequestBody UpdateRelationshipDTO updateRelationshipDTO) {
+            @Request UpdateRelationshipDTO updateRelationshipDTO) {
         Mono<UpdateResultDTO> updateMono = userRelationshipService
                 .updateUserOneSidedRelationships(CollectionUtil.newSet(keys),
                         updateRelationshipDTO.name(),
                         updateRelationshipDTO.blockDate(),
                         updateRelationshipDTO.establishmentDate())
-                .map(UpdateResultDTO::get);
+                .map(UpdateResultDTO::from);
         return HttpHandlerResult.okIfTruthy(updateMono);
     }
 
-    @DeleteMapping
-    @RequiredPermission(USER_RELATIONSHIP_DELETE)
-    public Mono<HttpHandlerResult<ResponseDTO<DeleteResultDTO>>> deleteRelationships(
-            List<UserRelationship.Key> keys) {
+    @ApiEndpoint(action = ApiEndpointAction.DELETE, requiredPermissions = USER_RELATIONSHIP_DELETE)
+    public Mono<ResponseDTO<DeleteResultDTO>> deleteRelationships(List<UserRelationship.Key> keys) {
         Mono<DeleteResultDTO> deleteMono =
                 userRelationshipService.deleteOneSidedRelationships(CollectionUtil.newSet(keys))
-                        .map(DeleteResultDTO::get);
+                        .map(DeleteResultDTO::from);
         return HttpHandlerResult.okIfTruthy(deleteMono);
     }
 
@@ -180,11 +178,11 @@ public class UserRelationshipController extends BaseController {
                         relationship.getKey()
                                 .getRelatedUserId())
                         .collect(Collectors.toCollection(recyclableList::getValue))
-                        .map(indexes -> UserRelationshipDTO.fromDomain(relationship,
+                        .map(indexes -> UserRelationshipDTO.from(relationship,
                                 CollectionUtil.newSet(indexes)))
                         .doFinally(signalType -> recyclableList.recycle());
             }
-            return Mono.just(UserRelationshipDTO.fromDomain(relationship));
+            return Mono.just(UserRelationshipDTO.from(relationship));
         });
     }
 

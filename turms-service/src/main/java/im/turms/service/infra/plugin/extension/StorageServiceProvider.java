@@ -25,9 +25,9 @@ import jakarta.validation.constraints.NotNull;
 
 import reactor.core.publisher.Mono;
 
-import im.turms.server.common.access.admin.web.MediaType;
 import im.turms.server.common.access.common.ResponseStatusCode;
 import im.turms.server.common.infra.exception.NotImplementedException;
+import im.turms.server.common.infra.http.MediaType;
 import im.turms.server.common.infra.plugin.ExtensionPoint;
 import im.turms.server.common.infra.time.DateRange;
 import im.turms.service.domain.storage.bo.StorageResourceInfo;

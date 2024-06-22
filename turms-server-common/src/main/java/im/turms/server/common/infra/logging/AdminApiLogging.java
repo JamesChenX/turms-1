@@ -17,7 +17,8 @@
 
 package im.turms.server.common.infra.logging;
 
-import java.util.Map;
+import java.util.List;
+import jakarta.annotation.Nullable;
 
 import io.netty.buffer.ByteBuf;
 
@@ -36,14 +37,14 @@ public final class AdminApiLogging {
     }
 
     public static void log(
-            String account,
+            @Nullable String account,
             String ip,
             String requestId,
             long requestTime,
-            String action,
-            Map<String, Object> params,
+            String path,
+            List<Object> arguments,
             int processingTime,
-            Throwable throwable) {
+            @Nullable Throwable throwable) {
         boolean isSuccessful = throwable == null;
         int estimatedSize = 64;
         String reason;
@@ -62,8 +63,8 @@ public final class AdminApiLogging {
                 // Request
                 requestId,
                 DateUtil.toBytes(requestTime),
-                action,
-                params.toString(),
+                path,
+                arguments,
                 // Response
                 isSuccessful
                         ? "TRUE"

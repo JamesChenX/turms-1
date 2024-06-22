@@ -17,55 +17,71 @@
 
 package im.turms.ai.domain.model.controller;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import jakarta.annotation.Nullable;
 
-import ai.djl.Application;
-import ai.djl.repository.Artifact;
 import ai.djl.repository.zoo.Criteria;
-import ai.djl.repository.zoo.ModelZoo;
+import org.springframework.context.ApplicationContext;
 
-import im.turms.ai.domain.model.dto.QueryModelsDTO;
-import im.turms.server.common.access.admin.web.annotation.GetMapping;
-import im.turms.server.common.access.admin.web.annotation.QueryParam;
-import im.turms.server.common.access.admin.web.annotation.RestController;
+import im.turms.ai.domain.model.dto.request.QueryModelsRequestDTO;
+import im.turms.ai.domain.model.dto.response.ModelDTO;
+import im.turms.ai.domain.model.dto.response.QueryModelsResponseDTO;
+import im.turms.ai.domain.model.service.ModelService;
+import im.turms.server.common.access.admin.api.ApiConst;
+import im.turms.server.common.access.admin.api.ApiController;
+import im.turms.server.common.access.admin.api.ApiEndpoint;
+import im.turms.server.common.access.admin.api.ApiEndpointAction;
+import im.turms.server.common.access.admin.api.BaseApiController;
+import im.turms.server.common.access.admin.api.response.ResponseDTO;
 
 /**
  * @author James Chen
  */
-@RestController("models")
-public class ModelController {
+@ApiController(ApiConst.RESOURCE_PATH_AI_SERVING_MODEL)
+public class ModelController extends BaseApiController {
 
     private static final Criteria<?, ?> ALL = Criteria.builder()
             .build();
 
-    @GetMapping
-    public List<Artifact> getModels(@QueryParam(required = false) QueryModelsDTO request) {
-        Criteria<?, ?> criteria;
-        if (request == null) {
-            criteria = ALL;
-        } else {
-            String artifactId = request.artifactId();
-            criteria = artifactId == null
-                    ? ALL
-                    : Criteria.builder()
-                            .optArtifactId(artifactId)
-                            .build();
-        }
-        Set<Map.Entry<Application, List<Artifact>>> entries;
-        try {
-            entries = ModelZoo.listModels(criteria)
-                    .entrySet();
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to find models", e);
-        }
-        List<Artifact> artifacts = new ArrayList<>(entries.size());
-        for (Map.Entry<Application, List<Artifact>> entry : entries) {
-            artifacts.addAll(entry.getValue());
-        }
-        return artifacts;
+    private final ModelService modelService;
+
+    public ModelController(ApplicationContext context, ModelService modelService) {
+        super(context);
+        this.modelService = modelService;
     }
 
+    @ApiEndpoint(action = ApiEndpointAction.QUERY)
+    public ResponseDTO<QueryModelsResponseDTO> queryModels(
+            @Nullable QueryModelsRequestDTO request) {
+        List<ModelDTO> models;
+        if (request == null) {
+            models = modelService.findModels(ALL, null);
+        } else {
+            if (request.hasFilter()) {
+                Set<String> artifactIds = request.filter()
+                        .ids();
+                if (artifactIds == null) {
+                    models = modelService.findModels(ALL, null, request.skip(), request.limit());
+                } else if (artifactIds.isEmpty()) {
+                    models = Collections.emptyList();
+                } else {
+                    int count = artifactIds.size();
+                    if (count == 1) {
+                        models = modelService.findModels(Criteria.builder()
+                                .optArtifactId(artifactIds.iterator()
+                                        .next())
+                                .build(), null, request.skip(), request.limit());
+                    } else {
+                        models = modelService
+                                .findModels(ALL, artifactIds, request.skip(), request.limit());
+                    }
+                }
+            } else {
+                models = modelService.findModels(ALL, null, request.skip(), request.limit());
+            }
+        }
+        return ResponseDTO.of(QueryModelsResponseDTO.of(models));
+    }
 }

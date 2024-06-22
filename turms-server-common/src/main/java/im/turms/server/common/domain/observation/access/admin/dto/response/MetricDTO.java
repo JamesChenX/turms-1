@@ -20,24 +20,50 @@ package im.turms.server.common.domain.observation.access.admin.dto.response;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import jakarta.annotation.Nullable;
+import jakarta.validation.constraints.NotNull;
 
-import im.turms.server.common.domain.common.access.dto.ControllerDTO;
+import io.swagger.v3.oas.annotations.media.Schema;
+
+import im.turms.server.common.domain.common.access.dto.ResponseComponentDTO;
+import im.turms.server.common.infra.collection.CollectionUtil;
 
 /**
  * @author James Chen
  */
 public record MetricDTO(
-        String name,
-        String description,
-        String baseUnit,
-        List<MeasurementDTO> measurements,
-        Map<String, Set<String>> availableTags
-) implements ControllerDTO {
+        @Schema(description = "The metric name") String name,
+        @Nullable @Schema(description = "The metric description") String description,
+        @Schema(description = "The base unit") String baseUnit,
+        @Schema(description = "The measurements") List<MeasurementDTO> measurements,
+        @Nullable @Schema(description = "The available tags") Map<String, Set<String>> availableTags
+) implements Comparable<MetricDTO> {
 
-    public record MeasurementDTO(
-            List<String> tags,
-            Map<String, Double> measurements
-    ) {
+    @Override
+    public int compareTo(@NotNull MetricDTO o) {
+        int result = name.compareTo(o.name);
+        if (result != 0) {
+            return result;
+        }
+        Map<String, Set<String>> availableTags2 = o.availableTags;
+        if (availableTags == null) {
+            return availableTags2 == null
+                    ? 0
+                    : -1;
+        }
+        if (availableTags2 == null) {
+            return 1;
+        }
+        return CollectionUtil.compare(availableTags.keySet(), availableTags2.keySet());
     }
 
+    public record MeasurementDTO(
+            @Schema(description = "The tags") List<String> tags,
+            @Schema(description = "The measurements") Map<String, Double> measurements
+    ) implements Comparable<MeasurementDTO> {
+        @Override
+        public int compareTo(@NotNull MeasurementDTO o) {
+            return CollectionUtil.compare(tags, o.tags);
+        }
+    }
 }

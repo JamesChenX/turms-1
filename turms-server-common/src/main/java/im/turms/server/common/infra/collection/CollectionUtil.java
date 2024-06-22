@@ -387,6 +387,16 @@ public final class CollectionUtil {
         return new ArrayList<>(collection);
     }
 
+    public static <T> List<T> toMutableList(Collection<T> collection) {
+        if (isImmutable(collection)) {
+            return new ArrayList<>(collection);
+        }
+        if (collection instanceof List<T> list) {
+            return list;
+        }
+        return new ArrayList<>(collection);
+    }
+
     public static <T> List<T> toListSupportRandomAccess(Collection<T> collection) {
         if (collection instanceof List<T> list && collection instanceof RandomAccess) {
             return list;
@@ -456,6 +466,21 @@ public final class CollectionUtil {
         return list;
     }
 
+    public static <T, R> List<R> transformAsList(List<T> values, Function<T, R> mapper) {
+        List<R> list = new ArrayList<>(values.size());
+        if (values instanceof RandomAccess) {
+            int count = values.size();
+            for (int i = 0; i < count; i++) {
+                list.add(mapper.apply(values.get(i)));
+            }
+        } else {
+            for (T value : values) {
+                list.add(mapper.apply(value));
+            }
+        }
+        return list;
+    }
+
     public static <T, R> List<R> transformAsList(T[] values, Function<T, R> mapper) {
         List<R> list = new ArrayList<>(values.length);
         for (T value : values) {
@@ -480,7 +505,25 @@ public final class CollectionUtil {
         return result;
     }
 
-    public static <T> List<T> sort(List<T> values) {
+    public static <T extends Comparable> List<T> sort(Collection<T> values) {
+        if (values.isEmpty()) {
+            return Collections.emptyList();
+        }
+        if (IMMUTABLE_COLLECTION_CLASS.isAssignableFrom(values.getClass())
+                || (!(values instanceof List<T> list))) {
+            List<T> newValues = new ArrayList<>(values);
+            newValues.sort(null);
+            return newValues;
+        } else {
+            list.sort(null);
+            return list;
+        }
+    }
+
+    public static <T extends Comparable> List<T> sort(List<T> values) {
+        if (values.isEmpty()) {
+            return values;
+        }
         if (IMMUTABLE_COLLECTION_CLASS.isAssignableFrom(values.getClass())) {
             List<T> newValues = new ArrayList<>(values);
             newValues.sort(null);
@@ -669,6 +712,75 @@ public final class CollectionUtil {
             set.set(b);
         }
         return set;
+    }
+
+    public static <T> List<T> applySkipAndLimit(
+            List<T> records,
+            @Nullable Integer skip,
+            @Nullable Integer limit) {
+        int count = records.size();
+        if (count == 0) {
+            return records;
+        }
+        if (skip != null) {
+            if (limit != null) {
+                if (skip >= count) {
+                    return Collections.emptyList();
+                } else if (skip > 0) {
+                    if (CollectionUtil.isImmutable(records)) {
+                        records = new ArrayList<>(records);
+                    }
+                    records = records.subList(skip, skip + Math.min(limit, count - skip));
+                } else if (limit > 0 && limit < count) {
+                    records = CollectionUtil.toList(records.subList(0, limit));
+                }
+            } else {
+                if (skip >= count) {
+                    return Collections.emptyList();
+                } else if (skip > 0) {
+                    if (CollectionUtil.isImmutable(records)) {
+                        records = new ArrayList<>(records);
+                    }
+                    records = records.subList(skip, count);
+                }
+            }
+        } else if (limit != null && limit > 0 && limit < count) {
+            if (CollectionUtil.isImmutable(records)) {
+                records = new ArrayList<>(records);
+            }
+            records = records.subList(0, Math.min(limit, records.size()));
+        }
+        return records;
+    }
+
+    public static <T extends Comparable<T>> int compare(
+            @Nullable Collection<T> c1,
+            @Nullable Collection<T> c2) {
+        if (c1 == null) {
+            return c2 == null
+                    ? 0
+                    : -1;
+        } else if (c2 == null) {
+            return 1;
+        }
+        Iterator<T> iterator1 = c1.iterator();
+        Iterator<T> iterator2 = c2.iterator();
+        while (true) {
+            if (!iterator1.hasNext()) {
+                return !iterator2.hasNext()
+                        ? 0
+                        : -1;
+            } else if (!iterator2.hasNext()) {
+                return 1;
+            } else {
+                T value1 = iterator1.next();
+                T value2 = iterator2.next();
+                int result = value1.compareTo(value2);
+                if (result != 0) {
+                    return result;
+                }
+            }
+        }
     }
 
     // endregion

@@ -17,34 +17,39 @@
 
 package im.turms.service.domain.cluster.access.admin.controller;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.List;
+import jakarta.annotation.Nullable;
 
+import org.springframework.context.ApplicationContext;
 import reactor.core.publisher.Mono;
 
-import im.turms.server.common.access.admin.dto.response.DeleteResultDTO;
-import im.turms.server.common.access.admin.dto.response.HttpHandlerResult;
-import im.turms.server.common.access.admin.dto.response.ResponseDTO;
-import im.turms.server.common.access.admin.permission.RequiredPermission;
-import im.turms.server.common.access.admin.web.annotation.DeleteMapping;
-import im.turms.server.common.access.admin.web.annotation.GetMapping;
-import im.turms.server.common.access.admin.web.annotation.PostMapping;
-import im.turms.server.common.access.admin.web.annotation.PutMapping;
-import im.turms.server.common.access.admin.web.annotation.QueryParam;
-import im.turms.server.common.access.admin.web.annotation.RequestBody;
-import im.turms.server.common.access.admin.web.annotation.RestController;
+import im.turms.server.common.access.admin.api.ApiConst;
+import im.turms.server.common.access.admin.api.ApiController;
+import im.turms.server.common.access.admin.api.ApiEndpoint;
+import im.turms.server.common.access.admin.api.ApiEndpointAction;
+import im.turms.server.common.access.admin.api.annotation.QueryParam;
+import im.turms.server.common.access.admin.api.response.DeleteResultDTO;
+import im.turms.server.common.access.admin.api.response.HttpHandlerResult;
+import im.turms.server.common.access.admin.api.response.ResponseDTO;
+import im.turms.server.common.access.admin.api.response.UpdateResultDTO;
 import im.turms.server.common.access.common.ResponseStatusCode;
 import im.turms.server.common.infra.cluster.node.Node;
-import im.turms.server.common.infra.cluster.node.NodeType;
 import im.turms.server.common.infra.cluster.node.NodeVersion;
 import im.turms.server.common.infra.cluster.service.config.entity.discovery.Leader;
 import im.turms.server.common.infra.cluster.service.config.entity.discovery.Member;
 import im.turms.server.common.infra.cluster.service.discovery.DiscoveryService;
-import im.turms.server.common.infra.collection.CollectionUtil;
 import im.turms.server.common.infra.exception.ResponseException;
 import im.turms.server.common.infra.property.TurmsPropertiesManager;
-import im.turms.service.domain.cluster.access.admin.dto.request.AddMemberDTO;
-import im.turms.service.domain.cluster.access.admin.dto.request.UpdateMemberDTO;
+import im.turms.service.domain.cluster.access.admin.dto.request.AddMembersRequestDTO;
+import im.turms.service.domain.cluster.access.admin.dto.request.NewMemberDTO;
+import im.turms.service.domain.cluster.access.admin.dto.request.QueryMembersRequestDTO;
+import im.turms.service.domain.cluster.access.admin.dto.request.RemoveMembersRequestDTO;
+import im.turms.service.domain.cluster.access.admin.dto.request.UpdateMembersRequestDTO;
+import im.turms.service.domain.cluster.access.admin.dto.response.AddMembersResponseDTO;
+import im.turms.service.domain.cluster.access.admin.dto.response.QueryMembersResponseDTO;
 import im.turms.service.domain.common.access.admin.controller.BaseController;
 
 import static im.turms.server.common.access.admin.permission.AdminPermission.CLUSTER_LEADER_QUERY;
@@ -57,86 +62,113 @@ import static im.turms.server.common.access.admin.permission.AdminPermission.CLU
 /**
  * @author James Chen
  */
-@RestController("cluster/members")
+@ApiController(ApiConst.RESOURCE_PATH_SERVICE_CLUSTER_MEMBER)
 public class MemberController extends BaseController {
 
     private final DiscoveryService discoveryService;
 
-    public MemberController(Node node, TurmsPropertiesManager propertiesManager) {
-        super(propertiesManager);
+    public MemberController(
+            Node node,
+            ApplicationContext context,
+            TurmsPropertiesManager propertiesManager) {
+        super(context, propertiesManager);
         discoveryService = node.getDiscoveryService();
     }
 
-    @GetMapping
-    @RequiredPermission(CLUSTER_MEMBER_QUERY)
-    public HttpHandlerResult<ResponseDTO<Collection<Member>>> queryMembers() {
-        return HttpHandlerResult.okIfTruthy(discoveryService.getAllKnownMembers()
-                .values());
+    @ApiEndpoint(action = ApiEndpointAction.QUERY, requiredPermissions = CLUSTER_MEMBER_QUERY)
+    public ResponseDTO<QueryMembersResponseDTO> queryMembers(
+            @Nullable QueryMembersRequestDTO request) {
+        if (request == null || !request.hasFilter()) {
+            return ResponseDTO.of(QueryMembersResponseDTO.of(discoveryService.getAllKnownMembers()
+                    .values()));
+        }
+        return ResponseDTO.of(QueryMembersResponseDTO.of(discoveryService.findMembers(
+                request.filter()
+                        .ids(),
+                request.filter()
+                        .role(),
+                request.skip(),
+                request.limit())));
     }
 
-    @DeleteMapping
-    @RequiredPermission(CLUSTER_MEMBER_DELETE)
-    public Mono<HttpHandlerResult<ResponseDTO<DeleteResultDTO>>> removeMembers(List<String> ids) {
-        Mono<Long> unregisterMembers =
-                discoveryService.unregisterMembers(CollectionUtil.newSet(ids));
-        return HttpHandlerResult.deleteResultByLongMono(unregisterMembers);
+    @ApiEndpoint(action = ApiEndpointAction.DELETE, requiredPermissions = CLUSTER_MEMBER_DELETE)
+    public Mono<ResponseDTO<DeleteResultDTO>> removeMembers(RemoveMembersRequestDTO request) {
+        Mono<Long> unregisterMembers;
+        if (request.deleteAll()) {
+            unregisterMembers = discoveryService.unregisterMembers();
+        } else {
+            LinkedHashSet<String> ids = request.filter()
+                    .ids();
+            if (ids.isEmpty()) {
+                return ResponseDTO.deleteResult0Mono();
+            }
+            unregisterMembers = discoveryService.unregisterMembers(ids);
+        }
+        return ResponseDTO.deleteResultFromLongMono(unregisterMembers);
     }
 
-    @PostMapping
-    @RequiredPermission(CLUSTER_MEMBER_CREATE)
-    public Mono<HttpHandlerResult<ResponseDTO<Void>>> addMember(
-            @RequestBody AddMemberDTO addMemberDTO) {
+    @ApiEndpoint(action = ApiEndpointAction.CREATE, requiredPermissions = CLUSTER_MEMBER_CREATE)
+    public Mono<ResponseDTO<AddMembersResponseDTO>> addMembers(AddMembersRequestDTO request) {
         String clusterId = discoveryService.getLocalMember()
                 .getClusterId();
-        NodeType nodeType = addMemberDTO.nodeType();
-        if (nodeType != NodeType.SERVICE && addMemberDTO.isLeaderEligible()) {
-            return Mono.error(ResponseException.get(ResponseStatusCode.ILLEGAL_ARGUMENT,
-                    "Only turms-service servers can be the leader"));
+        List<NewMemberDTO> newMembers = request.records();
+        List<Member> members = new ArrayList<>(newMembers.size());
+        for (NewMemberDTO newMember : newMembers) {
+            Date registrationDate = newMember.registrationDate();
+            Member member = new Member(
+                    clusterId,
+                    newMember.nodeId(),
+                    newMember.zone(),
+                    newMember.name(),
+                    newMember.nodeType(),
+                    NodeVersion.parse(newMember.version()),
+                    newMember.isSeed(),
+                    newMember.isLeaderEligible(),
+                    registrationDate == null
+                            ? new Date()
+                            : registrationDate,
+                    newMember.priority(),
+                    newMember.memberHost(),
+                    newMember.memberPort(),
+                    newMember.adminApiAddress(),
+                    newMember.wsAddress(),
+                    newMember.tcpAddress(),
+                    newMember.udpAddress(),
+                    false,
+                    newMember.isActive(),
+                    newMember.isHealthy());
+            members.add(member);
         }
-        Member member = new Member(
-                clusterId,
-                addMemberDTO.nodeId(),
-                addMemberDTO.zone(),
-                addMemberDTO.name(),
-                nodeType,
-                NodeVersion.parse(addMemberDTO.version()),
-                addMemberDTO.isSeed(),
-                addMemberDTO.isLeaderEligible(),
-                addMemberDTO.registrationDate(),
-                addMemberDTO.priority(),
-                addMemberDTO.memberHost(),
-                addMemberDTO.memberPort(),
-                addMemberDTO.adminApiAddress(),
-                addMemberDTO.wsAddress(),
-                addMemberDTO.tcpAddress(),
-                addMemberDTO.udpAddress(),
-                false,
-                addMemberDTO.isActive(),
-                addMemberDTO.isHealthy());
-        return discoveryService.registerMember(member)
-                .thenReturn(HttpHandlerResult.RESPONSE_OK);
+        return discoveryService.registerMembers(members)
+                .then(Mono.fromCallable(() -> ResponseDTO.of(AddMembersResponseDTO.of(members))));
     }
 
-    @PutMapping
-    @RequiredPermission(CLUSTER_MEMBER_UPDATE)
-    public Mono<HttpHandlerResult<ResponseDTO<Void>>> updateMember(
-            String id,
-            @RequestBody UpdateMemberDTO updateMemberDTO) {
-        Mono<Void> addMemberMono = discoveryService.updateMemberInfo(id,
-                updateMemberDTO.zone(),
-                updateMemberDTO.name(),
-                updateMemberDTO.isSeed(),
-                updateMemberDTO.isLeaderEligible(),
-                updateMemberDTO.isActive(),
-                updateMemberDTO.priority());
-        return addMemberMono.thenReturn(HttpHandlerResult.RESPONSE_OK);
+    @ApiEndpoint(action = ApiEndpointAction.UPDATE, requiredPermissions = CLUSTER_MEMBER_UPDATE)
+    public Mono<ResponseDTO<UpdateResultDTO>> updateMembers(UpdateMembersRequestDTO request) {
+        UpdateMembersRequestDTO.UpdateMemberDTO update = request.update();
+        if (update == null) {
+            return ResponseDTO.updateResult0Mono();
+        }
+        Mono<Long> updateMembers = discoveryService.updateMembersInfo(request.hasFilter()
+                ? request.filter()
+                        .ids()
+                : null,
+                update.zone(),
+                update.name(),
+                update.isSeed(),
+                update.isLeaderEligible(),
+                update.isActive(),
+                update.priority());
+        return ResponseDTO.updateResultFromLongMono(updateMembers);
     }
 
     // Leader
 
-    @GetMapping("leader")
-    @RequiredPermission(CLUSTER_LEADER_QUERY)
-    public HttpHandlerResult<ResponseDTO<Member>> queryLeader() {
+    @ApiEndpoint(
+            value = "leader",
+            action = ApiEndpointAction.QUERY,
+            requiredPermissions = CLUSTER_LEADER_QUERY)
+    public ResponseDTO<Member> queryLeader() {
         Leader leader = discoveryService.getLeader();
         if (leader == null) {
             throw ResponseException.get(ResponseStatusCode.NO_CONTENT);
@@ -147,10 +179,11 @@ public class MemberController extends BaseController {
         return HttpHandlerResult.okIfTruthy(member);
     }
 
-    @PostMapping("leader")
-    @RequiredPermission(CLUSTER_LEADER_UPDATE)
-    public Mono<HttpHandlerResult<ResponseDTO<Member>>> electNewLeader(
-            @QueryParam(required = false) String id) {
+    @ApiEndpoint(
+            value = "leader",
+            action = ApiEndpointAction.UPDATE,
+            requiredPermissions = CLUSTER_LEADER_UPDATE)
+    public Mono<ResponseDTO<Member>> electNewLeader(@QueryParam(required = false) String id) {
         Mono<Member> leader = id == null
                 ? discoveryService.electNewLeaderByPriority()
                 : discoveryService.electNewLeaderByNodeId(id);

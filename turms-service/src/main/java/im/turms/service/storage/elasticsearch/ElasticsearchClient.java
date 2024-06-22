@@ -32,7 +32,7 @@ import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.http.client.HttpClientResponse;
 
-import im.turms.server.common.access.admin.web.HttpUtil;
+import im.turms.server.common.infra.http.HttpUtil;
 import im.turms.server.common.infra.io.InputOutputException;
 import im.turms.server.common.infra.json.JsonCodecPool;
 import im.turms.server.common.infra.json.JsonUtil;

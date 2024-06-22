@@ -17,7 +17,6 @@
 
 package im.turms.server.common.domain.observation.model;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,7 +39,7 @@ public record RecordingSession(
 ) {
 
     @Nullable
-    public Date getCloseDate() {
+    public Date getStopDate() {
         RecordingState state = recording.getState();
         return state == RecordingState.CLOSED || state == RecordingState.STOPPED
                 ? Date.from(recording.getStopTime())
@@ -51,28 +50,49 @@ public record RecordingSession(
         return recording().getDestination();
     }
 
+    public void throwIfCannotBeDumped() {
+        RecordingState state = recording.getState();
+        switch (state) {
+            case RecordingState.RUNNING, RecordingState.STOPPED, RecordingState.CLOSED -> {
+            }
+            default -> throw new DumpIllegalStateException(
+                    "Failed to dump the recording ("
+                            + id
+                            + ") because it is in the state: "
+                            + state);
+        }
+    }
+
+    public boolean canBeDumped() {
+        RecordingState state = recording.getState();
+        return switch (state) {
+            case RecordingState.RUNNING, RecordingState.STOPPED, RecordingState.CLOSED -> true;
+            default -> false;
+        };
+    }
+
     public Path getFilePath(Path destination) {
         synchronized (recording) {
             RecordingState state = recording.getState();
-            if (state == RecordingState.RUNNING) {
-                try {
-                    recording.dump(destination);
-                } catch (IOException e) {
-                    throw new InputOutputException(
-                            "Failed to dump the recording session to the destination: "
-                                    + destination,
-                            e);
+            return switch (state) {
+                case RecordingState.RUNNING -> {
+                    try {
+                        recording.dump(destination);
+                    } catch (IOException e) {
+                        throw new InputOutputException(
+                                "Failed to dump the recording session to the destination: "
+                                        + destination,
+                                e);
+                    }
+                    yield destination;
                 }
-                return destination;
-            } else if (state == RecordingState.STOPPED || state == RecordingState.CLOSED) {
-                return recording.getDestination();
-            } else {
-                throw new DumpIllegalStateException(
+                case RecordingState.STOPPED, RecordingState.CLOSED -> recording.getDestination();
+                default -> throw new DumpIllegalStateException(
                         "Failed to dump the recording ("
                                 + id
                                 + ") because it is in the state: "
                                 + state);
-            }
+            };
         }
     }
 

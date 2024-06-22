@@ -785,4 +785,12 @@ public final class StringUtil {
         }
         return true;
     }
+
+    public static boolean startsWithLetter(@Nullable String value) {
+        if (value == null || value.isEmpty()) {
+            return false;
+        }
+        char first = value.charAt(0);
+        return 'a' <= first && first <= 'z' || 'A' <= first && first <= 'Z';
+    }
 }

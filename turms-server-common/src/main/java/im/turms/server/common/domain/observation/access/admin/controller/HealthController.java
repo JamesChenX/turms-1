@@ -17,24 +17,33 @@
 
 package im.turms.server.common.domain.observation.access.admin.controller;
 
-import im.turms.server.common.access.admin.dto.response.ResponseDTO;
-import im.turms.server.common.access.admin.web.annotation.GetMapping;
-import im.turms.server.common.access.admin.web.annotation.RestController;
+import org.springframework.context.ApplicationContext;
+
+import im.turms.server.common.access.admin.api.ApiConst;
+import im.turms.server.common.access.admin.api.ApiController;
+import im.turms.server.common.access.admin.api.ApiEndpoint;
+import im.turms.server.common.access.admin.api.ApiEndpointAction;
+import im.turms.server.common.access.admin.api.BaseApiController;
+import im.turms.server.common.access.admin.api.response.ResponseDTO;
 import im.turms.server.common.access.common.ResponseStatusCode;
-import im.turms.server.common.domain.observation.access.admin.dto.response.HealthDTO;
+import im.turms.server.common.domain.observation.access.admin.dto.response.QueryHealthResponseDTO;
 
 /**
  * @author James Chen
  */
-@RestController("health")
-public class HealthController {
+@ApiController(ApiConst.RESOURCE_PATH_COMMON_MONITOR_HEATH)
+public class HealthController extends BaseApiController {
 
-    private static final ResponseDTO<HealthDTO> HEALTH_RESPONSE =
-            new ResponseDTO<>(ResponseStatusCode.OK, new HealthDTO(HealthDTO.Status.UP));
+    private static final ResponseDTO<QueryHealthResponseDTO> HEALTH_RESPONSE = new ResponseDTO<>(
+            ResponseStatusCode.OK,
+            new QueryHealthResponseDTO(QueryHealthResponseDTO.Status.UP));
 
-    @GetMapping
-    public ResponseDTO<HealthDTO> getHealthStatus() {
-        return HEALTH_RESPONSE;
+    public HealthController(ApplicationContext context) {
+        super(context);
     }
 
+    @ApiEndpoint(action = ApiEndpointAction.QUERY)
+    public ResponseDTO<QueryHealthResponseDTO> queryHealthStatus() {
+        return HEALTH_RESPONSE;
+    }
 }

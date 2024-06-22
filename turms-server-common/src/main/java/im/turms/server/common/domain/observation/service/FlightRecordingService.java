@@ -24,6 +24,7 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -39,10 +40,13 @@ import org.jctools.maps.NonBlockingHashMapLong;
 import org.jctools.queues.MpscUnboundedArrayQueue;
 import org.springframework.stereotype.Service;
 
-import im.turms.server.common.access.admin.dto.response.UpdateResultDTO;
+import im.turms.server.common.access.admin.api.response.UpdateResultDTO;
+import im.turms.server.common.domain.observation.access.admin.dto.request.NewRecordingDTO;
 import im.turms.server.common.domain.observation.model.RecordingSession;
+import im.turms.server.common.infra.collection.CollectionUtil;
 import im.turms.server.common.infra.context.TurmsApplicationContext;
 import im.turms.server.common.infra.exception.IncompatibleJvmException;
+import im.turms.server.common.infra.exception.WriteRecordsException;
 import im.turms.server.common.infra.io.FileResource;
 import im.turms.server.common.infra.io.FileUtil;
 import im.turms.server.common.infra.io.InputOutputException;
@@ -154,18 +158,59 @@ public class FlightRecordingService {
         }
     }
 
+    public List<RecordingSession> startRecordings(@Nullable List<NewRecordingDTO> newRecordings) {
+        int count = CollectionUtil.getSize(newRecordings);
+        if (count == 0) {
+            return Collections.emptyList();
+        }
+        for (int i = 0; i < count; i++) {
+            NewRecordingDTO recording = newRecordings.get(i);
+            try {
+                validateCreateRecordingParams(recording.duration(),
+                        recording.maxAge(),
+                        recording.maxSize(),
+                        recording.delay());
+            } catch (Exception e) {
+                throw new WriteRecordsException(i, e);
+            }
+        }
+        List<RecordingSession> newSessions = new ArrayList<>(count);
+        for (int i = 0; i < count; i++) {
+            NewRecordingDTO recording = newRecordings.get(i);
+            RecordingSession session;
+            try {
+                session = startRecording0(recording.duration(),
+                        recording.maxAge(),
+                        recording.maxSize(),
+                        recording.delay(),
+                        recording.settings(),
+                        recording.description());
+            } catch (Exception e) {
+                throw new WriteRecordsException(i, e);
+            }
+            newSessions.add(session);
+        }
+        return newSessions;
+    }
+
     public RecordingSession startRecording(
-            @Nullable @Min(0) Integer durationSeconds,
-            @Nullable @Min(0) Integer maxAgeSeconds,
-            @Nullable @Min(0) Integer maxSizeBytes,
-            @Nullable @Min(0) Integer delaySeconds,
+            @Nullable @Min(0) Long duration,
+            @Nullable @Min(0) Long maxAge,
+            @Nullable @Min(0) Long maxSize,
+            @Nullable @Min(0) Long delay,
             @Nullable Map<String, String> customSettings,
             @Nullable String description) {
-        Validator.min(durationSeconds, "durationSeconds", 0);
-        Validator.min(maxAgeSeconds, "maxAgeSeconds", 0);
-        Validator.min(maxSizeBytes, "maxSizeBytes", 0);
-        Validator.min(delaySeconds, "delaySeconds", 0);
-        // TODO: max limit
+        validateCreateRecordingParams(duration, maxAge, maxSize, delay);
+        return startRecording0(duration, maxAge, maxSize, delay, customSettings, description);
+    }
+
+    private RecordingSession startRecording0(
+            @Nullable Long duration,
+            @Nullable Long maxAge,
+            @Nullable Long maxSize,
+            @Nullable Long delay,
+            @Nullable Map<String, String> customSettings,
+            @Nullable String description) {
         if (customSettings == null || customSettings.isEmpty()) {
             customSettings = defaultConfigs;
         } else {
@@ -192,19 +237,19 @@ public class FlightRecordingService {
         try {
             recording.setDestination(tempFile);
             recording.setToDisk(true);
-            if (durationSeconds != null) {
-                recording.setDuration(Duration.of(durationSeconds, ChronoUnit.SECONDS));
+            if (duration != null) {
+                recording.setDuration(Duration.of(duration, ChronoUnit.MILLIS));
             }
-            if (maxAgeSeconds != null) {
-                recording.setMaxAge(Duration.of(maxAgeSeconds, ChronoUnit.SECONDS));
+            if (maxAge != null) {
+                recording.setMaxAge(Duration.of(maxAge, ChronoUnit.MILLIS));
             }
-            if (maxSizeBytes != null) {
-                recording.setMaxSize(maxSizeBytes);
+            if (maxSize != null) {
+                recording.setMaxSize(maxSize);
             }
-            if (delaySeconds == null) {
+            if (delay == null) {
                 recording.start();
             } else {
-                recording.scheduleStart(Duration.of(delaySeconds, ChronoUnit.SECONDS));
+                recording.scheduleStart(Duration.of(delay, ChronoUnit.MILLIS));
             }
             RecordingSession session = new RecordingSession(id, recording, description);
             idToSession.put(id, session);
@@ -222,6 +267,17 @@ public class FlightRecordingService {
             }
             throw new RuntimeException("Failed to start a recording", e);
         }
+    }
+
+    private void validateCreateRecordingParams(
+            @Nullable Long duration,
+            @Nullable Long maxAge,
+            @Nullable Long maxSize,
+            @Nullable Long delay) {
+        Validator.min(duration, "duration", 0);
+        Validator.min(maxAge, "maxAge", 0);
+        Validator.min(maxSize, "maxSize", 0);
+        Validator.min(delay, "delay", 0);
     }
 
     public UpdateResultDTO closeRecordings() {
@@ -264,6 +320,70 @@ public class FlightRecordingService {
         }
     }
 
+    public List<FileResource> getRecordingFiles() {
+        Collection<RecordingSession> sessions = idToSession.values();
+        if (sessions.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<FileResource> resources = new ArrayList<>(sessions.size());
+        for (RecordingSession session : sessions) {
+            try {
+                if (session.canBeDumped()) {
+                    FileResource resource = dump(session);
+                    resources.add(resource);
+                }
+            } catch (Exception e) {
+                for (FileResource resource : resources) {
+                    try {
+                        resource.cleanup(null);
+                    } catch (Exception ex) {
+                        e.addSuppressed(new RuntimeException(
+                                "Caught an error when cleaning up the file resource: "
+                                        + resource.getFile(),
+                                ex));
+                    }
+                }
+                throw e;
+            }
+        }
+        return resources;
+    }
+
+    public List<FileResource> getRecordingFiles(Collection<Long> ids) {
+        Validator.notNull(ids, "ids");
+        if (ids.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<RecordingSession> sessions = new ArrayList<>(ids.size());
+        for (Long id : ids) {
+            RecordingSession session = idToSession.get(id);
+            if (session == null) {
+                continue;
+            }
+            session.throwIfCannotBeDumped();
+            sessions.add(session);
+        }
+        List<FileResource> resources = new ArrayList<>(sessions.size());
+        for (RecordingSession session : sessions) {
+            try {
+                resources.add(dump(session));
+            } catch (Exception e) {
+                for (FileResource resource : resources) {
+                    try {
+                        resource.cleanup(null);
+                    } catch (Exception ex) {
+                        e.addSuppressed(new RuntimeException(
+                                "Caught an error when cleaning up the file resource: "
+                                        + resource.getFile(),
+                                ex));
+                    }
+                }
+                throw e;
+            }
+        }
+        return resources;
+    }
+
     @Nullable
     public FileResource getRecordingFile(Long id, boolean close) {
         RecordingSession session = idToSession.get(id);
@@ -282,12 +402,33 @@ public class FlightRecordingService {
                 }
             });
         }
+        session.throwIfCannotBeDumped();
+        return dump(session);
+    }
+
+    private FileResource dump(RecordingSession session) {
+        Long id = session.id();
+        String fileName = id
+                + ".jfr";
         String name = id
                 + "-"
                 + TEMP_FLIGHT_RECORDING_FILE_ID.getAndIncrement()
                 + ".jfr";
         Path tempFile = FileUtil.createTempFile(JFR_DIR, name);
-        return new FileResource(fileName, session.getFilePath(tempFile));
+        try {
+            Path filePath = session.getFilePath(tempFile);
+            return new FileResource(fileName, filePath);
+        } catch (Exception e) {
+            try {
+                Files.deleteIfExists(tempFile);
+            } catch (IOException ex) {
+                e.addSuppressed(new InputOutputException(
+                        "Caught an error when deleting the temp file: "
+                                + tempFile,
+                        ex));
+            }
+            throw e;
+        }
     }
 
     public int deleteRecordings() {
@@ -320,7 +461,10 @@ public class FlightRecordingService {
         return idToSession.values();
     }
 
-    public Collection<RecordingSession> getSessions(Set<Long> ids) {
+    public List<RecordingSession> getSessions(Set<Long> ids) {
+        if (ids.isEmpty()) {
+            return Collections.emptyList();
+        }
         List<RecordingSession> sessions = new ArrayList<>(ids.size());
         for (Long id : ids) {
             RecordingSession session = idToSession.get(id);
@@ -342,5 +486,4 @@ public class FlightRecordingService {
             session.close(true);
         }
     }
-
 }

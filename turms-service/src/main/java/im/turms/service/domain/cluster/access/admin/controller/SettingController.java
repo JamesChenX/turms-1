@@ -20,15 +20,18 @@ package im.turms.service.domain.cluster.access.admin.controller;
 import java.util.Map;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.context.ApplicationContext;
 import reactor.core.publisher.Mono;
 
-import im.turms.server.common.access.admin.dto.response.HttpHandlerResult;
-import im.turms.server.common.access.admin.dto.response.ResponseDTO;
+import im.turms.server.common.access.admin.api.ApiConst;
+import im.turms.server.common.access.admin.api.ApiController;
+import im.turms.server.common.access.admin.api.ApiEndpoint;
+import im.turms.server.common.access.admin.api.ApiEndpointAction;
+import im.turms.server.common.access.admin.api.Request;
+import im.turms.server.common.access.admin.api.annotation.GetMapping;
+import im.turms.server.common.access.admin.api.response.HttpHandlerResult;
+import im.turms.server.common.access.admin.api.response.ResponseDTO;
 import im.turms.server.common.access.admin.permission.RequiredPermission;
-import im.turms.server.common.access.admin.web.annotation.GetMapping;
-import im.turms.server.common.access.admin.web.annotation.PutMapping;
-import im.turms.server.common.access.admin.web.annotation.RequestBody;
-import im.turms.server.common.access.admin.web.annotation.RestController;
 import im.turms.server.common.infra.property.TurmsProperties;
 import im.turms.server.common.infra.property.TurmsPropertiesInspector;
 import im.turms.server.common.infra.property.TurmsPropertiesManager;
@@ -45,16 +48,15 @@ import static im.turms.server.common.infra.property.TurmsPropertiesInspector.con
  * @implNote These APIs should be designed to work for the cluster settings instead of the local
  *           node settings by default consistently because it is "cluster/settings".
  */
-@RestController("cluster/settings")
+@ApiController(ApiConst.RESOURCE_PATH_SERVICE_CLUSTER_SETTING)
 public class SettingController extends BaseController {
 
-    public SettingController(TurmsPropertiesManager propertiesManager) {
-        super(propertiesManager);
+    public SettingController(ApplicationContext context, TurmsPropertiesManager propertiesManager) {
+        super(context, propertiesManager);
     }
 
-    @GetMapping
-    @RequiredPermission(CLUSTER_SETTING_QUERY)
-    public HttpHandlerResult<ResponseDTO<SettingsDTO>> queryClusterSettings(
+    @ApiEndpoint(action = ApiEndpointAction.QUERY, requiredPermissions = CLUSTER_SETTING_QUERY)
+    public ResponseDTO<SettingsDTO> queryClusterSettings(
             boolean queryLocalSettings,
             boolean onlyMutable) {
         TurmsProperties properties = queryLocalSettings
@@ -69,13 +71,12 @@ public class SettingController extends BaseController {
      * @implNote Do NOT declare turmsProperties as TurmsProperties because TurmsProperties has
      *           default values
      */
-    @PutMapping
-    @RequiredPermission(CLUSTER_SETTING_UPDATE)
+    @ApiEndpoint(action = ApiEndpointAction.UPDATE, requiredPermissions = CLUSTER_SETTING_UPDATE)
     @Schema(implementation = TurmsProperties.class)
-    public Mono<HttpHandlerResult<ResponseDTO<Void>>> updateClusterSettings(
+    public Mono<ResponseDTO<Void>> updateClusterSettings(
             boolean reset,
             boolean updateLocalSettings,
-            @RequestBody(required = false) Map<String, Object> turmsProperties) {
+            @Request(required = false) Map<String, Object> turmsProperties) {
         if (updateLocalSettings) {
             propertiesManager.updateLocalProperties(reset, turmsProperties);
             return Mono.just(HttpHandlerResult.RESPONSE_OK);
@@ -85,9 +86,11 @@ public class SettingController extends BaseController {
         }
     }
 
-    @GetMapping("metadata")
-    @RequiredPermission(CLUSTER_SETTING_QUERY)
-    public HttpHandlerResult<ResponseDTO<SettingsDTO>> queryClusterConfigMetadata(
+    @ApiEndpoint(
+            value = "metadata",
+            action = ApiEndpointAction.QUERY,
+            requiredPermissions = CLUSTER_SETTING_QUERY)
+    public ResponseDTO<SettingsDTO> queryClusterConfigMetadata(
             boolean queryLocalSettings,
             boolean onlyMutable,
             boolean withValue) {

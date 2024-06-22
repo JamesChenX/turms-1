@@ -22,23 +22,26 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.context.ApplicationContext;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import im.turms.server.common.access.admin.dto.response.DeleteResultDTO;
-import im.turms.server.common.access.admin.dto.response.HttpHandlerResult;
-import im.turms.server.common.access.admin.dto.response.PaginationDTO;
-import im.turms.server.common.access.admin.dto.response.ResponseDTO;
-import im.turms.server.common.access.admin.dto.response.UpdateResultDTO;
+import im.turms.server.common.access.admin.api.ApiConst;
+import im.turms.server.common.access.admin.api.ApiController;
+import im.turms.server.common.access.admin.api.ApiEndpoint;
+import im.turms.server.common.access.admin.api.ApiEndpointAction;
+import im.turms.server.common.access.admin.api.Request;
+import im.turms.server.common.access.admin.api.annotation.DeleteMapping;
+import im.turms.server.common.access.admin.api.annotation.GetMapping;
+import im.turms.server.common.access.admin.api.annotation.PutMapping;
+import im.turms.server.common.access.admin.api.annotation.QueryParam;
+import im.turms.server.common.access.admin.api.response.DeleteResultDTO;
+import im.turms.server.common.access.admin.api.response.HttpHandlerResult;
+import im.turms.server.common.access.admin.api.response.PaginationDTO;
+import im.turms.server.common.access.admin.api.response.ResponseDTO;
+import im.turms.server.common.access.admin.api.response.UpdateResultDTO;
 import im.turms.server.common.access.admin.permission.AdminPermission;
 import im.turms.server.common.access.admin.permission.RequiredPermission;
-import im.turms.server.common.access.admin.web.annotation.DeleteMapping;
-import im.turms.server.common.access.admin.web.annotation.GetMapping;
-import im.turms.server.common.access.admin.web.annotation.PostMapping;
-import im.turms.server.common.access.admin.web.annotation.PutMapping;
-import im.turms.server.common.access.admin.web.annotation.QueryParam;
-import im.turms.server.common.access.admin.web.annotation.RequestBody;
-import im.turms.server.common.access.admin.web.annotation.RestController;
 import im.turms.server.common.infra.property.TurmsPropertiesManager;
 import im.turms.service.domain.common.access.admin.controller.BaseController;
 import im.turms.service.domain.user.access.admin.dto.request.AddUserPermissionGroupDTO;
@@ -49,22 +52,24 @@ import im.turms.service.domain.user.service.UserPermissionGroupService;
 /**
  * @author James Chen
  */
-@RestController("users/permission-groups")
+@ApiController(ApiConst.RESOURCE_PATH_SERVICE_BUSINESS_USER_PERMISSION_GROUP)
 public class UserPermissionGroupController extends BaseController {
 
     private final UserPermissionGroupService userPermissionGroupService;
 
     public UserPermissionGroupController(
+            ApplicationContext context,
             TurmsPropertiesManager propertiesManager,
             UserPermissionGroupService userPermissionGroupService) {
-        super(propertiesManager);
+        super(context, propertiesManager);
         this.userPermissionGroupService = userPermissionGroupService;
     }
 
-    @PostMapping
-    @RequiredPermission(AdminPermission.USER_PERMISSION_GROUP_CREATE)
-    public Mono<HttpHandlerResult<ResponseDTO<UserPermissionGroup>>> addUserPermissionGroup(
-            @RequestBody AddUserPermissionGroupDTO addUserPermissionGroupDTO) {
+    @ApiEndpoint(
+            action = ApiEndpointAction.CREATE,
+            requiredPermissions = AdminPermission.USER_PERMISSION_GROUP_CREATE)
+    public Mono<ResponseDTO<UserPermissionGroup>> addUserPermissionGroup(
+            @Request AddUserPermissionGroupDTO addUserPermissionGroupDTO) {
         Set<Long> creatableGroupTypesIds = addUserPermissionGroupDTO.creatableGroupTypeIds();
         creatableGroupTypesIds = creatableGroupTypesIds == null
                 ? Collections.emptySet()
@@ -82,50 +87,52 @@ public class UserPermissionGroupController extends BaseController {
         return HttpHandlerResult.okIfTruthy(userPermissionGroupMono);
     }
 
-    @GetMapping
-    @RequiredPermission(AdminPermission.USER_PERMISSION_GROUP_QUERY)
-    public Mono<HttpHandlerResult<ResponseDTO<Collection<UserPermissionGroup>>>> queryUserPermissionGroups(
+    @ApiEndpoint(
+            action = ApiEndpointAction.QUERY,
+            requiredPermissions = AdminPermission.USER_PERMISSION_GROUP_QUERY)
+    public Mono<ResponseDTO<Collection<UserPermissionGroup>>> queryUserPermissionGroups(
             @QueryParam(required = false) Integer size) {
-        size = getPageSize(size);
+        size = getLimit(size);
         Flux<UserPermissionGroup> groupTypesFlux =
                 userPermissionGroupService.queryUserPermissionGroups(0, size);
         return HttpHandlerResult.okIfTruthy(groupTypesFlux);
     }
 
-    @GetMapping("page")
-    @RequiredPermission(AdminPermission.USER_PERMISSION_GROUP_QUERY)
-    public Mono<HttpHandlerResult<ResponseDTO<PaginationDTO<UserPermissionGroup>>>> queryUserPermissionGroups(
-            int page,
-            @QueryParam(required = false) Integer size) {
-        size = getPageSize(size);
-        Mono<Long> count = userPermissionGroupService.countUserPermissionGroups();
-        Flux<UserPermissionGroup> groupTypesFlux =
-                userPermissionGroupService.queryUserPermissionGroups(page, size);
-        return HttpHandlerResult.page(count, groupTypesFlux);
-    }
+//    @GetMapping("page")
+//    @RequiredPermission(AdminPermission.USER_PERMISSION_GROUP_QUERY)
+//    public Mono<HttpHandlerResult<ResponseDTO<PaginationDTO<UserPermissionGroup>>>> queryUserPermissionGroups(
+//            int page,
+//            @QueryParam(required = false) Integer size) {
+//        size = getLimit(size);
+//        Mono<Long> count = userPermissionGroupService.countUserPermissionGroups();
+//        Flux<UserPermissionGroup> groupTypesFlux =
+//                userPermissionGroupService.queryUserPermissionGroups(page, size);
+//        return HttpHandlerResult.page(count, groupTypesFlux);
+//    }
 
-    @PutMapping
-    @RequiredPermission(AdminPermission.USER_PERMISSION_GROUP_UPDATE)
-    public Mono<HttpHandlerResult<ResponseDTO<UpdateResultDTO>>> updateUserPermissionGroup(
+    @ApiEndpoint(
+            action = ApiEndpointAction.UPDATE,
+            requiredPermissions = AdminPermission.USER_PERMISSION_GROUP_UPDATE)
+    public Mono<ResponseDTO<UpdateResultDTO>> updateUserPermissionGroup(
             Set<Long> ids,
-            @RequestBody UpdateUserPermissionGroupDTO updateUserPermissionGroupDTO) {
+            @Request UpdateUserPermissionGroupDTO updateUserPermissionGroupDTO) {
         Mono<UpdateResultDTO> updateMono = userPermissionGroupService
                 .updateUserPermissionGroups(ids,
                         updateUserPermissionGroupDTO.creatableGroupTypeIds(),
                         updateUserPermissionGroupDTO.ownedGroupLimit(),
                         updateUserPermissionGroupDTO.ownedGroupLimitForEachGroupType(),
                         updateUserPermissionGroupDTO.groupTypeIdToLimit())
-                .map(UpdateResultDTO::get);
+                .map(UpdateResultDTO::from);
         return HttpHandlerResult.okIfTruthy(updateMono);
     }
 
-    @DeleteMapping
-    @RequiredPermission(AdminPermission.USER_PERMISSION_GROUP_DELETE)
-    public Mono<HttpHandlerResult<ResponseDTO<DeleteResultDTO>>> deleteUserPermissionGroup(
-            Set<Long> ids) {
+    @ApiEndpoint(
+            action = ApiEndpointAction.DELETE,
+            requiredPermissions = AdminPermission.USER_PERMISSION_GROUP_DELETE)
+    public Mono<ResponseDTO<DeleteResultDTO>> deleteUserPermissionGroup(Set<Long> ids) {
         Mono<DeleteResultDTO> deleteMono =
                 userPermissionGroupService.deleteUserPermissionGroups(ids)
-                        .map(DeleteResultDTO::get);
+                        .map(DeleteResultDTO::from);
         return HttpHandlerResult.okIfTruthy(deleteMono);
     }
 

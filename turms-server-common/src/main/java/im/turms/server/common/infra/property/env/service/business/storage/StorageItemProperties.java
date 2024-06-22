@@ -27,7 +27,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import im.turms.server.common.access.admin.web.MediaTypeConst;
+import im.turms.server.common.infra.http.MediaTypeConst;
 import im.turms.server.common.infra.property.metadata.Description;
 
 import static im.turms.server.common.infra.unit.ByteSizeUnit.MB;

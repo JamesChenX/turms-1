@@ -26,11 +26,11 @@ import jakarta.annotation.Nullable;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-import im.turms.server.common.access.admin.web.MediaType;
 import im.turms.server.common.access.client.dto.constant.StorageResourceType;
 import im.turms.server.common.access.common.ResponseStatusCode;
 import im.turms.server.common.infra.exception.IncompatibleInternalChangeException;
 import im.turms.server.common.infra.exception.ResponseException;
+import im.turms.server.common.infra.http.MediaType;
 import im.turms.server.common.infra.plugin.PluginManager;
 import im.turms.server.common.infra.time.DateRange;
 import im.turms.server.common.infra.validation.Validator;

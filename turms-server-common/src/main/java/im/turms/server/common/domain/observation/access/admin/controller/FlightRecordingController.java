@@ -18,31 +18,33 @@
 package im.turms.server.common.domain.observation.access.admin.controller;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import jakarta.annotation.Nullable;
 
-import jdk.jfr.Recording;
-import jdk.jfr.RecordingState;
+import org.springframework.context.ApplicationContext;
 
-import im.turms.server.common.access.admin.dto.response.DeleteResultDTO;
-import im.turms.server.common.access.admin.dto.response.HttpHandlerResult;
-import im.turms.server.common.access.admin.dto.response.ResponseDTO;
-import im.turms.server.common.access.admin.dto.response.UpdateResultDTO;
+import im.turms.server.common.access.admin.api.ApiConst;
+import im.turms.server.common.access.admin.api.ApiController;
+import im.turms.server.common.access.admin.api.ApiEndpoint;
+import im.turms.server.common.access.admin.api.ApiEndpointAction;
+import im.turms.server.common.access.admin.api.BaseApiController;
+import im.turms.server.common.access.admin.api.HttpResponseException;
+import im.turms.server.common.access.admin.api.response.DeleteResultDTO;
+import im.turms.server.common.access.admin.api.response.ResponseDTO;
+import im.turms.server.common.access.admin.api.response.UpdateResultDTO;
 import im.turms.server.common.access.admin.permission.AdminPermission;
-import im.turms.server.common.access.admin.permission.RequiredPermission;
-import im.turms.server.common.access.admin.web.HttpResponseException;
-import im.turms.server.common.access.admin.web.annotation.DeleteMapping;
-import im.turms.server.common.access.admin.web.annotation.GetMapping;
-import im.turms.server.common.access.admin.web.annotation.PostMapping;
-import im.turms.server.common.access.admin.web.annotation.PutMapping;
-import im.turms.server.common.access.admin.web.annotation.QueryParam;
-import im.turms.server.common.access.admin.web.annotation.RequestBody;
-import im.turms.server.common.access.admin.web.annotation.RestController;
 import im.turms.server.common.access.common.ResponseStatusCode;
-import im.turms.server.common.domain.observation.access.admin.dto.request.CreateRecordingDTO;
-import im.turms.server.common.domain.observation.access.admin.dto.response.RecordingSessionDTO;
+import im.turms.server.common.domain.common.access.dto.BinaryResponseDTO;
+import im.turms.server.common.domain.observation.access.admin.dto.request.CreateFlightRecordingsRequestDTO;
+import im.turms.server.common.domain.observation.access.admin.dto.request.DeleteFlightRecordingsRequestDTO;
+import im.turms.server.common.domain.observation.access.admin.dto.request.QueryFlightRecordingsAsFilesRequestDTO;
+import im.turms.server.common.domain.observation.access.admin.dto.request.QueryFlightRecordingsRequestDTO;
+import im.turms.server.common.domain.observation.access.admin.dto.request.UpdateFlightRecordingsRequestDTO;
+import im.turms.server.common.domain.observation.access.admin.dto.response.CreateFlightRecordingsResponseDTO;
+import im.turms.server.common.domain.observation.access.admin.dto.response.QueryFlightRecordingsResponseDTO;
 import im.turms.server.common.domain.observation.exception.DumpIllegalStateException;
 import im.turms.server.common.domain.observation.model.RecordingSession;
 import im.turms.server.common.domain.observation.service.FlightRecordingService;
@@ -51,85 +53,112 @@ import im.turms.server.common.infra.io.FileResource;
 /**
  * @author James Chen
  */
-@RestController("flight-recordings")
-public class FlightRecordingController {
+@ApiController(ApiConst.RESOURCE_PATH_COMMON_MONITOR_FLIGHT_RECORDING)
+public class FlightRecordingController extends BaseApiController {
 
+    public static final Comparator<RecordingSession> RECORDING_SESSION_COMPARATOR =
+            (o1, o2) -> Long.compare(o2.id(), o1.id());
     private final FlightRecordingService flightRecordingService;
 
-    public FlightRecordingController(FlightRecordingService flightRecordingService) {
+    public FlightRecordingController(
+            ApplicationContext context,
+            FlightRecordingService flightRecordingService) {
+        super(context);
         this.flightRecordingService = flightRecordingService;
     }
 
-    @RequiredPermission(AdminPermission.FLIGHT_RECORDING_QUERY)
-    @GetMapping
-    public HttpHandlerResult<ResponseDTO<Collection<RecordingSessionDTO>>> getRecordings(
-            @QueryParam(required = false) Set<Long> ids) {
-        Collection<RecordingSession> sessions = ids == null
-                ? flightRecordingService.getSessions()
-                : flightRecordingService.getSessions(ids);
-        List<RecordingSessionDTO> result = new ArrayList<>(sessions.size());
-        for (RecordingSession session : sessions) {
-            Recording recording = session.recording();
-            RecordingState state = recording.getState();
-            result.add(new RecordingSessionDTO(
-                    recording.getId(),
-                    state.name(),
-                    Date.from(recording.getStartTime()),
-                    session.getCloseDate(),
-                    session.description()));
+    @ApiEndpoint(
+            action = ApiEndpointAction.QUERY,
+            requiredPermissions = AdminPermission.FLIGHT_RECORDING_QUERY)
+    public ResponseDTO<QueryFlightRecordingsResponseDTO> queryFlightRecordings(
+            @Nullable QueryFlightRecordingsRequestDTO request) {
+        List<RecordingSession> sessions;
+        if (request == null) {
+            sessions = new ArrayList<>(flightRecordingService.getSessions());
+            sessions.sort(RECORDING_SESSION_COMPARATOR);
+        } else {
+            if (request.hasFilter()) {
+                LinkedHashSet<Long> ids = request.filter()
+                        .ids();
+                if (ids == null) {
+                    sessions = new ArrayList<>(flightRecordingService.getSessions());
+                } else {
+                    sessions = flightRecordingService.getSessions(ids);
+                }
+            } else {
+                sessions = new ArrayList<>(flightRecordingService.getSessions());
+            }
+            sessions.sort(RECORDING_SESSION_COMPARATOR);
+            sessions = applySkipAndLimit(request, sessions);
         }
-        return HttpHandlerResult.okIfTruthy(result);
+        return ResponseDTO.of(QueryFlightRecordingsResponseDTO.from(sessions));
     }
 
-    @RequiredPermission(AdminPermission.FLIGHT_RECORDING_CREATE)
-    @PostMapping
-    public HttpHandlerResult<ResponseDTO<Long>> startRecording(
-            @RequestBody CreateRecordingDTO createRecording) {
-        RecordingSession session =
-                flightRecordingService.startRecording(createRecording.durationSeconds(),
-                        createRecording.maxAgeSeconds(),
-                        createRecording.maxSizeBytes(),
-                        createRecording.delaySeconds(),
-                        createRecording.customSettings(),
-                        createRecording.description());
-        return HttpHandlerResult.okIfTruthy(session.id());
+    @ApiEndpoint(
+            action = ApiEndpointAction.CREATE,
+            requiredPermissions = AdminPermission.FLIGHT_RECORDING_CREATE)
+    public ResponseDTO<CreateFlightRecordingsResponseDTO> startFlightRecording(
+            CreateFlightRecordingsRequestDTO request) {
+        List<RecordingSession> sessions = flightRecordingService.startRecordings(request.records());
+        return ResponseDTO.of(CreateFlightRecordingsResponseDTO.from(sessions));
     }
 
-    @RequiredPermission(AdminPermission.FLIGHT_RECORDING_DELETE)
-    @DeleteMapping
-    public HttpHandlerResult<ResponseDTO<DeleteResultDTO>> deleteRecordings(
-            @QueryParam(required = false) Set<Long> ids) {
-        int deletedCount = ids == null
-                ? flightRecordingService.deleteRecordings()
-                : flightRecordingService.deleteRecordings(ids);
-        return HttpHandlerResult.deleteResult(deletedCount);
+    @ApiEndpoint(
+            action = ApiEndpointAction.DELETE,
+            requiredPermissions = AdminPermission.FLIGHT_RECORDING_DELETE)
+    public ResponseDTO<DeleteResultDTO> deleteRecordings(DeleteFlightRecordingsRequestDTO request) {
+        int deletedCount = request.hasFilter()
+                ? flightRecordingService.deleteRecordings(request.filter()
+                        .ids())
+                : flightRecordingService.deleteRecordings();
+        return ResponseDTO.deleteResult(deletedCount);
     }
 
-    @RequiredPermission(AdminPermission.FLIGHT_RECORDING_UPDATE)
-    @PutMapping
-    public HttpHandlerResult<ResponseDTO<UpdateResultDTO>> closeRecordings(
-            @QueryParam(required = false) Set<Long> ids) {
-        UpdateResultDTO result = ids == null
-                ? flightRecordingService.closeRecordings()
-                : flightRecordingService.closeRecordings(ids);
-        return HttpHandlerResult.okIfTruthy(result);
+    @ApiEndpoint(
+            action = ApiEndpointAction.UPDATE,
+            requiredPermissions = AdminPermission.FLIGHT_RECORDING_UPDATE)
+    public ResponseDTO<UpdateResultDTO> closeRecordings(UpdateFlightRecordingsRequestDTO request) {
+        UpdateResultDTO result;
+        if (request.hasFilter()) {
+            Set<Long> ids = request.filter()
+                    .ids();
+            result = ids == null
+                    ? flightRecordingService.closeRecordings()
+                    : flightRecordingService.closeRecordings(ids);
+        } else {
+            result = flightRecordingService.closeRecordings();
+        }
+        return ResponseDTO.of(result);
     }
 
-    @RequiredPermission(AdminPermission.FLIGHT_RECORDING_QUERY)
-    @GetMapping("jfr")
-    public FileResource downloadJfr(Long id, boolean close) {
-        FileResource file;
+    @ApiEndpoint(
+            value = "as-file",
+            action = ApiEndpointAction.QUERY,
+            requiredPermissions = AdminPermission.FLIGHT_RECORDING_QUERY)
+    public BinaryResponseDTO queryFlightRecordingsAsFiles(
+            @Nullable QueryFlightRecordingsAsFilesRequestDTO request) {
+        List<FileResource> resources;
         try {
-            file = flightRecordingService.getRecordingFile(id, close);
+            if (request == null) {
+                resources = flightRecordingService.getRecordingFiles();
+            } else {
+                if (request.hasFilter()) {
+                    LinkedHashSet<Long> ids = request.filter()
+                            .ids();
+                    if (ids == null) {
+                        resources = flightRecordingService.getRecordingFiles();
+                    } else {
+                        resources = flightRecordingService.getRecordingFiles(ids);
+                    }
+                } else {
+                    resources = flightRecordingService.getRecordingFiles();
+                }
+                resources = applySkipAndLimit(request, resources);
+            }
         } catch (DumpIllegalStateException e) {
             throw new HttpResponseException(ResponseStatusCode.DUMP_JFR_IN_ILLEGAL_STATUS, e);
         }
-        if (file == null) {
-            throw new HttpResponseException(
-                    ResponseStatusCode.RESOURCE_NOT_FOUND,
-                    "Recording not found");
-        }
-        return file;
+        return BinaryResponseDTO.of(resources);
     }
 
 }

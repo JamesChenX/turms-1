@@ -19,6 +19,7 @@ package im.turms.server.common.infra.plugin;
 
 import java.nio.file.Path;
 import java.util.Map;
+import jakarta.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,7 +31,7 @@ import im.turms.server.common.infra.cluster.node.NodeType;
  */
 @AllArgsConstructor
 @Data
-public class PluginDescriptor {
+public class PluginDescriptor implements Comparable<PluginDescriptor> {
     private final String id;
     private final Map<NodeType, ServerInfo> compatibleServerTypeToInfo;
     private final String version;
@@ -39,6 +40,20 @@ public class PluginDescriptor {
     private final String description;
 
     private Path path;
+
+    @Override
+    public int compareTo(@NotNull PluginDescriptor o) {
+        int result = id.compareTo(o.id);
+        if (result != 0) {
+            return result;
+        }
+        // TODO: compare semantic versions
+        result = version.compareTo(o.version);
+        if (result != 0) {
+            return result;
+        }
+        return provider.compareTo(o.provider);
+    }
 
     @Data
     public static class ServerInfo {

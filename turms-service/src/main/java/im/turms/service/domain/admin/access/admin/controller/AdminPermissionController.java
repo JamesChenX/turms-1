@@ -17,43 +17,50 @@
 
 package im.turms.service.domain.admin.access.admin.controller;
 
-import java.util.Collection;
 import java.util.List;
 
-import im.turms.server.common.access.admin.dto.response.ResponseDTO;
+import org.springframework.context.ApplicationContext;
+
+import im.turms.server.common.access.admin.api.ApiConst;
+import im.turms.server.common.access.admin.api.ApiController;
+import im.turms.server.common.access.admin.api.ApiEndpoint;
+import im.turms.server.common.access.admin.api.ApiEndpointAction;
+import im.turms.server.common.access.admin.api.response.ResponseDTO;
 import im.turms.server.common.access.admin.permission.AdminPermission;
-import im.turms.server.common.access.admin.permission.RequiredPermission;
-import im.turms.server.common.access.admin.web.annotation.GetMapping;
-import im.turms.server.common.access.admin.web.annotation.RestController;
-import im.turms.server.common.access.common.ResponseStatusCode;
 import im.turms.server.common.infra.collection.CollectionUtil;
 import im.turms.server.common.infra.lang.ClassUtil;
 import im.turms.server.common.infra.property.TurmsPropertiesManager;
 import im.turms.service.domain.admin.access.admin.dto.response.PermissionDTO;
+import im.turms.service.domain.admin.access.admin.dto.response.QueryAdminPermissionsResponseDTO;
 import im.turms.service.domain.common.access.admin.controller.BaseController;
 
 /**
  * @author James Chen
  */
-@RestController("admins/permissions")
+@ApiController(ApiConst.RESOURCE_PATH_COMMON_ADMIN_PERMISSION)
 public class AdminPermissionController extends BaseController {
 
-    private static final List<PermissionDTO> ALL_PERMISSIONS;
+    private static final ResponseDTO<QueryAdminPermissionsResponseDTO> QUERY_ADMIN_PERMISSIONS_RESPONSE_EMPTY;
 
     static {
         AdminPermission[] permissions = ClassUtil.getSharedEnumConstants(AdminPermission.class);
-        ALL_PERMISSIONS = CollectionUtil.transformAsList(permissions,
+        List<PermissionDTO> permissionDTOS = CollectionUtil.transformAsList(permissions,
                 permission -> new PermissionDTO(permission.getGroup(), permission));
+        QUERY_ADMIN_PERMISSIONS_RESPONSE_EMPTY = ResponseDTO
+                .of(new QueryAdminPermissionsResponseDTO(permissionDTOS.size(), permissionDTOS));
     }
 
-    public AdminPermissionController(TurmsPropertiesManager propertiesManager) {
-        super(propertiesManager);
+    public AdminPermissionController(
+            ApplicationContext context,
+            TurmsPropertiesManager propertiesManager) {
+        super(context, propertiesManager);
     }
 
-    @GetMapping
-    @RequiredPermission(AdminPermission.ADMIN_PERMISSION_QUERY)
-    public ResponseDTO<Collection<PermissionDTO>> queryAdminPermissions() {
-        return new ResponseDTO<>(ResponseStatusCode.OK, ALL_PERMISSIONS);
+    @ApiEndpoint(
+            action = ApiEndpointAction.QUERY,
+            requiredPermissions = AdminPermission.ADMIN_PERMISSION_QUERY)
+    public ResponseDTO<QueryAdminPermissionsResponseDTO> queryAdminPermissions() {
+        return QUERY_ADMIN_PERMISSIONS_RESPONSE_EMPTY;
     }
 
 }

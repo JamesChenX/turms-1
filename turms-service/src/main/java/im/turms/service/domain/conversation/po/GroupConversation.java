@@ -51,12 +51,7 @@ public final class GroupConversation extends BaseEntity {
         }
     }
 
-    @Data
-    public static class GroupConversionMemberKey {
-
-        private final Long groupId;
-        private final Long memberId;
-
+    public record GroupConversionMemberKey(Long groupId, Long memberId) {
     }
 
 }

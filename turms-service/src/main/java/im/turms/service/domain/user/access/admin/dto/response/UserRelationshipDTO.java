@@ -46,11 +46,11 @@ public record UserRelationshipDTO(
         this(new Key(ownerId, relatedUserId), name, blockDate, establishmentDate, groupIndexes);
     }
 
-    public static UserRelationshipDTO fromDomain(UserRelationship relationship) {
-        return fromDomain(relationship, null);
+    public static UserRelationshipDTO from(UserRelationship relationship) {
+        return from(relationship, null);
     }
 
-    public static UserRelationshipDTO fromDomain(
+    public static UserRelationshipDTO from(
             @NotNull UserRelationship relationship,
             @Nullable Set<Integer> groupIndexes) {
         UserRelationship.Key key = relationship.getKey();

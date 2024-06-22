@@ -36,7 +36,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.util.MimeTypeUtils;
 import reactor.netty.http.client.HttpClient;
 
-import im.turms.server.common.access.admin.dto.response.ResponseDTO;
+import im.turms.server.common.access.admin.api.response.ResponseDTO;
 import im.turms.server.common.infra.cluster.node.Node;
 import im.turms.server.common.infra.property.TurmsProperties;
 import im.turms.server.common.infra.property.TurmsPropertiesManager;

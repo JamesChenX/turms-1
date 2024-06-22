@@ -27,7 +27,8 @@ import lombok.Setter;
 import org.springframework.context.ApplicationContext;
 import reactor.core.publisher.Mono;
 
-import im.turms.server.common.access.admin.web.HttpRequestDispatcher;
+import im.turms.server.common.access.admin.api.ApiRequestDispatcher;
+import im.turms.server.common.access.admin.api.BaseApiController;
 import im.turms.server.common.infra.lang.ClassUtil;
 import im.turms.server.common.infra.logging.core.logger.Logger;
 import im.turms.server.common.infra.logging.core.logger.LoggerFactory;
@@ -80,12 +81,12 @@ public abstract class TurmsExtension {
                 .loadProperties(propertiesClass);
     }
 
-    protected void registerController(Object controller) {
+    protected void registerController(BaseApiController controller) {
         registerControllers(List.of(controller));
     }
 
-    protected void registerControllers(List<Object> controllers) {
-        context.getBean(HttpRequestDispatcher.class)
+    protected void registerControllers(List<BaseApiController> controllers) {
+        context.getBean(ApiRequestDispatcher.class)
                 .registerControllers(controllers);
     }
 

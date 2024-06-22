@@ -23,66 +23,40 @@ import jakarta.annotation.Nullable;
 import io.netty.buffer.ByteBuf;
 import org.springframework.context.ApplicationContext;
 
-import im.turms.server.common.access.admin.web.ApiEndpoint;
-import im.turms.server.common.access.admin.web.ApiEndpointKey;
-import im.turms.server.common.access.admin.web.HttpRequestDispatcher;
-import im.turms.server.common.access.admin.web.annotation.GetMapping;
-import im.turms.server.common.access.admin.web.annotation.RestController;
+import im.turms.server.common.access.admin.api.ApiConst;
+import im.turms.server.common.access.admin.api.ApiController;
+import im.turms.server.common.access.admin.api.ApiEndpoint;
+import im.turms.server.common.access.admin.api.ApiEndpointAction;
+import im.turms.server.common.access.admin.api.ApiEndpointInfo;
+import im.turms.server.common.access.admin.api.ApiEndpointKey;
+import im.turms.server.common.access.admin.api.ApiRequestDispatcher;
+import im.turms.server.common.access.admin.api.BaseApiController;
 import im.turms.server.common.infra.address.BaseServiceAddressManager;
 import im.turms.server.common.infra.cluster.node.Node;
 import im.turms.server.common.infra.context.TurmsApplicationContext;
-import im.turms.server.common.infra.io.FileUtil;
 import im.turms.server.common.infra.netty.ByteBufUtil;
 import im.turms.server.common.infra.openapi.OpenApiBuilder;
 
-import static im.turms.server.common.access.admin.web.ContentEncodingConst.GZIP;
-import static im.turms.server.common.access.admin.web.MediaTypeConst.APPLICATION_JAVASCRIPT;
-import static im.turms.server.common.access.admin.web.MediaTypeConst.APPLICATION_JSON;
-import static im.turms.server.common.access.admin.web.MediaTypeConst.IMAGE_PNG;
-import static im.turms.server.common.access.admin.web.MediaTypeConst.TEXT_CSS;
-import static im.turms.server.common.access.admin.web.MediaTypeConst.TEXT_HTML;
+import static im.turms.server.common.infra.http.ContentEncodingConst.GZIP;
+import static im.turms.server.common.infra.http.MediaTypeConst.APPLICATION_JAVASCRIPT;
+import static im.turms.server.common.infra.http.MediaTypeConst.APPLICATION_JSON;
+import static im.turms.server.common.infra.http.MediaTypeConst.IMAGE_PNG;
+import static im.turms.server.common.infra.http.MediaTypeConst.TEXT_CSS;
+import static im.turms.server.common.infra.http.MediaTypeConst.TEXT_HTML;
+import static im.turms.server.common.infra.openapi.OpenApiResourceConst.FAVICON_32x32;
+import static im.turms.server.common.infra.openapi.OpenApiResourceConst.INDEX_CSS;
+import static im.turms.server.common.infra.openapi.OpenApiResourceConst.INDEX_HTML;
+import static im.turms.server.common.infra.openapi.OpenApiResourceConst.SWAGGER_UI_BUNDLE;
+import static im.turms.server.common.infra.openapi.OpenApiResourceConst.SWAGGER_UI_CSS;
+import static im.turms.server.common.infra.openapi.OpenApiResourceConst.SWAGGER_UI_STANDALONE_PRESET;
 
 /**
  * @author James Chen
  */
-@RestController("openapi")
-public class OpenApiController {
+@ApiController(ApiConst.RESOURCE_PATH_COMMON_OPENAPI)
+public class OpenApiController extends BaseApiController {
 
-    private static final ByteBuf FAVICON_32_32;
-    private static final ByteBuf INDEX_HTML;
-    private static final ByteBuf INDEX_CSS;
-    private static final ByteBuf SWAGGER_UI_CSS;
-    private static final ByteBuf SWAGGER_UI_BUNDLE;
-    private static final ByteBuf SWAGGER_UI_STANDALONE_PRESET;
-
-    static {
-        FAVICON_32_32 = FileUtil.getWebJarAssetAsBuffer("swagger-ui/*/favicon-32x32.png");
-        INDEX_HTML = ByteBufUtil.getUnreleasableDirectBuffer(
-                """
-                        <!DOCTYPE html>
-                        <html lang="en">
-                          <head>
-                            <meta charset="UTF-8">
-                            <title>Swagger UI</title>
-                            <link rel="stylesheet" type="text/css" href="/openapi/ui/swagger-ui.css" />
-                            <link rel="stylesheet" type="text/css" href="/openapi/ui/index.css" />
-                            <link rel="icon" type="image/png" href="/openapi/ui/favicon-32x32.png" sizes="32x32" />
-                          </head>
-                          <body>
-                            <div id="swagger-ui"></div>
-                            <script src="/openapi/ui/swagger-ui-bundle.js" charset="UTF-8"> </script>
-                            <script src="/openapi/ui/swagger-ui-standalone-preset.js" charset="UTF-8"> </script>
-                            <script src="/openapi/ui/swagger-initializer.js" charset="UTF-8"> </script>
-                          </body>
-                        </html>
-                        """);
-        INDEX_CSS = FileUtil.getWebJarAssetAsBuffer("swagger-ui/*/index.css");
-        SWAGGER_UI_CSS = FileUtil.getWebJarAssetAsBuffer("swagger-ui/*/swagger-ui.css");
-        SWAGGER_UI_BUNDLE = FileUtil.getWebJarAssetAsBuffer("swagger-ui/*/swagger-ui-bundle.js.gz");
-        SWAGGER_UI_STANDALONE_PRESET =
-                FileUtil.getWebJarAssetAsBuffer("swagger-ui/*/swagger-ui-standalone-preset.js.gz");
-    }
-
+    private static final String ENDPOINT_API_DOCS = "api-docs";
     private final ApplicationContext context;
     private volatile ByteBuf apiBuffer;
     private final ByteBuf swaggerInitializer;
@@ -90,27 +64,38 @@ public class OpenApiController {
     public OpenApiController(
             ApplicationContext context,
             BaseServiceAddressManager serviceAddressManager) {
+        super(context);
         this.context = context;
-        swaggerInitializer = ByteBufUtil.getUnreleasableDirectBuffer("""
-                window.onload = function() {
-                  window.ui = SwaggerUIBundle({
-                    url: "%s/openapi/docs",
-                    dom_id: '#swagger-ui',
-                    deepLinking: true,
-                    presets: [
-                      SwaggerUIBundle.presets.apis,
-                      SwaggerUIStandalonePreset
-                    ],
-                    plugins: [
-                      SwaggerUIBundle.plugins.DownloadUrl
-                    ],
-                    layout: "StandaloneLayout"
-                  });
-                };
-                """.formatted(serviceAddressManager.getAdminApiAddress()));
+        String url = serviceAddressManager.getAdminApiAddress()
+                + "/"
+                + ApiConst.RESOURCE_PATH_COMMON_OPENAPI
+                + "/"
+                + ENDPOINT_API_DOCS;
+        swaggerInitializer = ByteBufUtil.getUnreleasableDirectBuffer(
+                // language=JavaScript
+                """
+                        window.onload = function() {
+                          window.ui = SwaggerUIBundle({
+                            url: "%s",
+                            dom_id: '#swagger-ui',
+                            deepLinking: true,
+                            presets: [
+                              SwaggerUIBundle.presets.apis,
+                              SwaggerUIStandalonePreset
+                            ],
+                            plugins: [
+                              SwaggerUIBundle.plugins.DownloadUrl
+                            ],
+                            layout: "StandaloneLayout"
+                          });
+                        };
+                        """.formatted(url));
     }
 
-    @GetMapping(value = "docs", produces = APPLICATION_JSON)
+    @ApiEndpoint(
+            value = ENDPOINT_API_DOCS,
+            action = ApiEndpointAction.QUERY,
+            produces = APPLICATION_JSON)
     public ByteBuf getApiDocs() {
         if (apiBuffer == null) {
             synchronized (this) {
@@ -122,50 +107,58 @@ public class OpenApiController {
         return apiBuffer;
     }
 
-    @GetMapping(value = "ui", produces = TEXT_HTML)
+    @ApiEndpoint(value = "ui", action = ApiEndpointAction.QUERY, produces = TEXT_HTML)
     public ByteBuf getIndexHtml() {
         return INDEX_HTML;
     }
 
-    @GetMapping(value = "ui/favicon-32x32.png", produces = IMAGE_PNG)
+    @ApiEndpoint(
+            value = "ui/favicon-32x32.png",
+            action = ApiEndpointAction.QUERY,
+            produces = IMAGE_PNG)
     public ByteBuf getFavicon3232() {
-        return FAVICON_32_32;
+        return FAVICON_32x32;
     }
 
-    @GetMapping(value = "ui/index.css", produces = TEXT_CSS)
+    @ApiEndpoint(value = "ui/index.css", action = ApiEndpointAction.QUERY, produces = TEXT_CSS)
     public ByteBuf getIndexCss() {
         return INDEX_CSS;
     }
 
-    @GetMapping(value = "ui/swagger-ui.css", produces = TEXT_CSS)
+    @ApiEndpoint(value = "ui/swagger-ui.css", action = ApiEndpointAction.QUERY, produces = TEXT_CSS)
     public ByteBuf getSwaggerUiCss() {
         return SWAGGER_UI_CSS;
     }
 
-    @GetMapping(
+    @ApiEndpoint(
             value = "ui/swagger-ui-bundle.js",
+            action = ApiEndpointAction.QUERY,
             produces = APPLICATION_JAVASCRIPT,
             encoding = GZIP)
     public ByteBuf getSwaggerUiBundle() {
         return SWAGGER_UI_BUNDLE;
     }
 
-    @GetMapping(
+    @ApiEndpoint(
             value = "ui/swagger-ui-standalone-preset.js",
+            action = ApiEndpointAction.QUERY,
             produces = APPLICATION_JAVASCRIPT,
             encoding = GZIP)
     public ByteBuf getSwaggerUiStandalonePreset() {
         return SWAGGER_UI_STANDALONE_PRESET;
     }
 
-    @GetMapping(value = "ui/swagger-initializer.js", produces = APPLICATION_JAVASCRIPT)
+    @ApiEndpoint(
+            value = "ui/swagger-initializer.js",
+            action = ApiEndpointAction.QUERY,
+            produces = APPLICATION_JAVASCRIPT)
     public ByteBuf getSwaggerInitializer() {
         return swaggerInitializer;
     }
 
     private synchronized void updateApiBuffer(
-            @Nullable Map<ApiEndpointKey, ApiEndpoint> keyToEndpoint) {
-        HttpRequestDispatcher dispatcher = context.getBean(HttpRequestDispatcher.class);
+            @Nullable Map<ApiEndpointKey, ApiEndpointInfo> keyToEndpoint) {
+        ApiRequestDispatcher dispatcher = context.getBean(ApiRequestDispatcher.class);
         if (apiBuffer == null) {
             dispatcher.addEndpointChangeListener(this::updateApiBuffer);
         } else {

@@ -22,18 +22,22 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.context.ApplicationContext;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import im.turms.server.common.access.admin.dto.response.HttpHandlerResult;
-import im.turms.server.common.access.admin.dto.response.ResponseDTO;
+import im.turms.server.common.access.admin.api.ApiConst;
+import im.turms.server.common.access.admin.api.ApiController;
+import im.turms.server.common.access.admin.api.ApiEndpoint;
+import im.turms.server.common.access.admin.api.ApiEndpointAction;
+import im.turms.server.common.access.admin.api.Request;
+import im.turms.server.common.access.admin.api.annotation.GetMapping;
+import im.turms.server.common.access.admin.api.annotation.PutMapping;
+import im.turms.server.common.access.admin.api.annotation.QueryParam;
+import im.turms.server.common.access.admin.api.response.HttpHandlerResult;
+import im.turms.server.common.access.admin.api.response.ResponseDTO;
 import im.turms.server.common.access.admin.permission.AdminPermission;
 import im.turms.server.common.access.admin.permission.RequiredPermission;
-import im.turms.server.common.access.admin.web.annotation.GetMapping;
-import im.turms.server.common.access.admin.web.annotation.PutMapping;
-import im.turms.server.common.access.admin.web.annotation.QueryParam;
-import im.turms.server.common.access.admin.web.annotation.RequestBody;
-import im.turms.server.common.access.admin.web.annotation.RestController;
 import im.turms.server.common.access.client.dto.constant.DeviceType;
 import im.turms.server.common.access.client.dto.constant.UserStatus;
 import im.turms.server.common.domain.location.bo.NearbyUser;
@@ -56,7 +60,7 @@ import im.turms.service.domain.user.service.onlineuser.SessionService;
 /**
  * @author James Chen
  */
-@RestController("users/online-infos")
+@ApiController(ApiConst.RESOURCE_PATH_SERVICE_BUSINESS_USER_ONLINE_INFO)
 public class UserOnlineInfoController extends BaseController {
 
     private final UserService userService;
@@ -67,6 +71,7 @@ public class UserOnlineInfoController extends BaseController {
     private final SessionService sessionService;
 
     public UserOnlineInfoController(
+            ApplicationContext context,
             TurmsPropertiesManager propertiesManager,
             UserService userService,
             StatisticsService statisticsService,
@@ -74,7 +79,7 @@ public class UserOnlineInfoController extends BaseController {
             UserStatusService userStatusService,
             NearbyUserService nearbyUserService,
             SessionService sessionService) {
-        super(propertiesManager);
+        super(context, propertiesManager);
         this.userService = userService;
         this.statisticsService = statisticsService;
         this.sessionLocationService = sessionLocationService;
@@ -83,10 +88,11 @@ public class UserOnlineInfoController extends BaseController {
         this.sessionService = sessionService;
     }
 
-    @GetMapping("count")
-    @RequiredPermission(AdminPermission.STATISTICS_USER_QUERY)
-    public Mono<HttpHandlerResult<ResponseDTO<OnlineUserCountDTO>>> countOnlineUsers(
-            boolean countByNodes) {
+    @ApiEndpoint(
+            value = "statistic",
+            action = ApiEndpointAction.QUERY,
+            requiredPermissions = AdminPermission.STATISTIC_USER_QUERY)
+    public Mono<ResponseDTO<OnlineUserCountDTO>> countOnlineUsers(boolean countByNodes) {
         if (!countByNodes) {
             return HttpHandlerResult.okIfTruthy(statisticsService.countOnlineUsers()
                     .map(total -> new OnlineUserCountDTO(total, null)));
@@ -101,9 +107,11 @@ public class UserOnlineInfoController extends BaseController {
                 }));
     }
 
-    @GetMapping("sessions")
-    @RequiredPermission(AdminPermission.USER_ONLINE_INFO_QUERY)
-    public Mono<HttpHandlerResult<ResponseDTO<Collection<UserSessionsInfo>>>> queryUserSessions(
+    @ApiEndpoint(
+            value = "session",
+            action = ApiEndpointAction.QUERY,
+            requiredPermissions = AdminPermission.USER_ONLINE_INFO_QUERY)
+    public Mono<ResponseDTO<Collection<UserSessionsInfo>>> queryUserSessions(
             Set<Long> ids,
             boolean returnNonExistingUsers) {
         Mono<Collection<UserSessionsInfo>> queryUserSessions;
@@ -131,9 +139,11 @@ public class UserOnlineInfoController extends BaseController {
         return HttpHandlerResult.okIfTruthy(queryUserSessions);
     }
 
-    @GetMapping("statuses")
-    @RequiredPermission(AdminPermission.USER_ONLINE_INFO_QUERY)
-    public Mono<HttpHandlerResult<ResponseDTO<Collection<UserSessionsStatus>>>> queryUserStatuses(
+    @ApiEndpoint(
+            value = "status",
+            action = ApiEndpointAction.QUERY,
+            requiredPermissions = AdminPermission.USER_ONLINE_INFO_QUERY)
+    public Mono<ResponseDTO<Collection<UserSessionsStatus>>> queryUserStatuses(
             Set<Long> ids,
             boolean returnNonExistingUsers) {
         List<Mono<UserSessionsStatus>> statusMonos = new ArrayList<>(ids.size());
@@ -156,9 +166,30 @@ public class UserOnlineInfoController extends BaseController {
         return HttpHandlerResult.okIfTruthy(Flux.merge(statusMonos));
     }
 
-    @GetMapping("nearby-users")
-    @RequiredPermission(AdminPermission.USER_ONLINE_INFO_QUERY)
-    public Mono<HttpHandlerResult<ResponseDTO<List<NearbyUser>>>> queryUsersNearby(
+    @PutMapping("statuses")
+    @RequiredPermission(AdminPermission.USER_ONLINE_INFO_UPDATE)
+    public Mono<ResponseDTO<Void>> updateUserOnlineStatus(
+            Set<Long> ids,
+            @QueryParam(required = false) Set<DeviceType> deviceTypes,
+            @Request UpdateOnlineStatusDTO updateOnlineStatusDTO) {
+        Mono<Boolean> updateMono;
+        UserStatus onlineStatus = updateOnlineStatusDTO.onlineStatus();
+        if (onlineStatus == UserStatus.OFFLINE) {
+            updateMono = deviceTypes == null
+                    ? sessionService.disconnect(ids, SessionCloseStatus.DISCONNECTED_BY_ADMIN)
+                    : sessionService
+                            .disconnect(ids, deviceTypes, SessionCloseStatus.DISCONNECTED_BY_ADMIN);
+        } else {
+            updateMono = userStatusService.updateOnlineUsersStatus(ids, onlineStatus);
+        }
+        return updateMono.thenReturn(HttpHandlerResult.RESPONSE_OK);
+    }
+
+    @ApiEndpoint(
+            value = "nearby-user",
+            action = ApiEndpointAction.QUERY,
+            requiredPermissions = AdminPermission.USER_ONLINE_INFO_QUERY)
+    public Mono<ResponseDTO<List<NearbyUser>>> queryUsersNearby(
             Long userId,
             @QueryParam(required = false) DeviceType deviceType,
             @QueryParam(required = false) Short maxCount,
@@ -178,9 +209,11 @@ public class UserOnlineInfoController extends BaseController {
         return HttpHandlerResult.okIfTruthy(nearbyUsers);
     }
 
-    @GetMapping("locations")
-    @RequiredPermission(AdminPermission.USER_ONLINE_INFO_QUERY)
-    public Mono<HttpHandlerResult<ResponseDTO<Collection<UserLocationDTO>>>> queryUserLocations(
+    @ApiEndpoint(
+            value = "location",
+            action = ApiEndpointAction.QUERY,
+            requiredPermissions = AdminPermission.USER_ONLINE_INFO_QUERY)
+    public Mono<ResponseDTO<Collection<UserLocationDTO>>> queryUserLocations(
             Set<Long> ids,
             @QueryParam(required = false) DeviceType deviceType) {
         int size = ids.size();
@@ -196,25 +229,6 @@ public class UserOnlineInfoController extends BaseController {
                                     .doubleValue())));
         }
         return HttpHandlerResult.okIfTruthy(Flux.merge(monos), size);
-    }
-
-    @PutMapping("statuses")
-    @RequiredPermission(AdminPermission.USER_ONLINE_INFO_UPDATE)
-    public Mono<HttpHandlerResult<ResponseDTO<Void>>> updateUserOnlineStatus(
-            Set<Long> ids,
-            @QueryParam(required = false) Set<DeviceType> deviceTypes,
-            @RequestBody UpdateOnlineStatusDTO updateOnlineStatusDTO) {
-        Mono<Boolean> updateMono;
-        UserStatus onlineStatus = updateOnlineStatusDTO.onlineStatus();
-        if (onlineStatus == UserStatus.OFFLINE) {
-            updateMono = deviceTypes == null
-                    ? sessionService.disconnect(ids, SessionCloseStatus.DISCONNECTED_BY_ADMIN)
-                    : sessionService
-                            .disconnect(ids, deviceTypes, SessionCloseStatus.DISCONNECTED_BY_ADMIN);
-        } else {
-            updateMono = userStatusService.updateOnlineUsersStatus(ids, onlineStatus);
-        }
-        return updateMono.thenReturn(HttpHandlerResult.RESPONSE_OK);
     }
 
 }

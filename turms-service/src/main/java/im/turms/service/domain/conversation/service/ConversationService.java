@@ -211,8 +211,8 @@ public class ConversationService {
         Map<Long, List<Long>> groupIdToMemberIds = CollectionUtil.newMapWithExpectedSize(1);
         int keyCount = keys.size();
         for (GroupConversation.GroupConversionMemberKey key : keys) {
-            groupIdToMemberIds.computeIfAbsent(key.getGroupId(), k -> new ArrayList<>(keyCount))
-                    .add(key.getMemberId());
+            groupIdToMemberIds.computeIfAbsent(key.groupId(), k -> new ArrayList<>(keyCount))
+                    .add(key.memberId());
         }
         Set<Map.Entry<Long, List<Long>>> entries = groupIdToMemberIds.entrySet();
         List<Mono<Void>> upsertMonos = new ArrayList<>(entries.size());

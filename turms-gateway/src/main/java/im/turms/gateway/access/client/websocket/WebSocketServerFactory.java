@@ -68,7 +68,7 @@ import static io.netty.handler.codec.http.HttpHeaderNames.CONNECTION;
 import static io.netty.handler.codec.http.HttpHeaderNames.SEC_WEBSOCKET_KEY;
 import static io.netty.handler.codec.http.HttpHeaderNames.UPGRADE;
 
-import static im.turms.server.common.access.admin.web.HttpUtil.isPreFlightRequest;
+import static im.turms.server.common.infra.http.HttpUtil.isPreFlightRequest;
 
 /**
  * @author James Chen

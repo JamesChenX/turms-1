@@ -25,10 +25,11 @@ import jakarta.validation.constraints.NotNull;
 import com.mongodb.client.model.changestream.FullDocument;
 import reactor.core.publisher.Mono;
 
+import im.turms.server.common.access.admin.api.ApiEndpointParameter;
+import im.turms.server.common.access.admin.api.ApiEndpointParameterType;
 import im.turms.server.common.access.admin.permission.AdminPermission;
-import im.turms.server.common.access.admin.web.MethodParameterInfo;
 import im.turms.server.common.domain.admin.bo.AdminInfo;
-import im.turms.server.common.domain.admin.po.Admin;
+import im.turms.server.common.domain.admin.po.AdminUser;
 import im.turms.server.common.domain.common.repository.BaseRepository;
 import im.turms.server.common.infra.cluster.service.config.ChangeStreamUtil;
 import im.turms.server.common.infra.collection.CollectorUtil;
@@ -51,33 +52,33 @@ public abstract class BaseAdminService {
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseAdminService.class);
 
     private final PasswordManager passwordManager;
-    private final BaseRepository<Admin, String> adminRepository;
     private final BaseAdminRoleService adminRoleService;
+    private final BaseRepository<AdminUser, String> adminUserRepository;
 
     private final Map<String, AdminInfo> accountToAdmin = new ConcurrentHashMap<>(16);
 
     protected BaseAdminService(
             PasswordManager passwordManager,
-            BaseRepository<Admin, String> adminRepository,
-            BaseAdminRoleService adminRoleService) {
+            BaseAdminRoleService adminRoleService,
+            BaseRepository<AdminUser, String> adminUserRepository) {
         this.passwordManager = passwordManager;
-        this.adminRepository = adminRepository;
         this.adminRoleService = adminRoleService;
+        this.adminUserRepository = adminUserRepository;
     }
 
     protected void loadAndListenAdmins() {
         // Load
         LOGGER.info("Loading all admins");
-        adminRepository.findAll()
+        adminUserRepository.findAll()
                 .collect(CollectorUtil.toChunkedList())
                 .onErrorMap(
                         t -> new RuntimeException("Caught an error while loading all admins", t))
                 .flatMap(admins -> {
-                    for (Admin admin : admins) {
-                        accountToAdmin.put(admin.getAccount(), new AdminInfo(admin, null));
+                    for (AdminUser adminUser : admins) {
+                        accountToAdmin.put(adminUser.getAccount(), new AdminInfo(adminUser, null));
                     }
-                    for (Admin admin : admins) {
-                        if (admin.getRoleId()
+                    for (AdminUser adminUser : admins) {
+                        if (adminUser.getRoleId()
                                 .equals(ADMIN_ROLE_ROOT_ID)) {
                             break;
                         }
@@ -90,89 +91,85 @@ public abstract class BaseAdminService {
         LOGGER.info("Loaded all admins");
 
         // Listen
-        adminRepository.watch(FullDocument.UPDATE_LOOKUP)
+        adminUserRepository.watch(FullDocument.UPDATE_LOOKUP)
                 .doOnNext(event -> {
-                    Admin admin = event.getFullDocument();
+                    AdminUser adminUser = event.getFullDocument();
                     switch (event.getOperationType()) {
-                        case INSERT, UPDATE, REPLACE ->
-                            accountToAdmin.put(admin.getAccount(), new AdminInfo(admin, null));
+                        case INSERT, UPDATE, REPLACE -> accountToAdmin.put(adminUser.getAccount(),
+                                new AdminInfo(adminUser, null));
                         case DELETE -> {
                             String account = ChangeStreamUtil.getIdAsString(event.getDocumentKey());
                             accountToAdmin.remove(account);
                         }
                         case INVALIDATE -> accountToAdmin.clear();
                         default -> LOGGER.fatal("Detected an illegal operation on the collection \""
-                                + Admin.COLLECTION_NAME
+                                + AdminUser.COLLECTION_NAME
                                 + "\" in the change stream event: {}", event);
                     }
                 })
                 .onErrorContinue((throwable, o) -> LOGGER.error(
                         "Caught an error while processing the change stream event ({}) of the collection: \""
-                                + Admin.COLLECTION_NAME
+                                + AdminUser.COLLECTION_NAME
                                 + "\"",
                         o,
                         throwable))
                 .subscribe();
     }
 
-    protected Mono<Admin> addRootAdmin() {
+    protected Mono<AdminUser> addRootAdmin() {
         return Mono.empty();
     }
 
     public Mono<Long> queryRoleId(@NotNull String account) {
-        return queryAdmin(account).map(Admin::getRoleId);
+        return queryAdmin(account).map(AdminUser::getRoleId);
     }
 
     public Mono<Boolean> isAdminAuthorized(
             @NotNull String account,
-            @NotNull AdminPermission permission) {
+            @NotNull AdminPermission[] requiredPermission) {
         try {
             Validator.notNull(account, "account");
-            Validator.notNull(permission, "permission");
+            Validator.notNull(requiredPermission, "requiredPermission");
         } catch (ResponseException e) {
             return Mono.error(e);
         }
         return queryRoleId(account)
-                .flatMap(roleId -> adminRoleService.hasPermission(roleId, permission))
+                .flatMap(roleId -> adminRoleService.hasPermission(roleId, requiredPermission))
                 .switchIfEmpty(PublisherPool.FALSE);
     }
 
     public Mono<Boolean> isAdminAuthorized(
-            @NotNull MethodParameterInfo[] params,
+            @NotNull ApiEndpointParameter[] params,
             @NotNull Object[] paramValues,
             @NotNull String account,
-            @NotNull AdminPermission permission) {
+            @NotNull AdminPermission[] requiredPermissions) {
         try {
             Validator.notNull(params, "params");
             Validator.notNull(paramValues, "paramValues");
             Validator.notNull(account, "account");
-            Validator.notNull(permission, "permission");
+            Validator.notNull(requiredPermissions, "requiredPermissions");
         } catch (ResponseException e) {
             return Mono.error(e);
         }
-        boolean isQueryingSelfInfo = false;
-        // Even if the account doesn't have the permission ADMIN_QUERY,
+        // Even if the admin user doesn't have the permission ADMIN_QUERY,
         // it can still query its own information
-        if (permission == AdminPermission.ADMIN_QUERY) {
-            for (int i = 0, length = params.length; i < length; i++) {
-                MethodParameterInfo param = params[i];
-                if (param.name()
-                        .equals("accounts")) {
+        for (int i = 0, length = params.length; i < length; i++) {
+            ApiEndpointParameter param = params[i];
+            if (param.type() == ApiEndpointParameterType.REQUEST_BODY_JSON) {
+                if (param instanceof QueryAdminUsersRequestDTO request) {
                     Object value = paramValues[i];
                     if (value instanceof Collection<?> collection
                             && collection.size() == 1
                             && collection.iterator()
                                     .next()
                                     .equals(account)) {
-                        isQueryingSelfInfo = true;
+                        return PublisherPool.TRUE;
                     }
-                    break;
                 }
+                break;
             }
         }
-        return isQueryingSelfInfo
-                ? PublisherPool.TRUE
-                : isAdminAuthorized(account, permission);
+        return isAdminAuthorized(account, requiredPermissions);
     }
 
     public Mono<Boolean> authenticate(
@@ -205,7 +202,7 @@ public abstract class BaseAdminService {
                 .switchIfEmpty(PublisherPool.FALSE);
     }
 
-    public Mono<Admin> queryAdmin(@NotNull String account) {
+    public Mono<AdminUser> queryAdmin(@NotNull String account) {
         try {
             Validator.notNull(account, "account");
         } catch (ResponseException e) {
@@ -213,10 +210,10 @@ public abstract class BaseAdminService {
         }
         AdminInfo adminInfo = accountToAdmin.get(account);
         if (adminInfo == null) {
-            return adminRepository.findById(account)
+            return adminUserRepository.findById(account)
                     .doOnNext(admin -> accountToAdmin.put(account, new AdminInfo(admin, null)));
         }
-        return Mono.just(adminInfo.getAdmin());
+        return Mono.just(adminInfo.getAdminUser());
     }
 
 }

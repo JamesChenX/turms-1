@@ -35,8 +35,8 @@ import im.turms.server.common.access.admin.permission.AdminPermission;
 import im.turms.server.common.access.client.dto.constant.GroupMemberRole;
 import im.turms.server.common.access.client.dto.constant.ProfileAccessStrategy;
 import im.turms.server.common.access.client.dto.constant.RequestStatus;
-import im.turms.server.common.domain.admin.po.Admin;
 import im.turms.server.common.domain.admin.po.AdminRole;
+import im.turms.server.common.domain.admin.po.AdminUser;
 import im.turms.server.common.domain.user.po.User;
 import im.turms.server.common.infra.collection.CollectionUtil;
 import im.turms.server.common.infra.logging.core.logger.Logger;
@@ -161,7 +161,7 @@ public final class MongoFakingManager {
         // "2000-01-01:00:00:00Z"
         final Date epoch = new Date(946684800000L);
         final long guestRoleId = 2L;
-        Admin guest = new Admin(
+        AdminUser guest = new AdminUser(
                 "guest",
                 passwordManager.encodeAdminPassword("guest"),
                 "guest",
@@ -169,14 +169,14 @@ public final class MongoFakingManager {
                 epoch);
         adminRelatedObjs.add(guest);
         for (int i = 1; i <= adminCount; i++) {
-            Admin admin = new Admin(
+            AdminUser adminUser = new AdminUser(
                     "account"
                             + i,
                     passwordManager.encodeAdminPassword("123"),
                     "my-name",
                     1L,
                     DateUtils.addDays(epoch, i));
-            adminRelatedObjs.add(admin);
+            adminRelatedObjs.add(adminUser);
         }
         AdminRole adminRole = new AdminRole(1L, "ADMIN", AdminPermission.ALL, 0, epoch);
         AdminRole guestRole = new AdminRole(

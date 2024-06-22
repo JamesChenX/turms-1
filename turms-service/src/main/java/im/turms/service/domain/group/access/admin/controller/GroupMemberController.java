@@ -22,51 +22,56 @@ import java.util.List;
 import java.util.Set;
 
 import com.mongodb.client.result.DeleteResult;
+import org.springframework.context.ApplicationContext;
 import reactor.core.publisher.Mono;
 
-import im.turms.server.common.access.admin.dto.response.DeleteResultDTO;
-import im.turms.server.common.access.admin.dto.response.HttpHandlerResult;
-import im.turms.server.common.access.admin.dto.response.PaginationDTO;
-import im.turms.server.common.access.admin.dto.response.ResponseDTO;
-import im.turms.server.common.access.admin.dto.response.UpdateResultDTO;
+import im.turms.server.common.access.admin.api.ApiConst;
+import im.turms.server.common.access.admin.api.ApiController;
+import im.turms.server.common.access.admin.api.ApiEndpoint;
+import im.turms.server.common.access.admin.api.ApiEndpointAction;
+import im.turms.server.common.access.admin.api.Request;
+import im.turms.server.common.access.admin.api.annotation.DeleteMapping;
+import im.turms.server.common.access.admin.api.annotation.GetMapping;
+import im.turms.server.common.access.admin.api.annotation.PutMapping;
+import im.turms.server.common.access.admin.api.annotation.QueryParam;
+import im.turms.server.common.access.admin.api.response.DeleteResultDTO;
+import im.turms.server.common.access.admin.api.response.HttpHandlerResult;
+import im.turms.server.common.access.admin.api.response.PaginationDTO;
+import im.turms.server.common.access.admin.api.response.ResponseDTO;
+import im.turms.server.common.access.admin.api.response.UpdateResultDTO;
 import im.turms.server.common.access.admin.permission.AdminPermission;
 import im.turms.server.common.access.admin.permission.RequiredPermission;
-import im.turms.server.common.access.admin.web.annotation.DeleteMapping;
-import im.turms.server.common.access.admin.web.annotation.GetMapping;
-import im.turms.server.common.access.admin.web.annotation.PostMapping;
-import im.turms.server.common.access.admin.web.annotation.PutMapping;
-import im.turms.server.common.access.admin.web.annotation.QueryParam;
-import im.turms.server.common.access.admin.web.annotation.RequestBody;
-import im.turms.server.common.access.admin.web.annotation.RestController;
 import im.turms.server.common.access.client.dto.constant.GroupMemberRole;
 import im.turms.server.common.infra.collection.CollectionUtil;
 import im.turms.server.common.infra.property.TurmsPropertiesManager;
 import im.turms.server.common.infra.time.DateRange;
 import im.turms.service.domain.common.access.admin.controller.BaseController;
 import im.turms.service.domain.group.access.admin.dto.request.AddGroupMemberDTO;
-import im.turms.service.domain.group.access.admin.dto.request.UpdateGroupMemberDTO;
+import im.turms.service.domain.group.access.admin.dto.request.UpdateGroupMembersRequestDTO;
 import im.turms.service.domain.group.po.GroupMember;
 import im.turms.service.domain.group.service.GroupMemberService;
 
 /**
  * @author James Chen
  */
-@RestController("groups/members")
+@ApiController(ApiConst.RESOURCE_PATH_SERVICE_BUSINESS_GROUP_MEMBER)
 public class GroupMemberController extends BaseController {
 
     private final GroupMemberService groupMemberService;
 
     public GroupMemberController(
+            ApplicationContext context,
             TurmsPropertiesManager propertiesManager,
             GroupMemberService groupMemberService) {
-        super(propertiesManager);
+        super(context, propertiesManager);
         this.groupMemberService = groupMemberService;
     }
 
-    @PostMapping
-    @RequiredPermission(AdminPermission.GROUP_MEMBER_CREATE)
-    public Mono<HttpHandlerResult<ResponseDTO<GroupMember>>> addGroupMember(
-            @RequestBody AddGroupMemberDTO addGroupMemberDTO) {
+    @ApiEndpoint(
+            action = ApiEndpointAction.CREATE,
+            requiredPermissions = AdminPermission.GROUP_MEMBER_CREATE)
+    public Mono<ResponseDTO<GroupMember>> addGroupMember(
+            @Request AddGroupMemberDTO addGroupMemberDTO) {
         Mono<GroupMember> createMono =
                 groupMemberService.addGroupMember(addGroupMemberDTO.groupId(),
                         addGroupMemberDTO.userId(),
@@ -78,9 +83,10 @@ public class GroupMemberController extends BaseController {
         return HttpHandlerResult.okIfTruthy(createMono);
     }
 
-    @GetMapping
-    @RequiredPermission(AdminPermission.GROUP_MEMBER_QUERY)
-    public Mono<HttpHandlerResult<ResponseDTO<List<GroupMember>>>> queryGroupMembers(
+    @ApiEndpoint(
+            action = ApiEndpointAction.QUERY,
+            requiredPermissions = AdminPermission.GROUP_MEMBER_QUERY)
+    public Mono<ResponseDTO<List<GroupMember>>> queryGroupMembers(
             @QueryParam(required = false) Set<Long> groupIds,
             @QueryParam(required = false) Set<Long> userIds,
             @QueryParam(required = false) Set<GroupMemberRole> roles,
@@ -89,7 +95,7 @@ public class GroupMemberController extends BaseController {
             @QueryParam(required = false) Date muteEndDateStart,
             @QueryParam(required = false) Date muteEndDateEnd,
             @QueryParam(required = false) Integer size) {
-        size = getPageSize(size);
+        size = getLimit(size);
         Mono<List<GroupMember>> groupMemberFlux = groupMemberService.queryGroupMembers(groupIds,
                 userIds,
                 roles,
@@ -100,59 +106,61 @@ public class GroupMemberController extends BaseController {
         return HttpHandlerResult.okIfTruthy(groupMemberFlux);
     }
 
-    @GetMapping("page")
-    @RequiredPermission(AdminPermission.GROUP_MEMBER_QUERY)
-    public Mono<HttpHandlerResult<ResponseDTO<PaginationDTO<GroupMember>>>> queryGroupMembers(
-            @QueryParam(required = false) Set<Long> groupIds,
-            @QueryParam(required = false) Set<Long> userIds,
-            @QueryParam(required = false) Set<GroupMemberRole> roles,
-            @QueryParam(required = false) Date joinDateStart,
-            @QueryParam(required = false) Date joinDateEnd,
-            @QueryParam(required = false) Date muteEndDateStart,
-            @QueryParam(required = false) Date muteEndDateEnd,
-            int page,
-            @QueryParam(required = false) Integer size) {
-        size = getPageSize(size);
-        Mono<Long> count = groupMemberService.countMembers(groupIds,
-                userIds,
-                roles,
-                DateRange.of(joinDateStart, joinDateEnd),
-                DateRange.of(muteEndDateStart, muteEndDateEnd));
-        Mono<List<GroupMember>> userFlux = groupMemberService.queryGroupMembers(groupIds,
-                userIds,
-                roles,
-                DateRange.of(joinDateStart, joinDateEnd),
-                DateRange.of(muteEndDateStart, muteEndDateEnd),
-                page,
-                size);
-        return HttpHandlerResult.page(count, userFlux);
-    }
+//    @GetMapping("page")
+//    @RequiredPermission(AdminPermission.GROUP_MEMBER_QUERY)
+//    public Mono<HttpHandlerResult<ResponseDTO<PaginationDTO<GroupMember>>>> queryGroupMembers(
+//            @QueryParam(required = false) Set<Long> groupIds,
+//            @QueryParam(required = false) Set<Long> userIds,
+//            @QueryParam(required = false) Set<GroupMemberRole> roles,
+//            @QueryParam(required = false) Date joinDateStart,
+//            @QueryParam(required = false) Date joinDateEnd,
+//            @QueryParam(required = false) Date muteEndDateStart,
+//            @QueryParam(required = false) Date muteEndDateEnd,
+//            int page,
+//            @QueryParam(required = false) Integer size) {
+//        size = getLimit(size);
+//        Mono<Long> count = groupMemberService.countMembers(groupIds,
+//                userIds,
+//                roles,
+//                DateRange.of(joinDateStart, joinDateEnd),
+//                DateRange.of(muteEndDateStart, muteEndDateEnd));
+//        Mono<List<GroupMember>> userFlux = groupMemberService.queryGroupMembers(groupIds,
+//                userIds,
+//                roles,
+//                DateRange.of(joinDateStart, joinDateEnd),
+//                DateRange.of(muteEndDateStart, muteEndDateEnd),
+//                page,
+//                size);
+//        return HttpHandlerResult.page(count, userFlux);
+//    }
 
-    @PutMapping
-    @RequiredPermission(AdminPermission.GROUP_MEMBER_UPDATE)
-    public Mono<HttpHandlerResult<ResponseDTO<UpdateResultDTO>>> updateGroupMembers(
+    @ApiEndpoint(
+            action = ApiEndpointAction.UPDATE,
+            requiredPermissions = AdminPermission.GROUP_MEMBER_UPDATE)
+    public Mono<ResponseDTO<UpdateResultDTO>> updateGroupMembers(
             List<GroupMember.Key> keys,
-            @RequestBody UpdateGroupMemberDTO updateGroupMemberDTO) {
+            @Request UpdateGroupMembersRequestDTO request) {
         Mono<UpdateResultDTO> updateMono = groupMemberService
                 .updateGroupMembers(CollectionUtil.newSet(keys),
-                        updateGroupMemberDTO.name(),
-                        updateGroupMemberDTO.role(),
-                        updateGroupMemberDTO.joinDate(),
-                        updateGroupMemberDTO.muteEndDate(),
+                        request.name(),
+                        request.role(),
+                        request.joinDate(),
+                        request.muteEndDate(),
                         null,
                         true)
-                .map(UpdateResultDTO::get);
+                .map(UpdateResultDTO::from);
         return HttpHandlerResult.okIfTruthy(updateMono);
     }
 
-    @DeleteMapping
-    @RequiredPermission(AdminPermission.GROUP_MEMBER_DELETE)
-    public Mono<HttpHandlerResult<ResponseDTO<DeleteResultDTO>>> deleteGroupMembers(
+    @ApiEndpoint(
+            action = ApiEndpointAction.DELETE,
+            requiredPermissions = AdminPermission.GROUP_MEMBER_DELETE)
+    public Mono<ResponseDTO<DeleteResultDTO>> deleteGroupMembers(
             @QueryParam(required = false) List<GroupMember.Key> keys) {
         Mono<DeleteResult> deleteMono = CollectionUtil.isEmpty(keys)
                 ? groupMemberService.deleteGroupMembers(true)
                 : groupMemberService.deleteGroupMembers(CollectionUtil.newSet(keys), null, true);
-        Mono<DeleteResultDTO> mono = deleteMono.map(DeleteResultDTO::get);
+        Mono<DeleteResultDTO> mono = deleteMono.map(DeleteResultDTO::from);
         return HttpHandlerResult.okIfTruthy(mono);
     }
 

@@ -23,19 +23,22 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Mono;
 
-import im.turms.server.common.access.admin.dto.response.HttpHandlerResult;
-import im.turms.server.common.access.admin.dto.response.PaginationDTO;
-import im.turms.server.common.access.admin.dto.response.ResponseDTO;
+import im.turms.server.common.access.admin.api.ApiConst;
+import im.turms.server.common.access.admin.api.ApiController;
+import im.turms.server.common.access.admin.api.ApiEndpoint;
+import im.turms.server.common.access.admin.api.ApiEndpointAction;
+import im.turms.server.common.access.admin.api.Request;
+import im.turms.server.common.access.admin.api.annotation.DeleteMapping;
+import im.turms.server.common.access.admin.api.annotation.GetMapping;
+import im.turms.server.common.access.admin.api.annotation.QueryParam;
+import im.turms.server.common.access.admin.api.response.HttpHandlerResult;
+import im.turms.server.common.access.admin.api.response.PaginationDTO;
+import im.turms.server.common.access.admin.api.response.ResponseDTO;
 import im.turms.server.common.access.admin.permission.RequiredPermission;
-import im.turms.server.common.access.admin.web.annotation.DeleteMapping;
-import im.turms.server.common.access.admin.web.annotation.GetMapping;
-import im.turms.server.common.access.admin.web.annotation.PostMapping;
-import im.turms.server.common.access.admin.web.annotation.QueryParam;
-import im.turms.server.common.access.admin.web.annotation.RequestBody;
-import im.turms.server.common.access.admin.web.annotation.RestController;
 import im.turms.server.common.domain.blocklist.bo.BlockedClient;
 import im.turms.server.common.domain.blocklist.service.BlocklistService;
 import im.turms.server.common.infra.property.TurmsPropertiesManager;
@@ -50,49 +53,46 @@ import static im.turms.server.common.access.admin.permission.AdminPermission.CLI
 /**
  * @author James Chen
  */
-@RestController("blocked-clients/users")
+@ApiController(ApiConst.RESOURCE_PATH_COMMON_BLOCKED_CLIENT_USER)
 public class UserBlocklistController extends BaseController {
 
     private final BlocklistService blocklistService;
 
     public UserBlocklistController(
+            ApplicationContext context,
             TurmsPropertiesManager propertiesManager,
             BlocklistService blocklistService) {
-        super(propertiesManager);
+        super(context, propertiesManager);
         this.blocklistService = blocklistService;
     }
 
-    @PostMapping
-    @RequiredPermission(CLIENT_BLOCKLIST_CREATE)
-    public Mono<HttpHandlerResult<ResponseDTO<Void>>> addBlockedUserIds(
-            @RequestBody AddBlockedUserIdsDTO addBlockedUserIdsDTO) {
+    @ApiEndpoint(action = ApiEndpointAction.CREATE, requiredPermissions = CLIENT_BLOCKLIST_CREATE)
+    public Mono<ResponseDTO<Void>> addBlockedUserIds(
+            @Request AddBlockedUserIdsDTO addBlockedUserIdsDTO) {
         Mono<Void> result = blocklistService.blockUserIds(addBlockedUserIdsDTO.ids(),
                 addBlockedUserIdsDTO.blockDurationSeconds());
         return HttpHandlerResult.okIfTruthy(result);
     }
 
-    @GetMapping
-    @RequiredPermission(CLIENT_BLOCKLIST_QUERY)
-    public HttpHandlerResult<ResponseDTO<Collection<BlockedUserDTO>>> queryBlockedUsers(
-            Set<Long> ids) {
+    @ApiEndpoint(action = ApiEndpointAction.QUERY, requiredPermissions = CLIENT_BLOCKLIST_QUERY)
+    public ResponseDTO<Collection<BlockedUserDTO>> queryBlockedUsers(Set<Long> ids) {
         List<BlockedClient<Long>> blockedUsers = blocklistService.getBlockedUsers(ids);
         return HttpHandlerResult.okIfTruthy(clients2users(blockedUsers));
     }
 
-    @GetMapping("page")
-    @RequiredPermission(CLIENT_BLOCKLIST_QUERY)
-    public HttpHandlerResult<ResponseDTO<PaginationDTO<BlockedUserDTO>>> queryBlockedUsers(
-            int page,
-            @QueryParam(required = false) Integer size) {
-        size = getPageSize(size);
-        int blockUserCount = blocklistService.countBlockUsers();
-        List<BlockedClient<Long>> blockedUsers = blocklistService.getBlockedUsers(page, size);
-        return HttpHandlerResult.page(blockUserCount, clients2users(blockedUsers));
-    }
+//    @GetMapping("page")
+//    @RequiredPermission(CLIENT_BLOCKLIST_QUERY)
+//    public HttpHandlerResult<ResponseDTO<PaginationDTO<BlockedUserDTO>>> queryBlockedUsers(
+//            int page,
+//            @QueryParam(required = false) Integer size) {
+//        size = getLimit(size);
+//        int blockUserCount = blocklistService.countBlockUsers();
+//        List<BlockedClient<Long>> blockedUsers = blocklistService.getBlockedUsers(page, size);
+//        return HttpHandlerResult.page(blockUserCount, clients2users(blockedUsers));
+//    }
 
-    @DeleteMapping
-    @RequiredPermission(CLIENT_BLOCKLIST_DELETE)
-    public Mono<HttpHandlerResult<ResponseDTO<Void>>> deleteBlockedUserIds(
+    @ApiEndpoint(action = ApiEndpointAction.DELETE, requiredPermissions = CLIENT_BLOCKLIST_DELETE)
+    public Mono<ResponseDTO<Void>> deleteBlockedUserIds(
             @QueryParam(required = false) Set<Long> ids,
             boolean deleteAll) {
         Mono<Void> result = Mono.empty();

@@ -19,6 +19,17 @@ package im.turms.server.common.domain.common.access.dto;
 
 /**
  * @author James Chen
+ * @implNote We use an abstract class instead of interface to force all subclasses to extend
+ *           {@link ControllerDTO} and avoid subclasses declaring as {@link Record} because:
+ *           <p>
+ *           1. {@link Record} doesn't support inheritance. If subclasses declare as {@link Record},
+ *           we cannot add new fields to the subclasses without breaking the compatibility, which
+ *           means field changes in DTOs will break the DTOs provided by Turms plugins, even if we
+ *           can introduce new fields as the default method in an interface, there is no fields to
+ *           accept these new fields in request DTOs if clients pass them to us.
+ *           <p>
+ *           2. It is verbose to use the default methods of interface to force subclasses to
+ *           implement new fields one by one, which will introduce a lot of boilerplate code.
  */
-public interface ControllerDTO {
+public abstract sealed class ControllerDTO permits RequestComponentDTO, RequestDTO {
 }

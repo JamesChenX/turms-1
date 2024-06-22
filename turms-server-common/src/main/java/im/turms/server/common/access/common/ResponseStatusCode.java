@@ -62,6 +62,7 @@ public enum ResponseStatusCode {
     RESOURCE_NOT_FOUND(1302, "The resource is not found", 404),
     DUPLICATE_RESOURCE(1303, "Duplicate resource", 409),
     ADMIN_REQUESTS_TOO_FREQUENT(1304, "Admin requests are too frequent", 429),
+    NOT_IMPLEMENTED(1305, "Not implemented", 501),
 
     // Admin - JFR
     DUMP_JFR_IN_ILLEGAL_STATUS(1310, "Dump JFR in a legal status", 406),

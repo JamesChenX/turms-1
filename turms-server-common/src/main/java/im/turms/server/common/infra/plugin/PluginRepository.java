@@ -20,6 +20,7 @@ package im.turms.server.common.infra.plugin;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -125,6 +126,27 @@ public class PluginRepository {
         return plugins;
     }
 
+    public List<Plugin> removePlugins() {
+        List<Plugin> removedPlugins = new ArrayList<>(idToPlugin.size());
+        Iterator<Plugin> iterator = idToPlugin.values()
+                .iterator();
+        while (iterator.hasNext()) {
+            Plugin plugin = iterator.next();
+            unregisterPluginExtensions(plugin);
+            iterator.remove();
+            removedPlugins.add(plugin);
+        }
+        if (!removedPlugins.isEmpty()) {
+            String removedPluginIds = CollectionUtil.toLatin1String(removedPlugins,
+                    plugin -> plugin.descriptor()
+                            .getId());
+            LOGGER.info("The plugins {} have been removed. The current number of plugins is: {}",
+                    removedPluginIds,
+                    idToPlugin.size());
+        }
+        return removedPlugins;
+    }
+
     public List<Plugin> removePlugins(Set<String> ids) {
         List<Plugin> removedPlugins = new ArrayList<>(ids.size());
         for (String id : ids) {
@@ -132,28 +154,32 @@ public class PluginRepository {
             if (plugin == null) {
                 continue;
             }
-            for (TurmsExtension extension : plugin.extensions()) {
-                ExtensionPoint extensionPoint = extension.getExtensionPoint();
-                for (Class<? extends ExtensionPoint> extensionPointClass : extension
-                        .getExtensionPointClasses()) {
-                    List<ExtensionPoint> extensionPoints =
-                            classToExtensionPoint.get(extensionPointClass);
-                    if (extensionPoints != null) {
-                        extensionPoints.remove(extensionPoint);
-                    }
-                }
-            }
+            unregisterPluginExtensions(plugin);
             removedPlugins.add(plugin);
         }
         if (!removedPlugins.isEmpty()) {
             String removedPluginIds = CollectionUtil.toLatin1String(removedPlugins,
                     plugin -> plugin.descriptor()
                             .getId());
-            LOGGER.info("The plugins {} has been removed. The current number of plugins is: {}",
+            LOGGER.info("The plugins {} have been removed. The current number of plugins is: {}",
                     removedPluginIds,
                     idToPlugin.size());
         }
         return removedPlugins;
+    }
+
+    private void unregisterPluginExtensions(Plugin plugin) {
+        for (TurmsExtension extension : plugin.extensions()) {
+            ExtensionPoint extensionPoint = extension.getExtensionPoint();
+            for (Class<? extends ExtensionPoint> extensionPointClass : extension
+                    .getExtensionPointClasses()) {
+                List<ExtensionPoint> extensionPoints =
+                        classToExtensionPoint.get(extensionPointClass);
+                if (extensionPoints != null) {
+                    extensionPoints.remove(extensionPoint);
+                }
+            }
+        }
     }
 
 }

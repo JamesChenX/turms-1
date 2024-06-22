@@ -20,6 +20,7 @@ package im.turms.server.common.infra.plugin;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import jakarta.validation.constraints.NotNull;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -44,7 +45,7 @@ import im.turms.server.common.infra.logging.core.logger.LoggerFactory;
  */
 @Accessors(fluent = true)
 @Data
-public abstract sealed class Plugin permits JavaPlugin, JsPlugin {
+public abstract sealed class Plugin implements Comparable<Plugin> permits JavaPlugin, JsPlugin {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Plugin.class);
 
@@ -53,6 +54,11 @@ public abstract sealed class Plugin permits JavaPlugin, JsPlugin {
 
     @Setter(AccessLevel.PACKAGE)
     private Consumer<TurmsExtension> onExtensionStarted;
+
+    @Override
+    public int compareTo(@NotNull Plugin o) {
+        return descriptor.compareTo(o.descriptor);
+    }
 
     Mono<Void> start() {
         List<Mono<Void>> startMonos = new ArrayList<>(extensions.size());

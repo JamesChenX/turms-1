@@ -24,11 +24,13 @@ import java.util.function.Function;
 import jakarta.annotation.Nullable;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.context.ApplicationContext;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.function.Function3;
 
-import im.turms.server.common.access.admin.web.HttpResponseException;
+import im.turms.server.common.access.admin.api.BaseApiController;
+import im.turms.server.common.access.admin.api.HttpResponseException;
 import im.turms.server.common.access.common.ResponseStatusCode;
 import im.turms.server.common.infra.property.TurmsProperties;
 import im.turms.server.common.infra.property.TurmsPropertiesManager;
@@ -41,7 +43,7 @@ import im.turms.service.domain.common.access.admin.dto.response.StatisticsRecord
 /**
  * @author James Chen
  */
-public abstract class BaseController {
+public abstract class BaseController extends BaseApiController {
 
     protected final TurmsPropertiesManager propertiesManager;
 
@@ -51,7 +53,8 @@ public abstract class BaseController {
     private int maxDayDifferencePerCountRequest;
     private int maxMonthDifferencePerCountRequest;
 
-    protected BaseController(TurmsPropertiesManager propertiesManager) {
+    protected BaseController(ApplicationContext context, TurmsPropertiesManager propertiesManager) {
+        super(context);
         this.propertiesManager = propertiesManager;
         propertiesManager.notifyAndAddGlobalPropertiesChangeListener(this::updateProperties);
     }
@@ -59,18 +62,22 @@ public abstract class BaseController {
     private void updateProperties(TurmsProperties properties) {
         AdminApiProperties apiProperties = properties.getService()
                 .getAdminApi();
-        defaultAvailableRecordsPerRequest = apiProperties.getDefaultAvailableRecordsPerRequest();
+        defaultAvailableRecordsPerRequest = apiProperties.getDefaultQueryRecordsLimit();
         maxAvailableRecordsPerRequest = apiProperties.getMaxAvailableRecordsPerRequest();
         maxHourDifferencePerCountRequest = apiProperties.getMaxHourDifferencePerCountRequest();
         maxDayDifferencePerCountRequest = apiProperties.getMaxDayDifferencePerCountRequest();
         maxMonthDifferencePerCountRequest = apiProperties.getMaxMonthDifferencePerCountRequest();
     }
 
-    public int getPageSize(@Nullable Integer size) {
-        if (size == null || size <= 0) {
+    public int getLimit() {
+        return defaultAvailableRecordsPerRequest;
+    }
+
+    public int getLimit(@Nullable Integer limit) {
+        if (limit == null || limit <= 0) {
             return defaultAvailableRecordsPerRequest;
         }
-        return Math.min(size, maxAvailableRecordsPerRequest);
+        return Math.min(limit, maxAvailableRecordsPerRequest);
     }
 
     public Mono<List<StatisticsRecordDTO>> queryBetweenDate(

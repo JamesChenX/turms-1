@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'ansi_escape_codes.dart';
 import 'log_appender.dart';
 import 'log_entry.dart';
@@ -30,24 +32,25 @@ class LogAppenderConsole extends LogAppender {
     final color = levelInfo.color;
     if (color != null) {
       if (error == null) {
-        print(
+        stdout.writeln(
             '$color${entry.timestamp.toIso8601String()} $levelName : ${entry.message}${AnsiColor.ansiDefault}');
       } else {
-        print(
+        stderr.writeln(
             '$color${entry.timestamp.toIso8601String()} $levelName : ${entry.message}\n${error.toString()}${AnsiColor.ansiDefault}');
         if (stackTrace != null) {
-          print('$color${stackTrace.toString()}${AnsiColor.ansiDefault}');
+          stderr.writeln(
+              '$color${stackTrace.toString()}${AnsiColor.ansiDefault}');
         }
       }
     } else {
       if (error == null) {
-        print(
+        stdout.writeln(
             '${entry.timestamp.toIso8601String()} $levelName : ${entry.message}');
       } else {
-        print(
+        stderr.writeln(
             '${entry.timestamp.toIso8601String()} $levelName : ${entry.message}\n${error.toString()}');
         if (stackTrace != null) {
-          print(stackTrace.toString());
+          stderr.writeln(stackTrace.toString());
         }
       }
     }

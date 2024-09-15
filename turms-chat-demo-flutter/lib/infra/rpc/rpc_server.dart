@@ -50,9 +50,13 @@ class RpcServer {
       final client = await RpcClient.connect(port);
       return await client.sendHealthcheckRequest();
     } catch (e) {
-      if (e is SocketException ||
-          (e is HttpException &&
-              e.message.toLowerCase().contains('connection closed'))) {
+      final actualException = e is WebSocketChannelException ? e.inner : e;
+      if (actualException is SocketException ||
+          (actualException is HttpException &&
+              actualException.message
+                  .toLowerCase()
+                  // e.g.: "Connection closed before full header was received"
+                  .contains('connection closed'))) {
         return false;
       }
     }

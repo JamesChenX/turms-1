@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 
 import '../io/file_utils.dart';
 import 'downloaded_file.dart';
+import 'file_too_large_exception.dart';
 
 class HttpUtils {
   HttpUtils._();
@@ -74,8 +75,7 @@ class HttpUtils {
     final response = await http.Client().send(http.Request(method, uri));
     final contentLength = response.contentLength;
     if (contentLength != null && contentLength > maxBytes) {
-      throw FileTooLargeException(
-          'File is too large. Max: $maxBytes. Actual: $contentLength');
+      throw FileTooLargeException(maxBytes, contentLength);
     }
     var received = 0;
     final bytes = <int>[];
@@ -87,8 +87,7 @@ class HttpUtils {
           // The "contentLength" header is not always the real size,
           // so we need to calculate size.
           if (received > maxBytes) {
-            throw Exception(
-                'File is too large. Max: $maxBytes. Received: $received');
+            throw FileTooLargeException(maxBytes, received);
           }
           if (contentLength != null) {
             onProgress?.call(received / contentLength);

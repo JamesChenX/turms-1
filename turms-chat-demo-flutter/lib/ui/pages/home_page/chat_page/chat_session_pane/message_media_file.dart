@@ -1,35 +1,23 @@
-class MessageMediaFile {
-  MessageMediaFile(
-      {required this.originalMediaUrl,
-      required this.originalMediaPath,
-      required this.originalMediaBytes,
-      required this.thumbnailImageUrl,
-      required this.thumbnailImagePath,
-      required this.thumbnailBytes});
+import 'dart:typed_data';
 
-  /// A media message must specify the original media URL.
-  /// So this is non-nullable.
+class MessageMediaFile {
+  const MessageMediaFile(
+      {required this.originalMediaUrl,
+      this.originalMediaPath,
+      this.originalMediaBytes,
+      this.thumbnailImageUrl,
+      this.thumbnailPath,
+      this.thumbnailBytes});
+
   final String originalMediaUrl;
 
-  /// If the user hasn't viewed the original media,
-  /// we don't need to download the original media,
-  /// so this is non-nullable.
   final String? originalMediaPath;
 
-  /// If the user hasn't viewed the original media,
-  /// we don't need to download the original media,
-  /// so this is non-nullable.
-  final List<int>? originalMediaBytes;
+  final Uint8List? originalMediaBytes;
 
-  /// A media message can not specify the thumbnail image URL.
-  /// So this is nullable.
   final String? thumbnailImageUrl;
 
-  /// A media message always display the thumbnail.
-  /// So this is non-nullable.
-  final String thumbnailImagePath;
+  final String? thumbnailPath;
 
-  /// A media message always display the thumbnail.
-  /// So this is non-nullable.
-  final List<int> thumbnailBytes;
+  final Uint8List? thumbnailBytes;
 }

@@ -20,6 +20,17 @@ class TaskUtils {
     return future.whenComplete(() => _idToCallback.remove(id));
   }
 
+  static Future<T> cacheFutureProvider<T>(
+      {required Object id, required Future<T> Function() futureProvider}) {
+    final result = _idToCallback[id];
+    if (result != null) {
+      return result as Future<T>;
+    }
+    final future = futureProvider.call();
+    _idToCallback[id] = future;
+    return future.whenComplete(() => _idToCallback.remove(id));
+  }
+
   static Future<T> addTask<T>(
       {required Object id, required Future<T> Function() callback}) {
     final result = _idToCallback[id];

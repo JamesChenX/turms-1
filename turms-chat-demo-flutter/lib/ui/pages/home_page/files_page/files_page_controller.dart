@@ -1,6 +1,6 @@
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:open_filex/open_filex.dart';
+import 'package:open_file/open_file.dart';
 
 import '../../../l10n/app_localizations.dart';
 import '../../../l10n/view_models/app_localizations_view_model.dart';
@@ -17,6 +17,6 @@ class FilesPageController extends ConsumerState {
 
   void downloadOrOpen() {
     // TODO: download + download animation + use real file path
-    OpenFilex.open('C:/projects/turms/turms-chat-demo-flutter/pubspec.yaml');
+    OpenFile.open('C:/projects/turms/turms-chat-demo-flutter/pubspec.yaml');
   }
 }

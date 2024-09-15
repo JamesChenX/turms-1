@@ -11,10 +11,15 @@ class FutureMemoryImageProvider
   final Future<Uint8List?> imageBytes;
 
   @override
+  Future<FutureMemoryImageProvider> obtainKey(
+          ImageConfiguration configuration) =>
+      SynchronousFuture<FutureMemoryImageProvider>(this);
+
+  @override
   ImageStreamCompleter loadImage(
           FutureMemoryImageProvider key, ImageDecoderCallback decode) =>
       MultiFrameImageStreamCompleter(
-        codec: _loadAsync(decode),
+        codec: _load(decode),
         scale: 1.0,
         debugLabel: cacheEntryId,
         informationCollector: () sync* {
@@ -22,7 +27,7 @@ class FutureMemoryImageProvider
         },
       );
 
-  Future<Codec> _loadAsync(ImageDecoderCallback decode) async {
+  Future<Codec> _load(ImageDecoderCallback decode) async {
     final bytes = await imageBytes;
     if (bytes == null || bytes.lengthInBytes == 0) {
       // The file may become available later.
@@ -33,11 +38,6 @@ class FutureMemoryImageProvider
     final buffer = await ImmutableBuffer.fromUint8List(bytes);
     return decode(buffer);
   }
-
-  @override
-  Future<FutureMemoryImageProvider> obtainKey(
-          ImageConfiguration configuration) =>
-      SynchronousFuture<FutureMemoryImageProvider>(this);
 
   @override
   bool operator ==(Object other) {
@@ -53,5 +53,5 @@ class FutureMemoryImageProvider
 
   @override
   String toString() =>
-      '${objectRuntimeType(this, 'CacheImageProvider')}("$cacheEntryId")';
+      '${objectRuntimeType(this, 'FutureMemoryImageProvider')}("$cacheEntryId")';
 }

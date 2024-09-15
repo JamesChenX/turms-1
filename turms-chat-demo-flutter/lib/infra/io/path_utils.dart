@@ -2,6 +2,11 @@ import 'dart:io';
 
 import '../app/app_config.dart';
 
+/// Application folder structure:
+/// - app
+/// - user
+///   - database
+///   - files
 class PathUtils {
   PathUtils._();
 

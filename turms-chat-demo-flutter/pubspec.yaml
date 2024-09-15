@@ -12,7 +12,7 @@ dependencies:
   async: ^2.11.0
   # bbflight.com
   # Note: No web support
-  background_downloader: ^8.4.1
+  background_downloader: ^8.4.3
   # dart.dev
   convert: ^3.1.1
   # flutter.dev
@@ -20,7 +20,7 @@ dependencies:
   # dart.dev
   crypto: ^3.0.3
   # fluttercommunity.dev
-  device_info_plus: ^10.0.1
+  device_info_plus: ^10.1.0
   # unverified uploader
   dotted_border: ^2.1.0
   # simonbinder.eu
@@ -54,7 +54,7 @@ dependencies:
   # loki3d.com
   image: ^4.1.7
   # flutter.dev
-  image_picker: ^1.0.7
+  image_picker: ^1.0.8
   intl: any
   # tools.dart.dev
   json_rpc_2: ^3.0.2
@@ -73,38 +73,38 @@ dependencies:
 #  media_kit_libs_macos_video: any
 #  media_kit_libs_windows_video: any
   # buildtoapp.com
-  open_filex: ^4.4.0
+  open_file: 3.5.3
   # fluttercommunity.dev
-  package_info_plus: ^7.0.0
+  package_info_plus: ^8.0.0
   # dart.dev
   path: ^1.9.0
   # flutter.dev
-  path_provider: ^2.1.2
+  path_provider: ^2.1.3
   # tools.dart.dev
   pub_semver: ^2.1.4
   # dash-overflow.net
   riverpod_annotation: ^2.3.5
   # tools.dart.dev
-  shelf_web_socket: ^1.0.4
+  shelf_web_socket: ^2.0.0
   # simonbinder.eu
   sqlite3_flutter_libs: ^0.5.20
   squadron: ^5.1.6
   # nativeshell.dev
-  super_clipboard: ^0.8.10
+  super_clipboard: ^0.8.11
   # nativeshell.dev
   # Note: The Flutter team recommends "super_drag_and_drop".
-  super_drag_and_drop: ^0.8.10
+  super_drag_and_drop: ^0.8.11
   # nativeshell.dev
-  super_hot_key: ^0.8.10
+  super_hot_key: ^0.8.11
   # leanflutter.dev
   # TODO: Wait for Flutter official solution: https://github.com/flutter/flutter/issues/81644
   tray_manager: ^0.2.2
   turms_client_dart:
     path: ../turms-client-dart/
   universal_html: ^2.2.4
-  url_launcher: ^6.2.5
+  url_launcher: ^6.2.6
   # flutter.dev
-  video_player: ^2.8.4
+  video_player: ^2.8.6
   # media-kit.dev
   video_player_media_kit: ^1.0.5
   visibility_detector: ^0.4.0+2
@@ -121,14 +121,14 @@ dev_dependencies:
   drift_dev: ^2.16.0
   flutter_gen_runner: ^5.4.0
   flutter_launcher_icons: ^0.13.1
-  flutter_lints: ^3.0.2
+  flutter_lints: ^4.0.0
   flutter_test:
     sdk: flutter
   #  matcher: ^0.12.16
   #  mockito: ^5.4.2
   # Flutter
   # TODO: Wait for Linux support: https://github.com/flutter/flutter/issues/73740
-  pigeon: ^18.0.0
+  pigeon: ^22.0.0
   riverpod_lint: ^2.3.10
 
 flutter:

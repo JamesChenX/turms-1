@@ -37,7 +37,7 @@ describe('Home page', () => {
 
         context('Form submission', () => {
             beforeEach(() => {
-                cy.get('.login-modal__account').type(account);
+                cy.get('.login-modal__login-name').type(account);
                 cy.get('.login-modal__password').type(pwd);
             });
 

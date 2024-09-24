@@ -9,14 +9,25 @@ import '../../../../../components/t_switch/t_switch.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../themes/theme_config.dart';
 
-class ChatSessionDetailsPrivateConversation extends ConsumerWidget {
+class ChatSessionDetailsPrivateConversation extends ConsumerStatefulWidget {
   const ChatSessionDetailsPrivateConversation(
       {super.key, required this.contact});
 
   final UserContact contact;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ChatSessionDetailsPrivateConversation> createState() =>
+      _ChatSessionDetailsPrivateConversationState();
+}
+
+class _ChatSessionDetailsPrivateConversationState
+    extends ConsumerState<ChatSessionDetailsPrivateConversation> {
+  // TODO: load from server + save to server
+  bool muteNotifications = false;
+  bool stickOnTop = false;
+
+  @override
+  Widget build(BuildContext context) {
     final appLocalizations = AppLocalizations.of(context);
     const divider = THorizontalDivider();
     return Column(
@@ -26,8 +37,11 @@ class ChatSessionDetailsPrivateConversation extends ConsumerWidget {
           children: [
             Text(appLocalizations.muteNotifications),
             TSwitch(
-              value: false,
-              onChanged: (value) {},
+              value: muteNotifications,
+              onChanged: (value) {
+                muteNotifications = value;
+                setState(() {});
+              },
             ),
           ],
         ),
@@ -39,8 +53,11 @@ class ChatSessionDetailsPrivateConversation extends ConsumerWidget {
           children: [
             Text(appLocalizations.stickOnTop),
             TSwitch(
-              value: false,
-              onChanged: (value) {},
+              value: stickOnTop,
+              onChanged: (value) {
+                stickOnTop = value;
+                setState(() {});
+              },
             ),
           ],
         ),

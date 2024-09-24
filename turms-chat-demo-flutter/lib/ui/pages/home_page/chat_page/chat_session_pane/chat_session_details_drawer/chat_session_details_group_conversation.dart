@@ -9,24 +9,34 @@ import '../../../../../components/t_switch/t_switch.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../themes/theme_config.dart';
 
-class ChatSessionDetailsGroupConversation extends ConsumerWidget {
+class ChatSessionDetailsGroupConversation extends ConsumerStatefulWidget {
   const ChatSessionDetailsGroupConversation({super.key, required this.contact});
 
   final GroupContact contact;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ChatSessionDetailsGroupConversation> createState() =>
+      _ChatSessionDetailsGroupConversationState();
+}
+
+class _ChatSessionDetailsGroupConversationState
+    extends ConsumerState<ChatSessionDetailsGroupConversation> {
+  bool muteNotifications = false;
+  bool stickOnTop = false;
+
+  @override
+  Widget build(BuildContext context) {
     final appLocalizations = AppLocalizations.of(context);
     const divider = THorizontalDivider();
-    final intro = contact.intro;
-    final members = contact.members;
+    final intro = widget.contact.intro;
+    final members = widget.contact.members;
     return Column(
       children: [
         Align(
           alignment: Alignment.topLeft,
           child: SelectionArea(
               child: Text(
-            contact.name,
+            widget.contact.name,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           )),
@@ -58,8 +68,11 @@ class ChatSessionDetailsGroupConversation extends ConsumerWidget {
           children: [
             Text(appLocalizations.muteNotifications),
             TSwitch(
-              value: false,
-              onChanged: (value) {},
+              value: muteNotifications,
+              onChanged: (value) {
+                muteNotifications = value;
+                setState(() {});
+              },
             ),
           ],
         ),
@@ -71,8 +84,11 @@ class ChatSessionDetailsGroupConversation extends ConsumerWidget {
           children: [
             Text(appLocalizations.stickOnTop),
             TSwitch(
-              value: false,
-              onChanged: (value) {},
+              value: stickOnTop,
+              onChanged: (value) {
+                stickOnTop = value;
+                setState(() {});
+              },
             ),
           ],
         ),

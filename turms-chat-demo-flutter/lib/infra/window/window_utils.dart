@@ -1,5 +1,7 @@
+import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:window_size/window_size.dart';
 
 import 'window_event_listener.dart';
 
@@ -70,4 +72,22 @@ class WindowUtils {
 
   static Future<void> setSkipTaskbar(bool skip) async =>
       windowManager.setSkipTaskbar(skip);
+
+  static Future<WindowController> createDialog(
+      String arguments, double width, double height) async {
+    final controller = await DesktopMultiWindow.createWindow(arguments);
+    final screen = await getCurrentScreen();
+    await controller.showTitleBar(false);
+    await controller.setPreventClose(true);
+    // TODO: https://github.com/rustdesk-org/rustdesk_desktop_multi_window/pull/19
+    // await controller.resizable(false);
+    if (screen == null) {
+      await controller.setFrame(Rect.fromLTWH(0, 0, width, height));
+    } else {
+      await controller.setFrame(Rect.fromLTWH(screen.visibleFrame.width - width,
+          screen.visibleFrame.height - height, width, height));
+    }
+    await controller.show();
+    return controller;
+  }
 }

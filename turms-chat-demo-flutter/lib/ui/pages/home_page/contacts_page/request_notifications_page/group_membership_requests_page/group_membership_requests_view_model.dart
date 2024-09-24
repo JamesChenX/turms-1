@@ -2,8 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../../domain/group/fixtures/group_membership_requests.dart';
 import '../../../../../../domain/group/models/group_membership_request.dart';
-import '../../../../../../domain/user/fixtures/friend_requests.dart';
-import '../../../../../../domain/user/models/friend_request.dart';
 import '../../../../../../infra/built_in_types/built_in_type_helpers.dart';
 
 class GroupMembershipRequestsViewModelNotifier

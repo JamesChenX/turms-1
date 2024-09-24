@@ -1,25 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
+import '../../../../../components/t_search_bar/t_search_bar.dart';
+import '../../../../../components/t_title_bar/t_title_bar.dart';
+import '../../../../../l10n/app_localizations.dart';
+import '../../../../../themes/theme_config.dart';
 import '../../../components/t_empty/t_empty.dart';
 import '../../../components/t_empty/t_empty_result.dart';
 import '../../../components/t_search_bar/t_search_bar.dart';
 import '../../../components/t_title_bar/t_title_bar.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../themes/theme_config.dart';
-import 'new_relationship_page_controller.dart';
+import 'chat_history_page_controller.dart';
 import 'relationship_info_tile.dart';
 
 const safeAreaPaddingHorizontal = 24.0;
 
-class NewRelationshipPageView extends StatelessWidget {
-  const NewRelationshipPageView(this.newRelationshipPageController);
+class ChatHistoryPageView extends StatelessWidget {
+  const ChatHistoryPageView(this.chatHistoryController);
 
-  final NewRelationshipPageController newRelationshipPageController;
+  final ChatHistoryPageController chatHistoryController;
 
   @override
   Widget build(BuildContext context) {
-    final appLocalizations = newRelationshipPageController.appLocalizations;
+    final appLocalizations = chatHistoryController.appLocalizations;
     return SizedBox(
       width: ThemeConfig.dialogWidthMedium,
       height: ThemeConfig.dialogHeightMedium,
@@ -48,7 +52,8 @@ class NewRelationshipPageView extends StatelessWidget {
           child: TSearchBar(
             hintText: appLocalizations.search,
             autofocus: true,
-            onSubmitted: newRelationshipPageController.searchUser,
+            onChanged: chatHistoryController.search,
+            onSubmitted: chatHistoryController.search,
           ),
         ),
         const SizedBox(height: 8),
@@ -64,7 +69,7 @@ class NewRelationshipPageView extends StatelessWidget {
                       tabAlignment: TabAlignment.start,
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       dividerHeight: 0,
-                      controller: newRelationshipPageController.tabController,
+                      controller: chatHistoryController.tabController,
                       tabs: [
                         Tab(
                           text: appLocalizations.addContact,
@@ -78,34 +83,23 @@ class NewRelationshipPageView extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  if (!newRelationshipPageController.isSearching)
-                    Expanded(child: _buildSearchResultTabView())
+                  Expanded(child: _buildSearchResultTabView())
                 ],
               ),
-              if (newRelationshipPageController.isSearching)
-                const Center(
-                  child: SizedBox(
-                    height: 25,
-                    width: 25,
-                    child: CircularProgressIndicator(
-                      color: Colors.blue,
-                    ),
-                  ),
-                )
             ],
           ),
         ),
       ]);
 
   Widget _buildSearchResultTabView() {
-    final contacts = newRelationshipPageController.contacts;
+    final contacts = chatHistoryController.contacts;
     return TabBarView(
-        controller: newRelationshipPageController.tabController,
+        controller: chatHistoryController.tabController,
         // TODO: Add search for groups
         children: List.generate(
             2,
             (index) => contacts.isEmpty
-                ? newRelationshipPageController.isSearchResultEmpty
+                ? chatHistoryController.isSearchResultEmpty
                     ? const TEmptyResult(
                         icon: Symbols.person_rounded,
                       )
@@ -115,7 +109,7 @@ class NewRelationshipPageView extends StatelessWidget {
                         .map<Widget>((contact) => RelationshipInfoTile(
                               isGroup: index == 1,
                               contact: contact,
-                              onTap: () => newRelationshipPageController
+                              onTap: () => chatHistoryController
                                   .openFriendRequestDialog(contact),
                             ))
                         .toList(),

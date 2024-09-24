@@ -1,8 +1,5 @@
-import 'package:fixnum/fixnum.dart';
 import '../../common/models/new_relationship_request.dart';
 import '../../common/models/request_status.dart';
-
-import 'index.dart';
 
 class FriendRequest extends NewRelationshipRequest {
   FriendRequest(

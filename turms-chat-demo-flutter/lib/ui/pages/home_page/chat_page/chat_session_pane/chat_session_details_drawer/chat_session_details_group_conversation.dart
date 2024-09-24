@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -87,7 +86,7 @@ class ChatSessionDetailsGroupConversation extends ConsumerWidget {
         TTextButton.outlined(
           containerPadding: ThemeConfig.paddingV4H8,
           text: appLocalizations.addNewMember,
-          prefix: Icon(
+          prefix: const Icon(
             Symbols.person_add_rounded,
             size: 20,
           ),
@@ -102,7 +101,7 @@ class ChatSessionDetailsGroupConversation extends ConsumerWidget {
         Expanded(
             child: ListView.separated(
           // Used to not overlay on the scrollbar
-          padding: EdgeInsets.only(right: 12),
+          padding: const EdgeInsets.only(right: 12),
           itemCount: members.length,
           itemBuilder: (context, index) {
             final member = members[index];
@@ -135,7 +134,7 @@ class ChatSessionDetailsGroupConversation extends ConsumerWidget {
         SizedBox(
           width: double.infinity,
           child: TTextButton(
-            containerPadding: EdgeInsets.symmetric(vertical: 8),
+            containerPadding: const EdgeInsets.symmetric(vertical: 8),
             containerColor: Colors.transparent,
             containerColorHovered: Colors.transparent,
             text: appLocalizations.clearChatHistory,
@@ -146,7 +145,7 @@ class ChatSessionDetailsGroupConversation extends ConsumerWidget {
         SizedBox(
           width: double.infinity,
           child: TTextButton(
-            containerPadding: EdgeInsets.symmetric(vertical: 8),
+            containerPadding: const EdgeInsets.symmetric(vertical: 8),
             containerColor: Colors.transparent,
             containerColorHovered: Colors.transparent,
             text: appLocalizations.leaveGroup,

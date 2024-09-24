@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
-import '../../../../../domain/user/models/index.dart';
 import '../../../../../domain/user/fixtures/contacts.dart';
+import '../../../../../domain/user/models/index.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../l10n/view_models/app_localizations_view_model.dart';
 import '../view_models/contacts_view_model.dart';

@@ -1,10 +1,9 @@
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
 
+import '../../../../../domain/user/fixtures/contacts.dart';
 import '../../../../../domain/user/fixtures/relationship_groups.dart';
 import '../../../../../domain/user/models/index.dart';
-import '../../../../../domain/user/fixtures/contacts.dart';
 import '../../../../../infra/built_in_types/built_in_type_helpers.dart';
 import '../../../../../infra/ui/text_utils.dart';
 import '../../../../components/t_accordion/t_accordion.dart';

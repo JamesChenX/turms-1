@@ -6,7 +6,6 @@ import '../../../components/t_avatar/t_avatar.dart';
 import '../../../components/t_button/t_text_button.dart';
 import '../../../components/t_list_tile/t_list_tile.dart';
 import '../../../l10n/view_models/app_localizations_view_model.dart';
-import '../../../themes/theme_config.dart';
 import 'new_relationship_page_view.dart';
 
 class RelationshipInfoTile extends ConsumerWidget {
@@ -25,8 +24,6 @@ class RelationshipInfoTile extends ConsumerWidget {
     final appLocalizations = ref.watch(appLocalizationsViewModel);
 
     return TListTile(
-        backgroundColor: ThemeConfig.conversationBackgroundColor,
-        hoveredBackgroundColor: ThemeConfig.conversationBackgroundColorHovered,
         padding: const EdgeInsets.symmetric(
             vertical: 12, horizontal: safeAreaPaddingHorizontal),
         child: Row(mainAxisSize: MainAxisSize.min, children: [

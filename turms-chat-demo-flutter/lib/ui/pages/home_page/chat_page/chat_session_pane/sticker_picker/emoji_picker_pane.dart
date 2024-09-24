@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../../../components/index.dart';
-import '../../../../../components/t_button/t_icon_button.dart';
 import '../../../../../themes/theme_config.dart';
 
 const _emoticons = [
@@ -88,7 +86,7 @@ const _emoticons = [
   '🙏'
 ];
 
-const containerColorHovered = const Color.fromARGB(255, 242, 242, 242);
+const containerColorHovered = Color.fromARGB(255, 242, 242, 242);
 
 class EmojiPickerPane extends StatelessWidget {
   const EmojiPickerPane({

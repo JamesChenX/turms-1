@@ -15,13 +15,10 @@
  * limitations under the License.
  */
 
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../domain/user/models/index.dart';
-import '../../../components/t_alert/t_alert.dart';
 import '../../../components/t_avatar/t_avatar.dart';
 import '../../../components/t_button/t_text_button.dart';
 import '../../../components/t_image_viewer/t_image_viewer.dart';

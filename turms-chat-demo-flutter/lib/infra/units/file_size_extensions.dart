@@ -34,3 +34,11 @@ extension FileSizeExtensionsInt on int {
   // ignore: non_constant_identifier_names
   int get MB => this * 1024 * 1024;
 }
+
+extension FileSizeExtensionsBigInt on BigInt {
+  // ignore: non_constant_identifier_names
+  BigInt get KB => this * BigInt.from(1024);
+
+  // ignore: non_constant_identifier_names
+  BigInt get MB => this * BigInt.from(1024 * 1024);
+}

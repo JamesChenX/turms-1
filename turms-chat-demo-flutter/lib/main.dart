@@ -2,8 +2,10 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_alert/flutter_platform_alert.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 
@@ -16,26 +18,43 @@ import 'domain/window/view_models/window_maximized_view_model.dart';
 import 'infra/app/app_config.dart';
 import 'infra/assets/assets.gen.dart';
 import 'infra/autostart/autostart_manager.dart';
+import 'infra/env/env_vars.dart';
+import 'infra/exception/exception_extensions.dart';
 import 'infra/logging/logger.dart';
 import 'infra/media/video_utils.dart';
 import 'infra/platform/platform_helpers.dart';
 import 'infra/rpc/rpc_client.dart';
 import 'infra/rpc/rpc_server.dart';
+import 'infra/rust/frb_generated.dart';
 import 'infra/tray/tray_menu_item.dart';
 import 'infra/tray/tray_utils.dart';
 import 'infra/window/window_event_listener.dart';
 import 'infra/window/window_utils.dart';
 import 'ui/pages/app.dart';
+import 'ui/pages/notification.dart' as n;
+
+const appTypeNotification = 'notification';
+const notificationWindowWidth = 200.0;
+const notificationWindowHeight = 100.0;
+WindowController? notificationWindowController;
 
 Future<void> main(List<String> args) async {
   try {
     await run(args);
-  } catch (_) {
+  } catch (e, s) {
+    logger.error(e.toString(), e, s);
+    // TODO: i10n
+    final text = e is Exception ? e.message : e.toString();
+    await FlutterPlatformAlert.showAlert(
+        windowTitle: 'Could not launch "${EnvVars.windowTitle}"',
+        text: text,
+        iconStyle: IconStyle.error,
+        options: PlatformAlertOptions(
+            windows: WindowsAlertOptions(preferMessageBox: true)));
     // Ensure all logs are flushed before exit.
     scheduleMicrotask(() {
       exit(1);
     });
-    rethrow;
   }
 }
 
@@ -44,9 +63,22 @@ Future<void> run(List<String> args) async {
   if (!isDesktop) {
     throw Exception('Only desktop is supported currently');
   }
-
   WidgetsFlutterBinding.ensureInitialized();
+  MaterialSymbolsBase.forceCompileTimeTreeShaking();
 
+  FlutterError.onError = (FlutterErrorDetails details) {
+    logger.error('Caught a Flutter error: $details');
+  };
+
+  if (args.contains(appTypeNotification)) {
+    await runAsNotification();
+  } else {
+    await WindowUtils.ensureInitialized();
+    await runAsMainApp(args);
+  }
+}
+
+Future<void> runAsMainApp(List<String> args) async {
   if (kReleaseMode) {
     // logger.addAppender((event) {
     //   if (event.level.value <= Level.error.value) {
@@ -65,14 +97,11 @@ Future<void> run(List<String> args) async {
       'meaning we will make incompatible changes without migration support, '
       'such as database schema changes');
 
-  MaterialSymbolsBase.forceCompileTimeTreeShaking();
-  FlutterError.onError = (FlutterErrorDetails details) {
-    logger.error('Caught a Flutter error: $details');
-  };
-
   await AppConfig.load();
+  await RustLib.init();
   logger
-    ..info('The application directory: ${AppConfig.appDir}')
+    ..info(
+        'The directory info: the application directory: ${AppConfig.appDir}, the temporary directory: ${AppConfig.tempDir}')
     ..info('The application package info: ${AppConfig.packageInfo}');
 
   VideoUtils.ensureInitialized();
@@ -81,8 +110,15 @@ Future<void> run(List<String> args) async {
   await _initForDesktopPlatforms(args, container);
   await _loadAppSettings(container);
 
+  // await WindowUtils.createDialog(
+  //     appTypeNotification, notificationWindowWidth, notificationWindowHeight);
   runApp(UncontrolledProviderScope(
       container: container, child: App(container: container)));
+}
+
+Future<void> runAsNotification() async {
+  logger.info('Notification application started: $pid');
+  runApp(const ProviderScope(child: n.Notification()));
 }
 
 Future<void> _loadAppSettings(ProviderContainer container) async {
@@ -103,6 +139,7 @@ Future<void> _initForDesktopPlatforms(
     WidgetsBinding.instance
         .addObserver(AppLifecycleListener(onExitRequested: () async {
       try {
+        await notificationWindowController?.close();
         await rpcServer.close();
       } catch (e) {
         // ignore
@@ -117,7 +154,6 @@ Future<void> _initForDesktopPlatforms(
       args: []);
 
   // UI-related
-  await WindowUtils.ensureInitialized();
 
   WindowUtils.addListener(WindowEventListener(onMaximize: () {
     container.read(isWindowMaximizedViewModel.notifier).state = true;

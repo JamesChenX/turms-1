@@ -1,6 +1,4 @@
-import 'package:fixnum/fixnum.dart';
 import '../../common/models/new_relationship_request.dart';
-import '../../user/models/index.dart';
 import '../../common/models/request_status.dart';
 import 'group.dart';
 

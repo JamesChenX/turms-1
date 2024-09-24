@@ -3,21 +3,27 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  desktop_multi_window
   file_selector_linux
+  flutter_platform_alert
   flutter_secure_storage_linux
   irondash_engine_context
   media_kit_libs_linux
   media_kit_video
+  open_file_linux
   screen_retriever
   sqlite3_flutter_libs
   super_native_extensions
+  texture_rgba_renderer
   tray_manager
   url_launcher_linux
   window_manager
+  window_size
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
   media_kit_native_event_loop
+  rust_lib_turms_chat_demo
 )
 
 set(PLUGIN_BUNDLED_LIBRARIES)

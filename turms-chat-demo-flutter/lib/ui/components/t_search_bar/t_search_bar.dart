@@ -12,7 +12,9 @@ class TSearchBar extends StatelessWidget {
       this.focusNode,
       this.prefixIcon = const Icon(Symbols.search_rounded, size: 20),
       this.transformValue,
-      this.onSubmitted});
+      this.onChanged,
+      this.onSubmitted
+      });
 
   final TextEditingController? textEditingController;
   final String hintText;
@@ -20,6 +22,7 @@ class TSearchBar extends StatelessWidget {
   final bool autofocus;
   final FocusNode? focusNode;
   final String Function(String)? transformValue;
+  final ValueChanged<String>? onChanged;
   final ValueChanged<String>? onSubmitted;
 
   @override
@@ -31,6 +34,7 @@ class TSearchBar extends StatelessWidget {
         prefixIcon: prefixIcon,
         showDeleteButtonIfHasText: true,
         transformValue: transformValue,
+        onChanged: onChanged,
         onSubmitted: onSubmitted,
       );
 }

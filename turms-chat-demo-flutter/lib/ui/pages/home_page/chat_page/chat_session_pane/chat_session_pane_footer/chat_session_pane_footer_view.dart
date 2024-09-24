@@ -5,7 +5,6 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:super_drag_and_drop/super_drag_and_drop.dart';
 
 import '../../../../../components/giphy/client/models/gif.dart';
-import '../../../../../components/t_alert/t_alert.dart';
 import '../../../../../components/t_button/t_icon_button.dart';
 import '../../../../../components/t_editor/t_editor.dart';
 import '../../../../../components/t_popup/t_popup.dart';
@@ -126,12 +125,12 @@ class ChatSessionPaneFooterView extends StatelessWidget {
                           onGiphyGifSelected: (GiphyGif value) {
                             final images = value.images;
                             final original = images?.original;
-                            final originalStill = images?.originalStill;
-                            if (original == null || originalStill == null) {
+                            final previewWebp = images?.previewWebp;
+                            if (original == null || previewWebp == null) {
                               return;
                             }
                             chatPageFooterController.sendImage(
-                                original.url, originalStill.url);
+                                original.webp ?? original.url, previewWebp.url);
                           },
                           onEmojiSelected: chatPageFooterController.insertEmoji,
                         )),
@@ -141,6 +140,16 @@ class ChatSessionPaneFooterView extends StatelessWidget {
                       iconColorHovered: Colors.black87,
                       iconColorPressed: ThemeConfig.primary,
                       tooltip: appLocalizations.sticker,
+                      onTap: () async {
+                        final file = await chatPageFooterController.pickFile();
+                      },
+                    ),
+                    TIconButton(
+                      iconData: Symbols.history_rounded,
+                      iconColor: Colors.black54,
+                      iconColorHovered: Colors.black87,
+                      iconColorPressed: ThemeConfig.primary,
+                      tooltip: appLocalizations.chatHistory,
                       onTap: () async {
                         final file = await chatPageFooterController.pickFile();
                       },

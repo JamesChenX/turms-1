@@ -1,5 +1,5 @@
-import '../models/relationship_group.dart';
 import '../../../infra/built_in_types/built_in_type_helpers.dart';
+import '../models/relationship_group.dart';
 import 'contacts.dart';
 
 final fixtureRelationshipGroups = fixtureUserContacts

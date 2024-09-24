@@ -71,7 +71,7 @@ class ChatSessionPane extends ConsumerWidget {
 }
 
 class _ChatSessionPaneFooter extends StatefulWidget {
-  const _ChatSessionPaneFooter({super.key});
+  const _ChatSessionPaneFooter();
 
   @override
   State<_ChatSessionPaneFooter> createState() => _ChatSessionPaneFooterState();

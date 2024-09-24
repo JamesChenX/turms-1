@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
+import '../../../infra/task/debouncer.dart';
 import '../../l10n/view_models/app_localizations_view_model.dart';
 import '../t_button/t_icon_button.dart';
 
@@ -24,7 +25,9 @@ class TTextField extends ConsumerStatefulWidget {
       this.expands = false,
       this.style,
       TextAlignVertical? textAlignVertical,
+      this.debounceTimeout,
       this.transformValue,
+      this.onChanged,
       this.onSubmitted,
       this.onTapOutside})
       : assert(!showDeleteButtonIfHasText || suffixIcon == null),
@@ -46,7 +49,9 @@ class TTextField extends ConsumerStatefulWidget {
   final bool expands;
   final TextAlignVertical textAlignVertical;
   final TextStyle? style;
+  final Duration? debounceTimeout;
   final String Function(String value)? transformValue;
+  final ValueChanged<String>? onChanged;
   final ValueChanged<String>? onSubmitted;
   final ValueChanged<PointerDownEvent>? onTapOutside;
 
@@ -56,6 +61,7 @@ class TTextField extends ConsumerStatefulWidget {
 
 class _TTextFieldState extends ConsumerState<TTextField> {
   TextEditingController? textEditingController;
+  Debouncer? debouncer;
 
   @override
   void initState() {
@@ -63,11 +69,16 @@ class _TTextFieldState extends ConsumerState<TTextField> {
     if (widget.textEditingController == null) {
       textEditingController = TextEditingController();
     }
+    final debounceTimeout = widget.debounceTimeout;
+    if (debounceTimeout != null) {
+      debouncer = Debouncer(timeout: debounceTimeout);
+    }
   }
 
   @override
   void dispose() {
     textEditingController?.dispose();
+    debouncer?.cancel();
     super.dispose();
   }
 
@@ -99,11 +110,25 @@ class _TTextFieldState extends ConsumerState<TTextField> {
               text: result,
               selection: TextSelection.collapsed(offset: result.length),
             );
+            value = result;
+          }
+          final localDebouncer = debouncer;
+          if (localDebouncer != null) {
+            localDebouncer.run(() {
+              widget.onChanged?.call(value);
+            });
+          } else {
+            widget.onChanged?.call(value);
           }
         }
         setState(() {});
       },
-      onSubmitted: widget.onSubmitted,
+      onSubmitted: debouncer == null
+          ? widget.onSubmitted
+          : (value) {
+              debouncer?.cancel();
+              widget.onSubmitted?.call(value);
+            },
       onTapOutside: widget.onTapOutside,
       style: widget.style ??
           const TextStyle(

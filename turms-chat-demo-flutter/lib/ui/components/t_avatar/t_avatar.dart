@@ -94,6 +94,7 @@ class TAvatar extends StatelessWidget {
         alignment: Alignment.center,
         child: Text(
           firstChar,
+          textScaler: TextScaler.noScaling,
           style: TextStyle(
               fontSize: textSize ?? size.textSize, color: Colors.white),
         ),

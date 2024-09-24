@@ -81,10 +81,7 @@ class TTable extends StatelessWidget {
 
 class _TTableRowView extends StatefulWidget {
   const _TTableRowView(
-      {super.key,
-      required this.row,
-      required this.widths,
-      required this.columnCount});
+      {required this.row, required this.widths, required this.columnCount});
 
   final TTableRow row;
   final List<double> widths;

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../themes/theme_config.dart';
-import '../t_tooltip/t_tooltip.dart';
 import 't_button.dart';
 
 class TIconButton extends StatelessWidget {

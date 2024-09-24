@@ -18,7 +18,6 @@ import '../../../../../../infra/logging/logger.dart';
 import '../../../../../../infra/random/random_utils.dart';
 import '../../../../../components/index.dart';
 import '../../../../../components/t_editor/t_editor.dart';
-import '../../../../../components/t_popup/t_popup.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../l10n/view_models/app_localizations_view_model.dart';
 import '../../view_models/selected_conversation_view_model.dart';

@@ -64,7 +64,7 @@ class _TTabsState extends State<TTabs> {
       return child;
     }
     return Padding(
-      padding: EdgeInsets.only(top: 8),
+      padding: const EdgeInsets.only(top: 8),
       child: child,
     );
   }

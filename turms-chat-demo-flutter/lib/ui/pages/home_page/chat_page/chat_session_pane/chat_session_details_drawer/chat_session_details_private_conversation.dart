@@ -1,10 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../../../../domain/user/models/contact.dart';
-import '../../../../../../infra/built_in_types/built_in_type_helpers.dart';
 import '../../../../../components/t_button/t_text_button.dart';
 import '../../../../../components/t_divider/t_horizontal_divider.dart';
 import '../../../../../components/t_switch/t_switch.dart';
@@ -56,7 +54,7 @@ class ChatSessionDetailsPrivateConversation extends ConsumerWidget {
         TTextButton.outlined(
           containerPadding: ThemeConfig.paddingV4H8,
           text: appLocalizations.addNewMember,
-          prefix: Icon(
+          prefix: const Icon(
             Symbols.person_add_rounded,
             size: 20,
           ),
@@ -68,7 +66,7 @@ class ChatSessionDetailsPrivateConversation extends ConsumerWidget {
         SizedBox(
           width: double.infinity,
           child: TTextButton(
-            containerPadding: EdgeInsets.symmetric(vertical: 16),
+            containerPadding: const EdgeInsets.symmetric(vertical: 16),
             // addContainer: false,
             containerColor: Colors.transparent,
             containerColorHovered: Colors.transparent,

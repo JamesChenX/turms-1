@@ -3,7 +3,6 @@ import 'package:flutter/widgets.dart';
 import '../../../../domain/user/models/contact.dart';
 import '../../../components/t_avatar/t_avatar.dart';
 import '../../../components/t_list_tile/t_list_tile.dart';
-import '../../../themes/theme_config.dart';
 
 class ContactTile extends StatefulWidget {
   const ContactTile(
@@ -33,9 +32,6 @@ class _ContactTileState extends State<ContactTile> {
     return TListTile(
         onTap: widget.onTap,
         focused: widget.selected,
-        backgroundColor: ThemeConfig.conversationBackgroundColor,
-        focusedBackgroundColor: ThemeConfig.conversationBackgroundColorFocused,
-        hoveredBackgroundColor: ThemeConfig.conversationBackgroundColorHovered,
         padding:
             // use more right padding to reserve space for scrollbar
             const EdgeInsets.only(left: 10, right: 14, top: 12, bottom: 12),

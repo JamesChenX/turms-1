@@ -6,7 +6,6 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../app/app_config.dart';
-import 'data_reader_file_adaptor.dart';
 
 final pathSeparator = Platform.pathSeparator;
 

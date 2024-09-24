@@ -251,8 +251,7 @@ class TTooltipState extends State<TTooltip>
     _animationStatus = status;
   }
 
-  void _scheduleShowTooltip(
-      {required Duration withDelay, Duration? showDuration}) {
+  void _scheduleShowTooltip({required Duration withDelay}) {
     assert(mounted);
     void show() {
       assert(mounted);

@@ -1,15 +1,17 @@
 import 'dart:async';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path/path.dart' as p;
 
 import '../../../domain/user/view_models/user_settings_view_model.dart';
 import '../../../infra/app/app_config.dart';
 import '../../../infra/env/env_vars.dart';
 import '../../../infra/github/github_client.dart';
 import '../../../infra/logging/logger.dart';
-import '../../../infra/native/index.dart';
+import '../../../infra/rust/api/system.dart';
 import '../../../infra/task/task_utils.dart';
 import '../../../infra/units/file_size_extensions.dart';
 import '../../components/index.dart';
@@ -31,6 +33,7 @@ import 'shared_view_models/home_page_tab_view_model.dart';
 
 const _taskIdCheckDiskSpace = 'checkDiskSpace';
 const _taskIdCheckForUpdates = 'checkForUpdates';
+final _diskWarningThreshold = BigInt.from(100).MB;
 
 class HomePageLandscape extends ConsumerStatefulWidget {
   const HomePageLandscape({Key? key}) : super(key: key);
@@ -139,10 +142,12 @@ class _HomePageLandscapeState extends ConsumerState<HomePageLandscape> {
         });
     TaskUtils.addPeriodicTask(
       id: _taskIdCheckDiskSpace,
-      duration: const Duration(minutes: 3),
+      duration: const Duration(minutes: 1),
       callback: () async {
-        final diskSpace = await appHostApi.getDiskSpace(AppConfig.appDir);
-        if (diskSpace.usable < 100.MB) {
+        final diskSpaceInfos = getDiskSpaceInfos();
+        final diskSpace = diskSpaceInfos.firstWhereOrNull(
+            (info) => p.isWithin(info.path, AppConfig.appDir));
+        if (diskSpace != null && diskSpace.available < _diskWarningThreshold) {
           final appLocalizations = ref.read(appLocalizationsViewModel);
           unawaited(showAlertDialog(
             context,
@@ -153,7 +158,7 @@ class _HomePageLandscapeState extends ConsumerState<HomePageLandscape> {
             },
           ));
         }
-        return false;
+        return true;
       },
     );
   }

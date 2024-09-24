@@ -58,6 +58,9 @@ class GiphyPickerBody extends ConsumerStatefulWidget {
   _GiphyPickerBodyState createState() => _GiphyPickerBodyState();
 }
 
+const crossAxisCount = 5;
+const limit = crossAxisCount * 10;
+
 class _GiphyPickerBodyState extends ConsumerState<GiphyPickerBody> {
   GiphyResponse? _response;
 
@@ -65,15 +68,8 @@ class _GiphyPickerBodyState extends ConsumerState<GiphyPickerBody> {
 
   final Axis _scrollDirection = Axis.vertical;
 
-  late int _crossAxisCount;
-
   // Spacing between gifs in grid
   final double _spacing = 8.0;
-
-  late double _gifWidth;
-
-  // Limit of query
-  late int _limit;
 
   bool _isLoading = false;
 
@@ -83,30 +79,7 @@ class _GiphyPickerBodyState extends ConsumerState<GiphyPickerBody> {
   void initState() {
     super.initState();
 
-    _gifWidth = switch (widget.type) {
-      GiphyType.gifs => 200,
-      GiphyType.stickers => 150,
-      GiphyType.emoji => 80
-    };
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
     widget.scrollController.addListener(_loadMoreIfScrollToEnd);
-    // _appBarProvider.addListener(_resetAndLoad); TODO?
-
-    // Set items count responsive
-    _crossAxisCount = (MediaQuery.of(context).size.width / _gifWidth).round();
-
-    // Set vertical max items count
-    final _mainAxisCount =
-        ((MediaQuery.of(context).size.height - 30) / _gifWidth).round();
-
-    _limit = min(20, _crossAxisCount * _mainAxisCount);
-    offset = 0;
-
     _loadMore();
   }
 
@@ -118,16 +91,16 @@ class _GiphyPickerBodyState extends ConsumerState<GiphyPickerBody> {
 
   @override
   Widget build(BuildContext context) {
-    final appLocalizations = ref.watch(appLocalizationsViewModel);
     final gifs = _gifs;
     if (gifs.isEmpty) {
+      final appLocalizations = ref.watch(appLocalizationsViewModel);
       return Center(
         child: TLoadingIndicator(text: appLocalizations.loading),
       );
     }
     return GridView.builder(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: _crossAxisCount,
+        crossAxisCount: crossAxisCount,
         mainAxisSpacing: _spacing,
         crossAxisSpacing: _spacing,
       ),
@@ -135,61 +108,59 @@ class _GiphyPickerBodyState extends ConsumerState<GiphyPickerBody> {
       scrollDirection: _scrollDirection,
       controller: widget.scrollController,
       itemCount: gifs.length,
-      itemBuilder: (ctx, idx) {
-        final _gif = gifs[idx];
-        return _buildItem(_gif);
-      },
+      itemBuilder: (ctx, idx) => _buildItem(gifs[idx]),
     );
   }
 
   Widget _buildItem(GiphyGif gif) {
     final images = gif.images!;
-    final fixedWidth = images.fixedWidth;
-    final _aspectRatio =
-        double.parse(fixedWidth.width) / double.parse(fixedWidth.height);
+    final image = images.fixedWidthSmall!;
+    final _aspectRatio = double.parse(image.width) / double.parse(image.height);
+    final url = image.url;
     return ClipRRect(
       borderRadius: BorderRadius.circular(10.0),
       child: MouseRegion(
         cursor: SystemMouseCursors.click,
         child: GestureDetector(
           onTap: () => widget.onSelected(gif),
-          child: fixedWidth.webp == null
-              ? Container()
-              : RepaintBoundary(
-                  child: Image.network(
-                    fixedWidth.webp!,
-                    cacheWidth: _gifWidth.toInt(),
-                    cacheHeight: _gifWidth ~/ _aspectRatio,
-                    semanticLabel: gif.title,
-                    gaplessPlayback: true,
-                    fit: BoxFit.fill,
-                    headers: {'accept': 'image/*'},
-                    // TODO
-                    // loadStateChanged: (state) => AnimatedSwitcher(
-                    //   duration: const Duration(milliseconds: 350),
-                    //   child: switch (state.extendedImageLoadState) {
-                    //     LoadState.loading => AspectRatio(
-                    //         aspectRatio: _aspectRatio,
-                    //         child: Container(
-                    //           color: Theme.of(context).cardColor,
-                    //         ),
-                    //       ),
-                    //     LoadState.completed => AspectRatio(
-                    //         aspectRatio: _aspectRatio,
-                    //         child: ExtendedRawImage(
-                    //           fit: BoxFit.fill,
-                    //           image: state.extendedImageInfo?.image,
-                    //         ),
-                    //       ),
-                    //     LoadState.failed => AspectRatio(
-                    //         aspectRatio: _aspectRatio,
-                    //         child: Container(
-                    //           color: Theme.of(context).cardColor,
-                    //         ),
-                    //       )
-                    //   },
-                  ),
-                ),
+          child: RepaintBoundary(
+            child: LayoutBuilder(builder: (context, constraints) {
+              final maxWidth = constraints.maxWidth;
+              return Image.network(
+                url,
+                cacheWidth: maxWidth.toInt(),
+                cacheHeight: maxWidth ~/ _aspectRatio,
+                semanticLabel: gif.title,
+                gaplessPlayback: true,
+                fit: BoxFit.fill,
+                headers: {'accept': 'image/*'},
+                // TODO
+                // loadStateChanged: (state) => AnimatedSwitcher(
+                //   duration: const Duration(milliseconds: 350),
+                //   child: switch (state.extendedImageLoadState) {
+                //     LoadState.loading => AspectRatio(
+                //         aspectRatio: _aspectRatio,
+                //         child: Container(
+                //           color: Theme.of(context).cardColor,
+                //         ),
+                //       ),
+                //     LoadState.completed => AspectRatio(
+                //         aspectRatio: _aspectRatio,
+                //         child: ExtendedRawImage(
+                //           fit: BoxFit.fill,
+                //           image: state.extendedImageInfo?.image,
+                //         ),
+                //       ),
+                //     LoadState.failed => AspectRatio(
+                //         aspectRatio: _aspectRatio,
+                //         child: Container(
+                //           color: Theme.of(context).cardColor,
+                //         ),
+                //       )
+                //   },
+              );
+            }),
+          ),
         ),
       ),
     );
@@ -204,6 +175,9 @@ class _GiphyPickerBodyState extends ConsumerState<GiphyPickerBody> {
     _isLoading = true;
 
     final client = ref.read(giphyClientProvider);
+    final appLocalizations = ref.read(appLocalizationsViewModel);
+
+    appLocalizations.localeName;
 
     offset = response == null
         ? 0
@@ -211,7 +185,7 @@ class _GiphyPickerBodyState extends ConsumerState<GiphyPickerBody> {
 
     final type = widget.type;
     if (type == GiphyType.emoji) {
-      response = await client.emojis(offset: offset, limit: _limit);
+      response = await client.emojis(offset: offset, limit: limit);
     } else {
       final queryText = ref.read(_queryTextViewModel);
       if (queryText.isNotEmpty) {
@@ -220,14 +194,14 @@ class _GiphyPickerBodyState extends ConsumerState<GiphyPickerBody> {
             offset: offset,
             // rating: _tabProvider.rating,
             type: type,
-            limit: _limit);
+            limit: limit);
       } else {
         response = await client.trending(
             // lang: _tabProvider.lang,
             offset: offset,
             // rating: _tabProvider.rating,
             type: type,
-            limit: _limit);
+            limit: limit);
       }
     }
 

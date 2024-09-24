@@ -1,25 +1,6 @@
 import 'images.dart';
 
 class GiphyGif {
-  String? title;
-  String? type;
-  String? id;
-  String? slug;
-  String? url;
-  String? bitlyGifUrl;
-  String? bitlyUrl;
-  String? embedUrl;
-  String? username;
-  String? source;
-  String? rating;
-  String? contentUrl;
-  String? sourceTld;
-  String? sourcePostUrl;
-  int? isSticker;
-  DateTime? importDatetime;
-  DateTime? trendingDatetime;
-  GiphyImages? images;
-
   GiphyGif({
     required this.title,
     required this.type,
@@ -67,6 +48,24 @@ class GiphyGif {
           json['images'] as Map<String, dynamic>,
         ),
       );
+  String? title;
+  String? type;
+  String? id;
+  String? slug;
+  String? url;
+  String? bitlyGifUrl;
+  String? bitlyUrl;
+  String? embedUrl;
+  String? username;
+  String? source;
+  String? rating;
+  String? contentUrl;
+  String? sourceTld;
+  String? sourcePostUrl;
+  int? isSticker;
+  DateTime? importDatetime;
+  DateTime? trendingDatetime;
+  GiphyImages? images;
 
   Map<String, dynamic> toJson() => <String, dynamic>{
         'title': title,

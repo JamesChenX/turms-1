@@ -1,8 +1,7 @@
 import 'package:fixnum/fixnum.dart';
 
-import '../models/friend_request.dart';
-import '../models/index.dart';
 import '../../common/models/request_status.dart';
+import '../models/index.dart';
 
 final _now = DateTime.now();
 

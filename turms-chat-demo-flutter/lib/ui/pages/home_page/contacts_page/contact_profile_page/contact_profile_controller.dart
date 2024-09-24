@@ -20,7 +20,7 @@ class ContactProfilePageController extends ConsumerState<ContactProfilePage> {
     return ContactProfilePageView(this);
   }
 
-  startConversation() {
+  void startConversation() {
     if (selectedContact == null) {
       return;
     }

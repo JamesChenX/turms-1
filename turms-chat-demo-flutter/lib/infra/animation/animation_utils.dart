@@ -1,6 +1,5 @@
 import 'package:flutter/animation.dart';
 
-import 'animation_extensions.dart';
 import 'dismissed_status_change_type.dart';
 
 final class AnimationUtils {

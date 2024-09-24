@@ -4,18 +4,18 @@ import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:image/image.dart' as img;
 import 'package:path/path.dart';
 
 import '../../../../../../infra/crypto/crypto_utils.dart';
 import '../../../../../../infra/env/env_vars.dart';
+import '../../../../../../infra/http/file_too_large_exception.dart';
 import '../../../../../../infra/http/http_utils.dart';
 import '../../../../../../infra/http/resource_not_found_exception.dart';
 import '../../../../../../infra/io/path_utils.dart';
 import '../../../../../../infra/media/corrupted_media_file_exception.dart';
+import '../../../../../../infra/rust/api/image.dart';
 import '../../../../../../infra/task/task_utils.dart';
 import '../../../../../../infra/units/file_size_extensions.dart';
-import '../../../../../../infra/worker/worker_manager.dart';
 import '../message_media_file.dart';
 
 class MessageImageProvider extends ImageProvider<MessageImageProvider> {
@@ -52,7 +52,6 @@ class MessageImageProvider extends ImageProvider<MessageImageProvider> {
   }
 
   Future<Uint8List> _fetchImage() async {
-    // 1. Prepare the paths.
     final url = originalImageUrl;
     final urlStr = url.toString();
     final ext = extension(urlStr);
@@ -71,8 +70,8 @@ class MessageImageProvider extends ImageProvider<MessageImageProvider> {
           cumulativeBytesLoaded: 0, expectedTotalBytes: null));
       final mediaFile = await TaskUtils.cacheFutureProvider(
           id: 'download:$url',
-          futureProvider: () => WorkerManager.schedule(_fetchImage0,
-              [url, outputOriginalImagePath, outputThumbnailPath]));
+          futureProvider: () =>
+              _fetchImage0(url, outputOriginalImagePath, outputThumbnailPath));
       return mediaFile.thumbnailBytes ?? mediaFile.originalMediaBytes!;
     } else {
       final outputOriginalImageFile = File(outputOriginalImagePath);
@@ -83,16 +82,14 @@ class MessageImageProvider extends ImageProvider<MessageImageProvider> {
           cumulativeBytesLoaded: 0, expectedTotalBytes: null));
       final mediaFile = await TaskUtils.cacheFutureProvider(
           id: 'download:$url',
-          futureProvider: () => WorkerManager.schedule(_fetchImage0,
-              [url, outputOriginalImagePath, outputThumbnailPath]));
+          futureProvider: () =>
+              _fetchImage0(url, outputOriginalImagePath, outputThumbnailPath));
       return mediaFile.originalMediaBytes!;
     }
   }
 
-  Future<MessageMediaFile> _fetchImage0(List<dynamic> args) async {
-    final uri = args[0] as String;
-    final outputOriginalImagePath = args[1] as String;
-    final outputThumbnailPath = args[2] as String;
+  Future<MessageMediaFile> _fetchImage0(String uri,
+      String outputOriginalImagePath, String outputThumbnailPath) async {
     final originalImageFile = await HttpUtils.downloadFile(
       uri: Uri.parse(uri),
       filePath: outputOriginalImagePath,
@@ -105,47 +102,43 @@ class MessageImageProvider extends ImageProvider<MessageImageProvider> {
     if (originalImageBytes.isEmpty) {
       throw ResourceNotFoundException(uri);
     }
-    // Don't resize GIF images because the "image" package
-    // is buggy for resizing GIF images.
-    // e.g. https://github.com/brendan-duncan/image/issues/588
-    // TODO: waiting for them to be fixed.
-    if (outputOriginalImagePath.endsWith('.gif')) {
-      return MessageMediaFile(
-        originalMediaUrl: uri,
-        originalMediaPath: outputOriginalImagePath,
-        originalMediaBytes: originalImageBytes,
-      );
+    final resizeResult = await resize(
+        inputPath: originalImageFile.file.path,
+        outputPath: outputThumbnailPath,
+        width: EnvVars.messageImageThumbnailSizeWidth,
+        height: EnvVars.messageImageThumbnailSizeHeight);
+    final errorType = resizeResult.errorType;
+    if (errorType == null) {
+      // TODO: optimize memory usage.
+      if (resizeResult.resized) {
+        final thumbnailBytes = await File(outputThumbnailPath).readAsBytes();
+        return MessageMediaFile(
+          originalMediaUrl: uri,
+          originalMediaPath: outputOriginalImagePath,
+          originalMediaBytes: originalImageBytes,
+          thumbnailPath: outputThumbnailPath,
+          thumbnailBytes: thumbnailBytes,
+        );
+      } else {
+        return MessageMediaFile(
+          originalMediaUrl: uri,
+          originalMediaPath: outputOriginalImagePath,
+          originalMediaBytes: originalImageBytes,
+        );
+      }
+    } else {
+      switch (errorType) {
+        case ResizeError.decoding:
+          throw const CorruptedMediaFileException();
+        case ResizeError.parameter:
+          throw ArgumentError();
+        case ResizeError.limits:
+          throw const FileTooLargeException();
+        case ResizeError.unsupported:
+        case ResizeError.ioError:
+          throw Exception('io');
+      }
     }
-    var originalImage =
-        img.decodeNamedImage(outputOriginalImagePath, originalImageBytes);
-    if (originalImage == null) {
-      throw const CorruptedMediaFileException();
-    }
-    if (originalImage.width > EnvVars.messageImageThumbnailSizeWidth ||
-        originalImage.height > EnvVars.messageImageThumbnailSizeHeight) {
-      originalImage = originalImage.convert(numChannels: 4);
-      final thumbnail = img.copyResize(originalImage,
-          width: originalImage.width > originalImage.height
-              ? EnvVars.messageImageThumbnailSizeWidth
-              : EnvVars.messageImageThumbnailSizeHeight,
-          maintainAspect: true,
-          interpolation: img.Interpolation.cubic);
-      final thumbnailBytes =
-          img.encodeNamedImage(outputThumbnailPath, thumbnail)!;
-      await File(outputThumbnailPath).writeAsBytes(thumbnailBytes);
-      return MessageMediaFile(
-        originalMediaUrl: uri,
-        originalMediaPath: outputOriginalImagePath,
-        originalMediaBytes: originalImageBytes,
-        thumbnailPath: outputThumbnailPath,
-        thumbnailBytes: thumbnailBytes,
-      );
-    }
-    return MessageMediaFile(
-      originalMediaUrl: uri,
-      originalMediaPath: outputOriginalImagePath,
-      originalMediaBytes: originalImageBytes,
-    );
   }
 
   @override

@@ -42,17 +42,19 @@ class TaskUtils {
     return value.whenComplete(() => _idToCallback.remove(id));
   }
 
-  static bool addPeriodicTask(
+  static Future<bool> addPeriodicTask(
       {required String id,
       required Duration duration,
       required Callback callback,
-      bool runImmediately = false}) {
+      bool runImmediately = false}) async {
     final timer = _idToTimer[id];
     if (timer != null) {
       return false;
     }
     if (runImmediately) {
-      callback();
+      if (!await callback()) {
+        return true;
+      }
     }
     _idToTimer[id] = Timer.periodic(duration, (timer) async {
       if (!await callback()) {

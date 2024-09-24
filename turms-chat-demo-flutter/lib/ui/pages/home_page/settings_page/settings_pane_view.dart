@@ -1,7 +1,7 @@
 part of 'settings_pane.dart';
 
 class _SettingsPaneView extends StatelessWidget {
-  const _SettingsPaneView(this._settingsPaneController, {super.key});
+  const _SettingsPaneView(this._settingsPaneController);
 
   final _SettingsPaneController _settingsPaneController;
 
@@ -81,9 +81,9 @@ class _SettingsPaneView extends StatelessWidget {
               ? TTextButton(
                   text: appLocalizations.reset,
                   addContainer: false,
-                  textStyle: TextStyle(color: ThemeConfig.linkColor),
+                  textStyle: const TextStyle(color: ThemeConfig.linkColor),
                   textStyleHovered:
-                      TextStyle(color: ThemeConfig.linkColorHovered),
+                      const TextStyle(color: ThemeConfig.linkColorHovered),
                   onTap: _settingsPaneController.resetShortcuts,
                 )
               : null,

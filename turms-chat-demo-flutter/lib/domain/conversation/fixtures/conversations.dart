@@ -2,13 +2,13 @@ import 'dart:math';
 
 import 'package:fixnum/fixnum.dart';
 
-import '../models/group_conversation.dart';
-import '../models/private_conversation.dart';
-import '../../message/models/message_delivery_status.dart';
-import '../../user/models/index.dart';
 import '../../../infra/random/random_utils.dart';
 import '../../../ui/pages/home_page/chat_page/chat_session_pane/message.dart';
+import '../../message/models/message_delivery_status.dart';
 import '../../user/fixtures/contacts.dart';
+import '../../user/models/index.dart';
+import '../models/group_conversation.dart';
+import '../models/private_conversation.dart';
 
 final random = Random(123456789);
 final endDate = DateTime(2000, 2, 20);

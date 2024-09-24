@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:turms_chat_demo/ui/pages/home_page/chat_page/chat_session_pane/message.dart';
 
 import '../../../../../domain/conversation/models/conversation.dart';
 import '../../../../components/t_avatar/t_avatar.dart';
@@ -9,6 +8,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../l10n/view_models/app_localizations_view_model.dart';
 import '../../../../l10n/view_models/date_format_view_models.dart';
 import '../../../../themes/theme_config.dart';
+import '../chat_session_pane/message.dart';
 
 const diameter = 10.0;
 const rightOffset = -diameter / 2;
@@ -51,8 +51,6 @@ class _ConversationTileState extends ConsumerState<ConversationTile> {
       backgroundColor: widget.highlighted
           ? ThemeConfig.conversationBackgroundColorHighlighted
           : ThemeConfig.conversationBackgroundColor,
-      focusedBackgroundColor: ThemeConfig.conversationBackgroundColorFocused,
-      hoveredBackgroundColor: ThemeConfig.conversationBackgroundColorHovered,
       padding:
           // use more right padding to reserve space for scrollbar
           // TODO: adapt the padding to not hide part of text (e.g. contact name).

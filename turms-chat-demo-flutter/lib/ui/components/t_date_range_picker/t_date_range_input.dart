@@ -76,8 +76,8 @@ class _TDateRangeInputState extends ConsumerState<_TDateRangeInput> {
             focusNode: widget.startDateFocusNode,
             readOnly: true,
             showCursor: false,
-            style:
-                TextStyle(color: ThemeConfig.textColorSecondary, height: 1.2),
+            style: const TextStyle(
+                color: ThemeConfig.textColorSecondary, height: 1.2),
             onTapOutside: onTapOutside,
           ),
         ),
@@ -92,8 +92,8 @@ class _TDateRangeInputState extends ConsumerState<_TDateRangeInput> {
             focusNode: widget.endDateFocusNode,
             readOnly: true,
             showCursor: false,
-            style:
-                TextStyle(color: ThemeConfig.textColorSecondary, height: 1.2),
+            style: const TextStyle(
+                color: ThemeConfig.textColorSecondary, height: 1.2),
             onTapOutside: onTapOutside,
           ),
         ),

@@ -111,7 +111,7 @@ class _TDateCellState extends ConsumerState<TDateCell> {
                           child: Center(
                               child: Text(
                             widget.day,
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.black26,
                             ),
                           )))),

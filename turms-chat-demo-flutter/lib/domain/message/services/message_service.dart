@@ -67,7 +67,8 @@ class MessageService {
       originalUrl.endsWith('.png') ||
       originalUrl.endsWith('.jpg') ||
       originalUrl.endsWith('.jpeg') ||
-      originalUrl.endsWith('.gif');
+      originalUrl.endsWith('.gif') ||
+      originalUrl.endsWith('.webp');
 
   String encodeImageMessage(String originalUrl, String thumbnailUrl) =>
       '![$originalUrl]($thumbnailUrl)';

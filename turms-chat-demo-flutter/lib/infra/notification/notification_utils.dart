@@ -30,28 +30,25 @@ class NotificationUtils {
 
   // TODO: Use our custom notification implementation once multi-window is supported:
   // https://github.com/flutter/flutter/issues/30701
-  // FIXME:
   static Future<void> showNotification(String header, String body) async {
     id++;
     if (Platform.isLinux) {
-      const notificationDetails = NotificationDetails(
-        linux: linuxDetails,
-      );
       await _notificationPlugin.show(
         id,
         header,
         body,
-        notificationDetails,
+        const NotificationDetails(
+          linux: linuxDetails,
+        ),
       );
     } else if (Platform.isMacOS) {
-      const notificationDetails = NotificationDetails(
-        macOS: darwinDetails,
-      );
       await _notificationPlugin.show(
         id,
         header,
         body,
-        notificationDetails,
+        const NotificationDetails(
+          macOS: darwinDetails,
+        ),
       );
     } else if (Platform.isWindows) {
       await _windowsNotification.showNotificationPluginTemplate(

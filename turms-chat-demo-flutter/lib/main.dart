@@ -30,8 +30,7 @@ import 'infra/tray/tray_menu_item.dart';
 import 'infra/tray/tray_utils.dart';
 import 'infra/window/window_event_listener.dart';
 import 'infra/window/window_utils.dart';
-import 'ui/pages/app.dart';
-import 'ui/pages/notification.dart' as n;
+import 'ui/desktop/pages/app.dart';
 
 const appTypeNotification = 'notification';
 const notificationWindowWidth = 200.0;
@@ -71,7 +70,7 @@ Future<void> run(List<String> args) async {
   };
 
   if (args.contains(appTypeNotification)) {
-    await runAsNotification();
+    // await runAsNotification();
   } else {
     await WindowUtils.ensureInitialized();
     await runAsMainApp(args);
@@ -114,11 +113,6 @@ Future<void> runAsMainApp(List<String> args) async {
   //     appTypeNotification, notificationWindowWidth, notificationWindowHeight);
   runApp(UncontrolledProviderScope(
       container: container, child: App(container: container)));
-}
-
-Future<void> runAsNotification() async {
-  logger.info('Notification application started: $pid');
-  runApp(const ProviderScope(child: n.Notification()));
 }
 
 Future<void> _loadAppSettings(ProviderContainer container) async {

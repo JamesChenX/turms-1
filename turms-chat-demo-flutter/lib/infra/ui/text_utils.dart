@@ -5,7 +5,7 @@ import '../built_in_types/built_in_type_helpers.dart';
 class TextUtils {
   TextUtils._();
 
-  static List<TextSpan> splitText({
+  static List<TextSpan> highlightSearchText({
     required String text,
     TextStyle? textStyle,
     required String searchText,

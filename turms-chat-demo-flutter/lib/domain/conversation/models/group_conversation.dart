@@ -1,7 +1,4 @@
-import 'package:flutter/src/painting/image_provider.dart';
-
-import '../../user/models/index.dart';
-import 'conversation.dart';
+part of './conversation.dart';
 
 class GroupConversation extends Conversation {
   GroupConversation(

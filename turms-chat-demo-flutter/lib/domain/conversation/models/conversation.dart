@@ -1,12 +1,14 @@
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/cupertino.dart';
 
-import '../../../ui/pages/home_page/chat_page/chat_session_pane/message.dart';
+import '../../../ui/desktop/pages/home_page/chat_page/chat_session_pane/message.dart';
 import '../../user/models/contact.dart';
-import 'group_conversation.dart';
-import 'private_conversation.dart';
 
-abstract class Conversation {
+part './group_conversation.dart';
+
+part './private_conversation.dart';
+
+sealed class Conversation {
   factory Conversation.from(
       {required Contact contact, required List<ChatMessage> messages}) {
     switch (contact) {

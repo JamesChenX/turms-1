@@ -131,7 +131,7 @@ class _ChatSessionPaneBodyState extends ConsumerState<ChatSessionPaneBody> {
     isLoading = true;
     setState(() {});
     // Simulate loading messages
-    Future.delayed(const Duration(seconds: 2), () {
+    Future<void>.delayed(const Duration(seconds: 2), () {
       // final newMessages = List<String>.generate(
       //     10, (index) => 'New Message ${messages.length + index}');
       // messages.insertAll(0, newMessages);

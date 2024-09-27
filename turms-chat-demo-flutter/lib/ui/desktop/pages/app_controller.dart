@@ -76,8 +76,8 @@ class AppController extends ConsumerState<App> with WindowListener {
     // Hide first to resize and paint.
     await WindowUtils.hide();
     // When hide() returns, the window may be hided or hiding (animation),
-    // so we wait for 300 millis to ensure the window is hided.
-    await Future.delayed(const Duration(milliseconds: 300));
+    // so we wait to ensure the window is hided.
+    await WindowUtils.waitUntilInvisible();
     if (resizeForLoginPage) {
       // Note that: We must set the min size first and then resize
       // because if setting the min size and resizing in one call,

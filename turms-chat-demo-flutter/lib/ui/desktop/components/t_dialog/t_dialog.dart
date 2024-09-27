@@ -56,7 +56,7 @@ Future<void> showSimpleTDialog(
                   child: child,
                 ),
                 const TTitleBar(
-                  backgroundColor: ThemeConfig.homePageBackgroundColor,
+                  backgroundColor: Colors.transparent,
                   displayCloseOnly: true,
                   popOnCloseTapped: true,
                 )

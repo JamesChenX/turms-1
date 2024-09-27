@@ -90,4 +90,10 @@ class WindowUtils {
     await controller.show();
     return controller;
   }
+
+  static Future<void> waitUntilInvisible() async {
+    while (await WindowUtils.isVisible()) {
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+    }
+  }
 }

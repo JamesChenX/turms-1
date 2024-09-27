@@ -48,12 +48,12 @@ class SubNavigationRailView extends StatelessWidget {
         ),
       );
 
-  Widget _buildSearchBar(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        child: SizedBox(
-          height: ThemeConfig.homePageHeaderHeight,
-          child: ColoredBox(
-            color: const Color.fromARGB(255, 247, 247, 247),
+  Widget _buildSearchBar(BuildContext context) => SizedBox(
+        height: ThemeConfig.homePageHeaderHeight,
+        child: ColoredBox(
+          color: const Color.fromARGB(255, 247, 247, 247),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Center(
               child: TSearchBar(
                 hintText: subNavigationRailController.appLocalizations.search,

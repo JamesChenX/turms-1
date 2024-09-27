@@ -45,6 +45,7 @@ class _TImageViewerState extends State<TImageViewer> {
             child: TTitleBar(
               displayCloseOnly: true,
               popOnCloseTapped: true,
+              usePositioned: false,
               backgroundColor: ThemeConfig.homePageBackgroundColor,
             ),
           ),

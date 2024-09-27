@@ -64,7 +64,12 @@ class MessageImageProvider extends ImageProvider<MessageImageProvider> {
     if (asThumbnail) {
       final outputThumbnailFile = File(outputThumbnailPath);
       if (await outputThumbnailFile.exists()) {
-        return outputThumbnailFile.readAsBytes();
+        final bytes = await outputThumbnailFile.readAsBytes();
+        this.mediaFile = MessageMediaFile(
+            originalMediaUrl: url,
+            thumbnailPath: outputThumbnailPath,
+            thumbnailBytes: bytes);
+        return bytes;
       }
       chunkEvents.add(const ImageChunkEvent(
           cumulativeBytesLoaded: 0, expectedTotalBytes: null));
@@ -72,11 +77,17 @@ class MessageImageProvider extends ImageProvider<MessageImageProvider> {
           id: 'download:$url',
           futureProvider: () =>
               _fetchImage0(url, outputOriginalImagePath, outputThumbnailPath));
+      this.mediaFile = mediaFile;
       return mediaFile.thumbnailBytes ?? mediaFile.originalMediaBytes!;
     } else {
       final outputOriginalImageFile = File(outputOriginalImagePath);
       if (await outputOriginalImageFile.exists()) {
-        return outputOriginalImageFile.readAsBytes();
+        final bytes = await outputOriginalImageFile.readAsBytes();
+        this.mediaFile = MessageMediaFile(
+            originalMediaUrl: url,
+            originalMediaPath: outputOriginalImagePath,
+            originalMediaBytes: bytes);
+        return bytes;
       }
       chunkEvents.add(const ImageChunkEvent(
           cumulativeBytesLoaded: 0, expectedTotalBytes: null));
@@ -84,6 +95,7 @@ class MessageImageProvider extends ImageProvider<MessageImageProvider> {
           id: 'download:$url',
           futureProvider: () =>
               _fetchImage0(url, outputOriginalImagePath, outputThumbnailPath));
+      this.mediaFile = mediaFile;
       return mediaFile.originalMediaBytes!;
     }
   }

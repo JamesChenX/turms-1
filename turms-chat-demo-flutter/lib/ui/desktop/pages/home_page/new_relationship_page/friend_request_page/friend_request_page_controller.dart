@@ -35,7 +35,7 @@ class FriendRequestPageController extends ConsumerState<FriendRequestPage> {
     isSending = true;
     setState(() {});
     // TODO: use real API
-    await Future.delayed(const Duration(seconds: 3));
+    await Future<void>.delayed(const Duration(seconds: 3));
     isSending = false;
     close();
   }

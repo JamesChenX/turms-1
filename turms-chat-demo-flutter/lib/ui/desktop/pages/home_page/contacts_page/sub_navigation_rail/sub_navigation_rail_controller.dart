@@ -57,7 +57,7 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
     isContactsLoading = true;
     setState(() {});
     // TODO: use real API
-    await Future.delayed(const Duration(seconds: 3));
+    await Future<void>.delayed(const Duration(seconds: 3));
     ref.read(contactsViewModel.notifier).state =
         getSystemContacts() + fixtureContacts;
     ref.read(isContactsInitializedViewModel.notifier).state = true;

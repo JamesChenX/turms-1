@@ -38,7 +38,7 @@ class TToastViewState extends State<TToastView>
           case DismissedStatusChangeType.becomeDismissed:
             widget.onDismissed();
           case DismissedStatusChangeType.becomeNotDismissed:
-            Future.delayed(widget.duration, () {
+            Future<void>.delayed(widget.duration, () {
               if (mounted &&
                   _animationController?.status == AnimationStatus.completed) {
                 hideAnimation();

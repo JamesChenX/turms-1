@@ -36,7 +36,7 @@ class CreateGroupPageController extends ConsumerState<CreateGroupPage> {
     isCreating = true;
     setState(() {});
     // TODO: use real API
-    await Future.delayed(const Duration(seconds: 3));
+    await Future<void>.delayed(const Duration(seconds: 3));
     isCreating = false;
     close();
   }

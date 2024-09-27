@@ -192,7 +192,7 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
     isConversationsLoading = true;
     setState(() {});
     // TODO: use real API
-    await Future.delayed(const Duration(seconds: 3));
+    await Future<void>.delayed(const Duration(seconds: 3));
     ref.read(conversationsViewModel.notifier).state = fixtureConversations;
     ref.read(isConversationsInitializedViewModel.notifier).state = true;
     isConversationsInitialized = true;

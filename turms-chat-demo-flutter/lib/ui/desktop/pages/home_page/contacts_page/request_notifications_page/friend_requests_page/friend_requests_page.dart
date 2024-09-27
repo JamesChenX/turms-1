@@ -40,7 +40,7 @@ class _FriendRequestsPageState extends ConsumerState<FriendRequestsPage> {
   Future<void> acceptFriendRequest(FriendRequest request) async {
     final notifier = ref.read(friendRequestsViewModel.notifier);
     // TODO: use real API
-    await Future.delayed(const Duration(seconds: 3));
+    await Future<void>.delayed(const Duration(seconds: 3));
     notifier.replace(request, request.copyWith(status: RequestStatus.accepted));
   }
 

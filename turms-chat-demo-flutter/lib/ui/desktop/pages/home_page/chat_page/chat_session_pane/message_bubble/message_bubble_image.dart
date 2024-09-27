@@ -21,11 +21,13 @@ class MessageBubbleImage extends StatefulWidget {
 
 class _MessageBubbleImageState extends State<MessageBubbleImage> {
   late MessageImageProvider originalImageProvider;
+  late MessageImageProvider thumbnailProvider;
 
   @override
   void initState() {
     super.initState();
     originalImageProvider = MessageImageProvider(widget.url, false);
+    thumbnailProvider = MessageImageProvider(widget.url, true);
   }
 
   @override
@@ -36,23 +38,27 @@ class _MessageBubbleImageState extends State<MessageBubbleImage> {
   }
 
   @override
-  Widget build(BuildContext context) => MouseRegion(
-      cursor: SystemMouseCursors.click,
-      child: GestureDetector(
-          onTap: () async {
-            // TODO: show a tip to let user know if the original image has been deleted.
-            unawaited(showImageViewerDialog(
-                context, MessageImageProvider(widget.url, false)));
-          },
-          child: _buildThumbnail()));
+  Widget build(BuildContext context) =>
+      MouseRegion(
+          cursor: SystemMouseCursors.click,
+          child: GestureDetector(
+              onTap: () async {
+                // TODO: show a tip to let user know if the original image has been deleted.
+                unawaited(
+                    showImageViewerDialog(context, originalImageProvider));
+              },
+              child: _buildThumbnail()));
 
-  Image _buildThumbnail() => Image(
+  Image _buildThumbnail() =>
+      Image(
         isAntiAlias: true,
         gaplessPlayback: true,
         image: MessageImageProvider(widget.url, true),
         fit: BoxFit.contain,
         loadingBuilder: (context, child, loadingProgress) {
-          if (loadingProgress == null) {
+          // FIXME: https://github.com/flutter/flutter/issues/85966
+          if (loadingProgress == null &&
+              ((child as Semantics).child as RawImage).image != null) {
             return ClipRRect(
               borderRadius: ThemeConfig.borderRadius4,
               child: Padding(
@@ -61,28 +67,24 @@ class _MessageBubbleImageState extends State<MessageBubbleImage> {
               ),
             );
           }
-          return Stack(
-            fit: StackFit.expand,
-            children: [
-              SizedBox(
-                width: EnvVars.messageImageThumbnailSizeWidth.toDouble(),
-                height: EnvVars.messageImageThumbnailSizeHeight.toDouble(),
-                child: const DecoratedBox(
-                  decoration: BoxDecoration(color: Colors.black12),
-                ),
-              ),
-              const Center(
-                child: RepaintBoundary(child: CupertinoActivityIndicator()),
-              )
-            ],
-          );
+          return SizedBox(
+              width: EnvVars.messageImageThumbnailSizeWidth.toDouble(),
+              height: EnvVars.messageImageThumbnailSizeHeight.toDouble(),
+              child: const ClipRRect(
+                borderRadius: ThemeConfig.borderRadius4,
+                child: DecoratedBox(
+                    decoration: BoxDecoration(color: Colors.black12),
+                    child:
+                    RepaintBoundary(child: CupertinoActivityIndicator())),
+              ));
         },
         errorBuilder: (context, error, stackTrace) => _buildError(),
       );
 
 // todo: click to download
   // handle different cases
-  Widget _buildError() => const SizedBox(
+  Widget _buildError() =>
+      const SizedBox(
         width: 100,
         height: 100,
         child: TImageBroken(),

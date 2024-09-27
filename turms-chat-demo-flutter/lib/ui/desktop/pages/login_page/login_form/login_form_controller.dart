@@ -70,7 +70,7 @@ class LoginFormController extends ConsumerState<LoginForm> {
   Future<void> login() async {
     // TODO: use real API
     // Behavior as if we were waiting for a login response
-    await Future.delayed(const Duration(seconds: 1));
+    await Future<void>.delayed(const Duration(seconds: 1));
     // store app settings
     final shouldRemember = rememberMe!;
     if (shouldRemember) {

@@ -26,7 +26,7 @@ class SettingsPageView extends StatelessWidget {
                   const Align(
                     alignment: Alignment.topRight,
                     child: TTitleBar(
-                      backgroundColor: ThemeConfig.homePageBackgroundColor,
+                      backgroundColor: Colors.transparent,
                       displayCloseOnly: true,
                       popOnCloseTapped: true,
                       usePositioned: false,

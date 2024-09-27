@@ -58,7 +58,7 @@ class NewRelationshipPageController extends ConsumerState<NewRelationshipPage>
     isSearching = true;
     setState(() {});
     // TODO: use real API
-    await Future.delayed(const Duration(seconds: 3));
+    await Future<void>.delayed(const Duration(seconds: 3));
     switch (searchType) {
       case SearchType.user:
         contacts = [

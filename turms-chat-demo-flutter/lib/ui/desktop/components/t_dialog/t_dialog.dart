@@ -28,7 +28,7 @@ Future<void> showCustomTDialog(
         builder: (BuildContext context) => Align(
               child: Material(
                 borderRadius: borderRadius,
-                child: Container(
+                child: DecoratedBox(
                     decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: borderRadius,

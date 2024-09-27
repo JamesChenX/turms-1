@@ -15,19 +15,21 @@ class ContactsPage extends StatelessWidget {
         ],
       );
 
-  Container _buildSubNavigationRail() => Container(
-        decoration: const BoxDecoration(
-            border: Border(
-                right: BorderSide(
-                    color: ThemeConfig.subNavigationRailDividerColor))),
+  Widget _buildSubNavigationRail() => const SizedBox(
         width: ThemeConfig.subNavigationRailWidth,
-        child: const SubNavigationRail(),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+              border: Border(
+                  right: BorderSide(
+                      color: ThemeConfig.subNavigationRailDividerColor))),
+          child: SubNavigationRail(),
+        ),
       );
 
-  Expanded _buildContactProfilePage() => Expanded(
-        child: Container(
+  Widget _buildContactProfilePage() => const Expanded(
+        child: ColoredBox(
           color: ThemeConfig.homePageBackgroundColor,
-          child: const ContactProfilePage(),
+          child: ContactProfilePage(),
         ),
       );
 }

@@ -11,8 +11,9 @@ class MainNavigationRail extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final loggedInUser = ref.watch(loggedInUserViewModel)!;
-    return Container(
-        color: const Color.fromARGB(255, 46, 46, 46),
+    return ColoredBox(
+      color: const Color.fromARGB(255, 46, 46, 46),
+      child: Padding(
         padding: const EdgeInsets.only(top: 32, bottom: 16),
         child: Column(
           children: [
@@ -25,6 +26,8 @@ class MainNavigationRail extends ConsumerWidget {
             ),
             const Expanded(child: Tabs())
           ],
-        ));
+        ),
+      ),
+    );
   }
 }

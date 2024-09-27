@@ -32,13 +32,15 @@ class ChatSessionPane extends ConsumerWidget {
       color: ThemeConfig.homePageBackgroundColor,
       child: Column(
         children: [
-          Container(
+          SizedBox(
             height: ThemeConfig.homePageHeaderHeight,
-            decoration: const BoxDecoration(
-                border: Border(
-                    bottom:
-                        BorderSide(color: Color.fromARGB(255, 231, 231, 231)))),
-            child: ChatSessionPaneHeader(drawerController),
+            child: DecoratedBox(
+              decoration: const BoxDecoration(
+                  border: Border(
+                      bottom: BorderSide(
+                          color: Color.fromARGB(255, 231, 231, 231)))),
+              child: ChatSessionPaneHeader(drawerController),
+            ),
           ),
           Expanded(
             child: Stack(

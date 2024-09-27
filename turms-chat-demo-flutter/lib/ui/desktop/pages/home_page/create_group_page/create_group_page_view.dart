@@ -28,48 +28,51 @@ class CreateGroupPageView extends StatelessWidget {
             height: 16,
           ),
           Expanded(
-            child: Container(
+            child: DecoratedBox(
               decoration: BoxDecoration(
                   border: Border.all(color: ThemeConfig.dividerColor),
                   borderRadius: ThemeConfig.borderRadius4),
-              padding: const EdgeInsets.symmetric(horizontal: 1),
-              child: Column(
-                children: [
-                  IntrinsicHeight(
-                    child: Row(
-                      children: [
-                        Expanded(
-                            child: Padding(
-                          padding: ThemeConfig.paddingH8,
-                          child: TSearchBar(
-                            hintText: appLocalizations.search,
-                            transformValue: (value) {
-                              createGroupPageController.updateSearchText(value);
-                              return value;
-                            },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 1),
+                child: Column(
+                  children: [
+                    IntrinsicHeight(
+                      child: Row(
+                        children: [
+                          Expanded(
+                              child: Padding(
+                            padding: ThemeConfig.paddingH8,
+                            child: TSearchBar(
+                              hintText: appLocalizations.search,
+                              transformValue: (value) {
+                                createGroupPageController
+                                    .updateSearchText(value);
+                                return value;
+                              },
+                            ),
+                          )),
+                          const TVerticalDivider(),
+                          Expanded(
+                            child: Text(
+                              textAlign: TextAlign.center,
+                              appLocalizations.selectedContacts,
+                            ),
                           ),
-                        )),
-                        const TVerticalDivider(),
-                        Expanded(
-                          child: Text(
-                            textAlign: TextAlign.center,
-                            appLocalizations.selectedContacts,
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  Expanded(
-                    child: Row(
-                      children: [
-                        Expanded(child: _buildContacts()),
-                        const TVerticalDivider(),
-                        Expanded(
-                            child: _buildSelectedContacts(appLocalizations))
-                      ],
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Expanded(child: _buildContacts()),
+                          const TVerticalDivider(),
+                          Expanded(
+                              child: _buildSelectedContacts(appLocalizations))
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

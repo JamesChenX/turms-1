@@ -45,17 +45,21 @@ class _TTabsState extends State<TTabs> {
           },
           child: SizedBox(
             width: double.maxFinite,
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
-              child: Text(tab.text,
-                  style: isSelected
-                      ? const TextStyle(color: ThemeConfig.tabTextColorSelected)
-                      : const TextStyle(color: ThemeConfig.tabTextColor)),
+            child: DecoratedBox(
               decoration: BoxDecoration(
                 borderRadius: ThemeConfig.borderRadius4,
                 color: isSelected || _hoveringTabId == tab.id
                     ? const Color.fromARGB(255, 246, 246, 246)
                     : null,
+              ),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
+                child: Text(tab.text,
+                    style: isSelected
+                        ? const TextStyle(
+                            color: ThemeConfig.tabTextColorSelected)
+                        : const TextStyle(color: ThemeConfig.tabTextColor)),
               ),
             ),
           )),

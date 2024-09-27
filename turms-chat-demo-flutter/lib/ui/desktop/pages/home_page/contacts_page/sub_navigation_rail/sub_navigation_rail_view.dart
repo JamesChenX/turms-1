@@ -38,24 +38,32 @@ class SubNavigationRailView extends StatelessWidget {
         ],
       ));
 
-  Widget _buildLoadingIndicator() => Container(
-        alignment: AlignmentDirectional.center,
+  Widget _buildLoadingIndicator() => const SizedBox(
         height: 40,
-        color: const Color.fromARGB(255, 237, 237, 237),
-        child: const CupertinoActivityIndicator(radius: 8),
+        child: ColoredBox(
+          color: Color.fromARGB(255, 237, 237, 237),
+          child: Center(
+            child: CupertinoActivityIndicator(radius: 8),
+          ),
+        ),
       );
 
-  Widget _buildSearchBar(BuildContext context) => Container(
-        height: ThemeConfig.homePageHeaderHeight,
+  Widget _buildSearchBar(BuildContext context) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12),
-        color: const Color.fromARGB(255, 247, 247, 247),
-        alignment: Alignment.center,
-        child: TSearchBar(
-          hintText: subNavigationRailController.appLocalizations.search,
-          transformValue: (value) {
-            subNavigationRailController.updateSearchText(value);
-            return value;
-          },
+        child: SizedBox(
+          height: ThemeConfig.homePageHeaderHeight,
+          child: ColoredBox(
+            color: const Color.fromARGB(255, 247, 247, 247),
+            child: Center(
+              child: TSearchBar(
+                hintText: subNavigationRailController.appLocalizations.search,
+                transformValue: (value) {
+                  subNavigationRailController.updateSearchText(value);
+                  return value;
+                },
+              ),
+            ),
+          ),
         ),
       );
 

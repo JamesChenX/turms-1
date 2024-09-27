@@ -32,7 +32,7 @@ class ChatSessionPaneFooterView extends StatelessWidget {
               chatPageFooterController.onDropLeave();
             },
             onPerformDrop: chatPageFooterController.onPerformDrop,
-            child: Container(
+            child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: _buildEditor(context, appLocalizations),
             )),

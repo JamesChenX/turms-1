@@ -250,10 +250,12 @@ class _TPopupState extends State<TPopup> {
           }
         },
         child: IgnorePointer(
-          child: Container(
+          child: SizedBox(
             width: size.width,
             height: size.height,
-            color: Colors.transparent,
+            child: const ColoredBox(
+              color: Colors.transparent,
+            ),
           ),
         ),
       );

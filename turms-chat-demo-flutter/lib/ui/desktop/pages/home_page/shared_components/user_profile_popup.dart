@@ -90,28 +90,32 @@ class _UserProfilePopupState extends ConsumerState<UserProfilePopup> {
         child: SizedBox(
           height: 160,
           width: 280,
-          child: Container(
-              alignment: Alignment.center,
-              decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: ThemeConfig.borderRadius4,
-                  boxShadow: ThemeConfig.boxShadow),
+          child: DecoratedBox(
+            decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: ThemeConfig.borderRadius4,
+                boxShadow: ThemeConfig.boxShadow),
+            child: Padding(
               padding: const EdgeInsets.only(
                   left: 16, top: 16, right: 16, bottom: 16),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  UserProfile(
-                    user: user,
-                    onEditTap:
-                        widget.editable ? _startEditUserProfileImage : null,
-                  ),
-                  TTextButton(
-                    text: appLocalizations.messages,
-                    onTap: () => _startConversation(user),
-                  ),
-                ],
-              )),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    UserProfile(
+                      user: user,
+                      onEditTap:
+                          widget.editable ? _startEditUserProfileImage : null,
+                    ),
+                    TTextButton(
+                      text: appLocalizations.messages,
+                      onTap: () => _startConversation(user),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );

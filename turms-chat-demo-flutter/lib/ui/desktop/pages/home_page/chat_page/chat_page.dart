@@ -16,13 +16,15 @@ class ChatPage extends StatelessWidget {
         ],
       );
 
-  Widget _buildSubNavigationRail() => Container(
-        decoration: const BoxDecoration(
-            border: Border(
-                right: BorderSide(
-                    color: ThemeConfig.subNavigationRailDividerColor))),
+  Widget _buildSubNavigationRail() => const SizedBox(
         width: ThemeConfig.subNavigationRailWidth,
-        child: const SubNavigationRail(),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+              border: Border(
+                  right: BorderSide(
+                      color: ThemeConfig.subNavigationRailDividerColor))),
+          child: SubNavigationRail(),
+        ),
       );
 
   Widget _buildChatSessionPane() => ChatSessionPane();

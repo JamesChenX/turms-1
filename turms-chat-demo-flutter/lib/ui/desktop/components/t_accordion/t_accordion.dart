@@ -95,7 +95,7 @@ class _TAccordionState extends State<TAccordion>
           InkWell(
             onTap: _toggleCollapsed,
             borderRadius: widget.titleBorderRadius,
-            child: Container(
+            child: DecoratedBox(
               decoration: BoxDecoration(
                 borderRadius: widget.titleBorderRadius,
                 border: widget.titleBorder,
@@ -103,32 +103,38 @@ class _TAccordionState extends State<TAccordion>
                     ? widget.expandedTitleBackgroundColor
                     : widget.collapsedTitleBackgroundColor,
               ),
-              padding: widget.titlePadding,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  RotationTransition(
-                      turns: _turnsAnimation,
-                      child: const Icon(Symbols.keyboard_arrow_right)),
-                  Expanded(
-                    child: widget.titleChild,
-                  )
-                ],
+              child: Padding(
+                padding: widget.titlePadding,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    RotationTransition(
+                        turns: _turnsAnimation,
+                        child: const Icon(Symbols.keyboard_arrow_right)),
+                    Expanded(
+                      child: widget.titleChild,
+                    )
+                  ],
+                ),
               ),
             ),
           ),
           if (_buildChild)
             SizeTransition(
               sizeFactor: _sizeAnimation,
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: widget.contentBorderRadius,
-                  border: widget.contentBorder,
-                  color: widget.contentBackgroundColor ?? Colors.white70,
-                ),
+              child: SizedBox(
                 width: MediaQuery.of(context).size.width,
-                padding: widget.contentPadding,
-                child: widget.contentChild,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    borderRadius: widget.contentBorderRadius,
+                    border: widget.contentBorder,
+                    color: widget.contentBackgroundColor ?? Colors.white70,
+                  ),
+                  child: Padding(
+                    padding: widget.contentPadding,
+                    child: widget.contentChild,
+                  ),
+                ),
               ),
             )
         ],

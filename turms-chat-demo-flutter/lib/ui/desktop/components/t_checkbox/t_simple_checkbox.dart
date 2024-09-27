@@ -58,17 +58,19 @@ class _TSimpleCheckboxState extends State<TSimpleCheckbox> {
 
   @override
   Widget build(BuildContext context) {
-    Widget child = Container(
+    Widget child = SizedBox(
       height: widget.size,
       width: widget.size,
-      decoration: BoxDecoration(
-          color: widget.value ? widget.activeBgColor : widget.inactiveBgColor,
-          borderRadius: BorderRadius.circular(4),
-          border: Border.all(
-              color: widget.value
-                  ? widget.activeBorderColor
-                  : widget.inactiveBorderColor)),
-      child: widget.value ? widget.activeIcon : widget.inactiveIcon,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+            color: widget.value ? widget.activeBgColor : widget.inactiveBgColor,
+            borderRadius: BorderRadius.circular(4),
+            border: Border.all(
+                color: widget.value
+                    ? widget.activeBorderColor
+                    : widget.inactiveBorderColor)),
+        child: widget.value ? widget.activeIcon : widget.inactiveIcon,
+      ),
     );
     final label = widget.label;
     if (label != null) {

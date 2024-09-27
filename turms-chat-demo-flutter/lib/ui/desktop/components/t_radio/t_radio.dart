@@ -78,9 +78,10 @@ class _TRadioState<T> extends State<TRadio<T>> with TickerProviderStateMixin {
       child: GestureDetector(
         onTap: onStatusChange,
         child: Row(mainAxisSize: MainAxisSize.min, children: [
-          Container(
-              height: widget.size,
-              width: widget.size,
+          SizedBox(
+            height: widget.size,
+            width: widget.size,
+            child: DecoratedBox(
               decoration: BoxDecoration(
                   color:
                       selected ? widget.activeBgColor : widget.inactiveBgColor,
@@ -99,7 +100,9 @@ class _TRadioState<T> extends State<TRadio<T>> with TickerProviderStateMixin {
                             height: widget.size * 0.5),
                       ),
                     )
-                  : null),
+                  : null,
+            ),
+          ),
           if (widget.label != null)
             const SizedBox(
               width: 8,

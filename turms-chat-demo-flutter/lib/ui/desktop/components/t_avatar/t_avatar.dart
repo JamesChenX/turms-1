@@ -75,28 +75,33 @@ class TAvatar extends StatelessWidget {
             )),
       );
     } else if (name.isEmpty) {
-      return Container(
+      return SizedBox(
         height: containerSize,
         width: containerSize,
-        color: ThemeConfig.defaultAvatarBackgroundColor,
-        child: Icon(Symbols.person_rounded,
-            fill: 1,
-            color: ThemeConfig.defaultAvatarIconColor,
-            // The "person" icon seems smaller than other icons,
-            // so we need to enlarge it.
-            size: size.iconSize * 1.2),
+        child: ColoredBox(
+          color: ThemeConfig.defaultAvatarBackgroundColor,
+          child: Icon(Symbols.person_rounded,
+              fill: 1,
+              color: ThemeConfig.defaultAvatarIconColor,
+              // The "person" icon seems smaller than other icons,
+              // so we need to enlarge it.
+              size: size.iconSize * 1.2),
+        ),
       );
     } else {
-      return Container(
+      return SizedBox(
         height: containerSize,
         width: containerSize,
-        color: _pickColor(name),
-        alignment: Alignment.center,
-        child: Text(
-          firstChar,
-          textScaler: TextScaler.noScaling,
-          style: TextStyle(
-              fontSize: textSize ?? size.textSize, color: Colors.white),
+        child: ColoredBox(
+          color: _pickColor(name),
+          child: Center(
+            child: Text(
+              firstChar,
+              textScaler: TextScaler.noScaling,
+              style: TextStyle(
+                  fontSize: textSize ?? size.textSize, color: Colors.white),
+            ),
+          ),
         ),
       );
     }

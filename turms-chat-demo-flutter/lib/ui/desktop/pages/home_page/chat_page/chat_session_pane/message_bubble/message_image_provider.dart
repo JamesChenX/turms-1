@@ -141,6 +141,10 @@ class MessageImageProvider extends ImageProvider<MessageImageProvider> {
     }
   }
 
+  void dispose() {
+    PaintingBinding.instance.imageCache.evict(this, includeLive: false);
+  }
+
   @override
   bool operator ==(Object other) {
     if (other.runtimeType != runtimeType) {

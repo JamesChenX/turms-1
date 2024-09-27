@@ -20,8 +20,18 @@ class MessageBubbleImage extends StatefulWidget {
 }
 
 class _MessageBubbleImageState extends State<MessageBubbleImage> {
+  late MessageImageProvider originalImageProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    originalImageProvider = MessageImageProvider(widget.url, false);
+  }
+
   @override
   void dispose() {
+    // Dispose the original image provider to save memory promptly.
+    originalImageProvider.dispose();
     super.dispose();
   }
 

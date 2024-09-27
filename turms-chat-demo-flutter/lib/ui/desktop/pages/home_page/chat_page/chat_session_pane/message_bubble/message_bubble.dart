@@ -55,16 +55,18 @@ class _MessageBubbleState extends State<MessageBubble> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               if (message.status == MessageDeliveryStatus.failed)
-                Container(
-                  padding: const EdgeInsets.all(1),
-                  decoration: const BoxDecoration(
+                const DecoratedBox(
+                  decoration: BoxDecoration(
                     color: ThemeConfig.messageBubbleErrorIconBackgroundColor,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
-                    Symbols.exclamation_rounded,
-                    color: ThemeConfig.messageBubbleErrorIconColor,
-                    size: 20,
+                  child: Padding(
+                    padding: EdgeInsets.all(1),
+                    child: Icon(
+                      Symbols.exclamation_rounded,
+                      color: ThemeConfig.messageBubbleErrorIconColor,
+                      size: 20,
+                    ),
                   ),
                 )
               else if (message.status == MessageDeliveryStatus.retrying)

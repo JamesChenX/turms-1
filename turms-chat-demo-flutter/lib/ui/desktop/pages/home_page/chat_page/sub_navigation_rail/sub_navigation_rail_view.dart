@@ -32,71 +32,81 @@ class SubNavigationRailView extends StatelessWidget {
         ),
       );
 
-  Widget _buildLoadingIndicator() => Container(
-        alignment: AlignmentDirectional.center,
+  Widget _buildLoadingIndicator() => const SizedBox(
         height: 40,
-        color: const Color.fromARGB(255, 237, 237, 237),
-        child: const CupertinoActivityIndicator(radius: 8),
+        child: ColoredBox(
+          color: Color.fromARGB(255, 237, 237, 237),
+          child: Align(
+            alignment: AlignmentDirectional.center,
+            child: CupertinoActivityIndicator(radius: 8),
+          ),
+        ),
       );
 
   Widget _buildSearchBar(BuildContext context) {
     final appLocalizations = subNavigationRailController.appLocalizations;
-    return Container(
-        height: ThemeConfig.homePageHeaderHeight,
-        padding: const EdgeInsets.symmetric(horizontal: 12),
+    return SizedBox(
+      height: ThemeConfig.homePageHeaderHeight,
+      child: ColoredBox(
         color: const Color.fromARGB(255, 247, 247, 247),
-        alignment: Alignment.center,
-        child: Row(
-          children: [
-            Expanded(
-              child: TSearchBar(
-                focusNode: subNavigationRailController.searchBarFocusNode,
-                hintText: appLocalizations.search,
-                textEditingController:
-                    subNavigationRailController.searchBarTextEditingController,
-                transformValue: (value) {
-                  subNavigationRailController.onSearchTextUpdated(value);
-                  return value;
-                },
-                onSubmitted: (_) =>
-                    subNavigationRailController.onSearchSubmitted(),
-              ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Center(
+            child: Row(
+              children: [
+                Expanded(
+                  child: TSearchBar(
+                    focusNode: subNavigationRailController.searchBarFocusNode,
+                    hintText: appLocalizations.search,
+                    textEditingController: subNavigationRailController
+                        .searchBarTextEditingController,
+                    transformValue: (value) {
+                      subNavigationRailController.onSearchTextUpdated(value);
+                      return value;
+                    },
+                    onSubmitted: (_) =>
+                        subNavigationRailController.onSearchSubmitted(),
+                  ),
+                ),
+                const SizedBox(
+                  width: 8,
+                ),
+                MenuAnchor(
+                    controller: subNavigationRailController.menuController,
+                    consumeOutsideTap: true,
+                    alignmentOffset: const Offset(0, 8),
+                    menuChildren: <Widget>[
+                      MenuItemButton(
+                        child: Text(appLocalizations.addContact),
+                        onPressed: () {
+                          showNewRelationshipDialog(context, true);
+                        },
+                      ),
+                      MenuItemButton(
+                        child: Text(appLocalizations.joinGroup),
+                        onPressed: () {
+                          showNewRelationshipDialog(context, false);
+                        },
+                      ),
+                      MenuItemButton(
+                        child: Text(appLocalizations.createGroup),
+                        onPressed: () {
+                          showCreateGroupDialog(context);
+                        },
+                      ),
+                    ],
+                    child: TIconButton(
+                        iconData: Symbols.add_rounded,
+                        addContainer: false,
+                        onTap: () {
+                          subNavigationRailController.menuController.open();
+                        }))
+              ],
             ),
-            const SizedBox(
-              width: 8,
-            ),
-            MenuAnchor(
-                controller: subNavigationRailController.menuController,
-                consumeOutsideTap: true,
-                alignmentOffset: const Offset(0, 8),
-                menuChildren: <Widget>[
-                  MenuItemButton(
-                    child: Text(appLocalizations.addContact),
-                    onPressed: () {
-                      showNewRelationshipDialog(context, true);
-                    },
-                  ),
-                  MenuItemButton(
-                    child: Text(appLocalizations.joinGroup),
-                    onPressed: () {
-                      showNewRelationshipDialog(context, false);
-                    },
-                  ),
-                  MenuItemButton(
-                    child: Text(appLocalizations.createGroup),
-                    onPressed: () {
-                      showCreateGroupDialog(context);
-                    },
-                  ),
-                ],
-                child: TIconButton(
-                    iconData: Symbols.add_rounded,
-                    addContainer: false,
-                    onTap: () {
-                      subNavigationRailController.menuController.open();
-                    }))
-          ],
-        ));
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildConversationTiles(BuildContext context) => Expanded(

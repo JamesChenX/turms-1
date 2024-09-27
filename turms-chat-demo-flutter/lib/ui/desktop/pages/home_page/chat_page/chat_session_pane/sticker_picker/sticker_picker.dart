@@ -32,75 +32,79 @@ class _StickerPickerState extends State<StickerPicker> {
   @override
   Widget build(BuildContext context) => Material(
         color: Colors.transparent,
-        child: Container(
+        child: SizedBox(
           height: 460,
           width: 460,
-          padding: const EdgeInsets.only(top: 16),
-          decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: ThemeConfig.borderRadius8,
-              boxShadow: ThemeConfig.boxShadow),
-          child: _isGiphyEnabled
-              ? Column(
-                  children: [
-                    Flexible(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: TLazyIndexedStack(
-                          index: switch (_currentTab) {
-                            _Tab.emoji => 0,
-                            _Tab.giphy => 1,
-                          },
-                          children: [
-                            EmojiPickerPane(
-                              onEmojiSelected: widget.onEmojiSelected,
+          child: DecoratedBox(
+            decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: ThemeConfig.borderRadius8,
+                boxShadow: ThemeConfig.boxShadow),
+            child: Padding(
+              padding: const EdgeInsets.only(top: 16),
+              child: _isGiphyEnabled
+                  ? Column(
+                      children: [
+                        Flexible(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: TLazyIndexedStack(
+                              index: switch (_currentTab) {
+                                _Tab.emoji => 0,
+                                _Tab.giphy => 1,
+                              },
+                              children: [
+                                EmojiPickerPane(
+                                  onEmojiSelected: widget.onEmojiSelected,
+                                ),
+                                GiphyPicker(
+                                  onSelected: widget.onGiphyGifSelected,
+                                ),
+                              ],
                             ),
-                            GiphyPicker(
-                              onSelected: widget.onGiphyGifSelected,
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
-                    const THorizontalDivider(
-                      color: _containerColorHovered,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 8, horizontal: 16),
-                      child: Row(
-                        children: [
-                          TIconButton(
-                            iconData: Symbols.emoji_emotions_rounded,
-                            containerSize: const Size.square(32),
-                            containerColorHovered: _containerColorHovered,
-                            containerPadding: EdgeInsets.zero,
-                            onTap: () {
-                              _currentTab = _Tab.emoji;
-                              setState(() {});
-                            },
+                        const THorizontalDivider(
+                          color: _containerColorHovered,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 8, horizontal: 16),
+                          child: Row(
+                            children: [
+                              TIconButton(
+                                iconData: Symbols.emoji_emotions_rounded,
+                                containerSize: const Size.square(32),
+                                containerColorHovered: _containerColorHovered,
+                                containerPadding: EdgeInsets.zero,
+                                onTap: () {
+                                  _currentTab = _Tab.emoji;
+                                  setState(() {});
+                                },
+                              ),
+                              const SizedBox(
+                                width: 16,
+                              ),
+                              TIconButton(
+                                iconData: Symbols.search_rounded,
+                                containerSize: const Size.square(32),
+                                containerColorHovered: _containerColorHovered,
+                                containerPadding: EdgeInsets.zero,
+                                onTap: () {
+                                  _currentTab = _Tab.giphy;
+                                  setState(() {});
+                                },
+                              )
+                            ],
                           ),
-                          const SizedBox(
-                            width: 16,
-                          ),
-                          TIconButton(
-                            iconData: Symbols.search_rounded,
-                            containerSize: const Size.square(32),
-                            containerColorHovered: _containerColorHovered,
-                            containerPadding: EdgeInsets.zero,
-                            onTap: () {
-                              _currentTab = _Tab.giphy;
-                              setState(() {});
-                            },
-                          )
-                        ],
-                      ),
+                        )
+                      ],
                     )
-                  ],
-                )
-              : EmojiPickerPane(
-                  onEmojiSelected: widget.onEmojiSelected,
-                ),
+                  : EmojiPickerPane(
+                      onEmojiSelected: widget.onEmojiSelected,
+                    ),
+            ),
+          ),
         ),
       );
 }

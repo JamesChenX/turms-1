@@ -43,7 +43,7 @@ class _TDateRangePickerPanelState extends State<_TDateRangePickerPanel> {
 
   @override
   Widget build(BuildContext context) => Material(
-        child: Container(
+        child: SizedBox(
           width: 576,
           height: 310,
           child: DecoratedBox(

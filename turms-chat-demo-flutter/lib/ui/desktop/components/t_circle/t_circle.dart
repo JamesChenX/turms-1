@@ -12,16 +12,17 @@ class TCircle extends StatelessWidget {
   final Widget child;
 
   @override
-  Widget build(BuildContext context) => Container(
+  Widget build(BuildContext context) => SizedBox(
         height: size,
         width: size,
-        decoration: BoxDecoration(
-          color: backgroundColor,
-          shape: BoxShape.circle,
-          // borderRadius: BorderRadius.circular(50 / 2),
-        ),
-        child: Center(
-          child: child,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            shape: BoxShape.circle,
+          ),
+          child: Center(
+            child: child,
+          ),
         ),
       );
 }

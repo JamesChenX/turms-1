@@ -82,7 +82,7 @@ class _MessageBubbleState extends State<MessageBubble> {
           ),
           UserProfilePopup(
             user: user,
-            position: UserProfilePopupPosition.bottomLeft,
+            faceLeft: true,
           )
         ],
       );

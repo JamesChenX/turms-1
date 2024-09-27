@@ -33,13 +33,13 @@ class UserProfilePopup extends ConsumerStatefulWidget {
   const UserProfilePopup({
     super.key,
     required this.user,
-    this.position = UserProfilePopupPosition.bottomRight,
     this.editable = false,
+    this.faceLeft = false,
   });
 
   final User user;
-  final UserProfilePopupPosition position;
   final bool editable;
+  final bool faceLeft;
 
   @override
   ConsumerState<UserProfilePopup> createState() => _UserProfilePopupState();
@@ -65,15 +65,8 @@ class _UserProfilePopupState extends ConsumerState<UserProfilePopup> {
     );
     return TPopup(
       controller: popupController,
-      targetAnchor: widget.position == UserProfilePopupPosition.bottomRight
-          ? Alignment.bottomRight
-          : Alignment.bottomLeft,
-      followerAnchor: widget.position == UserProfilePopupPosition.bottomRight
-          ? Alignment.topLeft
-          : Alignment.topRight,
-      offset: widget.position == UserProfilePopupPosition.bottomRight
-          ? const Offset(-5, -5)
-          : const Offset(5, -5),
+      targetAnchor: Alignment.center,
+      followerAnchor: widget.faceLeft ? Alignment.topRight : Alignment.topLeft,
       target: MouseRegion(
         cursor: SystemMouseCursors.click,
         child: image == null
@@ -133,9 +126,4 @@ class _UserProfilePopupState extends ConsumerState<UserProfilePopup> {
     popupController.hidePopover?.call();
     showUserProfileImageEditorDialog(context, widget.user);
   }
-}
-
-enum UserProfilePopupPosition {
-  bottomLeft,
-  bottomRight,
 }

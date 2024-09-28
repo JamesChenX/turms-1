@@ -2,13 +2,11 @@ import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:turms_client_dart/turms_client.dart';
 
 import '../../../../../../../domain/user/models/contact.dart';
 import '../../../../../../../domain/user/models/user.dart';
 import '../../../../../../../infra/built_in_types/built_in_type_helpers.dart';
 import '../../../../../../../infra/ui/text_utils.dart';
-import '../../../../../../l10n/app_localizations.dart';
 import '../../../../../../l10n/view_models/app_localizations_view_model.dart';
 import '../../../../../../themes/theme_config.dart';
 import '../../../../../components/index.dart';

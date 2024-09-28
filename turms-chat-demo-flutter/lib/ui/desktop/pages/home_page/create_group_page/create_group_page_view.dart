@@ -4,9 +4,9 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../../../../domain/user/models/index.dart';
 import '../../../../../infra/built_in_types/built_in_type_helpers.dart';
 import '../../../../../infra/ui/text_utils.dart';
-import '../../../components/index.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../themes/theme_config.dart';
+import '../../../components/index.dart';
 import 'create_group_page_controller.dart';
 
 class CreateGroupPageView extends StatelessWidget {

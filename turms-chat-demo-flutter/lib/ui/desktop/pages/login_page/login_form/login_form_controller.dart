@@ -116,7 +116,8 @@ class LoginFormController extends ConsumerState<LoginForm> {
       switch (type) {
         case HomePageAction.showChatPage:
           if (!userSettings.shortcutShowChatPage.initialized) {
-            userSettings.shortcutShowChatPage = Shortcut(type.defaultShortcutActivator, true);
+            userSettings.shortcutShowChatPage =
+                Shortcut(type.defaultShortcutActivator, true);
           }
           break;
         case HomePageAction.showContactsPage:

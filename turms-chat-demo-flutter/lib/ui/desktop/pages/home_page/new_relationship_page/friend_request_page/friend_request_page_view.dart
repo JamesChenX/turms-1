@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 
 import '../../../../../../domain/user/models/index.dart';
 import '../../../../../../infra/built_in_types/built_in_type_helpers.dart';
+import '../../../../../themes/theme_config.dart';
 import '../../../../components/t_avatar/t_avatar.dart';
 import '../../../../components/t_button/t_text_button.dart';
 import '../../../../components/t_text_field/t_text_field.dart';
 import '../../../../components/t_title_bar/t_title_bar.dart';
-import '../../../../../themes/theme_config.dart';
 import 'friend_request_page_controller.dart';
 
 class FriendRequestPageView extends StatelessWidget {

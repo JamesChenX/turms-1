@@ -3,11 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../../../../../domain/user/models/contact.dart';
+import '../../../../../../l10n/app_localizations.dart';
+import '../../../../../../themes/theme_config.dart';
 import '../../../../../components/t_button/t_text_button.dart';
 import '../../../../../components/t_divider/t_horizontal_divider.dart';
 import '../../../../../components/t_switch/t_switch.dart';
-import '../../../../../../l10n/app_localizations.dart';
-import '../../../../../../themes/theme_config.dart';
 
 class ChatSessionDetailsPrivateConversation extends ConsumerStatefulWidget {
   const ChatSessionDetailsPrivateConversation(

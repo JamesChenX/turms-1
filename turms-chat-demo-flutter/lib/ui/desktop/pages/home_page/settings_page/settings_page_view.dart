@@ -1,9 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
-import '../../../components/index.dart';
 import '../../../../themes/theme_config.dart';
+import '../../../components/index.dart';
 import 'settings_page_controller.dart';
 import 'settings_pane.dart';
 import 'sub_navigation_rail.dart';

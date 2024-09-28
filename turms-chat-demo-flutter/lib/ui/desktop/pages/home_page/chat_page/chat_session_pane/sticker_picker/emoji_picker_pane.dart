@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../components/index.dart';
 import '../../../../../../themes/theme_config.dart';
+import '../../../../../components/index.dart';
 
 const _emoticons = [
   '😀',

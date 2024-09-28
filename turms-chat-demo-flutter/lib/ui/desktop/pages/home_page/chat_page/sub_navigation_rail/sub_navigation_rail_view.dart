@@ -2,8 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
-import '../../../../components/index.dart';
 import '../../../../../themes/theme_config.dart';
+import '../../../../components/index.dart';
 import '../../create_group_page/create_group_page.dart';
 import '../../new_relationship_page/new_relationship_page.dart';
 import 'conversation_tiles.dart';

@@ -4,9 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../../domain/user/models/contact.dart';
 import '../../../../../../domain/user/models/index.dart';
 import '../../../../../../infra/built_in_types/built_in_type_helpers.dart';
-import '../../../../components/index.dart';
 import '../../../../../l10n/view_models/app_localizations_view_model.dart';
 import '../../../../../themes/theme_config.dart';
+import '../../../../components/index.dart';
 import '../request_notifications_page/request_notifications_page.dart';
 import 'contact_profile_controller.dart';
 

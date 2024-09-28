@@ -13,8 +13,7 @@ class TSearchBar extends StatelessWidget {
       this.prefixIcon = const Icon(Symbols.search_rounded, size: 20),
       this.transformValue,
       this.onChanged,
-      this.onSubmitted
-      });
+      this.onSubmitted});
 
   final TextEditingController? textEditingController;
   final String hintText;

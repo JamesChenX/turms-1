@@ -4,8 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../../../infra/env/env_vars.dart';
-import '../../../../../components/index.dart';
 import '../../../../../../themes/theme_config.dart';
+import '../../../../../components/index.dart';
 import 'message_image_provider.dart';
 
 const _imageBorderWidth = 1.0;
@@ -38,19 +38,16 @@ class _MessageBubbleImageState extends State<MessageBubbleImage> {
   }
 
   @override
-  Widget build(BuildContext context) =>
-      MouseRegion(
-          cursor: SystemMouseCursors.click,
-          child: GestureDetector(
-              onTap: () async {
-                // TODO: show a tip to let user know if the original image has been deleted.
-                unawaited(
-                    showImageViewerDialog(context, originalImageProvider));
-              },
-              child: _buildThumbnail()));
+  Widget build(BuildContext context) => MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+          onTap: () async {
+            // TODO: show a tip to let user know if the original image has been deleted.
+            unawaited(showImageViewerDialog(context, originalImageProvider));
+          },
+          child: _buildThumbnail()));
 
-  Image _buildThumbnail() =>
-      Image(
+  Image _buildThumbnail() => Image(
         isAntiAlias: true,
         gaplessPlayback: true,
         image: MessageImageProvider(widget.url, true),
@@ -75,7 +72,7 @@ class _MessageBubbleImageState extends State<MessageBubbleImage> {
                 child: DecoratedBox(
                     decoration: BoxDecoration(color: Colors.black12),
                     child:
-                    RepaintBoundary(child: CupertinoActivityIndicator())),
+                        RepaintBoundary(child: CupertinoActivityIndicator())),
               ));
         },
         errorBuilder: (context, error, stackTrace) => _buildError(),
@@ -83,8 +80,7 @@ class _MessageBubbleImageState extends State<MessageBubbleImage> {
 
 // todo: click to download
   // handle different cases
-  Widget _buildError() =>
-      const SizedBox(
+  Widget _buildError() => const SizedBox(
         width: 100,
         height: 100,
         child: TImageBroken(),

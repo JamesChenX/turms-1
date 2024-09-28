@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../components/index.dart';
 import '../../../../../themes/theme_config.dart';
+import '../../../../components/index.dart';
 import '../view_models/selected_conversation_view_model.dart';
 import 'chat_session_details_drawer/chat_session_details_drawer.dart';
 import 'chat_session_pane_body.dart';

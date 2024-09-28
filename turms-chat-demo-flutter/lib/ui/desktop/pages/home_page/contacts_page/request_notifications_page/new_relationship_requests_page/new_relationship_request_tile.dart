@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../../../domain/common/models/new_relationship_request.dart';
 import '../../../../../../../domain/common/models/request_status.dart';
-import '../../../../../components/t_avatar/t_avatar.dart';
-import '../../../../../components/t_button/t_text_button.dart';
 import '../../../../../../l10n/view_models/app_localizations_view_model.dart';
 import '../../../../../../themes/theme_config.dart';
+import '../../../../../components/t_avatar/t_avatar.dart';
+import '../../../../../components/t_button/t_text_button.dart';
 
 class NewRelationshipRequestTile extends ConsumerStatefulWidget {
   const NewRelationshipRequestTile(

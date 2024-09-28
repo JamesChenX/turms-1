@@ -14,7 +14,8 @@ import 'message_bubble_video.dart';
 class MessageBubble extends StatefulWidget {
   MessageBubble({
     Key? key,
-    required this.user,
+    required this.currentUser,
+    required this.sender,
     required this.message,
     this.onLongPress,
     required this.type,
@@ -22,7 +23,8 @@ class MessageBubble extends StatefulWidget {
     this.thumbnailUrl,
   }) : super(key: key);
 
-  final User user;
+  final User currentUser;
+  final User sender;
   final ChatMessage message;
   final MessageType type;
   final String? originalUrl;
@@ -36,17 +38,17 @@ class MessageBubble extends StatefulWidget {
 class _MessageBubbleState extends State<MessageBubble> {
   @override
   Widget build(BuildContext context) {
-    final user = widget.user;
+    final sender = widget.sender;
     final message = widget.message;
     return Padding(
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
         child: message.sentByMe
-            ? _buildSentMessageBubble(user, message, context)
-            : _buildReceivedMessageBubble(user, context));
+            ? _buildSentMessageBubble(sender, message, context)
+            : _buildReceivedMessageBubble(sender, context));
   }
 
   Row _buildSentMessageBubble(
-          User user, ChatMessage message, BuildContext context) =>
+          User sender, ChatMessage message, BuildContext context) =>
       Row(
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -81,7 +83,7 @@ class _MessageBubbleState extends State<MessageBubble> {
             width: 8,
           ),
           UserProfilePopup(
-            user: user,
+            user: sender,
             faceLeft: true,
           )
         ],
@@ -106,6 +108,7 @@ class _MessageBubbleState extends State<MessageBubble> {
       child: IntrinsicWidth(
         child: switch (widget.type) {
           MessageType.text => MessageBubbleText(
+              currentUser: widget.currentUser,
               message: widget.message,
             ),
           MessageType.youtube => Text(widget.originalUrl! ?? ''),

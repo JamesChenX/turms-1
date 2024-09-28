@@ -74,6 +74,7 @@ class _ConversationTileState extends ConsumerState<ConversationTile> {
     ]);
   }
 
+  // TODO: check presence
   Positioned _buildPresence() => const Positioned(
         child: SizedBox(
           width: diameter + 2,

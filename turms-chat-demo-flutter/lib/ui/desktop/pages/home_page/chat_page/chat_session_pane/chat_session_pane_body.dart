@@ -114,7 +114,8 @@ class _ChatSessionPaneBodyState extends ConsumerState<ChatSessionPaneBody> {
         final messageInfo = messageService.parseMessageInfo(message.text);
         return MessageBubble(
           key: ValueKey(message.messageId),
-          user: user,
+          currentUser: loggedInUser,
+          sender: user,
           message: message,
           type: messageInfo.type,
           originalUrl: messageInfo.originalUrl,

@@ -290,11 +290,29 @@ abstract class AppLocalizations {
   /// **'Edit Profile Image'**
   String get editProfileImage;
 
+  /// No description provided for @error.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get error;
+
   /// No description provided for @exit.
   ///
   /// In en, this message translates to:
   /// **'Exit'**
   String get exit;
+
+  /// No description provided for @failedToDownload.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to download'**
+  String get failedToDownload;
+
+  /// No description provided for @failedToDownloadFileTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to download file: File is larger than {size}MB'**
+  String failedToDownloadFileTooLarge(Object size);
 
   /// No description provided for @failedToSendImageInvalidUrl.
   ///
@@ -733,6 +751,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Version'**
   String get version;
+
+  /// No description provided for @videoNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Video not found'**
+  String get videoNotFound;
 }
 
 class _AppLocalizationsDelegate

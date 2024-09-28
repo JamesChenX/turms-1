@@ -1,6 +1,7 @@
 export 'giphy/giphy_picker.dart';
 export 't_accordion/t_accordion.dart';
 export 't_alert/t_alert.dart';
+export 't_async_builder/t_async_builder.dart';
 export 't_audio_player/t_audio_player.dart';
 export 't_avatar/t_avatar.dart';
 export 't_button/t_icon_button.dart';

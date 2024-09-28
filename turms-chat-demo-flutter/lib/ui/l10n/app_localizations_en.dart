@@ -103,7 +103,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get editProfileImage => 'Edit Profile Image';
 
   @override
+  String get error => 'Error';
+
+  @override
   String get exit => 'Exit';
+
+  @override
+  String get failedToDownload => 'Failed to download';
+
+  @override
+  String failedToDownloadFileTooLarge(Object size) {
+    return 'Failed to download file: File is larger than ${size}MB';
+  }
 
   @override
   String get failedToSendImageInvalidUrl => 'Failed to send image: Invalid URL';
@@ -329,4 +340,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get version => 'Version';
+
+  @override
+  String get videoNotFound => 'Video not found';
 }

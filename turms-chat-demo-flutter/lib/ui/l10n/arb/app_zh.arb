@@ -31,7 +31,10 @@
   "dropFilesHere": "在此放置文件",
   "edit": "编辑",
   "editProfileImage": "编辑头像",
+  "error": "错误",
   "exit": "退出",
+  "failedToDownload": "下载失败",
+  "failedToDownloadFileTooLarge": "文件大于{size}MB，无法下载",
   "failedToSendImageInvalidUrl": "发送图片失败: 无效图片URL",
   "failedToUpdateSettings": "设置更新失败: {error}",
   "fileName": "文件名",
@@ -104,5 +107,6 @@
   "update": "更新",
   "userId": "用户ID",
   "userPassword": "密码",
-  "version": "版本"
+  "version": "版本",
+  "videoNotFound": "视频不存在"
 }

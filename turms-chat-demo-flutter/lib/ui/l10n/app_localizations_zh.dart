@@ -103,7 +103,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get editProfileImage => '编辑头像';
 
   @override
+  String get error => '错误';
+
+  @override
   String get exit => '退出';
+
+  @override
+  String get failedToDownload => '下载失败';
+
+  @override
+  String failedToDownloadFileTooLarge(Object size) {
+    return '文件大于${size}MB，无法下载';
+  }
 
   @override
   String get failedToSendImageInvalidUrl => '发送图片失败: 无效图片URL';
@@ -329,4 +340,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get version => '版本';
+
+  @override
+  String get videoNotFound => '视频不存在';
 }

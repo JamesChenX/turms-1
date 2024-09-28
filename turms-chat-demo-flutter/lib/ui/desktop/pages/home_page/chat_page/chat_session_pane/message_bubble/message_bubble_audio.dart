@@ -22,23 +22,23 @@ import '../../../../../components/index.dart';
 const _maxAllowedMb = 100;
 final _maxAllowedBytes = _maxAllowedMb.MB;
 
-class MessageBubbleVideo extends ConsumerStatefulWidget {
-  const MessageBubbleVideo({Key? key, required this.url}) : super(key: key);
+class MessageBubbleAudio extends ConsumerStatefulWidget {
+  const MessageBubbleAudio({Key? key, required this.url}) : super(key: key);
 
   final Uri url;
 
   @override
-  ConsumerState<MessageBubbleVideo> createState() => _MessageBubbleVideoState();
+  ConsumerState<MessageBubbleAudio> createState() => _MessageBubbleAudioState();
 }
 
-class _MessageBubbleVideoState extends ConsumerState<MessageBubbleVideo> {
+class _MessageBubbleAudioState extends ConsumerState<MessageBubbleAudio> {
   late VideoPlayerController _controller;
   late Future<void> _initializeVideoPlayerFuture;
 
   bool _isPlaying = false;
 
   @override
-  void didUpdateWidget(MessageBubbleVideo oldWidget) {
+  void didUpdateWidget(MessageBubbleAudio oldWidget) {
     super.didUpdateWidget(oldWidget);
   }
 
@@ -101,7 +101,6 @@ class _MessageBubbleVideoState extends ConsumerState<MessageBubbleVideo> {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-      // TODO: use video size
       width: 200,
       height: 200,
       child: TAsyncBuilder(
@@ -133,6 +132,7 @@ class _MessageBubbleVideoState extends ConsumerState<MessageBubbleVideo> {
                     child: RepaintBoundary(child: CircularProgressIndicator())),
               )));
 
+  // TODO
   Widget _buildStack() => Stack(
         children: [
           AspectRatio(

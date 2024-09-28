@@ -31,7 +31,10 @@
   "dropFilesHere": "Drop files here",
   "edit": "Edit",
   "editProfileImage": "Edit Profile Image",
+  "error": "Error",
   "exit": "Exit",
+  "failedToDownload": "Failed to download",
+  "failedToDownloadFileTooLarge": "Failed to download file: File is larger than {size}MB",
   "failedToSendImageInvalidUrl": "Failed to send image: Invalid URL",
   "failedToUpdateSettings": "Failed to update settings: {error}",
   "fileName": "Name",
@@ -104,5 +107,6 @@
   "update": "Update",
   "userId": "User ID",
   "userPassword": "Password",
-  "version": "Version"
+  "version": "Version",
+  "videoNotFound": "Video not found"
 }

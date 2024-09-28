@@ -7,6 +7,7 @@ class ThemeConfig {
   ThemeConfig._();
 
   static const borderRadius0 = BorderRadius.zero;
+  static const borderRadius2 = BorderRadius.all(Radius.circular(2));
   static const borderRadius4 = BorderRadius.all(Radius.circular(4));
   static const borderRadius8 = BorderRadius.all(Radius.circular(8));
 
@@ -141,6 +142,8 @@ class ThemeConfig {
 
   static const settingPageSubNavigationRailDividerColor =
       Color.fromARGB(255, 240, 240, 240);
+
+  static final maskColor = Colors.black.withValues(alpha: 0.5);
 
   static ThemeData getLightTheme({String? fontFamily}) => ThemeData(
       useMaterial3: true,

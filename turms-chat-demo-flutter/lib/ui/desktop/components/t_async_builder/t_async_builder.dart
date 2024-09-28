@@ -5,9 +5,9 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 typedef AsyncWidgetBuilder<T> = Widget Function(
     BuildContext context, AsyncValue<T> snapshot);
 
-class TAsyncDataBuilder<T> extends StatelessWidget {
-  const TAsyncDataBuilder(
-      {super.key, required this.future, required this.builder});
+/// see [FutureBuilder]
+class TAsyncBuilder<T> extends StatelessWidget {
+  const TAsyncBuilder({super.key, required this.future, required this.builder});
 
   final Future<T?> future;
   final AsyncWidgetBuilder<T?> builder;
@@ -17,11 +17,11 @@ class TAsyncDataBuilder<T> extends StatelessWidget {
         future: future,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.hasError) {
+            if (snapshot.error case final error?) {
               return builder(
                   context,
-                  AsyncValue.error(snapshot.error!,
-                      snapshot.stackTrace ?? StackTrace.current));
+                  AsyncValue.error(
+                      error, snapshot.stackTrace ?? StackTrace.empty));
             } else {
               return builder(context, AsyncValue.data(snapshot.data));
             }

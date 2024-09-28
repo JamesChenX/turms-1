@@ -7,6 +7,7 @@ import '../../../../../../../domain/user/models/user.dart';
 import '../../../../../../themes/theme_config.dart';
 import '../../../shared_components/user_profile_popup.dart';
 import '../message.dart';
+import 'message_bubble_audio.dart';
 import 'message_bubble_image.dart';
 import 'message_bubble_text.dart';
 import 'message_bubble_video.dart';
@@ -106,18 +107,20 @@ class _MessageBubbleState extends State<MessageBubble> {
         widget.onLongPress?.call(context, details.globalPosition);
       },
       child: IntrinsicWidth(
+        // TODO: we may support compound messages in the future.
         child: switch (widget.type) {
           MessageType.text => MessageBubbleText(
               currentUser: widget.currentUser,
               message: widget.message,
             ),
-          MessageType.youtube => Text(widget.originalUrl! ?? ''),
           MessageType.video => MessageBubbleVideo(
               url: Uri.parse(widget.originalUrl!),
             ),
-          MessageType.audio => Text(widget.originalUrl ?? ''),
+          MessageType.audio =>
+            MessageBubbleAudio(url: Uri.parse(widget.originalUrl!)),
           MessageType.image => MessageBubbleImage(url: widget.originalUrl!),
           MessageType.file => Text(widget.originalUrl ?? ''),
+          MessageType.youtube => Text(widget.originalUrl!),
         },
       ));
 }

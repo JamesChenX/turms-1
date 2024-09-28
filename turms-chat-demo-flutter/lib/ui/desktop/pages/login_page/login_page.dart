@@ -22,13 +22,11 @@ class LoginPage extends StatelessWidget {
                   color: Colors.white, borderRadius: BorderRadius.circular(20)),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
+                spacing: 32,
                 children: [
                   SvgPicture.asset(
                     width: 320,
                     Assets.images.logo,
-                  ),
-                  const SizedBox(
-                    height: 32,
                   ),
                   const LoginForm(),
                 ],

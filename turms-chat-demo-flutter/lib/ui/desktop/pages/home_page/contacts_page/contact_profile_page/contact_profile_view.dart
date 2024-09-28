@@ -51,15 +51,13 @@ class ContactProfilePageView extends ConsumerWidget {
             child: Column(
               children: [
                 Row(
+                  spacing: 16,
                   children: [
                     TAvatar(
                       name: selectedContact.name,
                       image: selectedContact.image,
                       icon: selectedContact.icon,
                       size: TAvatarSize.large,
-                    ),
-                    const SizedBox(
-                      width: 16,
                     ),
                     Expanded(
                       child: Padding(

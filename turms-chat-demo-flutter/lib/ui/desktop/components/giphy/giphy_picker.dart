@@ -22,6 +22,7 @@ class GiphyPicker extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final appLocalizations = ref.watch(appLocalizationsViewModel);
     return Column(
+      spacing: 8,
       children: [
         TSearchBar(
           hintText: appLocalizations.searchStickers,
@@ -29,7 +30,6 @@ class GiphyPicker extends ConsumerWidget {
             ref.read(_queryTextViewModel.notifier).state = value;
           },
         ),
-        const SizedBox(height: 8.0),
         Expanded(
           child: GiphyPickerBody(
             type: GiphyType.stickers,

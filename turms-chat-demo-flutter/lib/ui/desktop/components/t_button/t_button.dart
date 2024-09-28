@@ -67,7 +67,8 @@ class _TButtonState extends State<TButton> {
     if (prefix != null) {
       child = Row(
           mainAxisSize: MainAxisSize.min,
-          children: [prefix, const SizedBox(width: 8), child]);
+          spacing: 8,
+          children: [prefix, child]);
     }
     if (widget.isLoading) {
       child = Stack(
@@ -101,10 +102,10 @@ class _TButtonState extends State<TButton> {
             color: widget.disabled
                 ? ThemeConfig.colorDisabled
                 : widget.isLoading
-                    ? widget.containerColor?.withOpacity(0.5)
+                    ? widget.containerColor?.withValues(alpha: 0.5)
                     : _isHovered
                         ? (widget.containerColorHovered ??
-                            widget.containerColor?.withOpacity(0.8))
+                            widget.containerColor?.withValues(alpha: 0.8))
                         : widget.containerColor,
             borderRadius: widget.containerBorderRadius,
             border: _isHovered

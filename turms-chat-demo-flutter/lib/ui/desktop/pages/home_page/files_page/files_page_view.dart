@@ -42,13 +42,11 @@ class FilesPageView extends ConsumerWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
               child: Row(
+                spacing: 16,
                 children: [
                   SizedBox(
                     width: 200,
                     child: TSearchBar(hintText: appLocalizations.fileName),
-                  ),
-                  const SizedBox(
-                    width: 16,
                   ),
                   TDateRangePicker(
                     firstDate: DateTime(now.year - 3),

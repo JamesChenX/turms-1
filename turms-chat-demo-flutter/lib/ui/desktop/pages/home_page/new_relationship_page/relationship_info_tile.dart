@@ -24,11 +24,8 @@ class RelationshipInfoTile extends ConsumerWidget {
     return TListTile(
         padding: const EdgeInsets.symmetric(
             vertical: 12, horizontal: safeAreaPaddingHorizontal),
-        child: Row(mainAxisSize: MainAxisSize.min, children: [
+        child: Row(mainAxisSize: MainAxisSize.min, spacing: 12, children: [
           TAvatar(name: contact.name, image: contact.image),
-          const SizedBox(
-            width: 12,
-          ),
           Expanded(
               child: Text(
             contact.name,
@@ -36,9 +33,6 @@ class RelationshipInfoTile extends ConsumerWidget {
             maxLines: 1,
             softWrap: false,
           )),
-          const SizedBox(
-            width: 12,
-          ),
           TTextButton(
               text: isGroup
                   ? appLocalizations.joinGroup

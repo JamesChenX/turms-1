@@ -75,14 +75,9 @@ class _TSimpleCheckboxState extends State<TSimpleCheckbox> {
     final label = widget.label;
     if (label != null) {
       child = Row(
+        spacing: 8,
         mainAxisSize: MainAxisSize.min,
-        children: [
-          child,
-          const SizedBox(
-            width: 8,
-          ),
-          Text(label)
-        ],
+        children: [child, Text(label)],
       );
     }
     return MouseRegion(

@@ -4,9 +4,9 @@ import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../../../domain/user/view_models/logged_in_user_info_view_model.dart';
 import '../../../../../infra/keyboard/shortcut_extensions.dart';
-import '../../../components/t_button/t_icon_button.dart';
 import '../../../../l10n/view_models/app_localizations_view_model.dart';
 import '../../../../themes/theme_config.dart';
+import '../../../components/t_button/t_icon_button.dart';
 import '../about_page/about_page.dart';
 import '../action_to_shortcut_view_model.dart';
 import '../home_page_action.dart';
@@ -41,7 +41,7 @@ class _TabsState extends ConsumerState<Tabs> {
     final shortcutShowFilesPage =
         actionToShortcut[HomePageAction.showFilesPage]!.$1;
     return Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-      Column(children: [
+      Column(spacing: 4, children: [
         TIconButton(
             iconData: Symbols.chat_rounded,
             iconFill: isChatTab,
@@ -54,7 +54,6 @@ class _TabsState extends ConsumerState<Tabs> {
                 HomePageTab.chat,
             iconColor: isChatTab ? ThemeConfig.primary : Colors.white54,
             iconColorHovered: isChatTab ? ThemeConfig.primary : Colors.white70),
-        const SizedBox(height: 4),
         TIconButton(
             iconData: Symbols.person_rounded,
             iconFill: isContactsTab,
@@ -68,7 +67,6 @@ class _TabsState extends ConsumerState<Tabs> {
             iconColor: isContactsTab ? ThemeConfig.primary : Colors.white54,
             iconColorHovered:
                 isContactsTab ? ThemeConfig.primary : Colors.white70),
-        const SizedBox(height: 4),
         TIconButton(
             iconData: Symbols.description_rounded,
             iconFill: isFilesTab,

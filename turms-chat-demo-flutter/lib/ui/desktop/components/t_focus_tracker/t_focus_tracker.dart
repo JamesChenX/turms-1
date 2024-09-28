@@ -66,7 +66,7 @@ class _TFocusTrackerState extends State<TFocusTracker> {
                     child: DecoratedBox(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(4),
-                        color: Colors.black.withOpacity(0.3),
+                        color: Colors.black.withValues(alpha: 0.3),
                       ),
                       child: const SizedBox.shrink(),
                     )),

@@ -114,6 +114,7 @@ class CreateGroupPageView extends StatelessWidget {
             padding: ThemeConfig.paddingH8,
             height: 40,
             child: Row(
+              spacing: 8,
               children: [
                 TSimpleCheckbox(
                     value: createGroupPageController.selectedUserContactIds
@@ -127,14 +128,10 @@ class CreateGroupPageView extends StatelessWidget {
                             .removeSelectedContact(userContact);
                       }
                     }),
-                const SizedBox(
-                  width: 8,
-                ),
                 TAvatar(
                   name: userContact.name,
                   size: TAvatarSize.small,
                 ),
-                const SizedBox(width: 8),
                 Flexible(
                   child: Text.rich(
                     TextSpan(
@@ -201,15 +198,13 @@ class CreateGroupPageView extends StatelessWidget {
 
   Widget _buildActions() => Row(
         mainAxisAlignment: MainAxisAlignment.end,
+        spacing: 16,
         children: [
           TTextButton.outlined(
             text: createGroupPageController.appLocalizations.cancel,
             containerPadding: ThemeConfig.paddingV4H8,
             containerWidth: 64,
             onTap: createGroupPageController.close,
-          ),
-          const SizedBox(
-            width: 16,
           ),
           TTextButton(
             isLoading: createGroupPageController.isCreating,

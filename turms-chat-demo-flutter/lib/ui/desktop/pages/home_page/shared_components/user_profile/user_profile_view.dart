@@ -16,11 +16,9 @@ class UserProfileView extends StatelessWidget {
     final user = widget.user;
     return IntrinsicHeight(
       child: Row(
+        spacing: 16,
         children: [
           UserProfileImage(userProfileController: userProfileController),
-          const SizedBox(
-            width: 16,
-          ),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 4),

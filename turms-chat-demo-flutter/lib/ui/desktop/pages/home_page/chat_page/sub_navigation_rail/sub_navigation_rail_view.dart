@@ -53,6 +53,7 @@ class SubNavigationRailView extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Center(
             child: Row(
+              spacing: 8,
               children: [
                 Expanded(
                   child: TSearchBar(
@@ -67,9 +68,6 @@ class SubNavigationRailView extends StatelessWidget {
                     onSubmitted: (_) =>
                         subNavigationRailController.onSearchSubmitted(),
                   ),
-                ),
-                const SizedBox(
-                  width: 8,
                 ),
                 MenuAnchor(
                     controller: subNavigationRailController.menuController,

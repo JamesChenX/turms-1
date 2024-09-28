@@ -29,7 +29,7 @@ class _TCheckboxState extends State<TCheckbox> {
             widget.onCheckedChanged(isChecked!);
             setState(() {});
           },
-          child: Row(mainAxisSize: MainAxisSize.min, children: [
+          child: Row(spacing: 4, mainAxisSize: MainAxisSize.min, children: [
             AbsorbPointer(
               child: Checkbox(
                 // focusNode: FocusNode(skipTraversal: true),
@@ -50,9 +50,6 @@ class _TCheckboxState extends State<TCheckbox> {
                   widget.onCheckedChanged(isChecked!);
                 },
               ),
-            ),
-            const SizedBox(
-              width: 4,
             ),
             Text(widget.text,
                 style: const TextStyle(

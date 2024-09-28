@@ -184,6 +184,7 @@ class __ChatSessionDetailsGroupConversationMemberListState
       for (var i = 0; i < itemCount; i++) matchedMembers[i].member.userId: i
     };
     return Column(
+      spacing: 8,
       children: [
         TSearchBar(
           hintText: appLocalizations.search,
@@ -191,9 +192,6 @@ class __ChatSessionDetailsGroupConversationMemberListState
             searchText = value;
             setState(() {});
           },
-        ),
-        const SizedBox(
-          height: 8,
         ),
         Expanded(
             child: ListView.separated(
@@ -205,11 +203,9 @@ class __ChatSessionDetailsGroupConversationMemberListState
           itemBuilder: (context, index) {
             final member = matchedMembers[index];
             return Row(
+              spacing: 8,
               children: [
                 TAvatar(name: member.member.name, size: TAvatarSize.small),
-                const SizedBox(
-                  width: 8,
-                ),
                 Expanded(
                     child: Text.rich(
                   TextSpan(children: member.nameTextSpans),
@@ -222,9 +218,6 @@ class __ChatSessionDetailsGroupConversationMemberListState
                     //   overflow: TextOverflow.ellipsis,
                     // )
                     ),
-                const SizedBox(
-                  width: 8,
-                ),
                 const Icon(Symbols.supervisor_account_rounded)
               ],
             );

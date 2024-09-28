@@ -54,11 +54,8 @@ class _ConversationTileState extends ConsumerState<ConversationTile> {
           // use more right padding to reserve space for scrollbar
           // TODO: adapt the padding to not hide part of text (e.g. contact name).
           const EdgeInsets.only(left: 10, right: 14, top: 12, bottom: 12),
-      child: Row(mainAxisSize: MainAxisSize.min, children: [
+      child: Row(mainAxisSize: MainAxisSize.min, spacing: 8, children: [
         _buildAvatar(),
-        const SizedBox(
-          width: 10,
-        ),
         Expanded(child: _buildConversation(appLocalizations, context))
       ]),
     );
@@ -101,6 +98,7 @@ class _ConversationTileState extends ConsumerState<ConversationTile> {
           Expanded(
               child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            spacing: 12,
             children: [
               Flexible(
                   child: Text.rich(
@@ -109,9 +107,6 @@ class _ConversationTileState extends ConsumerState<ConversationTile> {
                 maxLines: 1,
                 softWrap: false,
               )),
-              const SizedBox(
-                width: 12,
-              ),
               Text(
                 lastMessage == null || widget.isSearchMode
                     ? ''

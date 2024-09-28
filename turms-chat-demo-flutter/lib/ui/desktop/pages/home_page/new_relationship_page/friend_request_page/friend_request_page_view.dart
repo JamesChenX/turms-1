@@ -71,6 +71,7 @@ class FriendRequestPageView extends StatelessWidget {
                 const SizedBox(height: 12),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
+                  spacing: 16,
                   children: [
                     TTextButton.outlined(
                       text: appLocalizations.cancel,
@@ -78,7 +79,6 @@ class FriendRequestPageView extends StatelessWidget {
                       containerWidth: 64,
                       onTap: friendRequestPageController.close,
                     ),
-                    const SizedBox(width: 16),
                     TTextButton(
                       isLoading: friendRequestPageController.isSending,
                       text: appLocalizations.send,

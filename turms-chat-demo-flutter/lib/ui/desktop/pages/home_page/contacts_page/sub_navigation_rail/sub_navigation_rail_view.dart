@@ -147,11 +147,9 @@ class SubNavigationRailView extends StatelessWidget {
           String name, List<Contact> contacts, String? selectedContactId) =>
       TAccordion(
         titleChild: Row(
+          spacing: 4,
           children: [
             Text(name),
-            const SizedBox(
-              width: 4,
-            ),
             Text('(${contacts.length})'),
           ],
         ),

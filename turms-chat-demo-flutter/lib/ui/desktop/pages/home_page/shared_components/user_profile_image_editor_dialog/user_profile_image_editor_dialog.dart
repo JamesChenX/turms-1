@@ -60,6 +60,7 @@ class _UserProfileImageEditorDialogState
             height: 8,
           ),
           Row(
+            spacing: 16,
             children: [
               ClipRRect(
                 borderRadius: ThemeConfig.borderRadius4,
@@ -99,9 +100,6 @@ class _UserProfileImageEditorDialogState
                               ],
                             ),
                           )),
-              ),
-              const SizedBox(
-                width: 16,
               ),
               Expanded(
                 child: Column(

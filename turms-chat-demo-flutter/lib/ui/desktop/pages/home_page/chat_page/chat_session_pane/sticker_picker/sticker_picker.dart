@@ -71,6 +71,7 @@ class _StickerPickerState extends State<StickerPicker> {
                           padding: const EdgeInsets.symmetric(
                               vertical: 8, horizontal: 16),
                           child: Row(
+                            spacing: 16,
                             children: [
                               TIconButton(
                                 iconData: Symbols.emoji_emotions_rounded,
@@ -81,9 +82,6 @@ class _StickerPickerState extends State<StickerPicker> {
                                   _currentTab = _Tab.emoji;
                                   setState(() {});
                                 },
-                              ),
-                              const SizedBox(
-                                width: 16,
                               ),
                               TIconButton(
                                 iconData: Symbols.search_rounded,

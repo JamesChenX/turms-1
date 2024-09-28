@@ -12,7 +12,7 @@ class AppTheme {
     if (!Platform.isWindows) {
       return null;
     }
-    // Used to fix the text rendering problem
+    // FIXME: Used to fix the text rendering problem
     // mentioned in https://github.com/flutter/flutter/issues/63043.
     // Reference: https://learn.microsoft.com/en-us/windows/apps/design/globalizing/loc-international-fonts.
     return switch (locale?.languageCode) {

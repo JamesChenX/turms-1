@@ -16,13 +16,11 @@ class MainNavigationRail extends ConsumerWidget {
       child: Padding(
         padding: const EdgeInsets.only(top: 32, bottom: 16),
         child: Column(
+          spacing: 24,
           children: [
             UserProfilePopup(
               user: loggedInUser,
               editable: true,
-            ),
-            const SizedBox(
-              height: 24,
             ),
             const Expanded(child: Tabs())
           ],

@@ -35,14 +35,11 @@ class _ContactTileState extends State<ContactTile> {
         padding:
             // use more right padding to reserve space for scrollbar
             const EdgeInsets.only(left: 10, right: 14, top: 12, bottom: 12),
-        child: Row(mainAxisSize: MainAxisSize.min, children: [
+        child: Row(mainAxisSize: MainAxisSize.min, spacing: 8, children: [
           TAvatar(
             name: contact.name,
             image: contact.image,
             icon: contact.icon,
-          ),
-          const SizedBox(
-            width: 10,
           ),
           Expanded(
               child: Text.rich(

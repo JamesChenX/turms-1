@@ -32,8 +32,7 @@ class TForm extends StatelessWidget {
           if (titleSuffix == null) {
             children.add(text);
           } else {
-            children.add(
-                Row(children: [text, const SizedBox(width: 16), titleSuffix]));
+            children.add(Row(spacing: 16, children: [text, titleSuffix]));
           }
           for (final element in group.fields.indexed) {
             final (index, field) = element;

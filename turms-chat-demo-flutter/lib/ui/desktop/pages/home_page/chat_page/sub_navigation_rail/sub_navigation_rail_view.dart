@@ -61,10 +61,7 @@ class SubNavigationRailView extends StatelessWidget {
                     hintText: appLocalizations.search,
                     textEditingController: subNavigationRailController
                         .searchBarTextEditingController,
-                    transformValue: (value) {
-                      subNavigationRailController.onSearchTextUpdated(value);
-                      return value;
-                    },
+                    onChanged: subNavigationRailController.onSearchTextUpdated,
                     onSubmitted: (_) =>
                         subNavigationRailController.onSearchSubmitted(),
                   ),

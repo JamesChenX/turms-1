@@ -57,10 +57,7 @@ class SubNavigationRailView extends StatelessWidget {
             child: Center(
               child: TSearchBar(
                 hintText: subNavigationRailController.appLocalizations.search,
-                transformValue: (value) {
-                  subNavigationRailController.updateSearchText(value);
-                  return value;
-                },
+                onChanged: subNavigationRailController.updateSearchText,
               ),
             ),
           ),

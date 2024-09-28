@@ -9,9 +9,7 @@ import '../../../../../themes/theme_config.dart';
 import '../../../../components/index.dart';
 import '../chat_session_pane/message.dart';
 
-const diameter = 10.0;
-const rightOffset = -diameter / 2;
-const topOffset = -diameter / 2;
+const diameter = 12.0;
 
 class ConversationTile extends ConsumerStatefulWidget {
   const ConversationTile(
@@ -38,12 +36,16 @@ class ConversationTile extends ConsumerStatefulWidget {
   ConsumerState<ConversationTile> createState() => _ConversationTileState();
 }
 
+const _fontWeightBold = FontWeight.w600;
+
 class _ConversationTileState extends ConsumerState<ConversationTile> {
-  bool isHovered = false;
+  bool _bolded = false;
 
   @override
   Widget build(BuildContext context) {
     final appLocalizations = ref.watch(appLocalizationsViewModel);
+    _bolded =
+        !widget.isSearchMode && widget.conversation.unreadMessageCount > 0;
     return TListTile(
       onTap: widget.onTap,
       focused: widget.selected,
@@ -68,21 +70,33 @@ class _ConversationTileState extends ConsumerState<ConversationTile> {
         name: conversation.name,
         image: conversation.image,
       ),
-      if (!widget.isSearchMode && conversation.unreadMessageCount > 0)
-        Positioned(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints.tightFor(
-                width: diameter, height: diameter),
-            child: const DecoratedBox(
-              decoration:
-                  BoxDecoration(color: Colors.orange, shape: BoxShape.circle),
-            ),
-          ),
-          right: rightOffset,
-          top: topOffset,
-        )
+      _buildPresence()
     ]);
   }
+
+  Positioned _buildPresence() => const Positioned(
+        child: SizedBox(
+          width: diameter + 2,
+          height: diameter + 2,
+          child: DecoratedBox(
+            decoration:
+                BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+            child: Center(
+              child: SizedBox(
+                width: diameter,
+                height: diameter,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 107, 183, 0),
+                      shape: BoxShape.circle),
+                ),
+              ),
+            ),
+          ),
+        ),
+        right: 0,
+        bottom: 0,
+      );
 
   Column _buildConversation(
       AppLocalizations localizations, BuildContext context) {
@@ -103,6 +117,9 @@ class _ConversationTileState extends ConsumerState<ConversationTile> {
               Flexible(
                   child: Text.rich(
                 TextSpan(children: widget.nameTextSpans),
+                style: _bolded
+                    ? const TextStyle(fontWeight: _fontWeightBold)
+                    : null,
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
                 softWrap: false,
@@ -111,7 +128,12 @@ class _ConversationTileState extends ConsumerState<ConversationTile> {
                 lastMessage == null || widget.isSearchMode
                     ? ''
                     : dateFormat.format(lastMessage.timestamp),
-                style: const TextStyle(color: ThemeConfig.gray7, fontSize: 14),
+                style: _bolded
+                    ? const TextStyle(
+                        color: ThemeConfig.gray7,
+                        fontSize: 14,
+                        fontWeight: _fontWeightBold)
+                    : const TextStyle(color: ThemeConfig.gray7, fontSize: 14),
                 strutStyle:
                     const StrutStyle(fontSize: 14, forceStrutHeight: true),
               )
@@ -142,11 +164,21 @@ class _ConversationTileState extends ConsumerState<ConversationTile> {
                       if (draft != null)
                         TextSpan(
                             text: '[${localizations.draft}]',
-                            style: ThemeConfig.textStyleHighlight),
+                            style: _bolded
+                                ? ThemeConfig.textStyleHighlight
+                                    .copyWith(fontWeight: _fontWeightBold)
+                                : ThemeConfig.textStyleHighlight),
                       TextSpan(text: draft ?? lastMessage?.text ?? ''),
                     ]),
-                    style:
-                        const TextStyle(color: ThemeConfig.gray7, fontSize: 14),
+                    style: _bolded
+                        ? const TextStyle(
+                            color: ThemeConfig.gray7,
+                            fontSize: 14,
+                            fontWeight: _fontWeightBold)
+                        : const TextStyle(
+                            color: ThemeConfig.gray7,
+                            fontSize: 14,
+                          ),
                     strutStyle:
                         const StrutStyle(fontSize: 14, forceStrutHeight: true),
                     overflow: TextOverflow.ellipsis,

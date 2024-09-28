@@ -44,11 +44,8 @@ class CreateGroupPageView extends StatelessWidget {
                             padding: ThemeConfig.paddingH8,
                             child: TSearchBar(
                               hintText: appLocalizations.search,
-                              transformValue: (value) {
-                                createGroupPageController
-                                    .updateSearchText(value);
-                                return value;
-                              },
+                              onChanged:
+                                  createGroupPageController.updateSearchText,
                             ),
                           )),
                           const TVerticalDivider(),

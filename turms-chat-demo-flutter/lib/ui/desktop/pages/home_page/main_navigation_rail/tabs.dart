@@ -30,16 +30,15 @@ class _TabsState extends ConsumerState<Tabs> {
     final isChatTab = homePageTab == HomePageTab.chat;
     final isContactsTab = homePageTab == HomePageTab.contacts;
     final isFilesTab = homePageTab == HomePageTab.files;
-    // final isSettingsTab = homePageTab == HomePageTab.settings;
     final appLocalizations = ref.watch(appLocalizationsViewModel);
     final actionToShortcut = ref.watch(actionToShortcutViewModel);
 
     final shortcutShowChatPage =
-        actionToShortcut[HomePageAction.showChatPage]!.$1;
+        actionToShortcut[HomePageAction.showChatPage]?.shortcutActivator;
     final shortcutShowContactsPage =
-        actionToShortcut[HomePageAction.showContactsPage]!.$1;
+        actionToShortcut[HomePageAction.showContactsPage]?.shortcutActivator;
     final shortcutShowFilesPage =
-        actionToShortcut[HomePageAction.showFilesPage]!.$1;
+        actionToShortcut[HomePageAction.showFilesPage]?.shortcutActivator;
     return Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
       Column(spacing: 4, children: [
         TIconButton(

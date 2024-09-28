@@ -19,6 +19,7 @@ import '../../../../../domain/user/view_models/user_settings_view_model.dart';
 import '../../../../../infra/autostart/autostart_manager.dart';
 import '../../../../../infra/logging/log_appender_database.dart';
 import '../../../../../infra/logging/logger.dart';
+import '../../../../../infra/shortcut/shortcut.dart';
 import '../../../../../infra/sqlite/app_database.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../l10n/view_models/app_localizations_view_model.dart';
@@ -114,33 +115,32 @@ class LoginFormController extends ConsumerState<LoginForm> {
     for (final type in HomePageAction.values) {
       switch (type) {
         case HomePageAction.showChatPage:
-          if (!userSettings.shortcutShowChatPage.$2) {
-            userSettings.shortcutShowChatPage =
-                (type.defaultShortcutActivator, true);
+          if (!userSettings.shortcutShowChatPage.initialized) {
+            userSettings.shortcutShowChatPage = Shortcut(type.defaultShortcutActivator, true);
           }
           break;
         case HomePageAction.showContactsPage:
-          if (!userSettings.shortcutShowContactsPage.$2) {
+          if (!userSettings.shortcutShowContactsPage.initialized) {
             userSettings.shortcutShowContactsPage =
-                (type.defaultShortcutActivator, true);
+                Shortcut(type.defaultShortcutActivator, true);
           }
           break;
         case HomePageAction.showFilesPage:
-          if (!userSettings.shortcutShowFilesPage.$2) {
+          if (!userSettings.shortcutShowFilesPage.initialized) {
             userSettings.shortcutShowFilesPage =
-                (type.defaultShortcutActivator, true);
+                Shortcut(type.defaultShortcutActivator, true);
           }
           break;
         case HomePageAction.showSettingsDialog:
-          if (!userSettings.shortcutShowSettingsDialog.$2) {
+          if (!userSettings.shortcutShowSettingsDialog.initialized) {
             userSettings.shortcutShowSettingsDialog =
-                (type.defaultShortcutActivator, true);
+                Shortcut(type.defaultShortcutActivator, true);
           }
           break;
         case HomePageAction.showAboutDialog:
-          if (!userSettings.shortcutShowAboutDialog.$2) {
+          if (!userSettings.shortcutShowAboutDialog.initialized) {
             userSettings.shortcutShowAboutDialog =
-                (type.defaultShortcutActivator, true);
+                Shortcut(type.defaultShortcutActivator, true);
           }
           break;
       }

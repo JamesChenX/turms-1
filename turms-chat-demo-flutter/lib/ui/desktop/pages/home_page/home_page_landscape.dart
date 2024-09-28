@@ -49,15 +49,15 @@ class _HomePageLandscapeState extends ConsumerState<HomePageLandscape> {
     final actionToShortcut = ref.watch(actionToShortcutViewModel);
     final bindings = <ShortcutActivator, VoidCallback>{};
     final shortcutShowChatPage =
-        actionToShortcut[HomePageAction.showChatPage]!.$1;
+        actionToShortcut[HomePageAction.showChatPage]?.shortcutActivator;
     final shortcutShowContactsPage =
-        actionToShortcut[HomePageAction.showContactsPage]!.$1;
+        actionToShortcut[HomePageAction.showContactsPage]?.shortcutActivator;
     final shortcutShowFilesPage =
-        actionToShortcut[HomePageAction.showFilesPage]!.$1;
+        actionToShortcut[HomePageAction.showFilesPage]?.shortcutActivator;
     final shortcutShowSettingsDialog =
-        actionToShortcut[HomePageAction.showSettingsDialog]!.$1;
+        actionToShortcut[HomePageAction.showSettingsDialog]?.shortcutActivator;
     final shortcutShowAboutDialog =
-        actionToShortcut[HomePageAction.showAboutDialog]!.$1;
+        actionToShortcut[HomePageAction.showAboutDialog]?.shortcutActivator;
     if (shortcutShowChatPage != null) {
       bindings[shortcutShowChatPage] = () =>
           ref.read(homePageTabViewModel.notifier).state = HomePageTab.chat;

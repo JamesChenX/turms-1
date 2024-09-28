@@ -2,7 +2,7 @@ part of 'settings_pane.dart';
 
 class _SettingsPaneController extends ConsumerState<SettingsPane> {
   late AppLocalizations appLocalizations;
-  late Map<HomePageAction, (ShortcutActivator?, bool)> actionToShortcut;
+  late Map<HomePageAction, Shortcut> actionToShortcut;
 
   late bool useSystemLocale;
   late ThemeMode themeMode;
@@ -112,7 +112,7 @@ class _SettingsPaneController extends ConsumerState<SettingsPane> {
         for (final homePageAction in HomePageAction.values) {
           if (action != homePageAction &&
               (actionToShortcut[homePageAction]!
-                      .$1
+                      .shortcutActivator
                       ?.hasSameKeys(shortcutActivator) ??
                   false)) {
             await updateShortcut(notify: false, action: homePageAction);
@@ -127,19 +127,22 @@ class _SettingsPaneController extends ConsumerState<SettingsPane> {
     final userSettings = ref.read(userSettingsViewModel.notifier).state!;
     switch (action) {
       case HomePageAction.showChatPage:
-        userSettings.shortcutShowChatPage = (shortcutActivator, true);
+        userSettings.shortcutShowChatPage = Shortcut(shortcutActivator, true);
         break;
       case HomePageAction.showContactsPage:
-        userSettings.shortcutShowContactsPage = (shortcutActivator, true);
+        userSettings.shortcutShowContactsPage =
+            Shortcut(shortcutActivator, true);
         break;
       case HomePageAction.showFilesPage:
-        userSettings.shortcutShowFilesPage = (shortcutActivator, true);
+        userSettings.shortcutShowFilesPage = Shortcut(shortcutActivator, true);
         break;
       case HomePageAction.showSettingsDialog:
-        userSettings.shortcutShowSettingsDialog = (shortcutActivator, true);
+        userSettings.shortcutShowSettingsDialog =
+            Shortcut(shortcutActivator, true);
         break;
       case HomePageAction.showAboutDialog:
-        userSettings.shortcutShowAboutDialog = (shortcutActivator, true);
+        userSettings.shortcutShowAboutDialog =
+            Shortcut(shortcutActivator, true);
         break;
     }
     if (notify) {
@@ -159,7 +162,7 @@ class _SettingsPaneController extends ConsumerState<SettingsPane> {
   bool hasAnyShortcutChanged() {
     for (final homePageAction in HomePageAction.values) {
       final hasSameKeys = actionToShortcut[homePageAction]
-              ?.$1
+              ?.shortcutActivator
               ?.hasSameKeys(homePageAction.defaultShortcutActivator) ??
           false;
       if (!hasSameKeys) {

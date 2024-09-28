@@ -89,8 +89,7 @@ class _UserProfilePopupState extends ConsumerState<UserProfilePopup> {
                 borderRadius: ThemeConfig.borderRadius4,
                 boxShadow: ThemeConfig.boxShadow),
             child: Padding(
-              padding: const EdgeInsets.only(
-                  left: 16, top: 16, right: 16, bottom: 16),
+              padding: const EdgeInsets.all(16),
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

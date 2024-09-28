@@ -72,7 +72,7 @@ class _SettingsPaneView extends StatelessWidget {
   TFormFieldGroup _buildShortcutsFieldGroup(
           SettingFormFieldGroupContext formFieldGroupContext,
           AppLocalizations appLocalizations,
-          Map<HomePageAction, (ShortcutActivator?, bool)> actionToShortcut,
+          Map<HomePageAction, Shortcut> actionToShortcut,
           BuildContext context) =>
       TFormFieldGroup(
           title: formFieldGroupContext.getTitle(appLocalizations),
@@ -90,8 +90,9 @@ class _SettingsPaneView extends StatelessWidget {
           fields: [
             TFormFieldShortcutTextField(
                 label: '${appLocalizations.goToChatPage}:',
-                initialKeys:
-                    actionToShortcut[HomePageAction.showChatPage]!.$1?.keyList,
+                initialKeys: actionToShortcut[HomePageAction.showChatPage]!
+                    .shortcutActivator
+                    ?.keyList,
                 onShortcutChanged: (List<LogicalKeyboardKey> keys) {
                   _settingsPaneController.updateShortcut(
                       action: HomePageAction.showChatPage,
@@ -102,7 +103,7 @@ class _SettingsPaneView extends StatelessWidget {
             TFormFieldShortcutTextField(
                 label: '${appLocalizations.goToContactsPage}:',
                 initialKeys: actionToShortcut[HomePageAction.showContactsPage]!
-                    .$1
+                    .shortcutActivator
                     ?.keyList,
                 onShortcutChanged: (List<LogicalKeyboardKey> keys) =>
                     _settingsPaneController.updateShortcut(
@@ -112,8 +113,9 @@ class _SettingsPaneView extends StatelessWidget {
                             : LogicalKeySet.fromSet(keys.toSet()))),
             TFormFieldShortcutTextField(
                 label: '${appLocalizations.goToFilesPage}:',
-                initialKeys:
-                    actionToShortcut[HomePageAction.showFilesPage]!.$1?.keyList,
+                initialKeys: actionToShortcut[HomePageAction.showFilesPage]!
+                    .shortcutActivator
+                    ?.keyList,
                 onShortcutChanged: (List<LogicalKeyboardKey> keys) =>
                     _settingsPaneController.updateShortcut(
                         action: HomePageAction.showFilesPage,
@@ -124,7 +126,7 @@ class _SettingsPaneView extends StatelessWidget {
                 label: '${appLocalizations.openSettingsDialog}:',
                 initialKeys:
                     actionToShortcut[HomePageAction.showSettingsDialog]!
-                        .$1
+                        .shortcutActivator
                         ?.keyList,
                 onShortcutChanged: (List<LogicalKeyboardKey> keys) =>
                     _settingsPaneController.updateShortcut(
@@ -135,7 +137,7 @@ class _SettingsPaneView extends StatelessWidget {
             TFormFieldShortcutTextField(
                 label: '${appLocalizations.openAboutDialog}:',
                 initialKeys: actionToShortcut[HomePageAction.showAboutDialog]!
-                    .$1
+                    .shortcutActivator
                     ?.keyList,
                 onShortcutChanged: (List<LogicalKeyboardKey> keys) =>
                     _settingsPaneController.updateShortcut(

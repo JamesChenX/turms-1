@@ -14,6 +14,7 @@ import '../../../../../domain/user/view_models/user_settings_view_model.dart';
 import '../../../../../infra/app/app_config.dart';
 import '../../../../../infra/autostart/autostart_manager.dart';
 import '../../../../../infra/keyboard/shortcut_extensions.dart';
+import '../../../../../infra/shortcut/shortcut.dart';
 import '../../../components/index.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../l10n/view_models/app_localizations_view_model.dart';

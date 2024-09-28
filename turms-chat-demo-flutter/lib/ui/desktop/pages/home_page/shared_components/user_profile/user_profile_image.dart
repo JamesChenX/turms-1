@@ -26,64 +26,68 @@ class _UserProfileImageState extends State<UserProfileImage> {
       name: user.name,
       image: image,
     );
-    final onEditTap = userProfileController.widget.onEditTap;
-    return onEditTap != null
-        ? MouseRegion(
+    if (userProfileController.widget.onEditTap case final onEditTap?) {
+      return _buildEditableAvatar(onEditTap, avatar, userProfileController);
+    }
+    return image == null
+        ? avatar
+        : MouseRegion(
             cursor: SystemMouseCursors.click,
-            onEnter: (_) {
-              setState(() {
-                imageOpacity = 1;
-              });
-            },
-            onExit: (_) {
-              setState(() {
-                imageOpacity = 0;
-              });
-            },
             child: GestureDetector(
-              onTap: onEditTap,
-              child: Stack(
-                children: [
-                  avatar,
-                  Positioned.fill(
-                    child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: SizedBox(
-                        height: 20,
-                        width: double.infinity,
-                        child: AnimatedOpacity(
-                          opacity: imageOpacity,
-                          duration: const Duration(milliseconds: 100),
-                          child: DecoratedBox(
-                            decoration: const BoxDecoration(
-                              color: Color.fromARGB(128, 0, 0, 0),
-                            ),
-                            child: Center(
-                              child: Text(
-                                userProfileController.appLocalizations.edit,
-                                style: const TextStyle(
-                                    color: Colors.white, fontSize: 14),
-                              ),
-                            ),
+              onTap: () {
+                showImageViewerDialog(context, image);
+              },
+              child: avatar,
+            ),
+          );
+  }
+
+  MouseRegion _buildEditableAvatar(VoidCallback onEditTap, TAvatar avatar,
+          UserProfileController userProfileController) =>
+      MouseRegion(
+        cursor: SystemMouseCursors.click,
+        onEnter: (_) {
+          setState(() {
+            imageOpacity = 1;
+          });
+        },
+        onExit: (_) {
+          setState(() {
+            imageOpacity = 0;
+          });
+        },
+        child: GestureDetector(
+          onTap: onEditTap,
+          child: Stack(
+            children: [
+              avatar,
+              Positioned.fill(
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: SizedBox(
+                    height: 20,
+                    width: double.infinity,
+                    child: AnimatedOpacity(
+                      opacity: imageOpacity,
+                      duration: const Duration(milliseconds: 100),
+                      child: DecoratedBox(
+                        decoration: const BoxDecoration(
+                          color: Color.fromARGB(128, 0, 0, 0),
+                        ),
+                        child: Center(
+                          child: Text(
+                            userProfileController.appLocalizations.edit,
+                            style: const TextStyle(
+                                color: Colors.white, fontSize: 14),
                           ),
                         ),
                       ),
                     ),
-                  )
-                ],
-              ),
-            ),
-          )
-        : image == null
-            ? avatar
-            : MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: GestureDetector(
-                  onTap: () {
-                    showImageViewerDialog(context, image);
-                  },
-                  child: avatar,
+                  ),
                 ),
-              );
-  }
+              )
+            ],
+          ),
+        ),
+      );
 }

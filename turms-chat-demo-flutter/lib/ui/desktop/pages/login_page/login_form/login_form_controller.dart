@@ -13,6 +13,7 @@ import '../../../../../domain/user/models/user.dart';
 import '../../../../../domain/user/models/user_settings.dart';
 import '../../../../../domain/user/repositories/user_login_info_repository.dart';
 import '../../../../../domain/user/repositories/user_settings_repository.dart';
+import '../../../../../domain/user/services/UserService.dart';
 import '../../../../../domain/user/view_models/logged_in_user_info_view_model.dart';
 import '../../../../../domain/user/view_models/user_login_infos_view_model.dart';
 import '../../../../../domain/user/view_models/user_settings_view_model.dart';
@@ -69,9 +70,7 @@ class LoginFormController extends ConsumerState<LoginForm> {
   }
 
   Future<void> login() async {
-    // TODO: use real API
-    // Behavior as if we were waiting for a login response
-    await Future<void>.delayed(const Duration(seconds: 1));
+    final user = await userService.login(userId);
     // store app settings
     final shouldRemember = rememberMe!;
     if (shouldRemember) {
@@ -84,6 +83,11 @@ class LoginFormController extends ConsumerState<LoginForm> {
     await appSettingsRepository.upsertRememberMe(shouldRemember);
     // read user settings
     final userSettings = await _getUserSettings();
+
+    if (!mounted) {
+      return;
+    }
+
     ref.read(userSettingsViewModel.notifier).state = userSettings;
     final locale = userSettings.locale;
     if (locale != null) {
@@ -91,10 +95,8 @@ class LoginFormController extends ConsumerState<LoginForm> {
       ref.read(appLocalizationsViewModel.notifier).state =
           lookupAppLocalizations(locale);
     }
+    ref.read(loggedInUserViewModel.notifier).state = user;
 
-    // set status for logged in user
-    ref.read(loggedInUserViewModel.notifier).state =
-        User(userId: userId, name: 'James Chen');
     isWaitingLoginRequest = false;
     setState(() {});
   }

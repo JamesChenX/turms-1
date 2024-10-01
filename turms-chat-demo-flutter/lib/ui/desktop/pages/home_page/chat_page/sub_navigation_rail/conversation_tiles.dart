@@ -22,10 +22,6 @@ class ConversationTiles extends ConsumerStatefulWidget {
 }
 
 class _ConversationTilesState extends ConsumerState<ConversationTiles> {
-  String previousSearchText = '';
-  List<(Conversation, List<TextSpan>, List<ChatMessage>)>
-      conversationsInSearchMode = [];
-
   @override
   Widget build(BuildContext context) {
     final subNavigationRailController = widget.subNavigationRailController;

@@ -10,6 +10,7 @@
   "alwaysOnTopDisable": "Disable Always on Top",
   "alwaysOnTopEnable": "Always on Top",
   "appearance": "Appearance",
+  "audio": "Audio",
   "autoLogin": "Auto Login",
   "brightness": "Brightness",
   "cancel": "Cancel",
@@ -37,6 +38,7 @@
   "failedToDownloadFileTooLarge": "Failed to download file: File is larger than {size}MB",
   "failedToSendImageInvalidUrl": "Failed to send image: Invalid URL",
   "failedToUpdateSettings": "Failed to update settings: {error}",
+  "file": "File",
   "fileName": "Name",
   "fileSize": "Size",
   "fileTransfer": "File Transfer",
@@ -53,6 +55,7 @@
   "groupId": "Group ID",
   "groupMembershipRequests": "Group Membership Requests",
   "groups": "Groups",
+  "image": "Image",
   "joinGroup": "Join Group",
   "language": "Language",
   "launchAndExit": "Launch and Exit",
@@ -108,5 +111,8 @@
   "userId": "User ID",
   "userPassword": "Password",
   "version": "Version",
-  "videoNotFound": "Video not found"
+  "video": "Video",
+  "videoNotFound": "Video not found",
+  "yesterday": "Yesterday",
+  "youtube": "YouTube"
 }

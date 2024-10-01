@@ -9,11 +9,11 @@ import 'message_text_editing_controller.dart';
 
 class MessageBubbleText extends StatefulWidget {
   const MessageBubbleText(
-      {Key? key, required this.currentUser, required this.message})
+      {Key? key, required this.currentUser, required this.messages})
       : super(key: key);
 
   final User currentUser;
-  final ChatMessage message;
+  final List<ChatMessage> messages;
 
   @override
   State<MessageBubbleText> createState() => _MessageBubbleTextState();
@@ -45,7 +45,7 @@ class _MessageBubbleTextState extends State<MessageBubbleText> {
     Widget content = IntrinsicWidth(
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: widget.message.sentByMe
+          color: widget.messages.first.sentByMe
               ? const Color.fromARGB(255, 149, 216, 248)
               : Colors.white,
           borderRadius: ThemeConfig.borderRadius4,

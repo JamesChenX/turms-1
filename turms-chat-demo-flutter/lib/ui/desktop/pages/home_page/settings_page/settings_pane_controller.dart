@@ -27,11 +27,12 @@ class _SettingsPaneController extends ConsumerState<SettingsPane> {
   }
 
   Future<void> updateActionOnClose(SettingActionOnClose value) async {
+    final userSettingsController = ref.read(userSettingsViewModel.notifier);
     await userSettingsRepository.upsert(
         ref.read(loggedInUserViewModel)!.userId,
         UserSettingId.actionOnClose.name,
         UserSettingId.actionOnClose.convertValueToString(value));
-    ref.read(userSettingsViewModel.notifier).state!.actionOnClose = value;
+    userSettingsController.state!.actionOnClose = value;
     userSettingsViewModelRef.notifyListeners();
   }
 
@@ -48,6 +49,7 @@ class _SettingsPaneController extends ConsumerState<SettingsPane> {
   }
 
   Future<void> updateLaunchOnStartup(bool value) async {
+    final userSettingsController = ref.read(userSettingsViewModel.notifier);
     try {
       if (value) {
         await autostartManager.enable();
@@ -58,7 +60,7 @@ class _SettingsPaneController extends ConsumerState<SettingsPane> {
       unawaited(TToast.showToast(
           context, appLocalizations.failedToUpdateSettings(e.toString())));
     }
-    ref.read(userSettingsViewModel.notifier).state!.launchOnStartup = value;
+    userSettingsController.state!.launchOnStartup = value;
     userSettingsViewModelRef.notifyListeners();
   }
 
@@ -101,9 +103,11 @@ class _SettingsPaneController extends ConsumerState<SettingsPane> {
       required HomePageAction action,
       ShortcutActivator? shortcutActivator}) async {
     final userSettingId = action.userSettingId;
+    final userId = ref.read(loggedInUserViewModel)!.userId;
+    final userSettingsController = ref.read(userSettingsViewModel.notifier);
     if (shortcutActivator == null) {
       await userSettingsRepository.upsert(
-        ref.read(loggedInUserViewModel)!.userId,
+        userId,
         userSettingId.name,
         UserSettings.unsetValue,
       );
@@ -119,12 +123,10 @@ class _SettingsPaneController extends ConsumerState<SettingsPane> {
           }
         }
       }
-      await userSettingsRepository.upsert(
-          ref.read(loggedInUserViewModel)!.userId,
-          userSettingId.name,
+      await userSettingsRepository.upsert(userId, userSettingId.name,
           userSettingId.convertValueToString(shortcutActivator));
     }
-    final userSettings = ref.read(userSettingsViewModel.notifier).state!;
+    final userSettings = userSettingsController.state!;
     switch (action) {
       case HomePageAction.showChatPage:
         userSettings.shortcutShowChatPage = Shortcut(shortcutActivator, true);
@@ -151,11 +153,12 @@ class _SettingsPaneController extends ConsumerState<SettingsPane> {
   }
 
   Future<void> updateThemeMode(ThemeMode value) async {
+    final userSettingsController = ref.read(userSettingsViewModel.notifier);
     await userSettingsRepository.upsert(
         ref.read(loggedInUserViewModel)!.userId,
         UserSettingId.theme.name,
         UserSettingId.theme.convertValueToString(value));
-    ref.read(userSettingsViewModel.notifier).state!.theme = value;
+    userSettingsController.state!.theme = value;
     userSettingsViewModelRef.notifyListeners();
   }
 

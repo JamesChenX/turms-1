@@ -58,7 +58,7 @@ class ChatSessionPaneFooterController
     final newConversation = ref.watch(selectedConversationViewModel);
     final currentConversation = conversation;
     if (newConversation?.id != currentConversation?.id) {
-      SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
         if (currentConversation != null) {
           final previousDraft = currentConversation.draft;
           final draft = getEditorDocument();
@@ -195,6 +195,8 @@ class ChatSessionPaneFooterController
         messageId: RandomUtils.nextUniqueInt64(),
         senderId: ref.read(loggedInUserViewModel)!.userId,
         sentByMe: true,
+        isFakeMessage: false,
+        isGroupMessage: conversation is GroupConversation,
         text: text,
         timestamp: DateTime.now(),
         status: MessageDeliveryStatus.delivering));

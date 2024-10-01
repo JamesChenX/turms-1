@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../../../domain/common/models/request_status.dart';
 import '../../../../../../../domain/user/models/contact.dart';
 import '../../../../../../../domain/user/models/friend_request.dart';
+import '../../../../../../../domain/user/services/UserService.dart';
 import '../../../chat_page/view_models/selected_conversation_view_model.dart';
 import '../new_relationship_requests_page/new_relationship_requests_page.dart';
 import 'friend_requests_view_model.dart';
@@ -39,8 +40,7 @@ class _FriendRequestsPageState extends ConsumerState<FriendRequestsPage> {
 
   Future<void> acceptFriendRequest(FriendRequest request) async {
     final notifier = ref.read(friendRequestsViewModel.notifier);
-    // TODO: use real API
-    await Future<void>.delayed(const Duration(seconds: 3));
+    await userService.acceptFriendRequest(request.id);
     notifier.replace(request, request.copyWith(status: RequestStatus.accepted));
   }
 

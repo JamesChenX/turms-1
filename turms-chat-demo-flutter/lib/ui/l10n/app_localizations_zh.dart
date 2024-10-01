@@ -40,6 +40,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get appearance => '外观';
 
   @override
+  String get audio => '音频';
+
+  @override
   String get autoLogin => '自动登录';
 
   @override
@@ -125,6 +128,9 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get file => '文件';
+
+  @override
   String get fileName => '文件名';
 
   @override
@@ -171,6 +177,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get groups => '群组';
+
+  @override
+  String get image => '图片';
 
   @override
   String get joinGroup => '加入群组';
@@ -342,5 +351,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get version => '版本';
 
   @override
+  String get video => '视频';
+
+  @override
   String get videoNotFound => '视频不存在';
+
+  @override
+  String get yesterday => '昨天';
+
+  @override
+  String get youtube => 'YouTube';
 }

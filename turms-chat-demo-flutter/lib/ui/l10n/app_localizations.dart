@@ -164,6 +164,12 @@ abstract class AppLocalizations {
   /// **'Appearance'**
   String get appearance;
 
+  /// No description provided for @audio.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio'**
+  String get audio;
+
   /// No description provided for @autoLogin.
   ///
   /// In en, this message translates to:
@@ -326,6 +332,12 @@ abstract class AppLocalizations {
   /// **'Failed to update settings: {error}'**
   String failedToUpdateSettings(Object error);
 
+  /// No description provided for @file.
+  ///
+  /// In en, this message translates to:
+  /// **'File'**
+  String get file;
+
   /// No description provided for @fileName.
   ///
   /// In en, this message translates to:
@@ -421,6 +433,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Groups'**
   String get groups;
+
+  /// No description provided for @image.
+  ///
+  /// In en, this message translates to:
+  /// **'Image'**
+  String get image;
 
   /// No description provided for @joinGroup.
   ///
@@ -752,11 +770,29 @@ abstract class AppLocalizations {
   /// **'Version'**
   String get version;
 
+  /// No description provided for @video.
+  ///
+  /// In en, this message translates to:
+  /// **'Video'**
+  String get video;
+
   /// No description provided for @videoNotFound.
   ///
   /// In en, this message translates to:
   /// **'Video not found'**
   String get videoNotFound;
+
+  /// No description provided for @yesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get yesterday;
+
+  /// No description provided for @youtube.
+  ///
+  /// In en, this message translates to:
+  /// **'YouTube'**
+  String get youtube;
 }
 
 class _AppLocalizationsDelegate

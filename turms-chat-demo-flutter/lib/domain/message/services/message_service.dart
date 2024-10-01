@@ -1,24 +1,29 @@
+import 'dart:convert';
+
 import '../models/message_text_info.dart';
 import '../models/message_type.dart';
 
-/// e.g. "![http://example.com/image.png](http://example.com/image.png)"
+/// e.g.:
+/// 1. "![an example|100x100](http://example.com/image.png)"
+/// 2. "![an example|100x100](http://example.com/video.mp4)"
+/// 3. "[![an example|100x100](http://example.com/image.png)](http://example.com/video.mp4)"
 /// The first group is the required original resource HTTP URL.
 /// The second group is the optional thumbnail image HTTP URL.
 final _markdownResourceRegex = RegExp(r'!\[(https?:\/\/\S+?\.\S+?)]\((.*?)\)');
 
 class MessageService {
-  MessageTextInfo parseMessageInfo(String text) {
+  MessageInfo parseMessageInfo(String text) {
     if (!text.startsWith('![')) {
-      return MessageTextInfo.text;
+      return MessageInfo.text;
     }
     final matches = _markdownResourceRegex.allMatches(text);
     final matchCount = matches.length;
     if (matchCount == 0 || matchCount > 1) {
-      return MessageTextInfo.text;
+      return MessageInfo.text;
     }
     final match = matches.first;
     if (match.groupCount != 2) {
-      return MessageTextInfo.text;
+      return MessageInfo.text;
     }
     String? thumbnailUrl = match.group(2)!;
     if (!thumbnailUrl.startsWith('http://') &&
@@ -29,7 +34,7 @@ class MessageService {
     final originalUrl = match.group(1)!;
     if (originalUrl.contains('//www.youtube.com/') ||
         originalUrl.contains('//youtube.com/')) {
-      return MessageTextInfo(
+      return MessageInfo(
         type: MessageType.youtube,
         thumbnailUrl: thumbnailUrl,
         originalUrl: originalUrl,
@@ -37,25 +42,25 @@ class MessageService {
     } else if (originalUrl.endsWith('.mp4') ||
         originalUrl.endsWith('.mov') ||
         originalUrl.endsWith('.avi')) {
-      return MessageTextInfo(
+      return MessageInfo(
         type: MessageType.video,
         thumbnailUrl: thumbnailUrl,
         originalUrl: originalUrl,
       );
     } else if (originalUrl.endsWith('.mp3') || originalUrl.endsWith('.wav')) {
-      return MessageTextInfo(
+      return MessageInfo(
         type: MessageType.audio,
         thumbnailUrl: thumbnailUrl,
         originalUrl: originalUrl,
       );
     } else if (_isSupportedImageType(originalUrl)) {
-      return MessageTextInfo(
+      return MessageInfo(
         type: MessageType.image,
         thumbnailUrl: thumbnailUrl,
         originalUrl: originalUrl,
       );
     } else {
-      return MessageTextInfo(
+      return MessageInfo(
         type: MessageType.file,
         thumbnailUrl: thumbnailUrl,
         originalUrl: originalUrl,

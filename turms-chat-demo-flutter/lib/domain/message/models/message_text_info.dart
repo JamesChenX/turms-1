@@ -1,12 +1,20 @@
 import 'message_type.dart';
 
-class MessageTextInfo {
-  const MessageTextInfo(
-      {required this.type, this.thumbnailUrl, this.originalUrl});
+class MessageInfo {
+  const MessageInfo(
+      {required this.type,
+      this.originalUrl,
+      this.originalWidth,
+      this.originalHeight});
 
   final MessageType type;
-  final String? thumbnailUrl;
-  final String? originalUrl;
 
-  static const MessageTextInfo text = MessageTextInfo(type: MessageType.text);
+  // TODO: no turms server support generate thumbnail yet,
+  // so there is no point to use thumbnailUrl currently.
+  // final String? thumbnailUrl;
+  final String? originalUrl;
+  final int? originalWidth;
+  final int? originalHeight;
+
+  static const MessageInfo text = MessageInfo(type: MessageType.text);
 }

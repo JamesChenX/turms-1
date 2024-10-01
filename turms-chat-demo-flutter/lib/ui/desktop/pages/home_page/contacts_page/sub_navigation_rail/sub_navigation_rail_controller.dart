@@ -6,6 +6,8 @@ import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../../../../domain/user/fixtures/contacts.dart';
 import '../../../../../../domain/user/models/index.dart';
+import '../../../../../../domain/user/services/UserService.dart';
+import '../../../../../../domain/user/view_models/logged_in_user_info_view_model.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../l10n/view_models/app_localizations_view_model.dart';
 import '../view_models/contacts_view_model.dart';
@@ -55,27 +57,22 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
 
   Future<void> loadContacts() async {
     isContactsLoading = true;
+    final contactsController = ref.read(contactsViewModel.notifier);
+    final isContactsInitializedController =
+        ref.read(isContactsInitializedViewModel.notifier);
     setState(() {});
-    // TODO: use real API
-    await Future<void>.delayed(const Duration(seconds: 3));
-    ref.read(contactsViewModel.notifier).state =
-        getSystemContacts() + fixtureContacts;
-    ref.read(isContactsInitializedViewModel.notifier).state = true;
+
+    final contacts = await userService.queryContacts(appLocalizations);
+
+    contactsController.state = contacts;
+    isContactsInitializedController.state = true;
     isContactsInitialized = true;
     isContactsLoading = false;
+    if (!mounted) {
+      return;
+    }
     setState(() {});
   }
-
-  List<Contact> getSystemContacts() => [
-        SystemContact(
-            type: SystemContactType.requestNotification,
-            name: appLocalizations.requestNotification,
-            icon: Symbols.person_add_rounded),
-        SystemContact(
-            type: SystemContactType.fileTransfer,
-            name: appLocalizations.fileTransfer,
-            icon: Symbols.drive_file_move_rounded),
-      ];
 
   void updateSearchText(String value) {
     searchText = value;

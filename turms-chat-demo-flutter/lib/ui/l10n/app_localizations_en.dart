@@ -40,6 +40,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appearance => 'Appearance';
 
   @override
+  String get audio => 'Audio';
+
+  @override
   String get autoLogin => 'Auto Login';
 
   @override
@@ -125,6 +128,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get file => 'File';
+
+  @override
   String get fileName => 'Name';
 
   @override
@@ -171,6 +177,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get groups => 'Groups';
+
+  @override
+  String get image => 'Image';
 
   @override
   String get joinGroup => 'Join Group';
@@ -342,5 +351,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get version => 'Version';
 
   @override
+  String get video => 'Video';
+
+  @override
   String get videoNotFound => 'Video not found';
+
+  @override
+  String get yesterday => 'Yesterday';
+
+  @override
+  String get youtube => 'YouTube';
 }

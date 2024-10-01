@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../../domain/conversation/fixtures/conversations.dart';
 import '../../../../../../domain/conversation/models/conversation.dart';
+import '../../../../../../domain/conversation/services/ConversationService.dart';
 import '../../../../../../domain/message/models/message_delivery_status.dart';
 import '../../../../../../domain/user/view_models/logged_in_user_info_view_model.dart';
 import '../../../../../../domain/user/view_models/user_settings_view_model.dart';
@@ -190,15 +191,21 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
 
   Future<void> loadConversations() async {
     isConversationsLoading = true;
-    setState(() {});
-    // TODO: use real API
-    await Future<void>.delayed(const Duration(seconds: 3));
-    ref.read(conversationsViewModel.notifier).state = fixtureConversations;
-    ref.read(isConversationsInitializedViewModel.notifier).state = true;
-    isConversationsInitialized = true;
-    isConversationsLoading = false;
+    final conversationsController = ref.read(conversationsViewModel.notifier);
+    final isConversationsInitializedController =
+        ref.read(isConversationsInitializedViewModel.notifier);
     setState(() {});
 
+    final conversations = await conversationService.queryConversations();
+
+    conversationsController.state = conversations;
+    isConversationsInitializedController.state = true;
+    isConversationsInitialized = true;
+    isConversationsLoading = false;
+    if (!mounted) {
+      return;
+    }
+    setState(() {});
     final random = Random();
     Timer.periodic(
       const Duration(seconds: 3),
@@ -237,6 +244,8 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
               messageId: RandomUtils.nextUniqueInt64(),
               senderId: contactId,
               sentByMe: false,
+              isFakeMessage: true,
+              isGroupMessage: false,
               text: message,
               timestamp: now,
               status: MessageDeliveryStatus.delivered));
@@ -253,6 +262,8 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
             messageId: RandomUtils.nextUniqueInt64(),
             senderId: senderId,
             sentByMe: false,
+            isFakeMessage: true,
+            isGroupMessage: true,
             text: message,
             timestamp: now,
             status: MessageDeliveryStatus.delivered));

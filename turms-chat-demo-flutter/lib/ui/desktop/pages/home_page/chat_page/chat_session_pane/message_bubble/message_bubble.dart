@@ -17,7 +17,7 @@ class MessageBubble extends StatefulWidget {
     Key? key,
     required this.currentUser,
     required this.sender,
-    required this.message,
+    required this.messages,
     this.onLongPress,
     required this.type,
     this.originalUrl,
@@ -26,7 +26,7 @@ class MessageBubble extends StatefulWidget {
 
   final User currentUser;
   final User sender;
-  final ChatMessage message;
+  final List<ChatMessage> messages;
   final MessageType type;
   final String? originalUrl;
   final String? thumbnailUrl;
@@ -39,18 +39,14 @@ class MessageBubble extends StatefulWidget {
 class _MessageBubbleState extends State<MessageBubble> {
   @override
   Widget build(BuildContext context) {
-    final sender = widget.sender;
-    final message = widget.message;
     return Padding(
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-        child: message.sentByMe
-            ? _buildSentMessageBubble(sender, message, context)
-            : _buildReceivedMessageBubble(sender, context));
+        child: widget.messages.first.sentByMe
+            ? _buildSentMessageBubble(context)
+            : _buildReceivedMessageBubble(context));
   }
 
-  Row _buildSentMessageBubble(
-          User sender, ChatMessage message, BuildContext context) =>
-      Row(
+  Row _buildSentMessageBubble(BuildContext context) => Row(
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -90,7 +86,9 @@ class _MessageBubbleState extends State<MessageBubble> {
         ],
       );
 
-  Row _buildReceivedMessageBubble(User user, BuildContext context) => Row(
+  Row _buildReceivedMessageBubble(
+          User user, List<ChatMessage> messages, BuildContext context) =>
+      Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // TAvatar(name: user.name, image: user.image),
@@ -111,7 +109,7 @@ class _MessageBubbleState extends State<MessageBubble> {
         child: switch (widget.type) {
           MessageType.text => MessageBubbleText(
               currentUser: widget.currentUser,
-              message: widget.message,
+              messages: widget.messages,
             ),
           MessageType.video => MessageBubbleVideo(
               url: Uri.parse(widget.originalUrl!),

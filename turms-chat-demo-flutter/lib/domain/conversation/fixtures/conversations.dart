@@ -33,12 +33,10 @@ final fixtureConversations = fixtureContacts.map((contact) {
           final sentByMe = random.nextBool();
           return ChatMessage(
               messageId: RandomUtils.nextUniqueInt64(),
-              senderId: sentByMe
-                  ?
-                  // TODO: We should use the logged in user ID
-                  Int64(-1)
-                  : contact.userId,
+              senderId: sentByMe ? Int64.MIN_VALUE : contact.userId,
               sentByMe: sentByMe,
+              isFakeMessage: true,
+              isGroupMessage: false,
               text: message,
               timestamp: timestamps[count - messageIndex - 1],
               status: sentByMe
@@ -65,6 +63,8 @@ final fixtureConversations = fixtureContacts.map((contact) {
           senderId: memberId,
           // TODO
           sentByMe: false,
+          isFakeMessage: true,
+          isGroupMessage: true,
           text: message,
           timestamp: date,
           status: MessageDeliveryStatus.delivered);

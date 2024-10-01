@@ -10,6 +10,7 @@
   "alwaysOnTopDisable": "取消置顶",
   "alwaysOnTopEnable": "置顶",
   "appearance": "外观",
+  "audio": "音频",
   "autoLogin": "自动登录",
   "brightness": "亮度",
   "cancel": "取消",
@@ -37,6 +38,7 @@
   "failedToDownloadFileTooLarge": "文件大于{size}MB，无法下载",
   "failedToSendImageInvalidUrl": "发送图片失败: 无效图片URL",
   "failedToUpdateSettings": "设置更新失败: {error}",
+  "file": "文件",
   "fileName": "文件名",
   "fileSize": "大小",
   "fileTransfer": "文件传输助手",
@@ -53,6 +55,7 @@
   "groupId": "群组ID",
   "groupMembershipRequests": "入群请求",
   "groups": "群组",
+  "image": "图片",
   "joinGroup": "加入群组",
   "language": "语言",
   "launchAndExit": "启动与退出",
@@ -108,5 +111,8 @@
   "userId": "用户ID",
   "userPassword": "密码",
   "version": "版本",
-  "videoNotFound": "视频不存在"
+  "video": "视频",
+  "videoNotFound": "视频不存在",
+  "yesterday": "昨天",
+  "youtube": "YouTube"
 }

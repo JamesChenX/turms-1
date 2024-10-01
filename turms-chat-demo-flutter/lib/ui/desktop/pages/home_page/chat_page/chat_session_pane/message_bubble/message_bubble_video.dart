@@ -68,15 +68,15 @@ class _MessageBubbleVideoState extends ConsumerState<MessageBubbleVideo> {
           throw UserVisibleException(
               e,
               (cause) => ref
-                  .watch(appLocalizationsViewModel)
+                  .read(appLocalizationsViewModel)
                   .failedToDownloadFileTooLarge(_maxAllowedMb));
         } catch (e) {
           throw UserVisibleException(
-              e, (_) => ref.watch(appLocalizationsViewModel).failedToDownload);
+              e, (_) => ref.read(appLocalizationsViewModel).failedToDownload);
         }
         if (downloadedFile == null) {
           throw UserVisibleException(
-              null, (_) => ref.watch(appLocalizationsViewModel).videoNotFound);
+              null, (_) => ref.read(appLocalizationsViewModel).videoNotFound);
         }
         controller = VideoPlayerController.file(downloadedFile.file);
       }
@@ -121,10 +121,20 @@ class _MessageBubbleVideoState extends ConsumerState<MessageBubbleVideo> {
                       color: ThemeConfig.maskColor,
                     ),
                     child: Center(
-                      child: Text(
-                        message,
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 16),
+                      child: Row(
+                        spacing: 16,
+                        children: [
+                          const Icon(
+                            Symbols.info_i_rounded,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                          Text(
+                            message,
+                            style: const TextStyle(
+                                color: Colors.white, fontSize: 16),
+                          ),
+                        ],
                       ),
                     ),
                   );

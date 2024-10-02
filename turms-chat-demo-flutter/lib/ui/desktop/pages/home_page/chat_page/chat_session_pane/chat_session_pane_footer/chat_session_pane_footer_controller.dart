@@ -215,11 +215,11 @@ class ChatSessionPaneFooterController
     selectedConversationController.replaceMessage(
         fakeMessageId,
         message.copyWith(
-          messageId: sentMessage.messageId,
-          status: sentMessage.status,
-          // We don't replace the timestamp on purpose.
-          // timestamp: sentMessage.timestamp
-        ));
+            messageId: sentMessage.messageId,
+            status: sentMessage.status,
+            // Note that this may cause the timestamp UI of the message updated,
+            // which is expected to ensure the timestamp is consistent with the server and recipients.
+            timestamp: sentMessage.timestamp));
   }
 
   void removeFiles(DataReaderFile file) {

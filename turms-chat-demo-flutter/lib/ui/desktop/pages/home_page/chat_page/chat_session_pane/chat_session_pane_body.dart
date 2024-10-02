@@ -79,7 +79,14 @@ class _ChatSessionPaneBodyState extends ConsumerState<ChatSessionPaneBody> {
     assert(() {
       final sortedMessages = List<ChatMessage>.from(messages)
         ..sort(
-          (a, b) => a.timestamp.compareTo(b.timestamp),
+          (a, b) {
+            final result = a.timestamp.compareTo(b.timestamp);
+            if (result == 0) {
+              // Used to ensure a stable sort.
+              return a.messageId.compareTo(b.messageId);
+            }
+            return result;
+          },
         );
       return const ListEquality<ChatMessage>().equals(sortedMessages, messages);
     }(),
@@ -112,18 +119,30 @@ class _ChatSessionPaneBodyState extends ConsumerState<ChatSessionPaneBody> {
               return items;
             }
           } else {
-            items.add(_ChatSessionItemMessage(lastMessage));
+            if (lastMessageGroup == null ||
+                lastMessage.messageId !=
+                    lastMessageGroup.messages.last.messageId) {
+              items.add(_ChatSessionItemMessage(lastMessage));
+            }
             lastMessageGroup = null;
           }
         } else {
           lastMessageGroup = null;
-          items
-            ..add(_ChatSessionItemMessage(lastMessage))
-            ..add(_ChatSessionItemDaySeparator(timestamp));
+          if (lastMessageGroup != null &&
+              lastMessage.messageId ==
+                  lastMessageGroup.messages.last.messageId) {
+            items.add(_ChatSessionItemMessage(lastMessage));
+          }
+          items.add(_ChatSessionItemDaySeparator(timestamp));
         }
       }
       if (i == lastMessageIndex) {
-        return items..add(_ChatSessionItemMessage(message));
+        if (lastMessageGroup == null ||
+            lastMessage == null ||
+            lastMessage.messageId != lastMessageGroup.messages.last.messageId) {
+          items.add(_ChatSessionItemMessage(message));
+        }
+        return items;
       } else {
         lastMessage = message;
       }

@@ -32,8 +32,8 @@ class MessageService {
     if (nodeCount == 1) {
       final firstNode = nodes.first;
       if (firstNode case final Element element) {
-        if (element.tag == 'img') {
-          return _parseImageOrTextMessage(nodes, element);
+        if (element.tag == ResourceSyntax.tag) {
+          return _parseResourceOrTextMessage(nodes, element);
         }
       }
       return _parseTextMessageFromNode(nodes, firstNode);
@@ -41,7 +41,7 @@ class MessageService {
     return _parseTextMessageFromNodes(nodes);
   }
 
-  MessageInfo _parseImageOrTextMessage(List<Node> nodes, Element element) {
+  MessageInfo _parseResourceOrTextMessage(List<Node> nodes, Element element) {
     final src = element.attributes[ResourceSyntax.attributeSrc];
     if (src == null) {
       return _parseTextMessageFromNode(nodes, element);
@@ -94,7 +94,7 @@ class MessageService {
       if (sizeDividerIndex < 0) {
         return _parseTextMessageFromNode(nodes, element);
       }
-      final xIndex = alt.lastIndexOf('x', sizeDividerIndex + 1);
+      final xIndex = alt.indexOf('x', sizeDividerIndex + 1);
       if (xIndex < 0) {
         return _parseTextMessageFromNode(nodes, element);
       }
@@ -182,7 +182,7 @@ class MessageService {
       '![$thumbnailUrl|${width}x$height]($originalUrl)';
 
   Future<ChatMessage> sendMessage(String text, ChatMessage message) async {
-    await Future<ChatMessage>.delayed(const Duration(seconds: 1));
+    await Future<void>.delayed(const Duration(seconds: 1));
     return message;
   }
 }

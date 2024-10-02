@@ -8,16 +8,16 @@ import '../message.dart';
 import 'message_text_editing_controller.dart';
 
 class MessageBubbleText extends StatefulWidget {
-  const MessageBubbleText(
-      {Key? key,
-      required this.currentUser,
-      required this.message,
-      required this.position})
-      : super(key: key);
+  const MessageBubbleText({
+    Key? key,
+    required this.currentUser,
+    required this.message,
+    required this.borderRadius,
+  }) : super(key: key);
 
   final User currentUser;
   final ChatMessage message;
-  final MessageBubbleTextPosition position;
+  final BorderRadius borderRadius;
 
   @override
   State<MessageBubbleText> createState() => _MessageBubbleTextState();
@@ -52,14 +52,7 @@ class _MessageBubbleTextState extends State<MessageBubbleText> {
           color: widget.message.sentByMe
               ? const Color.fromARGB(255, 149, 216, 248)
               : Colors.white,
-          borderRadius: switch (widget.position) {
-            MessageBubbleTextPosition.single => ThemeConfig.borderRadius4,
-            MessageBubbleTextPosition.first =>
-              const BorderRadius.vertical(top: Radius.circular(4)),
-            MessageBubbleTextPosition.middle => null,
-            MessageBubbleTextPosition.last =>
-              const BorderRadius.vertical(bottom: Radius.circular(4))
-          },
+          borderRadius: widget.borderRadius,
           border: _isMentioned
               ? const Border(
                   left: BorderSide(
@@ -108,5 +101,3 @@ class _MessageBubbleTextState extends State<MessageBubbleText> {
     return content;
   }
 }
-
-enum MessageBubbleTextPosition { single, first, middle, last }

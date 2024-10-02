@@ -100,8 +100,8 @@ class _ChatSessionPaneBodyState extends ConsumerState<ChatSessionPaneBody> {
           if (lastMessage.type == MessageType.text &&
               message.type == MessageType.text &&
               lastMessage.senderId == message.senderId &&
-              lastMessageTimestamp.hour == lastMessageTimestamp.hour &&
-              lastMessageTimestamp.minute == lastMessageTimestamp.minute) {
+              lastMessageTimestamp.hour == timestamp.hour &&
+              lastMessageTimestamp.minute == timestamp.minute) {
             if (lastMessageGroup == null) {
               lastMessageGroup = MessageGroup([lastMessage, message]);
               items.add(_ChatSessionItemMessageGroup(lastMessageGroup));

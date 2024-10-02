@@ -7,7 +7,6 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../../../domain/conversation/fixtures/conversations.dart';
 import '../../../../../../domain/conversation/models/conversation.dart';
 import '../../../../../../domain/conversation/services/ConversationService.dart';
 import '../../../../../../domain/message/models/message_delivery_status.dart';
@@ -240,13 +239,12 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
       if (conversation is PrivateConversation) {
         final contactId = conversation.contact.userId;
         if (contactId != loggedInUser.userId) {
-          conversation.messages.add(ChatMessage(
-              messageId: RandomUtils.nextUniqueInt64(),
+          conversation.messages.add(ChatMessage.parse(message,
+              messageId: -RandomUtils.nextUniqueInt64(),
               senderId: contactId,
               sentByMe: false,
               isFakeMessage: true,
               isGroupMessage: false,
-              text: message,
               timestamp: now,
               status: MessageDeliveryStatus.delivered));
           onMessageReceived(message, conversation, conversations,
@@ -258,13 +256,12 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
         final senderId = conversation.contact.members
             .firstWhere((member) => member.userId != loggedInUser.userId)
             .userId;
-        conversation.messages.add(ChatMessage(
-            messageId: RandomUtils.nextUniqueInt64(),
+        conversation.messages.add(ChatMessage.parse(message,
+            messageId: -RandomUtils.nextUniqueInt64(),
             senderId: senderId,
             sentByMe: false,
             isFakeMessage: true,
             isGroupMessage: true,
-            text: message,
             timestamp: now,
             status: MessageDeliveryStatus.delivered));
         onMessageReceived(

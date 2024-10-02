@@ -2,8 +2,37 @@ import 'package:fixnum/fixnum.dart';
 
 import '../../../../../../domain/message/models/message_delivery_status.dart';
 import '../../../../../../domain/message/models/message_type.dart';
+import '../../../../../../domain/message/services/message_service.dart';
 
 class ChatMessage {
+  factory ChatMessage.parse(
+    String text, {
+    required Int64 messageId,
+    required Int64 senderId,
+    required bool sentByMe,
+    required bool isFakeMessage,
+    required bool isGroupMessage,
+    required DateTime timestamp,
+    required MessageDeliveryStatus status,
+  }) {
+    final info = messageService.parseMessageInfo(text);
+    return ChatMessage(
+      type: info.type,
+      messageId: messageId,
+      text: text,
+      senderId: senderId,
+      sentByMe: sentByMe,
+      isFakeMessage: isFakeMessage,
+      isGroupMessage: isGroupMessage,
+      timestamp: timestamp,
+      status: status,
+      originalUrl: info.originalUrl,
+      originalWidth: info.originalWidth,
+      originalHeight: info.originalHeight,
+      mentionAll: info.mentionAll ?? false,
+      mentionedUserIds: info.mentionedUserIds ?? const {},
+    );
+  }
 
   const ChatMessage(
       {required this.type,
@@ -28,6 +57,7 @@ class ChatMessage {
   final bool isFakeMessage;
   final bool isGroupMessage;
   final String text;
+
   // final List<ChatMessageSpan> spans;
   final DateTime timestamp;
   final MessageDeliveryStatus status;
@@ -36,8 +66,41 @@ class ChatMessage {
   final Set<Int64> mentionedUserIds;
 
   final String? originalUrl;
-  final int? originalWidth;
-  final int? originalHeight;
+  final double? originalWidth;
+  final double? originalHeight;
+
+  ChatMessage copyWith({
+    MessageType? type,
+    Int64? messageId,
+    Int64? senderId,
+    bool? sentByMe,
+    bool? isFakeMessage,
+    bool? isGroupMessage,
+    String? text,
+    DateTime? timestamp,
+    MessageDeliveryStatus? status,
+    bool? mentionAll,
+    Set<Int64>? mentionedUserIds,
+    String? originalUrl,
+    double? originalWidth,
+    double? originalHeight,
+  }) =>
+      ChatMessage(
+        type: type ?? this.type,
+        messageId: messageId ?? this.messageId,
+        senderId: senderId ?? this.senderId,
+        sentByMe: sentByMe ?? this.sentByMe,
+        isFakeMessage: isFakeMessage ?? this.isFakeMessage,
+        isGroupMessage: isGroupMessage ?? this.isGroupMessage,
+        text: text ?? this.text,
+        timestamp: timestamp ?? this.timestamp,
+        status: status ?? this.status,
+        mentionAll: mentionAll ?? this.mentionAll,
+        mentionedUserIds: mentionedUserIds ?? this.mentionedUserIds,
+        originalUrl: originalUrl ?? this.originalUrl,
+        originalWidth: originalWidth ?? this.originalWidth,
+        originalHeight: originalHeight ?? this.originalHeight,
+      );
 }
 
 enum ChatMessageSpanType { plain, emoji }

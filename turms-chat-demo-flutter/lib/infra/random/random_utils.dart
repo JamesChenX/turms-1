@@ -12,6 +12,9 @@ var _counter = 0;
 const _timestampMask = (1 << 47) - 1;
 const _counterMask = (1 << 16) - 1;
 
+final _startTime = DateTime.now().millisecondsSinceEpoch;
+final _stopwatch = Stopwatch()..start();
+
 class RandomUtils {
   RandomUtils._();
 
@@ -39,8 +42,8 @@ class RandomUtils {
   }
 
   static Int64 nextUniqueInt64() {
-    final now = DateTime.now();
-    final timestamp = now.millisecondsSinceEpoch & _timestampMask;
+    final timestamp =
+        (_startTime + _stopwatch.elapsedMilliseconds) & _timestampMask;
     final counter = _counter++;
     return Int64((timestamp << 16) | (counter & _counterMask));
   }

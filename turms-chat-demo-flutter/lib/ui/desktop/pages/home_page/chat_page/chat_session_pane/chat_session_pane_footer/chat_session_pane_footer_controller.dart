@@ -157,15 +157,16 @@ class ChatSessionPaneFooterController
     setState(() {});
   }
 
-  void sendInputMessage() {
+  Future<void> sendInputMessage() async {
     final document = getEditorDocument();
     if (document.isBlank) {
       return;
     }
-    sendMessage(document);
+    await sendMessage(document);
   }
 
-  void sendImage(String originalUrl, String thumbnailUrl) {
+  void sendImage(
+      String originalUrl, String thumbnailUrl, int width, int height) {
     try {
       final originalUri = Uri.parse(originalUrl);
       originalUrl = originalUri.origin + originalUri.path;
@@ -185,25 +186,40 @@ class ChatSessionPaneFooterController
           e);
       return;
     }
-    final text = messageService.encodeImageMessage(originalUrl, thumbnailUrl);
+    final text = messageService.encodeImageMessage(
+        originalUrl: originalUrl,
+        thumbnailUrl: thumbnailUrl,
+        width: width,
+        height: height);
     sendMessage(text);
   }
 
-  void sendMessage(String text) {
-    ref.read(selectedConversationViewModel.notifier).addMessage(ChatMessage(
-        // TODO: use real ID
-        messageId: RandomUtils.nextUniqueInt64(),
+  Future<void> sendMessage(String text) async {
+    final fakeMessageId = -RandomUtils.nextUniqueInt64();
+    final message = ChatMessage.parse(text,
+        messageId: fakeMessageId,
         senderId: ref.read(loggedInUserViewModel)!.userId,
         sentByMe: true,
         isFakeMessage: false,
         isGroupMessage: conversation is GroupConversation,
-        text: text,
+        // Note that: the timestamp may be different from the one the recipients received.
         timestamp: DateTime.now(),
-        status: MessageDeliveryStatus.delivering));
-
+        status: MessageDeliveryStatus.delivering);
+    final selectedConversationController =
+        ref.read(selectedConversationViewModel.notifier)..addMessage(message);
     editorController.text = '';
     setState(() {});
-    // TODO: send
+
+    final sentMessage = await messageService.sendMessage(text, message);
+
+    selectedConversationController.replaceMessage(
+        fakeMessageId,
+        message.copyWith(
+          messageId: sentMessage.messageId,
+          status: sentMessage.status,
+          // We don't replace the timestamp on purpose.
+          // timestamp: sentMessage.timestamp
+        ));
   }
 
   void removeFiles(DataReaderFile file) {

@@ -32,6 +32,8 @@ sealed class Conversation {
 
   final String id;
   final String name;
+
+  /// Note that the messages should be sorted by timestamp in ascending order.
   final List<ChatMessage> messages;
   int unreadMessageCount;
   String? draft;

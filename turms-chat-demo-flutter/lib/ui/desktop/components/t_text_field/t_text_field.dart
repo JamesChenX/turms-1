@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -6,6 +7,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../../../infra/task/debouncer.dart';
 import '../../../l10n/view_models/app_localizations_view_model.dart';
 import '../t_button/t_icon_button.dart';
+import '../t_dropdown_menu/t_dropdown_menu.dart';
 
 class TTextField extends ConsumerStatefulWidget {
   const TTextField(
@@ -29,6 +31,7 @@ class TTextField extends ConsumerStatefulWidget {
       this.transformValue,
       this.onChanged,
       this.onSubmitted,
+      this.onCaretMoved,
       this.onTapOutside})
       : assert(!showDeleteButtonIfHasText || suffixIcon == null),
         textAlignVertical = textAlignVertical ??
@@ -53,6 +56,7 @@ class TTextField extends ConsumerStatefulWidget {
   final String Function(String value)? transformValue;
   final ValueChanged<String>? onChanged;
   final ValueChanged<String>? onSubmitted;
+  final ValueChanged<Offset>? onCaretMoved;
   final ValueChanged<PointerDownEvent>? onTapOutside;
 
   @override
@@ -60,6 +64,7 @@ class TTextField extends ConsumerStatefulWidget {
 }
 
 class _TTextFieldState extends ConsumerState<TTextField> {
+  late GlobalKey _fieldKey;
   TextEditingController? textEditingController;
   Debouncer? debouncer;
 
@@ -72,6 +77,9 @@ class _TTextFieldState extends ConsumerState<TTextField> {
     final debounceTimeout = widget.debounceTimeout;
     if (debounceTimeout != null) {
       debouncer = Debouncer(timeout: debounceTimeout);
+    }
+    if (widget.onCaretMoved != null) {
+      _fieldKey = GlobalKey();
     }
   }
 
@@ -124,9 +132,11 @@ class _TTextFieldState extends ConsumerState<TTextField> {
           if (localDebouncer != null) {
             localDebouncer.run(() {
               widget.onChanged?.call(value);
+              _tryNotifyCaretPositionChanged();
             });
           } else {
             widget.onChanged?.call(value);
+            _tryNotifyCaretPositionChanged();
           }
           setState(() {});
         });
@@ -162,6 +172,7 @@ class _TTextFieldState extends ConsumerState<TTextField> {
                     onTap: () {
                       controller.clear();
                       widget.onChanged?.call('');
+                      _tryNotifyCaretPositionChanged();
                       setState(() {});
                     },
                   )
@@ -177,5 +188,67 @@ class _TTextFieldState extends ConsumerState<TTextField> {
         ),
       ),
     );
+  }
+
+  void _tryNotifyCaretPositionChanged() {
+    final onCaretMoved = widget.onCaretMoved;
+    if (onCaretMoved == null) {
+      return;
+    }
+    final currentContext = _fieldKey.currentContext;
+    if (currentContext == null) {
+      return;
+    }
+    final fieldBox = currentContext.findRenderObject();
+    final caretPosition =
+        fieldBox is RenderBox ? _getCaretPosition(fieldBox) : null;
+    if (caretPosition == null) {
+      return;
+    }
+    onCaretMoved.call(caretPosition);
+  }
+
+  RenderEditable? _findRenderEditable(RenderObject root) {
+    RenderEditable? renderEditable;
+    void recursiveFinder(RenderObject child) {
+      if (child is RenderEditable) {
+        renderEditable = child;
+        return;
+      }
+      child.visitChildren(recursiveFinder);
+    }
+
+    root.visitChildren(recursiveFinder);
+    return renderEditable;
+  }
+
+  TextSelectionPoint _globalize(TextSelectionPoint point, RenderBox box) =>
+      TextSelectionPoint(
+        box.localToGlobal(point.point),
+        point.direction,
+      );
+
+  Offset? _getCaretPosition(RenderBox box) {
+    final renderEditable = _findRenderEditable(box);
+    if (renderEditable == null || !renderEditable.hasFocus) {
+      return null;
+    }
+    final selection = renderEditable.selection;
+    if (selection == null) {
+      return null;
+    }
+    final firstEndpoint =
+        renderEditable.getEndpointsForSelection(selection).firstOrNull;
+    if (firstEndpoint == null) {
+      return null;
+    }
+    final point = _globalize(
+      firstEndpoint,
+      renderEditable,
+    );
+
+    final cursorOffset = renderEditable.cursorOffset;
+
+    return point.point;
   }
 }

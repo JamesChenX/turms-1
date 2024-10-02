@@ -7,7 +7,6 @@ import '../../../../../../domain/user/models/index.dart';
 import '../../../../../../infra/ui/text_utils.dart';
 import '../../../../../l10n/view_models/app_localizations_view_model.dart';
 import '../../../../../themes/theme_config.dart';
-import '../chat_session_pane/message.dart';
 import 'conversation_tile.dart';
 import 'sub_navigation_rail_controller.dart';
 

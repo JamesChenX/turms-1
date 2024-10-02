@@ -128,7 +128,10 @@ class ChatSessionPaneFooterView extends StatelessWidget {
                               return;
                             }
                             chatPageFooterController.sendImage(
-                                original.webp ?? original.url, previewWebp.url);
+                                original.webp ?? original.url,
+                                previewWebp.url,
+                                int.parse(original.width),
+                                int.parse(original.height));
                           },
                           onEmojiSelected: chatPageFooterController.insertEmoji,
                         )),

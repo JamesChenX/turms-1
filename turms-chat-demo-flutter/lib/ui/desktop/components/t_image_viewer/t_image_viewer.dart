@@ -60,8 +60,8 @@ class _TImageViewerState extends State<TImageViewer> {
                   image: ResizeImage(widget.image,
                       // We should NOT use the size of the view
                       // because we support zooming in the image viewer.
-                      width: EnvVars.messageImageMaxCachedSizeWidth,
-                      height: EnvVars.messageImageMaxCachedSizeHeight,
+                      width: EnvVars.messageImageMaxCachedSizeWidth.toInt(),
+                      height: EnvVars.messageImageMaxCachedSizeHeight.toInt(),
                       policy: ResizeImagePolicy.fit),
                   gaplessPlayback: true,
                   fit: BoxFit.contain,

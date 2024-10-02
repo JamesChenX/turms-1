@@ -52,6 +52,9 @@ Future<void> generateEnvFile() async {
     final name = key.constCaseToCamelCase();
     if (value == 'true' || value == 'false') {
       code.write("  static const bool $name = bool.fromEnvironment('$key');\n");
+    } else if (value.contains('.') && double.tryParse(value) != null) {
+      code.write(
+          "  static final double $name = double.parse(const String.fromEnvironment('$key'));\n");
     } else if (int.tryParse(value) != null) {
       code.write("  static const int $name = int.fromEnvironment('$key');\n");
     } else {

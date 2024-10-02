@@ -1,71 +1,170 @@
-import 'dart:convert';
+import 'package:fixnum/fixnum.dart';
+import 'package:markdown/markdown.dart';
 
-import '../models/message_text_info.dart';
+import '../../../infra/markdown/mention_syntax.dart';
+import '../../../infra/markdown/resource_syntax.dart';
+import '../../../ui/desktop/pages/home_page/chat_page/chat_session_pane/message.dart';
+import '../models/message_info.dart';
 import '../models/message_type.dart';
 
-/// e.g.:
-/// 1. "![an example|100x100](http://example.com/image.png)"
-/// 2. "![an example|100x100](http://example.com/video.mp4)"
-/// 3. "[![an example|100x100](http://example.com/image.png)](http://example.com/video.mp4)"
-/// The first group is the required original resource HTTP URL.
-/// The second group is the optional thumbnail image HTTP URL.
-final _markdownResourceRegex = RegExp(r'!\[(https?:\/\/\S+?\.\S+?)]\((.*?)\)');
+final _document = Document(
+    withDefaultBlockSyntaxes: false,
+    withDefaultInlineSyntaxes: false,
+    encodeHtml: false,
+    inlineSyntaxes: [ResourceSyntax(), MentionSyntax()]);
 
 class MessageService {
+  /// Note that we reference Markdown's syntax, but we don't follow it exactly. e.g.:
+  /// we use "![http://example.com/thumbnail.png|100x100](http://example.com/video.mp4)" instead of
+  /// "[![|100x100](http://example.com/thumbnail.png)](http://example.com/video.mp4)" to represent video
+  /// as the previous one is concise and consistent with our use cases.
+  ///
+  /// Image: "![http://example.com/thumbnail.png|100x100](http://example.com/original_image.png)"
+  /// Audio: "![http://example.com/thumbnail.png|100x100](http://example.com/video.mp3)"
+  /// Video: "![http://example.com/thumbnail.png|100x100](http://example.com/video.mp4)"
   MessageInfo parseMessageInfo(String text) {
-    if (!text.startsWith('![')) {
-      return MessageInfo.text;
+    if (text.isEmpty) {
+      return const MessageInfo(type: MessageType.text, nodes: []);
     }
-    final matches = _markdownResourceRegex.allMatches(text);
-    final matchCount = matches.length;
-    if (matchCount == 0 || matchCount > 1) {
-      return MessageInfo.text;
+    final nodes = _document.parseInline(text);
+    final nodeCount = nodes.length;
+    assert(nodeCount > 0, 'Invalid message text');
+    if (nodeCount == 1) {
+      final firstNode = nodes.first;
+      if (firstNode case final Element element) {
+        if (element.tag == 'img') {
+          return _parseImageOrTextMessage(nodes, element);
+        }
+      }
+      return _parseTextMessageFromNode(nodes, firstNode);
     }
-    final match = matches.first;
-    if (match.groupCount != 2) {
-      return MessageInfo.text;
+    return _parseTextMessageFromNodes(nodes);
+  }
+
+  MessageInfo _parseImageOrTextMessage(List<Node> nodes, Element element) {
+    final src = element.attributes[ResourceSyntax.attributeSrc];
+    if (src == null) {
+      return _parseTextMessageFromNode(nodes, element);
     }
-    String? thumbnailUrl = match.group(2)!;
-    if (!thumbnailUrl.startsWith('http://') &&
-        !thumbnailUrl.startsWith('https://') &&
-        !_isSupportedImageType(thumbnailUrl)) {
-      thumbnailUrl = null;
+    final alt = element.attributes[ResourceSyntax.attributeAlt];
+    if (alt == null) {
+      return _parseTextMessageFromNode(nodes, element);
     }
-    final originalUrl = match.group(1)!;
-    if (originalUrl.contains('//www.youtube.com/') ||
-        originalUrl.contains('//youtube.com/')) {
+    if (src.contains('//www.youtube.com/') || src.contains('//youtube.com/')) {
       return MessageInfo(
         type: MessageType.youtube,
-        thumbnailUrl: thumbnailUrl,
-        originalUrl: originalUrl,
+        originalUrl: src,
+        nodes: nodes,
       );
-    } else if (originalUrl.endsWith('.mp4') ||
-        originalUrl.endsWith('.mov') ||
-        originalUrl.endsWith('.avi')) {
+    } else if (src.endsWith('.mp4') ||
+        src.endsWith('.mov') ||
+        src.endsWith('.avi')) {
+      final sizeDividerIndex = alt.lastIndexOf('|');
+      if (sizeDividerIndex < 0) {
+        return _parseTextMessageFromNode(nodes, element);
+      }
+      final xIndex = alt.lastIndexOf('x', sizeDividerIndex + 1);
+      if (xIndex < 0) {
+        return _parseTextMessageFromNode(nodes, element);
+      }
+      final width =
+          double.tryParse(alt.substring(sizeDividerIndex + 1, xIndex));
+      if (width == null) {
+        return _parseTextMessageFromNode(nodes, element);
+      }
+      final height = double.tryParse(alt.substring(xIndex + 1));
+      if (height == null) {
+        return _parseTextMessageFromNode(nodes, element);
+      }
       return MessageInfo(
         type: MessageType.video,
-        thumbnailUrl: thumbnailUrl,
-        originalUrl: originalUrl,
+        originalUrl: src,
+        originalHeight: height,
+        originalWidth: width,
+        nodes: nodes,
       );
-    } else if (originalUrl.endsWith('.mp3') || originalUrl.endsWith('.wav')) {
+    } else if (src.endsWith('.mp3') || src.endsWith('.wav')) {
       return MessageInfo(
         type: MessageType.audio,
-        thumbnailUrl: thumbnailUrl,
-        originalUrl: originalUrl,
+        originalUrl: src,
+        nodes: nodes,
       );
-    } else if (_isSupportedImageType(originalUrl)) {
+    } else if (_isSupportedImageType(src)) {
+      final sizeDividerIndex = alt.lastIndexOf('|');
+      if (sizeDividerIndex < 0) {
+        return _parseTextMessageFromNode(nodes, element);
+      }
+      final xIndex = alt.lastIndexOf('x', sizeDividerIndex + 1);
+      if (xIndex < 0) {
+        return _parseTextMessageFromNode(nodes, element);
+      }
+      final width =
+          double.tryParse(alt.substring(sizeDividerIndex + 1, xIndex));
+      if (width == null) {
+        return _parseTextMessageFromNode(nodes, element);
+      }
+      final height = double.tryParse(alt.substring(xIndex + 1));
+      if (height == null) {
+        return _parseTextMessageFromNode(nodes, element);
+      }
       return MessageInfo(
         type: MessageType.image,
-        thumbnailUrl: thumbnailUrl,
-        originalUrl: originalUrl,
+        originalUrl: src,
+        originalHeight: height,
+        originalWidth: width,
+        nodes: nodes,
       );
     } else {
       return MessageInfo(
         type: MessageType.file,
-        thumbnailUrl: thumbnailUrl,
-        originalUrl: originalUrl,
+        originalUrl: src,
+        nodes: nodes,
       );
     }
+  }
+
+  MessageInfo _parseTextMessageFromNodes(List<Node> nodes) {
+    var mentionAll = false;
+    final mentionedUserIds = <Int64>{};
+    for (final node in nodes) {
+      if (node is Element && node.tag == MentionSyntax.tag) {
+        final value = node.attributes.values.first;
+        if (value == MentionSyntax.mentionAllValue) {
+          mentionAll = true;
+        } else {
+          final userId = Int64.tryParseInt(value);
+          if (userId != null) {
+            mentionedUserIds.add(userId);
+          }
+        }
+      }
+    }
+    return MessageInfo(
+        type: MessageType.text,
+        nodes: nodes,
+        mentionAll: mentionAll,
+        mentionedUserIds: mentionedUserIds);
+  }
+
+  MessageInfo _parseTextMessageFromNode(List<Node> nodes, Node node) {
+    var mentionAll = false;
+    final mentionedUserIds = <Int64>{};
+    if (node is Element && node.tag == MentionSyntax.tag) {
+      final value = node.attributes.values.first;
+      if (value == MentionSyntax.mentionAllValue) {
+        mentionAll = true;
+      } else {
+        final userId = Int64.tryParseInt(value);
+        if (userId != null) {
+          mentionedUserIds.add(userId);
+        }
+      }
+    }
+    return MessageInfo(
+        type: MessageType.text,
+        nodes: nodes,
+        mentionAll: mentionAll,
+        mentionedUserIds: mentionedUserIds);
   }
 
   bool _isSupportedImageType(String originalUrl) =>
@@ -75,8 +174,17 @@ class MessageService {
       originalUrl.endsWith('.gif') ||
       originalUrl.endsWith('.webp');
 
-  String encodeImageMessage(String originalUrl, String thumbnailUrl) =>
-      '![$originalUrl]($thumbnailUrl)';
+  String encodeImageMessage(
+          {required String originalUrl,
+          required String thumbnailUrl,
+          required int width,
+          required int height}) =>
+      '![$thumbnailUrl|${width}x$height]($originalUrl)';
+
+  Future<ChatMessage> sendMessage(String text, ChatMessage message) async {
+    await Future<ChatMessage>.delayed(const Duration(seconds: 1));
+    return message;
+  }
 }
 
 MessageService messageService = MessageService();

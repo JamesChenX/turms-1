@@ -9,7 +9,6 @@ import '../../../../../domain/app/models/app_settings.dart';
 import '../../../../../domain/app/repositories/app_settings_repository.dart';
 import '../../../../../domain/app/view_models/app_settings_view_model.dart';
 import '../../../../../domain/user/models/setting_action_on_close.dart';
-import '../../../../../domain/user/models/user.dart';
 import '../../../../../domain/user/models/user_settings.dart';
 import '../../../../../domain/user/repositories/user_login_info_repository.dart';
 import '../../../../../domain/user/repositories/user_settings_repository.dart';

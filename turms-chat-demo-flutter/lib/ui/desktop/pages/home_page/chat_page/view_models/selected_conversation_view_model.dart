@@ -1,3 +1,4 @@
+import 'package:fixnum/fixnum.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../../domain/conversation/models/conversation.dart';
@@ -36,6 +37,16 @@ class SelectedConversationViewModelNotifier extends Notifier<Conversation?> {
     conversations.add(newConversation);
     state = newConversation;
     conversationsViewModelRef.notifyListeners();
+  }
+
+  void replaceMessage(Int64 messageId, ChatMessage message) {
+    final messages = state!.messages;
+    final index = messages.indexWhere((e) => messageId == e.messageId);
+    if (index < 0) {
+      return;
+    }
+    messages[index] = message;
+    ref.notifyListeners();
   }
 
   void addMessage(ChatMessage message) {

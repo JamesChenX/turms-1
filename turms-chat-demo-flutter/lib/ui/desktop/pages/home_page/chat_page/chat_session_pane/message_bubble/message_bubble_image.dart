@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../../../infra/env/env_vars.dart';
+import '../../../../../../../infra/ui/size_utils.dart';
 import '../../../../../../themes/theme_config.dart';
 import '../../../../../components/index.dart';
 import 'message_image_provider.dart';
@@ -11,29 +12,42 @@ import 'message_image_provider.dart';
 const _imageBorderWidth = 1.0;
 
 class MessageBubbleImage extends StatefulWidget {
-  const MessageBubbleImage({Key? key, required this.url}) : super(key: key);
+  const MessageBubbleImage(
+      {Key? key, required this.url, required this.width, required this.height})
+      : super(key: key);
 
   final String url;
+  final double width;
+  final double height;
 
   @override
   State<MessageBubbleImage> createState() => _MessageBubbleImageState();
 }
 
 class _MessageBubbleImageState extends State<MessageBubbleImage> {
-  late MessageImageProvider originalImageProvider;
-  late MessageImageProvider thumbnailProvider;
+  late MessageImageProvider _originalImageProvider;
+  late MessageImageProvider _thumbnailProvider;
+  late double _width;
+  late double _height;
 
   @override
   void initState() {
     super.initState();
-    originalImageProvider = MessageImageProvider(widget.url, false);
-    thumbnailProvider = MessageImageProvider(widget.url, true);
+    _originalImageProvider = MessageImageProvider(widget.url, false);
+    _thumbnailProvider = MessageImageProvider(widget.url, true);
+
+    final size = SizeUtils.keepAspectRatio(
+        Size(widget.width, widget.height),
+        EnvVars.messageImageThumbnailSizeWidth,
+        EnvVars.messageImageThumbnailSizeHeight);
+    _width = size.width;
+    _height = size.height;
   }
 
   @override
   void dispose() {
     // Dispose the original image provider to save memory promptly.
-    originalImageProvider.dispose();
+    _originalImageProvider.dispose();
     super.dispose();
   }
 
@@ -43,14 +57,14 @@ class _MessageBubbleImageState extends State<MessageBubbleImage> {
       child: GestureDetector(
           onTap: () async {
             // TODO: show a tip to let user know if the original image has been deleted.
-            unawaited(showImageViewerDialog(context, originalImageProvider));
+            unawaited(showImageViewerDialog(context, _originalImageProvider));
           },
           child: _buildThumbnail()));
 
   Image _buildThumbnail() => Image(
         isAntiAlias: true,
         gaplessPlayback: true,
-        image: MessageImageProvider(widget.url, true),
+        image: _thumbnailProvider,
         fit: BoxFit.contain,
         loadingBuilder: (context, child, loadingProgress) {
           // FIXME: https://github.com/flutter/flutter/issues/85966
@@ -65,8 +79,8 @@ class _MessageBubbleImageState extends State<MessageBubbleImage> {
             );
           }
           return SizedBox(
-              width: EnvVars.messageImageThumbnailSizeWidth.toDouble(),
-              height: EnvVars.messageImageThumbnailSizeHeight.toDouble(),
+              width: _width,
+              height: _height,
               child: const ClipRRect(
                 borderRadius: ThemeConfig.borderRadius4,
                 child: DecoratedBox(

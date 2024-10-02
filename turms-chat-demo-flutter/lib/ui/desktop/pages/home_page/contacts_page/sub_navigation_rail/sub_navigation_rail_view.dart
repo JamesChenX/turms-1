@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import '../../../../../../domain/user/fixtures/contacts.dart';
 import '../../../../../../domain/user/fixtures/relationship_groups.dart';
 import '../../../../../../domain/user/models/index.dart';
+import '../../../../../../domain/user/services/UserService.dart';
 import '../../../../../../infra/built_in_types/built_in_type_helpers.dart';
 import '../../../../../../infra/ui/text_utils.dart';
 import '../../../../../themes/theme_config.dart';
@@ -114,8 +115,8 @@ class SubNavigationRailView extends StatelessWidget {
   List<Widget> _buildRelationshipGroups(BuildContext context) {
     final selectedContactId = subNavigationRailController.selectedContact?.id;
     final appLocalizations = subNavigationRailController.appLocalizations;
-    final widgets = subNavigationRailController
-        .getSystemContacts()
+    final widgets = userService
+        .getSystemContacts(appLocalizations)
         .map<Widget>((contact) => ContactTile(
               contact: contact,
               nameTextSpans: [],

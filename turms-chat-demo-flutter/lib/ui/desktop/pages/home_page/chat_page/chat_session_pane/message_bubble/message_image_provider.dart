@@ -117,8 +117,8 @@ class MessageImageProvider extends ImageProvider<MessageImageProvider> {
     final resizeResult = await resize(
         inputPath: originalImageFile.file.path,
         outputPath: outputThumbnailPath,
-        width: EnvVars.messageImageThumbnailSizeWidth,
-        height: EnvVars.messageImageThumbnailSizeHeight);
+        width: EnvVars.messageImageThumbnailSizeWidth.toInt(),
+        height: EnvVars.messageImageThumbnailSizeHeight.toInt());
     final errorType = resizeResult.errorType;
     if (errorType == null) {
       // TODO: optimize memory usage.

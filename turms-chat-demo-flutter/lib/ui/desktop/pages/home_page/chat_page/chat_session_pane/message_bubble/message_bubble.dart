@@ -19,17 +19,11 @@ class MessageBubble extends StatefulWidget {
     required this.sender,
     required this.messages,
     this.onLongPress,
-    required this.type,
-    this.originalUrl,
-    this.thumbnailUrl,
   }) : super(key: key);
 
   final User currentUser;
   final User sender;
   final List<ChatMessage> messages;
-  final MessageType type;
-  final String? originalUrl;
-  final String? thumbnailUrl;
   final void Function(BuildContext, Offset)? onLongPress;
 
   @override
@@ -38,87 +32,135 @@ class MessageBubble extends StatefulWidget {
 
 class _MessageBubbleState extends State<MessageBubble> {
   @override
-  Widget build(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-        child: widget.messages.first.sentByMe
-            ? _buildSentMessageBubble(context)
-            : _buildReceivedMessageBubble(context));
-  }
+  Widget build(BuildContext context) => Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+      child: widget.messages.first.sentByMe
+          ? _buildSentMessageBubble(context)
+          : _buildReceivedMessageBubble(context));
 
-  Row _buildSentMessageBubble(BuildContext context) => Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+  Row _buildSentMessageBubble(BuildContext context) {
+    final messages = widget.messages;
+    final messageCount = messages.length;
+    assert(messageCount > 0, 'There should be at least one message');
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 8,
+      children: [
+        if (messageCount == 1)
+          _buildMessage(context, MainAxisAlignment.start, messages.first,
+              MessageBubbleTextPosition.single)
+        else
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            spacing: 2,
             children: [
-              if (message.status == MessageDeliveryStatus.failed)
-                const DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: ThemeConfig.messageBubbleErrorIconBackgroundColor,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.all(1),
-                    child: Icon(
-                      Symbols.exclamation_rounded,
-                      color: ThemeConfig.messageBubbleErrorIconColor,
-                      size: 20,
-                    ),
-                  ),
-                )
-              else if (message.status == MessageDeliveryStatus.retrying)
-                const RepaintBoundary(child: CupertinoActivityIndicator()),
-              const SizedBox(
-                width: 12,
-              ),
-              _buildMessageBubble(context)
+              for (var i = 0; i < messageCount; i++)
+                _buildMessage(
+                    context,
+                    MainAxisAlignment.start,
+                    messages[i],
+                    i == 0
+                        ? MessageBubbleTextPosition.first
+                        : i == messageCount - 1
+                            ? MessageBubbleTextPosition.last
+                            : MessageBubbleTextPosition.middle)
             ],
           ),
-          const SizedBox(
-            width: 8,
-          ),
-          UserProfilePopup(
-            user: sender,
-            faceLeft: true,
-          )
-        ],
-      );
+        UserProfilePopup(
+          user: widget.sender,
+          faceLeft: true,
+        )
+      ],
+    );
+  }
 
-  Row _buildReceivedMessageBubble(
-          User user, List<ChatMessage> messages, BuildContext context) =>
+  Row _buildReceivedMessageBubble(BuildContext context) {
+    final messages = widget.messages;
+    final messageCount = messages.length;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 8,
+      children: [
+        UserProfilePopup(user: widget.sender),
+        if (messageCount == 1)
+          _buildMessage(context, MainAxisAlignment.end, messages.first,
+              MessageBubbleTextPosition.single)
+        else
+          Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 2,
+              children: [
+                for (var i = 0; i < messageCount; i++)
+                  _buildMessage(
+                      context,
+                      MainAxisAlignment.end,
+                      messages[i],
+                      i == 0
+                          ? MessageBubbleTextPosition.first
+                          : i == messageCount - 1
+                              ? MessageBubbleTextPosition.last
+                              : MessageBubbleTextPosition.middle),
+              ])
+      ],
+    );
+  }
+
+  Row _buildMessage(BuildContext context, MainAxisAlignment mainAxisAlignment,
+          ChatMessage message, MessageBubbleTextPosition position) =>
       Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: mainAxisAlignment,
+        spacing: 12,
         children: [
-          // TAvatar(name: user.name, image: user.image),
-          UserProfilePopup(user: user),
-          const SizedBox(
-            width: 8,
-          ),
-          _buildMessageBubble(context)
+          if (message.status == MessageDeliveryStatus.failed)
+            const DecoratedBox(
+              decoration: BoxDecoration(
+                color: ThemeConfig.messageBubbleErrorIconBackgroundColor,
+                shape: BoxShape.circle,
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(1),
+                child: Icon(
+                  Symbols.exclamation_rounded,
+                  color: ThemeConfig.messageBubbleErrorIconColor,
+                  size: 20,
+                ),
+              ),
+            )
+          else if (message.status == MessageDeliveryStatus.retrying)
+            const RepaintBoundary(child: CupertinoActivityIndicator()),
+          _buildMessageBubble(context, message, position)
         ],
       );
 
-  Widget _buildMessageBubble(BuildContext context) => GestureDetector(
-      onLongPressStart: (details) {
-        widget.onLongPress?.call(context, details.globalPosition);
-      },
-      child: IntrinsicWidth(
-        // TODO: we may support compound messages in the future.
-        child: switch (widget.type) {
-          MessageType.text => MessageBubbleText(
-              currentUser: widget.currentUser,
-              messages: widget.messages,
-            ),
-          MessageType.video => MessageBubbleVideo(
-              url: Uri.parse(widget.originalUrl!),
-            ),
-          MessageType.audio =>
-            MessageBubbleAudio(url: Uri.parse(widget.originalUrl!)),
-          MessageType.image => MessageBubbleImage(url: widget.originalUrl!),
-          MessageType.file => Text(widget.originalUrl ?? ''),
-          MessageType.youtube => Text(widget.originalUrl!),
-        },
-      ));
+  Widget _buildMessageBubble(BuildContext context, ChatMessage message,
+          MessageBubbleTextPosition position) =>
+      GestureDetector(
+          onLongPressStart: (details) {
+            widget.onLongPress?.call(context, details.globalPosition);
+          },
+          child: IntrinsicWidth(
+            // TODO: we may support compound messages in the future.
+            child: switch (message.type) {
+              MessageType.text => MessageBubbleText(
+                  currentUser: widget.currentUser,
+                  message: message,
+                  position: position,
+                ),
+              MessageType.video => MessageBubbleVideo(
+                  url: Uri.parse(message.originalUrl!),
+                  width: message.originalWidth!,
+                  height: message.originalHeight!,
+                ),
+              MessageType.audio =>
+                MessageBubbleAudio(url: Uri.parse(message.originalUrl!)),
+              MessageType.image => MessageBubbleImage(
+                  url: message.originalUrl!,
+                  width: message.originalWidth!,
+                  height: message.originalHeight!,
+                ),
+              MessageType.file => Text(message.originalUrl ?? ''),
+              MessageType.youtube => Text(message.originalUrl!),
+            },
+          ));
 }

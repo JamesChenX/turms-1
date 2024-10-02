@@ -14,6 +14,7 @@ import '../../../../../../../infra/http/downloaded_file.dart';
 import '../../../../../../../infra/http/file_too_large_exception.dart';
 import '../../../../../../../infra/http/http_utils.dart';
 import '../../../../../../../infra/io/path_utils.dart';
+import '../../../../../../../infra/ui/size_utils.dart';
 import '../../../../../../../infra/units/file_size_extensions.dart';
 import '../../../../../../l10n/view_models/app_localizations_view_model.dart';
 import '../../../../../../themes/theme_config.dart';
@@ -23,9 +24,13 @@ const _maxAllowedMb = 100;
 final _maxAllowedBytes = _maxAllowedMb.MB;
 
 class MessageBubbleVideo extends ConsumerStatefulWidget {
-  const MessageBubbleVideo({Key? key, required this.url}) : super(key: key);
+  const MessageBubbleVideo(
+      {Key? key, required this.url, required this.width, required this.height})
+      : super(key: key);
 
   final Uri url;
+  final double width;
+  final double height;
 
   @override
   ConsumerState<MessageBubbleVideo> createState() => _MessageBubbleVideoState();
@@ -34,6 +39,8 @@ class MessageBubbleVideo extends ConsumerStatefulWidget {
 class _MessageBubbleVideoState extends ConsumerState<MessageBubbleVideo> {
   late VideoPlayerController _controller;
   late Future<void> _initializeVideoPlayerFuture;
+  late double _width;
+  late double _height;
 
   bool _isPlaying = false;
 
@@ -45,6 +52,11 @@ class _MessageBubbleVideoState extends ConsumerState<MessageBubbleVideo> {
   @override
   void initState() {
     super.initState();
+
+    final size =
+        SizeUtils.keepAspectRatio(Size(widget.width, widget.height), 200, 200);
+    _width = size.width;
+    _height = size.height;
 
     _initializeVideoPlayerFuture = Future.microtask(() async {
       final url = widget.url;
@@ -101,9 +113,8 @@ class _MessageBubbleVideoState extends ConsumerState<MessageBubbleVideo> {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-      // TODO: use video size
-      width: 200,
-      height: 200,
+      width: _width,
+      height: _height,
       child: TAsyncBuilder(
           future: _initializeVideoPlayerFuture,
           builder: (context, snapshot) => snapshot.when(
@@ -112,9 +123,8 @@ class _MessageBubbleVideoState extends ConsumerState<MessageBubbleVideo> {
                   final message = switch (error) {
                     UserVisibleException(:final message) => message,
                     final Exception e =>
-                      '${ref.watch(appLocalizationsViewModel).error}: ${e.message}',
-                    _ =>
-                      '${ref.watch(appLocalizationsViewModel).error}: $error',
+                      '${ref.read(appLocalizationsViewModel).error}: ${e.message}',
+                    _ => '${ref.read(appLocalizationsViewModel).error}: $error',
                   };
                   return DecoratedBox(
                     decoration: BoxDecoration(

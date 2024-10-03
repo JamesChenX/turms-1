@@ -10,7 +10,6 @@ class ChatMessage {
     required Int64 messageId,
     required Int64 senderId,
     required bool sentByMe,
-    required bool isFakeMessage,
     required bool isGroupMessage,
     required DateTime timestamp,
     required MessageDeliveryStatus status,
@@ -22,7 +21,6 @@ class ChatMessage {
       text: text,
       senderId: senderId,
       sentByMe: sentByMe,
-      isFakeMessage: isFakeMessage,
       isGroupMessage: isGroupMessage,
       timestamp: timestamp,
       status: status,
@@ -39,7 +37,6 @@ class ChatMessage {
       required this.messageId,
       required this.senderId,
       required this.sentByMe,
-      required this.isFakeMessage,
       required this.isGroupMessage,
       required this.text,
       required this.timestamp,
@@ -54,7 +51,6 @@ class ChatMessage {
   final Int64 messageId;
   final Int64 senderId;
   final bool sentByMe;
-  final bool isFakeMessage;
   final bool isGroupMessage;
   final String text;
 
@@ -74,7 +70,6 @@ class ChatMessage {
     Int64? messageId,
     Int64? senderId,
     bool? sentByMe,
-    bool? isFakeMessage,
     bool? isGroupMessage,
     String? text,
     DateTime? timestamp,
@@ -90,7 +85,6 @@ class ChatMessage {
         messageId: messageId ?? this.messageId,
         senderId: senderId ?? this.senderId,
         sentByMe: sentByMe ?? this.sentByMe,
-        isFakeMessage: isFakeMessage ?? this.isFakeMessage,
         isGroupMessage: isGroupMessage ?? this.isGroupMessage,
         text: text ?? this.text,
         timestamp: timestamp ?? this.timestamp,

@@ -80,10 +80,10 @@ class _ChatSessionPaneFooter extends StatefulWidget {
 }
 
 class _ChatSessionPaneFooterState extends State<_ChatSessionPaneFooter> {
-  bool isResizing = false;
-  double pointerDownDy = 0;
-  double height = 240;
-  double baseHeight = 0;
+  bool _isResizing = false;
+  double _pointerDownDy = 0;
+  double _height = 240;
+  double _baseHeight = 0;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -91,36 +91,36 @@ class _ChatSessionPaneFooterState extends State<_ChatSessionPaneFooter> {
         children: [
           Listener(
             onPointerCancel: (event) {
-              isResizing = false;
+              _isResizing = false;
               setState(() {});
             },
             onPointerUp: (event) {
-              isResizing = false;
+              _isResizing = false;
               setState(() {});
             },
             onPointerDown: (PointerDownEvent event) {
-              baseHeight = height;
-              pointerDownDy = event.position.dy;
-              isResizing = true;
+              _baseHeight = _height;
+              _pointerDownDy = event.position.dy;
+              _isResizing = true;
               setState(() {});
             },
             onPointerMove: (event) {
-              final delta = pointerDownDy - event.position.dy;
+              final delta = _pointerDownDy - event.position.dy;
               final newHeight =
-                  (baseHeight + delta).clamp(130, 500).roundToDouble();
-              if (newHeight != height) {
-                height = newHeight;
+                  (_baseHeight + delta).clamp(130, 500).roundToDouble();
+              if (newHeight != _height) {
+                _height = newHeight;
                 setState(() {});
               }
             },
             child: MouseRegion(
               cursor: SystemMouseCursors.resizeUpDown,
-              child: isResizing
+              child: _isResizing
                   ? const Padding(
                       padding: EdgeInsets.symmetric(vertical: 2),
                       child: THorizontalDivider(
                         color: ThemeConfig.primary,
-                        thickness: 5,
+                        thickness: 4,
                       ),
                     )
                   : const Padding(
@@ -132,7 +132,7 @@ class _ChatSessionPaneFooterState extends State<_ChatSessionPaneFooter> {
             ),
           ),
           ConstrainedBox(
-            constraints: BoxConstraints.tightFor(height: height),
+            constraints: BoxConstraints.tightFor(height: _height),
             child: const ChatSessionPaneFooter(),
           )
         ],

@@ -196,7 +196,7 @@ class ChatSessionPaneFooterController
 
   Future<void> sendMessage(String text) async {
     final now = DateTime.now();
-    final fakeMessageId = -RandomUtils.nextUniqueInt64();
+    final fakeMessageId = -RandomUtils.nextUniquePositiveInt64();
     // Note that: the timestamp may be different from the one the recipients received.
     // TODO: Use the server time for reference,
     //  especially when the device time is not correct.
@@ -212,7 +212,6 @@ class ChatSessionPaneFooterController
         messageId: fakeMessageId,
         senderId: ref.read(loggedInUserViewModel)!.userId,
         sentByMe: true,
-        isFakeMessage: false,
         isGroupMessage: conversation is GroupConversation,
         timestamp: tempTimestamp,
         status: MessageDeliveryStatus.delivering);

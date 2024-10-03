@@ -9,12 +9,15 @@ import '../../../../../../domain/message/models/message_group.dart';
 import '../../../../../../domain/message/models/message_type.dart';
 import '../../../../../../domain/user/fixtures/contacts.dart';
 import '../../../../../../domain/user/models/user.dart';
+import '../../../../../../domain/user/services/UserService.dart';
 import '../../../../../../domain/user/view_models/logged_in_user_info_view_model.dart';
 import '../../../../../l10n/view_models/app_localizations_view_model.dart';
 import '../../../../../l10n/view_models/date_format_view_models.dart';
 import '../../../../../themes/theme_config.dart';
 import 'message.dart';
 import 'message_bubble/message_bubble.dart';
+import 'package:intl/src/intl/date_format.dart';
+import 'package:turms_chat_demo/ui/l10n/app_localizations.dart';
 
 class ChatSessionPaneBody extends ConsumerStatefulWidget {
   const ChatSessionPaneBody(this.selectedConversation, {super.key});
@@ -166,89 +169,84 @@ class _ChatSessionPaneBodyState extends ConsumerState<ChatSessionPaneBody> {
       // Reverse the list to display conversations from bottom to top
       reverse: true,
       itemCount: itemCount,
-      findChildIndexCallback: (key) {
-        final id = (key as ValueKey<Int64>).value;
-        return itemIdToIndex[id];
-      },
+      findChildIndexCallback: (key) =>
+          itemIdToIndex[(key as ValueKey<Int64>).value],
       itemBuilder: (context, index) {
-        // Calculate the actual index in the conversations list.
-        // [index] starts from 0,
-        // we return the last item in [items] for the index 0.
         final actualIndex = itemCount - index - 1;
         final item = items[actualIndex];
-        switch (item) {
-          case _ChatSessionItemLoadingIndicator():
-            if (_isLoading) {
-              return const Padding(
-                key: _chatSessionItemLoadingIndicatorKey,
-                padding: EdgeInsets.symmetric(vertical: 8),
-                child: CupertinoActivityIndicator(radius: 8),
-              );
-            } else {
-              return const Center(
-                key: _chatSessionItemLoadingIndicatorKey,
-                child: Text('Load More Messages'),
-              );
-            }
-          case _ChatSessionItemDaySeparator(:final datetime):
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              child: Center(
-                child: DecoratedBox(
-                  key: ValueKey(item.id),
-                  decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 218, 218, 218),
-                      borderRadius: ThemeConfig.borderRadius4),
-                  child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
-                    child: Text(
-                      DateUtils.isSameDay(yesterday, datetime)
-                          ? appLocalizations.yesterday
-                          : dateFormat.format(datetime),
-                      style: const TextStyle(color: Colors.white, fontSize: 12),
-                    ),
-                  ),
-                ),
-              ),
-            );
-          case _ChatSessionItemMessageGroup(:final messageGroup):
-            final User user;
-            final message = messageGroup.messages.first;
-            if (message.sentByMe) {
-              user = loggedInUser;
-            } else if (conversation is PrivateConversation) {
-              user = conversation.contact;
-            } else {
-              // TODO: find from group users
-              user = fixtureUserContacts
-                  .firstWhere((element) => element.userId == message.senderId);
-            }
-            return MessageBubble(
-              key: ValueKey(item.id),
-              currentUser: loggedInUser,
-              sender: user,
-              messages: messageGroup.messages,
-            );
-          case _ChatSessionItemMessage(:final message):
-            final User user;
-            if (message.sentByMe) {
-              user = loggedInUser;
-            } else if (conversation is PrivateConversation) {
-              user = conversation.contact;
-            } else {
-              // TODO: find from group users
-              user = fixtureUserContacts
-                  .firstWhere((element) => element.userId == message.senderId);
-            }
-            return MessageBubble(
-              key: ValueKey(item.id),
-              currentUser: loggedInUser,
-              sender: user,
-              messages: [message],
-            );
-        }
+        return switch (item) {
+          _ChatSessionItemLoadingIndicator() => _buildLoadingIndicator(),
+          _ChatSessionItemDaySeparator(:final datetime) => _buildDaySeparator(
+              item, yesterday, datetime, appLocalizations, dateFormat),
+          _ChatSessionItemMessage(:final message) =>
+            _buildMessages([message], loggedInUser, conversation, item),
+          _ChatSessionItemMessageGroup(:final messageGroup) => _buildMessages(
+              messageGroup.messages, loggedInUser, conversation, item)
+        };
       },
+    );
+  }
+
+  SingleChildRenderObjectWidget _buildLoadingIndicator() {
+    if (_isLoading) {
+      return const Padding(
+        key: _chatSessionItemLoadingIndicatorKey,
+        padding: EdgeInsets.symmetric(vertical: 8),
+        child: CupertinoActivityIndicator(radius: 8),
+      );
+    } else {
+      // TODO
+      return const Center(
+        key: _chatSessionItemLoadingIndicatorKey,
+        child: Text('Load More Messages'),
+      );
+    }
+  }
+
+  Padding _buildDaySeparator(
+          _ChatSessionItemDaySeparator item,
+          DateTime yesterday,
+          DateTime datetime,
+          AppLocalizations appLocalizations,
+          DateFormat dateFormat) =>
+      Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Center(
+          child: DecoratedBox(
+            key: ValueKey(item.id),
+            decoration: const BoxDecoration(
+                color: Color.fromARGB(255, 218, 218, 218),
+                borderRadius: ThemeConfig.borderRadius4),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
+              child: Text(
+                DateUtils.isSameDay(yesterday, datetime)
+                    ? appLocalizations.yesterday
+                    : dateFormat.format(datetime),
+                style: const TextStyle(color: Colors.white, fontSize: 12),
+              ),
+            ),
+          ),
+        ),
+      );
+
+  MessageBubble _buildMessages(List<ChatMessage> messages, User loggedInUser,
+      Conversation conversation, _ChatSessionItem item) {
+    final User user;
+    final message = messages.first;
+    if (message.sentByMe) {
+      user = loggedInUser;
+    } else if (conversation is PrivateConversation) {
+      user = conversation.contact;
+    } else {
+      user = userService.queryUsers(message.senderId);
+    }
+    return MessageBubble(
+      key: ValueKey(item.id),
+      currentUser: loggedInUser,
+      sender: user,
+      messages: messages,
+      onRetry: message.sentByMe ? () {} : null,
     );
   }
 
@@ -269,7 +267,7 @@ class _ChatSessionPaneBodyState extends ConsumerState<ChatSessionPaneBody> {
     });
   }
 
-  void scrollToBottom() {
+  void _scrollToBottom() {
     _scrollController.animateTo(
       _scrollController.position.minScrollExtent,
       duration: const Duration(milliseconds: 200),

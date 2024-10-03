@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 extension BoolExtensions on bool {
   String toIntString() => this ? '1' : '0';
 }
@@ -57,6 +59,13 @@ extension Iterables<E> on Iterable<E> {
       <K, List<E>>{},
       (Map<K, List<E>> map, E element) =>
           map..putIfAbsent(keyFunction(element), () => <E>[]).add(element));
+
+  LinkedHashMap<K, List<E>> groupByAsLinkedHashMap<K>(
+          K Function(E) keyFunction) =>
+      fold(
+          LinkedHashMap<K, List<E>>(),
+          (LinkedHashMap<K, List<E>> map, E element) =>
+              map..putIfAbsent(keyFunction(element), () => <E>[]).add(element));
 }
 
 extension ListExtensions<T> on List<T> {

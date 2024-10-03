@@ -31,6 +31,11 @@ class UserService {
     await Future<void>.delayed(const Duration(seconds: 1));
     return User(userId: userId, name: 'James Chen');
   }
+
+  User queryUsers(Int64 senderId) {
+    return fixtureUserContacts
+        .firstWhere((element) => element.userId == senderId);
+  }
 }
 
 final userService = UserService();

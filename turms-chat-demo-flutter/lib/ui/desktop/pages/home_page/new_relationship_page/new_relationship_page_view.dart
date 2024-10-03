@@ -99,26 +99,34 @@ class NewRelationshipPageView extends StatelessWidget {
 
   Widget _buildSearchResultTabView() {
     final contacts = newRelationshipPageController.contacts;
+    final contactCount = contacts.length;
+    final idToIndex = {
+      for (var i = 0; i < contactCount; i++) contacts[i].id: i
+    };
     return TabBarView(
         controller: newRelationshipPageController.tabController,
         // TODO: Add search for groups
         children: List.generate(
-            2,
-            (index) => contacts.isEmpty
-                ? newRelationshipPageController.isSearchResultEmpty
-                    ? const TEmptyResult(
-                        icon: Symbols.person_rounded,
-                      )
-                    : const TEmpty()
-                : ListView(
-                    children: contacts
-                        .map<Widget>((contact) => RelationshipInfoTile(
-                              isGroup: index == 1,
-                              contact: contact,
-                              onTap: () => newRelationshipPageController
-                                  .openFriendRequestDialog(contact),
-                            ))
-                        .toList(),
-                  )));
+          2,
+          (index) => contacts.isEmpty
+              ? newRelationshipPageController.isSearchResultEmpty
+                  ? const TEmptyResult(
+                      icon: Symbols.person_rounded,
+                    )
+                  : const TEmpty()
+              : ListView.builder(
+                  findChildIndexCallback: (key) =>
+                      idToIndex[(key as ValueKey<String>).value],
+                  itemBuilder: (context, index) {
+                    final contact = contacts[index];
+                    return RelationshipInfoTile(
+                      key: ValueKey(contact.id),
+                      isGroup: index == 1,
+                      contact: contact,
+                      onTap: () => newRelationshipPageController
+                          .openFriendRequestDialog(contact),
+                    );
+                  }),
+        ));
   }
 }

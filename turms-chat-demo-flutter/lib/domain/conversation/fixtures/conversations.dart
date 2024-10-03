@@ -32,10 +32,9 @@ final fixtureConversations = fixtureContacts.map((contact) {
           final (messageIndex, message) = item;
           final sentByMe = random.nextBool();
           return ChatMessage.parse(message,
-              messageId: -RandomUtils.nextUniqueInt64(),
+              messageId: -RandomUtils.nextUniquePositiveInt64(),
               senderId: sentByMe ? Int64.MIN_VALUE : contact.userId,
               sentByMe: sentByMe,
-              isFakeMessage: true,
               isGroupMessage: false,
               timestamp: timestamps[messageIndex],
               status: sentByMe
@@ -58,11 +57,10 @@ final fixtureConversations = fixtureContacts.map((contact) {
       final message = messages[RandomUtils.nextInt() % messageCount];
       date = date.add(Duration(seconds: random.nextInt(60 * 60 * 24 * 500)));
       ChatMessage.parse(message,
-          messageId: -RandomUtils.nextUniqueInt64(),
+          messageId: -RandomUtils.nextUniquePositiveInt64(),
           senderId: memberId,
           // TODO
           sentByMe: false,
-          isFakeMessage: true,
           isGroupMessage: true,
           timestamp: date,
           status: MessageDeliveryStatus.delivered);

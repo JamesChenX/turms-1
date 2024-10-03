@@ -1,3 +1,4 @@
+import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -25,53 +26,57 @@ class NewRelationshipRequestsPageView extends ConsumerWidget {
     final now = DateTime.now();
     final appLocalizations =
         newRelationshipRequestsPageController.appLocalizations;
-    return ListView(
+    return ListView.separated(
+      itemCount:
+          newRelationshipRequestsPageController.creationDateAndRequests.length,
       // Prevent the scrollbar from overlapping children.
       padding: const EdgeInsets.only(right: 24),
-      children: newRelationshipRequestsPageController
-          .creationDateToRequests.entries.indexed
-          .expand((item) {
-        final (entryIndex, creationDateAndFriendRequests) = item;
-        final creationDate = creationDateAndFriendRequests.key;
-        final requests = creationDateAndFriendRequests.value;
+      findChildIndexCallback: (key) => newRelationshipRequestsPageController
+          .groupIdToIndex[(key as ValueKey<Int64>).value],
+      separatorBuilder: (context, index) => const SizedBox(height: 16),
+      itemBuilder: (context, index) {
+        final entry = newRelationshipRequestsPageController
+            .creationDateAndRequests[index];
         return _buildRequestGroupOfSameDay(
-            entryIndex, creationDate, now, appLocalizations, ref, requests);
-      }).toList(),
+            entry.key, now, appLocalizations, ref, entry.value);
+      },
     );
   }
 
-  List<Widget> _buildRequestGroupOfSameDay(
-          int entryIndex,
+  Widget _buildRequestGroupOfSameDay(
           DateTime creationDate,
           DateTime now,
           AppLocalizations appLocalizations,
           WidgetRef ref,
           List<NewRelationshipRequest> requests) =>
-      [
-        if (entryIndex > 0) const SizedBox(height: 16),
-        if (DateUtils.isSameDay(creationDate, now))
-          Text(appLocalizations.today)
-        else if (creationDate.year == now.year)
-          Text(ref.watch(dateFormatViewModel_Md).format(creationDate))
-        else
-          Text(ref.watch(dateFormatViewModel_yMd).format(creationDate)),
-        const SizedBox(height: 8),
-        const THorizontalDivider(),
-        const SizedBox(height: 12),
-        ...requests.indexed.expand((item) {
-          final (requestIndex, request) = item;
-          return [
-            if (requestIndex > 0) const SizedBox(height: 16),
-            NewRelationshipRequestTile(
-              key: Key(request.id.toString()),
-              request: request,
-              onAccept: () async => newRelationshipRequestsPageController.widget
-                  .onRequestStatusChange(request, RequestStatus.accepted),
-              onStartConversation: () => newRelationshipRequestsPageController
-                  .widget
-                  .onStartConversationTap(request),
-            )
-          ];
-        })
-      ];
+      Column(
+        key: ValueKey(requests.first.id),
+        children: [
+          if (DateUtils.isSameDay(creationDate, now))
+            Text(appLocalizations.today)
+          else if (creationDate.year == now.year)
+            Text(ref.watch(dateFormatViewModel_Md).format(creationDate))
+          else
+            Text(ref.watch(dateFormatViewModel_yMd).format(creationDate)),
+          const SizedBox(height: 8),
+          const THorizontalDivider(),
+          const SizedBox(height: 12),
+          ...requests.indexed.expand((item) {
+            final (requestIndex, request) = item;
+            return [
+              if (requestIndex > 0) const SizedBox(height: 16),
+              NewRelationshipRequestTile(
+                key: Key(request.id.toString()),
+                request: request,
+                onAccept: () async => newRelationshipRequestsPageController
+                    .widget
+                    .onRequestStatusChange(request, RequestStatus.accepted),
+                onStartConversation: () => newRelationshipRequestsPageController
+                    .widget
+                    .onStartConversationTap(request),
+              )
+            ];
+          })
+        ],
+      );
 }

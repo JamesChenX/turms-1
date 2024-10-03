@@ -20,13 +20,13 @@ class MessageBubble extends ConsumerStatefulWidget {
     required this.currentUser,
     required this.sender,
     required this.messages,
-    this.onLongPress,
+    this.onRetry,
   }) : super(key: key);
 
   final User currentUser;
   final User sender;
   final List<ChatMessage> messages;
-  final void Function(BuildContext, Offset)? onLongPress;
+  final Future<void> Function()? onRetry;
 
   @override
   ConsumerState<MessageBubble> createState() => _MessageBubbleState();
@@ -136,66 +136,72 @@ class _MessageBubbleState extends ConsumerState<MessageBubble> {
   }
 
   Row _buildMessage(
-          BuildContext context,
-          MainAxisAlignment mainAxisAlignment,
-          ChatMessage message,
-          CrossAxisAlignment? infoAlignment,
-          BorderRadius borderRadius) =>
-      Row(
-        mainAxisAlignment: mainAxisAlignment,
-        spacing: 12,
-        children: [
-          if (message.status == MessageDeliveryStatus.failed)
-            const DecoratedBox(
-              decoration: BoxDecoration(
-                color: ThemeConfig.messageBubbleErrorIconBackgroundColor,
-                shape: BoxShape.circle,
-              ),
-              child: Padding(
-                padding: EdgeInsets.all(1),
-                child: Icon(
-                  Symbols.exclamation_rounded,
-                  color: ThemeConfig.messageBubbleErrorIconColor,
-                  size: 20,
+      BuildContext context,
+      MainAxisAlignment mainAxisAlignment,
+      ChatMessage message,
+      CrossAxisAlignment? infoAlignment,
+      BorderRadius borderRadius) {
+    final deliveryStatus = message.status;
+    return Row(
+      mainAxisAlignment: mainAxisAlignment,
+      spacing: 12,
+      children: [
+        if (deliveryStatus == MessageDeliveryStatus.failed)
+          MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: GestureDetector(
+              onTap: () async {
+                await widget.onRetry!();
+              },
+              child: const DecoratedBox(
+                decoration: BoxDecoration(
+                  color: ThemeConfig.messageBubbleErrorIconBackgroundColor,
+                  shape: BoxShape.circle,
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(1),
+                  child: Icon(
+                    Symbols.exclamation_rounded,
+                    color: ThemeConfig.messageBubbleErrorIconColor,
+                    size: 20,
+                  ),
                 ),
               ),
-            )
-          else if (message.status == MessageDeliveryStatus.retrying)
-            const RepaintBoundary(child: CupertinoActivityIndicator()),
-          _buildMessageBubble(context, message, infoAlignment, borderRadius)
-        ],
-      );
+            ),
+          )
+        else if (deliveryStatus == MessageDeliveryStatus.delivering)
+          const RepaintBoundary(child: CupertinoActivityIndicator()),
+        _buildMessageBubble(context, message, infoAlignment, borderRadius)
+      ],
+    );
+  }
 
   Widget _buildMessageBubble(BuildContext context, ChatMessage message,
       CrossAxisAlignment? infoAlignment, BorderRadius borderRadius) {
-    final child = GestureDetector(
-        onLongPressStart: (details) {
-          widget.onLongPress?.call(context, details.globalPosition);
-        },
-        child: IntrinsicWidth(
-          // TODO: we may support compound messages in the future.
-          child: switch (message.type) {
-            MessageType.text => MessageBubbleText(
-                currentUser: widget.currentUser,
-                message: message,
-                borderRadius: borderRadius,
-              ),
-            MessageType.video => MessageBubbleVideo(
-                url: Uri.parse(message.originalUrl!),
-                width: message.originalWidth!,
-                height: message.originalHeight!,
-              ),
-            MessageType.audio =>
-              MessageBubbleAudio(url: Uri.parse(message.originalUrl!)),
-            MessageType.image => MessageBubbleImage(
-                url: message.originalUrl!,
-                width: message.originalWidth!,
-                height: message.originalHeight!,
-              ),
-            MessageType.file => Text(message.originalUrl ?? ''),
-            MessageType.youtube => Text(message.originalUrl!),
-          },
-        ));
+    final child = IntrinsicWidth(
+      // TODO: we may support compound messages in the future.
+      child: switch (message.type) {
+        MessageType.text => MessageBubbleText(
+            currentUser: widget.currentUser,
+            message: message,
+            borderRadius: borderRadius,
+          ),
+        MessageType.video => MessageBubbleVideo(
+            url: Uri.parse(message.originalUrl!),
+            width: message.originalWidth!,
+            height: message.originalHeight!,
+          ),
+        MessageType.audio =>
+          MessageBubbleAudio(url: Uri.parse(message.originalUrl!)),
+        MessageType.image => MessageBubbleImage(
+            url: message.originalUrl!,
+            width: message.originalWidth!,
+            height: message.originalHeight!,
+          ),
+        MessageType.file => Text(message.originalUrl ?? ''),
+        MessageType.youtube => Text(message.originalUrl!),
+      },
+    );
     if (infoAlignment != null) {
       final sender = widget.sender;
       return Column(

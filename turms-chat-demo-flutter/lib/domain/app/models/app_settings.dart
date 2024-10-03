@@ -6,10 +6,7 @@ class AppSettings {
   AppSettings(this._idToSetting);
 
   factory AppSettings.fromTableData(List<AppSettingTableData> records) {
-    final idToSetting = <String, String?>{};
-    for (final record in records) {
-      idToSetting[record.id] = record.value;
-    }
+    final idToSetting = {for (final record in records) record.id: record.value};
     return AppSettings(idToSetting);
   }
 

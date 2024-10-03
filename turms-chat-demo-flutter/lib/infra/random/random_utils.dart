@@ -41,7 +41,7 @@ class RandomUtils {
     return stringBuffer.toString();
   }
 
-  static Int64 nextUniqueInt64() {
+  static Int64 nextUniquePositiveInt64() {
     final timestamp =
         (_startTime + _stopwatch.elapsedMilliseconds) & _timestampMask;
     final counter = _counter++;

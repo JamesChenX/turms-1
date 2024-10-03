@@ -240,10 +240,9 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
         final contactId = conversation.contact.userId;
         if (contactId != loggedInUser.userId) {
           conversation.messages.add(ChatMessage.parse(message,
-              messageId: -RandomUtils.nextUniqueInt64(),
+              messageId: -RandomUtils.nextUniquePositiveInt64(),
               senderId: contactId,
               sentByMe: false,
-              isFakeMessage: true,
               isGroupMessage: false,
               timestamp: now,
               status: MessageDeliveryStatus.delivered));
@@ -257,10 +256,9 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
             .firstWhere((member) => member.userId != loggedInUser.userId)
             .userId;
         conversation.messages.add(ChatMessage.parse(message,
-            messageId: -RandomUtils.nextUniqueInt64(),
+            messageId: -RandomUtils.nextUniquePositiveInt64(),
             senderId: senderId,
             sentByMe: false,
-            isFakeMessage: true,
             isGroupMessage: true,
             timestamp: now,
             status: MessageDeliveryStatus.delivered));

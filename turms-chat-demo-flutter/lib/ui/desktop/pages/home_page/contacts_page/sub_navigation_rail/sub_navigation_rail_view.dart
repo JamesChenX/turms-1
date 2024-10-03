@@ -32,6 +32,7 @@ class SubNavigationRailView extends StatelessWidget {
           Expanded(
             child: subNavigationRailController.searchText.isNotBlank
                 ? _buildSearchResults()
+                // TODO: use builder
                 : ListView(
                     children: _buildRelationshipGroups(context),
                   ),

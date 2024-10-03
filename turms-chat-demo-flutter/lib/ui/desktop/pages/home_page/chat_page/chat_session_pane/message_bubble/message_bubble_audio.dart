@@ -19,6 +19,8 @@ import '../../../../../../l10n/view_models/app_localizations_view_model.dart';
 import '../../../../../../themes/theme_config.dart';
 import '../../../../../components/index.dart';
 
+const _width = 286.0;
+const _height = 52.0;
 const _maxAllowedMb = 100;
 final _maxAllowedBytes = _maxAllowedMb.MB;
 
@@ -34,8 +36,6 @@ class MessageBubbleAudio extends ConsumerStatefulWidget {
 class _MessageBubbleAudioState extends ConsumerState<MessageBubbleAudio> {
   late VideoPlayerController _controller;
   late Future<void> _initializeAudioControllerFuture;
-
-  bool _isPlaying = false;
 
   @override
   void didUpdateWidget(MessageBubbleAudio oldWidget) {
@@ -84,7 +84,6 @@ class _MessageBubbleAudioState extends ConsumerState<MessageBubbleAudio> {
       controller.addListener(() {
         if (controller.value.position == controller.value.duration) {
           controller.seekTo(Duration.zero);
-          _isPlaying = false;
           setState(() {});
         }
       });
@@ -101,8 +100,8 @@ class _MessageBubbleAudioState extends ConsumerState<MessageBubbleAudio> {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-      width: 286,
-      height: 52,
+      width: _width,
+      height: _height,
       child: TAsyncBuilder(
           future: _initializeAudioControllerFuture,
           builder: (context, snapshot) => snapshot.when(
@@ -138,7 +137,7 @@ class _MessageBubbleAudioState extends ConsumerState<MessageBubbleAudio> {
             aspectRatio: _controller.value.aspectRatio,
             child: VideoPlayer(_controller),
           ),
-          if (!_isPlaying)
+          if (!_controller.value.isPlaying)
             Center(
               child: SizedBox(
                 width: 36,
@@ -165,12 +164,10 @@ class _MessageBubbleAudioState extends ConsumerState<MessageBubbleAudio> {
               child: GestureDetector(
                 behavior: HitTestBehavior.translucent,
                 onTap: () async {
-                  if (_isPlaying) {
+                  if (_controller.value.isPlaying) {
                     await _controller.pause();
-                    _isPlaying = false;
                   } else {
                     await _controller.play();
-                    _isPlaying = true;
                   }
                   setState(() {});
                 },

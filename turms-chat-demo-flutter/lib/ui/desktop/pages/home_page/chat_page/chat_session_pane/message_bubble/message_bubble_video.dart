@@ -42,8 +42,6 @@ class _MessageBubbleVideoState extends ConsumerState<MessageBubbleVideo> {
   late double _width;
   late double _height;
 
-  bool _isPlaying = false;
-
   @override
   void didUpdateWidget(MessageBubbleVideo oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -96,7 +94,6 @@ class _MessageBubbleVideoState extends ConsumerState<MessageBubbleVideo> {
       controller.addListener(() {
         if (controller.value.position == controller.value.duration) {
           controller.seekTo(Duration.zero);
-          _isPlaying = false;
           setState(() {});
         }
       });
@@ -159,7 +156,7 @@ class _MessageBubbleVideoState extends ConsumerState<MessageBubbleVideo> {
             aspectRatio: _controller.value.aspectRatio,
             child: VideoPlayer(_controller),
           ),
-          if (!_isPlaying)
+          if (!_controller.value.isPlaying)
             Center(
               child: SizedBox(
                 width: 36,
@@ -186,12 +183,10 @@ class _MessageBubbleVideoState extends ConsumerState<MessageBubbleVideo> {
               child: GestureDetector(
                 behavior: HitTestBehavior.translucent,
                 onTap: () async {
-                  if (_isPlaying) {
+                  if (_controller.value.isPlaying) {
                     await _controller.pause();
-                    _isPlaying = false;
                   } else {
                     await _controller.play();
-                    _isPlaying = true;
                   }
                   setState(() {});
                 },

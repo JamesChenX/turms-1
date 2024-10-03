@@ -11,7 +11,7 @@ import 'conversation_tile.dart';
 import 'sub_navigation_rail_controller.dart';
 
 class ConversationTiles extends ConsumerStatefulWidget {
-  ConversationTiles({Key? key, required this.subNavigationRailController})
+  const ConversationTiles({Key? key, required this.subNavigationRailController})
       : super(key: key);
 
   final SubNavigationRailController subNavigationRailController;

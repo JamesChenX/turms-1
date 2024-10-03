@@ -1,7 +1,7 @@
 part of 'request_notifications_page.dart';
 
 class _RequestNotificationsPageView extends StatelessWidget {
-  _RequestNotificationsPageView(this.requestNotificationsPageController);
+  const _RequestNotificationsPageView(this.requestNotificationsPageController);
 
   final _RequestNotificationsPageController requestNotificationsPageController;
 

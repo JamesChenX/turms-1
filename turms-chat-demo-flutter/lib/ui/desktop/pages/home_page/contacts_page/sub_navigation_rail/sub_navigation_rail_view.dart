@@ -168,7 +168,7 @@ class SubNavigationRailView extends StatelessWidget {
 }
 
 class _StyledContact {
-  _StyledContact({required this.contact, required this.nameTextSpans});
+  const _StyledContact({required this.contact, required this.nameTextSpans});
 
   final Contact contact;
   final List<TextSpan> nameTextSpans;

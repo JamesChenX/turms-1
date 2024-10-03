@@ -230,7 +230,7 @@ class __ChatSessionDetailsGroupConversationMemberListState
 }
 
 class _StyledMember {
-  _StyledMember({required this.member, required this.nameTextSpans});
+  const _StyledMember({required this.member, required this.nameTextSpans});
 
   final User member;
   final List<TextSpan> nameTextSpans;

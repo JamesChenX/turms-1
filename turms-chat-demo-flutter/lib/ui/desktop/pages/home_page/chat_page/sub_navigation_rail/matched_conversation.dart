@@ -4,7 +4,7 @@ import '../../../../../../domain/conversation/models/conversation.dart';
 import '../chat_session_pane/message.dart';
 
 class StyledConversation {
-  StyledConversation(
+  const StyledConversation(
       {required this.conversation,
       required this.matchedMessages,
       required this.nameTextSpans});

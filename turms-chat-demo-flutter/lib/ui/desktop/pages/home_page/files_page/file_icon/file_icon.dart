@@ -83,7 +83,7 @@ const _defaultColor = Colors.grey;
 // };
 
 class FileIcon extends StatelessWidget {
-  FileIcon({super.key, required String fileFormat})
+  const FileIcon({super.key, required String fileFormat})
       : fileFormat = fileFormat.toUpperCase();
 
   final String fileFormat;
@@ -104,7 +104,7 @@ ui.Image getFileImage(String fileFormat) =>
     });
 
 class FileIconPainter extends CustomPainter {
-  FileIconPainter(this.fileFormat, {super.repaint})
+  const FileIconPainter(this.fileFormat, {super.repaint})
       // : color = _formatToIcon[fileFormat] ?? _defaultColor;
       : color = _defaultColor;
 

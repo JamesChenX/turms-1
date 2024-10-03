@@ -33,7 +33,7 @@ class MessageBubbleAudio extends ConsumerStatefulWidget {
 
 class _MessageBubbleAudioState extends ConsumerState<MessageBubbleAudio> {
   late VideoPlayerController _controller;
-  late Future<void> _initializeVideoPlayerFuture;
+  late Future<void> _initializeAudioControllerFuture;
 
   bool _isPlaying = false;
 
@@ -46,7 +46,7 @@ class _MessageBubbleAudioState extends ConsumerState<MessageBubbleAudio> {
   void initState() {
     super.initState();
 
-    _initializeVideoPlayerFuture = Future.microtask(() async {
+    _initializeAudioControllerFuture = Future.microtask(() async {
       final url = widget.url;
       final urlStr = url.toString();
       final ext = extension(urlStr);
@@ -68,15 +68,15 @@ class _MessageBubbleAudioState extends ConsumerState<MessageBubbleAudio> {
           throw UserVisibleException(
               e,
               (cause) => ref
-                  .watch(appLocalizationsViewModel)
+                  .read(appLocalizationsViewModel)
                   .failedToDownloadFileTooLarge(_maxAllowedMb));
         } catch (e) {
           throw UserVisibleException(
-              e, (_) => ref.watch(appLocalizationsViewModel).failedToDownload);
+              e, (_) => ref.read(appLocalizationsViewModel).failedToDownload);
         }
         if (downloadedFile == null) {
           throw UserVisibleException(
-              null, (_) => ref.watch(appLocalizationsViewModel).videoNotFound);
+              null, (_) => ref.read(appLocalizationsViewModel).videoNotFound);
         }
         controller = VideoPlayerController.file(downloadedFile.file);
       }
@@ -101,19 +101,18 @@ class _MessageBubbleAudioState extends ConsumerState<MessageBubbleAudio> {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-      width: 200,
-      height: 200,
+      width: 286,
+      height: 52,
       child: TAsyncBuilder(
-          future: _initializeVideoPlayerFuture,
+          future: _initializeAudioControllerFuture,
           builder: (context, snapshot) => snapshot.when(
                 data: (data) => _buildStack(),
                 error: (error, stackTrace) {
                   final message = switch (error) {
                     UserVisibleException(:final message) => message,
                     final Exception e =>
-                      '${ref.watch(appLocalizationsViewModel).error}: ${e.message}',
-                    _ =>
-                      '${ref.watch(appLocalizationsViewModel).error}: $error',
+                      '${ref.read(appLocalizationsViewModel).error}: ${e.message}',
+                    _ => '${ref.read(appLocalizationsViewModel).error}: $error',
                   };
                   return DecoratedBox(
                     decoration: BoxDecoration(

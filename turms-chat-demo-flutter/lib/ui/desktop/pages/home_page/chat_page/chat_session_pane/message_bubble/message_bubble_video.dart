@@ -38,7 +38,7 @@ class MessageBubbleVideo extends ConsumerStatefulWidget {
 
 class _MessageBubbleVideoState extends ConsumerState<MessageBubbleVideo> {
   late VideoPlayerController _controller;
-  late Future<void> _initializeVideoPlayerFuture;
+  late Future<void> _initializeVideoControllerFuture;
   late double _width;
   late double _height;
 
@@ -58,7 +58,7 @@ class _MessageBubbleVideoState extends ConsumerState<MessageBubbleVideo> {
     _width = size.width;
     _height = size.height;
 
-    _initializeVideoPlayerFuture = Future.microtask(() async {
+    _initializeVideoControllerFuture = Future.microtask(() async {
       final url = widget.url;
       final urlStr = url.toString();
       final ext = extension(urlStr);
@@ -116,7 +116,7 @@ class _MessageBubbleVideoState extends ConsumerState<MessageBubbleVideo> {
       width: _width,
       height: _height,
       child: TAsyncBuilder(
-          future: _initializeVideoPlayerFuture,
+          future: _initializeVideoControllerFuture,
           builder: (context, snapshot) => snapshot.when(
                 data: (data) => _buildStack(),
                 error: (error, stackTrace) {

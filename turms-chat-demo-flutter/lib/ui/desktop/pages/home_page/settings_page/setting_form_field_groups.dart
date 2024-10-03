@@ -12,7 +12,8 @@ enum SettingFormFieldGroup {
 }
 
 class SettingFormFieldGroupContext {
-  SettingFormFieldGroupContext({required this.key, required this.getTitle});
+  const SettingFormFieldGroupContext(
+      {required this.key, required this.getTitle});
 
   final GlobalKey key;
   final String Function(AppLocalizations appLocalizations) getTitle;

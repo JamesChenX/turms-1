@@ -69,7 +69,7 @@ class _ChatSessionPaneBodyState extends ConsumerState<ChatSessionPaneBody> {
 
   /// We don't use sealed classes to limit possible values for better performance (don't need to create new objects).
   List<_ChatSessionItem> _generateItems(List<ChatMessage> messages) {
-    final items = <_ChatSessionItem>[_ChatSessionItemLoadingIndicator()];
+    final items = <_ChatSessionItem>[const _ChatSessionItemLoadingIndicator()];
     final messageCount = messages.length;
     if (messageCount == 0) {
       return items;
@@ -285,7 +285,7 @@ sealed class _ChatSessionItem {
 }
 
 class _ChatSessionItemLoadingIndicator extends _ChatSessionItem {
-  _ChatSessionItemLoadingIndicator()
+  const _ChatSessionItemLoadingIndicator()
       : super(_chatSessionItemLoadingIndicatorId);
 }
 

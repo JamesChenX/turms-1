@@ -15,7 +15,7 @@ import 'message_bubble_text.dart';
 import 'message_bubble_video.dart';
 
 class MessageBubble extends ConsumerStatefulWidget {
-  MessageBubble({
+  const MessageBubble({
     Key? key,
     required this.currentUser,
     required this.sender,

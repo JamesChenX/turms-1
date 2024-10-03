@@ -195,15 +195,26 @@ class ChatSessionPaneFooterController
   }
 
   Future<void> sendMessage(String text) async {
+    final now = DateTime.now();
     final fakeMessageId = -RandomUtils.nextUniqueInt64();
+    // Note that: the timestamp may be different from the one the recipients received.
+    // TODO: Use the server time for reference,
+    //  especially when the device time is not correct.
+    final DateTime tempTimestamp;
+    final lastMessageTimestamp = conversation?.messages.lastOrNull?.timestamp;
+    if (lastMessageTimestamp == null ||
+        lastMessageTimestamp.compareTo(now) < 0) {
+      tempTimestamp = now;
+    } else {
+      tempTimestamp = lastMessageTimestamp.add(const Duration(milliseconds: 1));
+    }
     final message = ChatMessage.parse(text,
         messageId: fakeMessageId,
         senderId: ref.read(loggedInUserViewModel)!.userId,
         sentByMe: true,
         isFakeMessage: false,
         isGroupMessage: conversation is GroupConversation,
-        // Note that: the timestamp may be different from the one the recipients received.
-        timestamp: DateTime.now(),
+        timestamp: tempTimestamp,
         status: MessageDeliveryStatus.delivering);
     final selectedConversationController =
         ref.read(selectedConversationViewModel.notifier)..addMessage(message);
@@ -217,7 +228,8 @@ class ChatSessionPaneFooterController
         message.copyWith(
             messageId: sentMessage.messageId,
             status: sentMessage.status,
-            // Note that this may cause the timestamp UI of the message updated,
+            // Note that this will update the timestamp UI of the message
+            // if the received timestamp is different from the fake one,
             // which is expected to ensure the timestamp is consistent with the server and recipients.
             timestamp: sentMessage.timestamp));
   }
@@ -232,7 +244,11 @@ class ChatSessionPaneFooterController
     if (result == null) {
       return;
     }
-    final file = File(result.files.single.path!);
+    final path = result.files.singleOrNull?.path;
+    if (path == null) {
+      return;
+    }
+    final file = File(path);
     tryAddNewFile([DataReaderFileValueAdapter(file)]);
     setState(() {});
   }

@@ -20,14 +20,14 @@ class Attachment extends ConsumerStatefulWidget {
 }
 
 class _AttachmentState extends ConsumerState<Attachment> {
-  bool isContainerHovered = false;
-  bool isCloseHovered = false;
+  bool _isContainerHovered = false;
+  bool _isCloseHovered = false;
 
   @override
   Widget build(BuildContext context) => MouseRegion(
         cursor: SystemMouseCursors.click,
-        onEnter: (_) => setState(() => isContainerHovered = true),
-        onExit: (_) => setState(() => isContainerHovered = false),
+        onEnter: (_) => setState(() => _isContainerHovered = true),
+        onExit: (_) => setState(() => _isContainerHovered = false),
         child: GestureDetector(
           onTap: () {},
           child: AnimatedContainer(
@@ -36,7 +36,7 @@ class _AttachmentState extends ConsumerState<Attachment> {
             padding: const EdgeInsets.symmetric(horizontal: 8),
             duration: const Duration(milliseconds: 100),
             decoration: BoxDecoration(
-              color: isContainerHovered
+              color: _isContainerHovered
                   ? ThemeConfig.messageAttachmentColorHovered
                   : ThemeConfig.messageAttachmentColor,
               borderRadius: BorderRadius.circular(8),
@@ -69,11 +69,11 @@ class _AttachmentState extends ConsumerState<Attachment> {
                 // SizedBox(width: 8),
                 MouseRegion(
                   cursor: SystemMouseCursors.click,
-                  onEnter: (_) => setState(() => isCloseHovered = true),
-                  onExit: (_) => setState(() => isCloseHovered = false),
+                  onEnter: (_) => setState(() => _isCloseHovered = true),
+                  onExit: (_) => setState(() => _isCloseHovered = false),
                   child: TIconButton(
                       iconData: Symbols.close_rounded,
-                      iconWeight: isCloseHovered ? 700 : 400,
+                      iconWeight: _isCloseHovered ? 700 : 400,
                       tooltip:
                           ref.watch(appLocalizationsViewModel).removeAttachment,
                       onTap: widget.onRemoveAttachmentTapped),

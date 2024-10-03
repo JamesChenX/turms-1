@@ -65,18 +65,18 @@ class TTextField extends ConsumerStatefulWidget {
 
 class _TTextFieldState extends ConsumerState<TTextField> {
   late GlobalKey _fieldKey;
-  TextEditingController? textEditingController;
-  Debouncer? debouncer;
+  TextEditingController? _textEditingController;
+  Debouncer? _debouncer;
 
   @override
   void initState() {
     super.initState();
     if (widget.textEditingController == null) {
-      textEditingController = TextEditingController();
+      _textEditingController = TextEditingController();
     }
     final debounceTimeout = widget.debounceTimeout;
     if (debounceTimeout != null) {
-      debouncer = Debouncer(timeout: debounceTimeout);
+      _debouncer = Debouncer(timeout: debounceTimeout);
     }
     if (widget.onCaretMoved != null) {
       _fieldKey = GlobalKey();
@@ -85,15 +85,16 @@ class _TTextFieldState extends ConsumerState<TTextField> {
 
   @override
   void dispose() {
-    textEditingController?.dispose();
-    debouncer?.cancel();
+    _textEditingController?.dispose();
+    _debouncer?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final prefixIcon = widget.prefixIcon;
-    final controller = (widget.textEditingController ?? textEditingController)!;
+    final controller =
+        (widget.textEditingController ?? _textEditingController)!;
     final showSuffixIcon = (widget.suffixIcon != null) ||
         (widget.showDeleteButtonIfHasText && controller.text.isNotEmpty);
     final suffixIcon = widget.suffixIcon;
@@ -128,7 +129,7 @@ class _TTextFieldState extends ConsumerState<TTextField> {
               value = result;
             }
           }
-          final localDebouncer = debouncer;
+          final localDebouncer = _debouncer;
           if (localDebouncer != null) {
             localDebouncer.run(() {
               widget.onChanged?.call(value);
@@ -141,10 +142,10 @@ class _TTextFieldState extends ConsumerState<TTextField> {
           setState(() {});
         });
       },
-      onSubmitted: debouncer == null
+      onSubmitted: _debouncer == null
           ? widget.onSubmitted
           : (value) {
-              debouncer?.cancel();
+              _debouncer?.cancel();
               widget.onSubmitted?.call(value);
             },
       onTapOutside: widget.onTapOutside,

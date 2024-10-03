@@ -17,8 +17,6 @@ class FriendRequestsPage extends ConsumerStatefulWidget {
 }
 
 class _FriendRequestsPageState extends ConsumerState<FriendRequestsPage> {
-  List<FriendRequest> requests = [];
-
   @override
   Widget build(BuildContext context) {
     final friendRequests = ref.watch(friendRequestsViewModel);

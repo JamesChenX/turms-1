@@ -5,8 +5,6 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../../../../../../domain/message/models/message_delivery_status.dart';
 import '../../../../../../../domain/message/models/message_type.dart';
 import '../../../../../../../domain/user/models/user.dart';
-import '../../../../../../l10n/app_localizations.dart';
-import '../../../../../../l10n/view_models/app_localizations_view_model.dart';
 import '../../../../../../l10n/view_models/date_format_view_models.dart';
 import '../../../../../../themes/theme_config.dart';
 import '../../../shared_components/user_profile_popup.dart';
@@ -36,12 +34,10 @@ class MessageBubble extends ConsumerStatefulWidget {
 
 class _MessageBubbleState extends ConsumerState<MessageBubble> {
   late DateTime _now;
-  late AppLocalizations _appLocalizations;
 
   @override
   Widget build(BuildContext context) {
     _now = DateTime.now();
-    _appLocalizations = ref.watch(appLocalizationsViewModel);
     return Padding(
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
         child: widget.messages.first.sentByMe

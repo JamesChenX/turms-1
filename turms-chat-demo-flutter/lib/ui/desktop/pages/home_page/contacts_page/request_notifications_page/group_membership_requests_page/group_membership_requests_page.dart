@@ -5,7 +5,6 @@ import '../../../../../../../domain/common/models/request_status.dart';
 import '../../../../../../../domain/group/models/group_membership_request.dart';
 import '../../../../../../../domain/group/services/GroupService.dart';
 import '../../../../../../../domain/user/models/contact.dart';
-import '../../../../../../../domain/user/models/friend_request.dart';
 import '../../../chat_page/view_models/selected_conversation_view_model.dart';
 import '../new_relationship_requests_page/new_relationship_requests_page.dart';
 import 'group_membership_requests_view_model.dart';
@@ -20,8 +19,6 @@ class GroupMembershipRequestsPage extends ConsumerStatefulWidget {
 
 class _GroupMembershipRequestsPageState
     extends ConsumerState<GroupMembershipRequestsPage> {
-  List<FriendRequest> requests = [];
-
   @override
   Widget build(BuildContext context) {
     final groupMembershipRequest = ref.watch(groupMembershipRequestsViewModel);

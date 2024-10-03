@@ -71,7 +71,7 @@ class _GiphyPickerBodyState extends ConsumerState<GiphyPickerBody> {
 
   bool _isLoading = false;
 
-  int offset = 0;
+  int _offset = 0;
 
   @override
   void initState() {
@@ -177,26 +177,26 @@ class _GiphyPickerBodyState extends ConsumerState<GiphyPickerBody> {
 
     appLocalizations.localeName;
 
-    offset = response == null
+    _offset = response == null
         ? 0
         : response.pagination!.offset + response.pagination!.count;
 
     final type = widget.type;
     if (type == GiphyType.emoji) {
-      response = await client.emojis(offset: offset, limit: limit);
+      response = await client.emojis(offset: _offset, limit: limit);
     } else {
       final queryText = ref.read(_queryTextViewModel);
       if (queryText.isNotEmpty) {
         response = await client.search(queryText,
             // lang: _tabProvider.lang,
-            offset: offset,
+            offset: _offset,
             // rating: _tabProvider.rating,
             type: type,
             limit: limit);
       } else {
         response = await client.trending(
             // lang: _tabProvider.lang,
-            offset: offset,
+            offset: _offset,
             // rating: _tabProvider.rating,
             type: type,
             limit: limit);

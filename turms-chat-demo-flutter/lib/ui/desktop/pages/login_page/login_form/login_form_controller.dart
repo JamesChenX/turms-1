@@ -148,7 +148,7 @@ class LoginFormController extends ConsumerState<LoginForm> {
       }
     }
     return userSettings
-      // Set default values if the user never set them.
+      // Set default values if the user hasn't set them.
       ..actionOnClose ??= SettingActionOnClose.minimizeToTray
       ..newMessageNotification ??= true
       ..launchOnStartup ??= await autostartManager.isEnabled()

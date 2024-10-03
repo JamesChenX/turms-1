@@ -33,7 +33,7 @@ const _chatSessionItemLoadingIndicatorKey =
 class _ChatSessionPaneBodyState extends ConsumerState<ChatSessionPaneBody> {
   final ScrollController _scrollController = ScrollController();
 
-  bool isLoading = false;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -178,7 +178,7 @@ class _ChatSessionPaneBodyState extends ConsumerState<ChatSessionPaneBody> {
         final item = items[actualIndex];
         switch (item) {
           case _ChatSessionItemLoadingIndicator():
-            if (isLoading) {
+            if (_isLoading) {
               return const Padding(
                 key: _chatSessionItemLoadingIndicatorKey,
                 padding: EdgeInsets.symmetric(vertical: 8),
@@ -253,10 +253,10 @@ class _ChatSessionPaneBodyState extends ConsumerState<ChatSessionPaneBody> {
   }
 
   void _loadMoreMessages() {
-    if (isLoading) {
+    if (_isLoading) {
       return;
     }
-    isLoading = true;
+    _isLoading = true;
     setState(() {});
     // Simulate loading messages
     Future<void>.delayed(const Duration(seconds: 2), () {
@@ -264,7 +264,7 @@ class _ChatSessionPaneBodyState extends ConsumerState<ChatSessionPaneBody> {
       //     10, (index) => 'New Message ${messages.length + index}');
       // messages.insertAll(0, newMessages);
 
-      isLoading = false;
+      _isLoading = false;
       setState(() {});
     });
   }

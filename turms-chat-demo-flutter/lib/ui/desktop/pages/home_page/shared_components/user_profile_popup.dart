@@ -46,12 +46,12 @@ class UserProfilePopup extends ConsumerStatefulWidget {
 }
 
 class _UserProfilePopupState extends ConsumerState<UserProfilePopup> {
-  late TPopupController popupController;
+  late TPopupController _popupController;
 
   @override
   void initState() {
     super.initState();
-    popupController = TPopupController();
+    _popupController = TPopupController();
   }
 
   @override
@@ -64,7 +64,7 @@ class _UserProfilePopupState extends ConsumerState<UserProfilePopup> {
       image: image,
     );
     return TPopup(
-      controller: popupController,
+      controller: _popupController,
       targetAnchor: Alignment.center,
       followerAnchor: widget.faceLeft ? Alignment.topRight : Alignment.topLeft,
       target: MouseRegion(
@@ -114,7 +114,7 @@ class _UserProfilePopupState extends ConsumerState<UserProfilePopup> {
   }
 
   void _startConversation(User user) {
-    popupController.hidePopover?.call();
+    _popupController.hidePopover?.call();
     // TODO: Handle the case when the user is a stranger.
     ref
         .read(selectedConversationViewModel.notifier)
@@ -122,7 +122,7 @@ class _UserProfilePopupState extends ConsumerState<UserProfilePopup> {
   }
 
   void _startEditUserProfileImage() {
-    popupController.hidePopover?.call();
+    _popupController.hidePopover?.call();
     showUserProfileImageEditorDialog(context, widget.user);
   }
 }

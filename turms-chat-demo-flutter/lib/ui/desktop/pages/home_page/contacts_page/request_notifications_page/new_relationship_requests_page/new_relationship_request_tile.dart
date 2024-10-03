@@ -27,7 +27,7 @@ class NewRelationshipRequestTile extends ConsumerStatefulWidget {
 
 class _NewRelationshipRequestTileState
     extends ConsumerState<NewRelationshipRequestTile> {
-  bool isHandling = false;
+  bool _isHandling = false;
 
   @override
   Widget build(BuildContext context) {
@@ -82,12 +82,12 @@ class _NewRelationshipRequestTileState
                 containerWidth: 80,
                 containerPadding: ThemeConfig.paddingV4H8,
                 text: appLocalizations.accept,
-                isLoading: isHandling,
+                isLoading: _isHandling,
                 onTap: () async {
-                  isHandling = true;
+                  _isHandling = true;
                   setState(() {});
                   await widget.onAccept();
-                  isHandling = false;
+                  _isHandling = false;
                   setState(() {});
                 },
               ),

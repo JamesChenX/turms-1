@@ -29,9 +29,9 @@ class UserProfileImageEditorDialog extends ConsumerStatefulWidget {
 class _UserProfileImageEditorDialogState
     extends ConsumerState<UserProfileImageEditorDialog> {
   ImageProvider? _selectedImage;
-  bool flipX = false;
-  bool flipY = false;
-  double angle = 0;
+  bool _flipX = false;
+  bool _flipY = false;
+  double _angle = 0;
 
   @override
   void initState() {
@@ -79,10 +79,10 @@ class _UserProfileImageEditorDialogState
                             child: Stack(
                               children: [
                                 Transform.flip(
-                                  flipX: flipX,
-                                  flipY: flipY,
+                                  flipX: _flipX,
+                                  flipY: _flipY,
                                   child: Transform.rotate(
-                                    angle: angle,
+                                    angle: _angle,
                                     child: Image(
                                       image: selectedImage,
                                       width: _imageSize,
@@ -130,7 +130,7 @@ class _UserProfileImageEditorDialogState
                           tooltip: appLocalizations.rotateLeft,
                           disabled: !enableOperations,
                           onTap: () {
-                            angle -= 90.degreesToRadians();
+                            _angle -= 90.degreesToRadians();
                             setState(() {});
                           },
                         ),
@@ -140,7 +140,7 @@ class _UserProfileImageEditorDialogState
                           tooltip: appLocalizations.rotateRight,
                           disabled: !enableOperations,
                           onTap: () {
-                            angle += 90.degreesToRadians();
+                            _angle += 90.degreesToRadians();
                             setState(() {});
                           },
                         ),
@@ -150,7 +150,7 @@ class _UserProfileImageEditorDialogState
                           tooltip: appLocalizations.flipHorizontally,
                           disabled: !enableOperations,
                           onTap: () {
-                            flipX = !flipX;
+                            _flipX = !_flipX;
                             setState(() {});
                           },
                         ),
@@ -161,7 +161,7 @@ class _UserProfileImageEditorDialogState
                           tooltip: appLocalizations.flipVertically,
                           disabled: !enableOperations,
                           onTap: () {
-                            flipY = !flipY;
+                            _flipY = !_flipY;
                             setState(() {});
                           },
                         ),

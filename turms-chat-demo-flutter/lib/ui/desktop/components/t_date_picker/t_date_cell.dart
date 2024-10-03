@@ -44,7 +44,7 @@ class TDateCell extends ConsumerStatefulWidget {
 }
 
 class _TDateCellState extends ConsumerState<TDateCell> {
-  bool isHovered = false;
+  bool _isHovered = false;
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +104,7 @@ class _TDateCellState extends ConsumerState<TDateCell> {
                       child: DecoratedBox(
                           decoration: BoxDecoration(
                             borderRadius: ThemeConfig.borderRadius4,
-                            color: isHovered
+                            color: _isHovered
                                 ? const Color.fromARGB(255, 245, 245, 245)
                                 : null,
                           ),
@@ -166,7 +166,7 @@ class _TDateCellState extends ConsumerState<TDateCell> {
                               right: Radius.circular(4)),
                           RangePosition.none => ThemeConfig.borderRadius4,
                         },
-                        color: isHovered
+                        color: _isHovered
                             ? ThemeConfig.primary
                             : switch (widget.selectRangePosition) {
                                 RangePosition.none => null,
@@ -179,7 +179,7 @@ class _TDateCellState extends ConsumerState<TDateCell> {
                       child: Center(
                           child: Text(widget.day,
                               style: TextStyle(
-                                  color: isHovered
+                                  color: _isHovered
                                       ? Colors.white
                                       : switch (widget.selectRangePosition) {
                                           RangePosition.none => null,
@@ -202,7 +202,7 @@ class _TDateCellState extends ConsumerState<TDateCell> {
       onEnter: (event) {
         if (!disabled) {
           setState(() {
-            isHovered = true;
+            _isHovered = true;
           });
           if (widget.inCurrentCalendarMonth) {
             widget.onMouseRegionEntered?.call(widget.date);
@@ -212,7 +212,7 @@ class _TDateCellState extends ConsumerState<TDateCell> {
       onExit: (event) {
         if (!disabled) {
           setState(() {
-            isHovered = false;
+            _isHovered = false;
           });
           if (widget.inCurrentCalendarMonth) {
             widget.onMouseRegionExited?.call(widget.date);

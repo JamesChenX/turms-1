@@ -24,8 +24,8 @@ class ChatSessionDetailsGroupConversation extends ConsumerStatefulWidget {
 
 class _ChatSessionDetailsGroupConversationState
     extends ConsumerState<ChatSessionDetailsGroupConversation> {
-  bool muteNotifications = false;
-  bool stickOnTop = false;
+  bool _muteNotifications = false;
+  bool _stickOnTop = false;
 
   @override
   Widget build(BuildContext context) {
@@ -71,9 +71,9 @@ class _ChatSessionDetailsGroupConversationState
           children: [
             Text(appLocalizations.muteNotifications),
             TSwitch(
-              value: muteNotifications,
+              value: _muteNotifications,
               onChanged: (value) {
-                muteNotifications = value;
+                _muteNotifications = value;
                 setState(() {});
               },
             ),
@@ -87,9 +87,9 @@ class _ChatSessionDetailsGroupConversationState
           children: [
             Text(appLocalizations.stickOnTop),
             TSwitch(
-              value: stickOnTop,
+              value: _stickOnTop,
               onChanged: (value) {
-                stickOnTop = value;
+                _stickOnTop = value;
                 setState(() {});
               },
             ),
@@ -159,17 +159,17 @@ class _ChatSessionDetailsGroupConversationMemberList
 
 class __ChatSessionDetailsGroupConversationMemberListState
     extends ConsumerState<_ChatSessionDetailsGroupConversationMemberList> {
-  String searchText = '';
+  String _searchText = '';
 
   @override
   Widget build(BuildContext context) {
     final appLocalizations = ref.watch(appLocalizationsViewModel);
 
-    final isSearchMode = searchText.isNotBlank;
+    final isSearchMode = _searchText.isNotBlank;
     final matchedMembers = widget.members.expand<_StyledMember>((member) {
       final nameTextSpans = TextUtils.highlightSearchText(
           text: member.name,
-          searchText: searchText,
+          searchText: _searchText,
           searchTextStyle: ThemeConfig.textStyleHighlight);
       if (nameTextSpans.length == 1 && isSearchMode) {
         return [];
@@ -187,7 +187,7 @@ class __ChatSessionDetailsGroupConversationMemberListState
         TSearchBar(
           hintText: appLocalizations.search,
           onChanged: (value) {
-            searchText = value;
+            _searchText = value;
             setState(() {});
           },
         ),

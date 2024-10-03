@@ -23,8 +23,8 @@ class ChatSessionDetailsPrivateConversation extends ConsumerStatefulWidget {
 class _ChatSessionDetailsPrivateConversationState
     extends ConsumerState<ChatSessionDetailsPrivateConversation> {
   // TODO: load from server + save to server
-  bool muteNotifications = false;
-  bool stickOnTop = false;
+  bool _muteNotifications = false;
+  bool _stickOnTop = false;
 
   @override
   Widget build(BuildContext context) {
@@ -37,9 +37,9 @@ class _ChatSessionDetailsPrivateConversationState
           children: [
             Text(appLocalizations.muteNotifications),
             TSwitch(
-              value: muteNotifications,
+              value: _muteNotifications,
               onChanged: (value) {
-                muteNotifications = value;
+                _muteNotifications = value;
                 setState(() {});
               },
             ),
@@ -53,9 +53,9 @@ class _ChatSessionDetailsPrivateConversationState
           children: [
             Text(appLocalizations.stickOnTop),
             TSwitch(
-              value: stickOnTop,
+              value: _stickOnTop,
               onChanged: (value) {
-                stickOnTop = value;
+                _stickOnTop = value;
                 setState(() {});
               },
             ),

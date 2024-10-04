@@ -19,8 +19,10 @@ class _SettingsPaneController extends ConsumerState<SettingsPane> {
   Widget build(BuildContext context) {
     appLocalizations = ref.watch(appLocalizationsViewModel);
     actionToShortcut = ref.watch(actionToShortcutViewModel);
-    useSystemLocale = ref.watch(useSystemLocaleViewModel);
-    themeMode = ref.watch(appThemeViewModel).themeMode;
+    final localInfo = ref.watch(localeInfoViewModel);
+    useSystemLocale = localInfo.isSystemLocale;
+    final theme = ref.watch(themeViewModel);
+    themeMode = theme.extension<AppThemeExtension>()!.themeMode;
     userSettings = ref.watch(userSettingsViewModel)!;
 
     return _SettingsPaneView(this);
@@ -66,23 +68,24 @@ class _SettingsPaneController extends ConsumerState<SettingsPane> {
 
   Future<void> updateLocale(SettingLocale value) async {
     final Locale locale;
-    if (value case SettingLocale.system) {
-      ref.read(useSystemLocaleViewModel.notifier).state = true;
-      locale = WidgetsBinding.instance.platformDispatcher.locale;
+    if (value == SettingLocale.system) {
+      locale = ref.read(localeInfoViewModel.notifier).useSystemLocale().locale;
       await userSettingsRepository.delete(
         ref.read(loggedInUserViewModel)!.userId,
         UserSettingId.locale.name,
       );
     } else {
-      ref.read(useSystemLocaleViewModel.notifier).state = false;
-      locale = Locale(value.name);
+      final newLocale = ref
+          .read(localeInfoViewModel.notifier)
+          .updateLocaleIfSupported(value.name)
+          ?.locale;
+      assert(newLocale != null, 'Unsupported locale: ${value.name}');
+      locale = newLocale!;
       await userSettingsRepository.upsert(
           ref.read(loggedInUserViewModel)!.userId,
           UserSettingId.locale.name,
           UserSettingId.locale.convertValueToString(locale));
     }
-    ref.read(appLocalizationsViewModel.notifier).state =
-        lookupAppLocalizations(locale);
     ref.read(userSettingsViewModel.notifier).state!.locale = locale;
     userSettingsViewModelRef.notifyListeners();
   }

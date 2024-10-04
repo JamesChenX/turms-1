@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../infra/ui/color_extensions.dart';
+import 'app_theme_extension.dart';
 
 class ThemeConfig {
   ThemeConfig._();
@@ -147,6 +148,7 @@ class ThemeConfig {
 
   static ThemeData getLightTheme({String? fontFamily}) => ThemeData(
       useMaterial3: true,
+      extensions: [const AppThemeExtensionLight()],
       // splashFactory: NoSplash.splashFactory,
       primaryColor: primary,
       unselectedWidgetColor: borderColor,
@@ -166,6 +168,7 @@ class ThemeConfig {
   // todo
   static ThemeData getDarkTheme({String? fontFamily}) => ThemeData(
       useMaterial3: true,
+      extensions: [const AppThemeExtensionDark()],
       // splashFactory: NoSplash.splashFactory,
       primaryColor: primary,
       unselectedWidgetColor: borderColor,

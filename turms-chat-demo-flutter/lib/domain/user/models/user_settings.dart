@@ -7,7 +7,7 @@ import 'setting_action_on_close.dart';
 import 'user_setting_ids.dart';
 
 class UserSettings {
-  UserSettings(this._idToSetting);
+  const UserSettings(this._idToSetting);
 
   /// Set to an empty string instead of null
   /// to distinguish from the default value.
@@ -16,7 +16,7 @@ class UserSettings {
   static (UserSettings, StackfulException?) fromTableData(
       List<UserSettingTableData> records) {
     final nameToSettingId = UserSettingId.values.asNameMap();
-    final settings = UserSettings({});
+    const settings = UserSettings({});
     StackfulException? exception;
     for (final record in records) {
       final settingId = nameToSettingId[record.id];

@@ -83,7 +83,7 @@ const _defaultColor = Colors.grey;
 // };
 
 class FileIcon extends StatelessWidget {
-  const FileIcon({super.key, required String fileFormat})
+  FileIcon({super.key, required String fileFormat})
       : fileFormat = fileFormat.toUpperCase();
 
   final String fileFormat;

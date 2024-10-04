@@ -17,7 +17,8 @@ import '../../../../../infra/keyboard/shortcut_extensions.dart';
 import '../../../../../infra/shortcut/shortcut.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../l10n/view_models/app_localizations_view_model.dart';
-import '../../../../l10n/view_models/use_system_locale_view_model.dart';
+import '../../../../l10n/view_models/system_locale_info_view_model.dart';
+import '../../../../themes/app_theme_extension.dart';
 import '../../../../themes/app_theme_view_model.dart';
 import '../../../../themes/theme_config.dart';
 import '../../../components/index.dart';
@@ -26,6 +27,7 @@ import '../home_page_action.dart';
 import 'setting_form_field_groups.dart';
 
 part 'settings_pane_controller.dart';
+
 part 'settings_pane_view.dart';
 
 class SettingsPane extends ConsumerStatefulWidget {

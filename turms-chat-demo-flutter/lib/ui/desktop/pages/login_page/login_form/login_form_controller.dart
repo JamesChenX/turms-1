@@ -23,7 +23,6 @@ import '../../../../../infra/shortcut/shortcut.dart';
 import '../../../../../infra/sqlite/app_database.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../l10n/view_models/app_localizations_view_model.dart';
-import '../../../../l10n/view_models/use_system_locale_view_model.dart';
 import '../../home_page/home_page_action.dart';
 import 'login_form.dart';
 import 'login_form_view.dart';
@@ -88,12 +87,6 @@ class LoginFormController extends ConsumerState<LoginForm> {
     }
 
     ref.read(userSettingsViewModel.notifier).state = userSettings;
-    final locale = userSettings.locale;
-    if (locale != null) {
-      ref.read(useSystemLocaleViewModel.notifier).state = false;
-      ref.read(appLocalizationsViewModel.notifier).state =
-          lookupAppLocalizations(locale);
-    }
     ref.read(loggedInUserViewModel.notifier).state = user;
 
     isWaitingLoginRequest = false;

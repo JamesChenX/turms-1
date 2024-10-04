@@ -32,10 +32,8 @@ class UserService {
     return User(userId: userId, name: 'James Chen');
   }
 
-  User queryUsers(Int64 senderId) {
-    return fixtureUserContacts
-        .firstWhere((element) => element.userId == senderId);
-  }
+  User queryUsers(Int64 senderId) =>
+      fixtureUserContacts.firstWhere((element) => element.userId == senderId);
 }
 
 final userService = UserService();

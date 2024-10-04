@@ -7,13 +7,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '../../../domain/user/view_models/logged_in_user_info_view_model.dart';
-import '../../../domain/user/view_models/user_settings_view_model.dart';
 import '../../../domain/window/view_models/window_maximized_view_model.dart';
 import '../../../infra/app/app_config.dart';
 import '../../../infra/window/window_utils.dart';
-import '../../l10n/view_models/app_localizations_view_model.dart';
-import '../../l10n/view_models/use_system_locale_view_model.dart';
-import '../../themes/app_theme.dart';
+import '../../l10n/view_models/system_locale_info_view_model.dart';
 import '../../themes/app_theme_view_model.dart';
 import '../components/t_dialog/t_dialog.dart';
 import 'app.dart';
@@ -22,7 +19,8 @@ import 'app_view.dart';
 class AppController extends ConsumerState<App> with WindowListener {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey();
 
-  late AppTheme appTheme;
+  late Locale locale;
+  late ThemeData themeData;
 
   bool shouldDisplayLoginPage = true;
   bool isDisplayingLoginPage = true;
@@ -61,7 +59,8 @@ class AppController extends ConsumerState<App> with WindowListener {
         });
       }
     });
-    appTheme = ref.watch(appThemeViewModel);
+    locale = ref.watch(localeInfoViewModel).locale;
+    themeData = ref.watch(themeViewModel);
     isWindowMaximized = ref.watch(isWindowMaximizedViewModel);
     return AppView(this);
   }
@@ -119,16 +118,6 @@ class AppController extends ConsumerState<App> with WindowListener {
   }
 
   Locale? resolveLocale(
-      List<Locale>? locales, Iterable<Locale> supportedLocales) {
-    final locale = ref.read(userSettingsViewModel)?.locale;
-    if (locale != null) {
-      return locale;
-    }
-    final useSystemLocale = ref.read(useSystemLocaleViewModel);
-    if (useSystemLocale) {
-      return WidgetsBinding.instance.platformDispatcher.locale;
-    }
-    final localeName = ref.read(appLocalizationsViewModel).localeName;
-    return Locale(localeName);
-  }
+          List<Locale>? locales, Iterable<Locale> supportedLocales) =>
+      ref.read(localeInfoViewModel).locale;
 }

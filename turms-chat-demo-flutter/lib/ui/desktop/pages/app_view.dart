@@ -3,6 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 import '../../../infra/io/global_keyboard_listener.dart';
 import '../../l10n/app_localizations.dart';
+import '../../themes/app_theme_extension.dart';
 import '../../themes/theme_config.dart';
 import 'app_controller.dart';
 import 'home_page/home_page.dart';
@@ -15,14 +16,16 @@ class AppView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final appTheme = appController.appTheme;
+    final themeData = appController.themeData;
+    final appThemeExtension = themeData.extension<AppThemeExtension>()!;
+    final themeMode = appThemeExtension.themeMode;
     return MaterialApp(
-        locale: appTheme.locale,
+        locale: appController.locale,
         debugShowCheckedModeBanner: false,
         navigatorKey: appController.navigatorKey,
-        themeMode: appTheme.themeMode,
-        theme: ThemeConfig.getLightTheme(fontFamily: appTheme.fontFamily),
-        darkTheme: ThemeConfig.getDarkTheme(fontFamily: appTheme.fontFamily),
+        themeMode: themeMode,
+        theme: themeMode == ThemeMode.light ? themeData : null,
+        darkTheme: themeMode == ThemeMode.dark ? themeData : null,
         localizationsDelegates: const [
           AppLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,

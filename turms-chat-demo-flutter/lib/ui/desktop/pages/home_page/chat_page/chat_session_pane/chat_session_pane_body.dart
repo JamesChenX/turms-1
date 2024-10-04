@@ -3,21 +3,20 @@ import 'package:fixnum/fixnum.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/src/intl/date_format.dart';
 
 import '../../../../../../domain/conversation/models/conversation.dart';
 import '../../../../../../domain/message/models/message_group.dart';
 import '../../../../../../domain/message/models/message_type.dart';
-import '../../../../../../domain/user/fixtures/contacts.dart';
 import '../../../../../../domain/user/models/user.dart';
 import '../../../../../../domain/user/services/UserService.dart';
 import '../../../../../../domain/user/view_models/logged_in_user_info_view_model.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../../l10n/view_models/app_localizations_view_model.dart';
 import '../../../../../l10n/view_models/date_format_view_models.dart';
 import '../../../../../themes/theme_config.dart';
 import 'message.dart';
 import 'message_bubble/message_bubble.dart';
-import 'package:intl/src/intl/date_format.dart';
-import 'package:turms_chat_demo/ui/l10n/app_localizations.dart';
 
 class ChatSessionPaneBody extends ConsumerStatefulWidget {
   const ChatSessionPaneBody(this.selectedConversation, {super.key});

@@ -189,7 +189,8 @@ class _SettingsPaneView extends StatelessWidget {
             ),
             TFormFieldSelect(
               label: appLocalizations.theme,
-              value: _settingsPaneController.userSettings.theme,
+              value: _settingsPaneController.userSettings.theme ??
+                  ThemeMode.system,
               entries: [
                 TDropdownMenuEntry(
                     label: appLocalizations.systemTheme,

@@ -10,18 +10,16 @@ part './private_conversation.dart';
 
 sealed class Conversation {
   factory Conversation.from(
-      {required Contact contact, required List<ChatMessage> messages}) {
-    switch (contact) {
-      case UserContact():
-        return PrivateConversation(contact: contact, messages: messages);
-      case GroupContact():
-        return GroupConversation(contact: contact, messages: messages);
-      case SystemContact():
-        return PrivateConversation(
+          {required Contact contact, required List<ChatMessage> messages}) =>
+      switch (contact) {
+        UserContact() =>
+          PrivateConversation(contact: contact, messages: messages),
+        GroupContact() =>
+          GroupConversation(contact: contact, messages: messages),
+        SystemContact() => PrivateConversation(
             messages: messages,
-            contact: UserContact(userId: Int64(-1), name: contact.name));
-    }
-  }
+            contact: UserContact(userId: Int64(-1), name: contact.name))
+      };
 
   Conversation(
       {required this.id,

@@ -51,7 +51,7 @@ class ChatSessionPaneFooterView extends StatelessWidget {
               child: CallbackShortcuts(
                 bindings: {
                   const SingleActivator(LogicalKeyboardKey.enter):
-                      chatPageFooterController.sendInputMessage
+                      chatPageFooterController.sendMessage
                 },
                 child: TEditor(
                   controller: chatPageFooterController.editorController,
@@ -161,7 +161,7 @@ class ChatSessionPaneFooterView extends StatelessWidget {
                     iconData: Symbols.send_rounded,
                     iconColorHovered: ThemeConfig.primary,
                     tooltip: appLocalizations.send,
-                    onTap: chatPageFooterController.sendInputMessage)
+                    onTap: chatPageFooterController.sendMessage)
               ],
             ),
           ),

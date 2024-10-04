@@ -157,12 +157,12 @@ class ChatSessionPaneFooterController
     setState(() {});
   }
 
-  Future<void> sendInputMessage() async {
+  Future<void> sendMessage() async {
     final document = getEditorDocument();
     if (document.isBlank) {
       return;
     }
-    await sendMessage(document);
+    await _sendMessage(document);
   }
 
   void sendImage(
@@ -191,10 +191,10 @@ class ChatSessionPaneFooterController
         thumbnailUrl: thumbnailUrl,
         width: width,
         height: height);
-    sendMessage(text);
+    _sendMessage(text);
   }
 
-  Future<void> sendMessage(String text) async {
+  Future<void> _sendMessage(String text) async {
     final now = DateTime.now();
     final fakeMessageId = -RandomUtils.nextUniquePositiveInt64();
     // Note that: the timestamp may be different from the one the recipients received.
@@ -222,6 +222,7 @@ class ChatSessionPaneFooterController
 
     final sentMessage = await messageService.sendMessage(text, message);
 
+    // TODO: handle the case when the controller has already been changed.
     selectedConversationController.replaceMessage(
         fakeMessageId,
         message.copyWith(

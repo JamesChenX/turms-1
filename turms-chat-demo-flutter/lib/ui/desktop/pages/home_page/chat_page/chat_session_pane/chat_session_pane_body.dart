@@ -6,15 +6,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/src/intl/date_format.dart';
 
 import '../../../../../../domain/conversation/models/conversation.dart';
+import '../../../../../../domain/message/models/message_delivery_status.dart';
 import '../../../../../../domain/message/models/message_group.dart';
 import '../../../../../../domain/message/models/message_type.dart';
+import '../../../../../../domain/message/services/message_service.dart';
 import '../../../../../../domain/user/models/user.dart';
 import '../../../../../../domain/user/services/UserService.dart';
 import '../../../../../../domain/user/view_models/logged_in_user_info_view_model.dart';
+import '../../../../../../infra/random/random_utils.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../l10n/view_models/app_localizations_view_model.dart';
 import '../../../../../l10n/view_models/date_format_view_models.dart';
 import '../../../../../themes/theme_config.dart';
+import '../view_models/selected_conversation_view_model.dart';
 import 'message.dart';
 import 'message_bubble/message_bubble.dart';
 
@@ -178,9 +182,9 @@ class _ChatSessionPaneBodyState extends ConsumerState<ChatSessionPaneBody> {
           _ChatSessionItemDaySeparator(:final datetime) => _buildDaySeparator(
               item, yesterday, datetime, appLocalizations, dateFormat),
           _ChatSessionItemMessage(:final message) =>
-            _buildMessages([message], loggedInUser, conversation, item),
+            _buildMessages(conversation, [message], loggedInUser, item),
           _ChatSessionItemMessageGroup(:final messageGroup) => _buildMessages(
-              messageGroup.messages, loggedInUser, conversation, item)
+              conversation, messageGroup.messages, loggedInUser, item)
         };
       },
     );
@@ -229,41 +233,87 @@ class _ChatSessionPaneBodyState extends ConsumerState<ChatSessionPaneBody> {
         ),
       );
 
-  MessageBubble _buildMessages(List<ChatMessage> messages, User loggedInUser,
-      Conversation conversation, _ChatSessionItem item) {
-    final User user;
+  MessageBubble _buildMessages(Conversation conversation,
+      List<ChatMessage> messages, User loggedInUser, _ChatSessionItem item) {
     final message = messages.first;
-    if (message.sentByMe) {
-      user = loggedInUser;
-    } else if (conversation is PrivateConversation) {
-      user = conversation.contact;
-    } else {
-      user = userService.queryUsers(message.senderId);
-    }
+    final user = _getMessageSender(conversation, message, loggedInUser);
     return MessageBubble(
       key: ValueKey(item.id),
       currentUser: loggedInUser,
       sender: user,
       messages: messages,
-      onRetry: message.sentByMe ? () {} : null,
+      onRetry: message.sentByMe
+          ? () async {
+              await _sendMessage(conversation, message);
+            }
+          : null,
     );
   }
 
-  void _loadMoreMessages() {
+  Future<void> _sendMessage(
+      Conversation conversation, ChatMessage message) async {
+    final now = DateTime.now();
+    final previousMessageId = message.messageId;
+    final fakeMessageId = -RandomUtils.nextUniquePositiveInt64();
+    // Note that: the timestamp may be different from the one the recipients received.
+    // TODO: Use the server time for reference,
+    //  especially when the device time is not correct.
+    final DateTime tempTimestamp;
+    final lastMessageTimestamp = conversation.messages.lastOrNull?.timestamp;
+    if (lastMessageTimestamp == null ||
+        lastMessageTimestamp.compareTo(now) < 0) {
+      tempTimestamp = now;
+    } else {
+      tempTimestamp = lastMessageTimestamp.add(const Duration(milliseconds: 1));
+    }
+    message = message.copyWith(
+        messageId: fakeMessageId,
+        timestamp: tempTimestamp,
+        status: MessageDeliveryStatus.delivering);
+    final selectedConversationController =
+        ref.read(selectedConversationViewModel.notifier)
+          ..removeMessage(previousMessageId)
+          ..addMessage(message);
+    setState(() {});
+
+    final sentMessage = await messageService.sendMessage(message.text, message);
+
+    // TODO: handle the case when the controller has already been changed.
+    selectedConversationController.replaceMessage(
+        fakeMessageId,
+        message.copyWith(
+            messageId: sentMessage.messageId,
+            status: sentMessage.status,
+            // Note that this will update the timestamp UI of the message
+            // if the received timestamp is different from the fake one,
+            // which is expected to ensure the timestamp is consistent with the server and recipients.
+            timestamp: sentMessage.timestamp));
+  }
+
+  User _getMessageSender(
+      Conversation conversation, ChatMessage message, User loggedInUser) {
+    if (message.sentByMe) {
+      return loggedInUser;
+    } else if (conversation is PrivateConversation) {
+      return conversation.contact;
+    } else {
+      return userService.queryUsers(message.senderId);
+    }
+  }
+
+  Future<void> _loadMoreMessages() async {
     if (_isLoading) {
       return;
     }
     _isLoading = true;
     setState(() {});
-    // Simulate loading messages
-    Future<void>.delayed(const Duration(seconds: 2), () {
-      // final newMessages = List<String>.generate(
-      //     10, (index) => 'New Message ${messages.length + index}');
-      // messages.insertAll(0, newMessages);
-
-      _isLoading = false;
-      setState(() {});
-    });
+    final messages = await messageService.queryMoreMessages();
+    // TODO: add messages to the conversation.
+    _isLoading = false;
+    if (!mounted) {
+      return;
+    }
+    setState(() {});
   }
 
   void _scrollToBottom() {

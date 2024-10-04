@@ -57,6 +57,10 @@ class SelectedConversationViewModelNotifier extends Notifier<Conversation?> {
   void notifyListeners() {
     ref.notifyListeners();
   }
+
+  void removeMessage(Int64 messageId) {
+    state!.messages.removeWhere((element) => element.messageId == messageId);
+  }
 }
 
 final selectedConversationViewModel =

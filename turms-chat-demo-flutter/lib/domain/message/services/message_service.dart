@@ -185,6 +185,13 @@ class MessageService {
     await Future<void>.delayed(const Duration(seconds: 1));
     return message;
   }
+
+  Future<List<ChatMessage>> queryMoreMessages() async {
+    await Future<void>.delayed(const Duration(seconds: 2));
+    // final messageTexts =  List<String>.generate(
+    //     10, (index) => 'New Message $index');
+    return List.empty();
+  }
 }
 
 MessageService messageService = MessageService();

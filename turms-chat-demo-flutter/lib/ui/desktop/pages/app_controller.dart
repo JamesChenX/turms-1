@@ -46,6 +46,10 @@ class AppController extends ConsumerState<App> with WindowListener {
 
   @override
   Widget build(BuildContext context) {
+    locale = ref.watch(localeInfoViewModel).locale;
+    themeData = ref.watch(themeViewModel);
+    isWindowMaximized = ref.watch(isWindowMaximizedViewModel);
+
     ref.listen(loggedInUserViewModel,
         (previousLoggedInUser, currentLoggedInUser) {
       final displayLoginPage = currentLoggedInUser == null;
@@ -59,9 +63,6 @@ class AppController extends ConsumerState<App> with WindowListener {
         });
       }
     });
-    locale = ref.watch(localeInfoViewModel).locale;
-    themeData = ref.watch(themeViewModel);
-    isWindowMaximized = ref.watch(isWindowMaximizedViewModel);
     return AppView(this);
   }
 

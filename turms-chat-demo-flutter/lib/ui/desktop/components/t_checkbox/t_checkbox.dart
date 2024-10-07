@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../themes/theme_config.dart';
+import '../../../themes/index.dart';
 
 class TCheckbox extends StatefulWidget {
   const TCheckbox(this.initialValue, this.text,
@@ -21,6 +21,7 @@ class _TCheckboxState extends State<TCheckbox> {
   @override
   Widget build(BuildContext context) {
     isChecked ??= widget.initialValue;
+    final appThemeExtension = context.appThemeExtension;
     return MouseRegion(
         cursor: SystemMouseCursors.click,
         child: GestureDetector(
@@ -37,8 +38,8 @@ class _TCheckboxState extends State<TCheckbox> {
                 visualDensity:
                     const VisualDensity(horizontal: -4, vertical: -4),
                 splashRadius: 0,
-                side: const BorderSide(
-                  color: ThemeConfig.checkboxColor,
+                side: BorderSide(
+                  color: appThemeExtension.checkboxColor,
                   width: 2,
                 ),
                 checkColor: Colors.white,
@@ -51,9 +52,7 @@ class _TCheckboxState extends State<TCheckbox> {
                 },
               ),
             ),
-            Text(widget.text,
-                style: const TextStyle(
-                    color: ThemeConfig.textColorSecondary, fontSize: 16))
+            Text(widget.text, style: appThemeExtension.checkboxTextStyle)
           ]),
         ));
   }

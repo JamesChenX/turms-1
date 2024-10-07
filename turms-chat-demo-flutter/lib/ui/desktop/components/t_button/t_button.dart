@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import '../../../themes/theme_config.dart';
+import '../../../themes/index.dart';
 import '../t_tooltip/t_tooltip.dart';
 
 class TButton extends StatefulWidget {
@@ -16,7 +16,7 @@ class TButton extends StatefulWidget {
       this.containerPadding,
       this.containerBorder,
       this.containerBorderHovered,
-      this.containerBorderRadius = ThemeConfig.borderRadius4,
+      this.containerBorderRadius = Sizes.borderRadiusCircular4,
       this.isLoading = false,
       this.disabled = false,
       this.tooltip,
@@ -58,6 +58,7 @@ class _TButtonState extends State<TButton> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.theme;
     var child = _isPressed
         ? (widget.childPressed ?? widget.childHovered ?? widget.child)
         : _isHovered
@@ -100,7 +101,7 @@ class _TButtonState extends State<TButton> {
           duration: const Duration(milliseconds: 200),
           decoration: BoxDecoration(
             color: widget.disabled
-                ? ThemeConfig.colorDisabled
+                ? theme.disabledColor
                 : widget.isLoading
                     ? widget.containerColor?.withValues(alpha: 0.5)
                     : _isHovered

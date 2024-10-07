@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../l10n/view_models/date_format_view_models.dart';
-import '../../../themes/theme_config.dart';
+import '../../../themes/index.dart';
+
 import '../index.dart';
 
 part 't_date_range_input.dart';

@@ -6,7 +6,8 @@ import '../../../../../../domain/conversation/models/conversation.dart';
 import '../../../../../../domain/user/models/index.dart';
 import '../../../../../../infra/ui/text_utils.dart';
 import '../../../../../l10n/view_models/app_localizations_view_model.dart';
-import '../../../../../themes/theme_config.dart';
+
+import '../../../../../themes/index.dart';
 import 'conversation_tile.dart';
 import 'sub_navigation_rail_controller.dart';
 
@@ -73,7 +74,8 @@ class _ConversationTilesState extends ConsumerState<ConversationTiles> {
                   1 => TextUtils.highlightSearchText(
                       text: conversation.messages[0].text,
                       searchText: subNavigationRailController.searchText,
-                      searchTextStyle: ThemeConfig.textStyleHighlight),
+                      searchTextStyle:
+                          context.appThemeExtension.highlightTextStyle),
                   _ => [
                       TextSpan(
                           text: relatedMessages(conversation.messages.length))

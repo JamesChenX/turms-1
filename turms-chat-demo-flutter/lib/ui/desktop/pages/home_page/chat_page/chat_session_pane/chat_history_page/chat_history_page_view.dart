@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../../../../l10n/app_localizations.dart';
-import '../../../../../../themes/theme_config.dart';
+import '../../../../../../themes/index.dart';
+
 import '../../../../../components/index.dart';
 import 'chat_history_page_controller.dart';
 
@@ -16,16 +17,17 @@ class ChatHistoryPageView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appLocalizations = chatHistoryController.appLocalizations;
+    final appThemeExtension = context.appThemeExtension;
     return SizedBox(
-      width: ThemeConfig.dialogWidthMedium,
-      height: ThemeConfig.dialogHeightMedium,
+      width: Sizes.dialogWidthMedium,
+      height: Sizes.dialogHeightMedium,
       child: Stack(
         children: [
           Positioned.fill(
             child: _buildPage(appLocalizations),
           ),
-          const TTitleBar(
-            backgroundColor: ThemeConfig.homePageBackgroundColor,
+          TTitleBar(
+            backgroundColor: appThemeExtension.homePageBackgroundColor,
             displayCloseOnly: true,
             popOnCloseTapped: true,
           )
@@ -35,9 +37,9 @@ class ChatHistoryPageView extends StatelessWidget {
   }
 
   Column _buildPage(AppLocalizations appLocalizations) => Column(children: [
-        const SizedBox(height: 16),
+        Sizes.sizedBoxH16,
         Text(appLocalizations.addNewRelationship),
-        const SizedBox(height: 16),
+        Sizes.sizedBoxH16,
         Padding(
           padding:
               const EdgeInsets.symmetric(horizontal: safeAreaPaddingHorizontal),
@@ -48,18 +50,19 @@ class ChatHistoryPageView extends StatelessWidget {
             onSubmitted: chatHistoryController.search,
           ),
         ),
-        const SizedBox(height: 8),
+        Sizes.sizedBoxH8,
         Expanded(
           child: Stack(
             children: [
               Column(
+                spacing: 8,
                 children: [
                   Align(
                     alignment: Alignment.centerLeft,
                     child: TabBar(
                       isScrollable: true,
                       tabAlignment: TabAlignment.start,
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      padding: Sizes.paddingH8,
                       dividerHeight: 0,
                       controller: chatHistoryController.tabController,
                       tabs: [
@@ -74,7 +77,6 @@ class ChatHistoryPageView extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 8),
                   Expanded(child: _buildSearchResultTabView())
                 ],
               ),

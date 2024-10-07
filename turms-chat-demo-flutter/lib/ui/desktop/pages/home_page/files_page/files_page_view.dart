@@ -6,7 +6,7 @@ import '../../../../../domain/file/fixtures/files.dart';
 import '../../../../../infra/units/file_size_extensions.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../l10n/view_models/date_format_view_models.dart';
-import '../../../../themes/theme_config.dart';
+import '../../../../themes/index.dart';
 import '../../../components/index.dart';
 import '../../../components/t_table/t_table.dart';
 import 'file_icon/file_icon.dart';
@@ -19,28 +19,29 @@ class FilesPageView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final appThemeExtension = context.appThemeExtension;
     final appLocalizations = filesPageController.appLocalizations;
     return Column(
       children: [
-        _buildQueryFilters(context, appLocalizations),
-        _buildTable(context, appLocalizations, ref),
+        _buildQueryFilters(context, appThemeExtension, appLocalizations),
+        _buildTable(context, appThemeExtension, appLocalizations, ref),
       ],
     );
   }
 
-  Widget _buildQueryFilters(
-      BuildContext context, AppLocalizations appLocalizations) {
+  Widget _buildQueryFilters(BuildContext context,
+      AppThemeExtension appThemeExtension, AppLocalizations appLocalizations) {
     final now = DateTime.now();
     return ColoredBox(
-      color: ThemeConfig.homePageBackgroundColor,
+      color: appThemeExtension.homePageBackgroundColor,
       child: ConstrainedBox(
-        constraints: const BoxConstraints.tightFor(
-            height: ThemeConfig.homePageHeaderHeight),
+        constraints:
+            const BoxConstraints.tightFor(height: Sizes.homePageHeaderHeight),
         child: Stack(children: [
           const TWindowControlZone(toggleMaximizeOnDoubleTap: true),
           Center(
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+              padding: Sizes.paddingV16H8,
               child: Row(
                 spacing: 16,
                 children: [
@@ -65,8 +66,8 @@ class FilesPageView extends ConsumerWidget {
     );
   }
 
-  Widget _buildTable(
-      BuildContext context, AppLocalizations appLocalizations, WidgetRef ref) {
+  Widget _buildTable(BuildContext context, AppThemeExtension appThemeExtension,
+      AppLocalizations appLocalizations, WidgetRef ref) {
     // use "add_Hm()" instead of "add_jm()"
     // to make the string short and concise
     final dateFormat = ref.watch(dateFormatViewModel_yMdHm);
@@ -74,21 +75,23 @@ class FilesPageView extends ConsumerWidget {
       child: TTable(
         header: TTableRow(cells: [
           const TTableDataCell(widget: Icon(Symbols.insert_drive_file_rounded)),
-          _buildHeaderCell(appLocalizations.fileName),
-          _buildHeaderCell(appLocalizations.fileUploadDate),
-          _buildHeaderCell(appLocalizations.fileUploader),
-          _buildHeaderCell(appLocalizations.fileSize),
-          _buildHeaderCell(appLocalizations.progress),
+          _buildHeaderCell(appThemeExtension, appLocalizations.fileName),
+          _buildHeaderCell(appThemeExtension, appLocalizations.fileUploadDate),
+          _buildHeaderCell(appThemeExtension, appLocalizations.fileUploader),
+          _buildHeaderCell(appThemeExtension, appLocalizations.fileSize),
+          _buildHeaderCell(appThemeExtension, appLocalizations.progress),
         ]),
         rows: fixtureFiles
             .map((e) => TTableRow(
                   onTap: filesPageController.downloadOrOpen,
                   cells: [
                     TTableDataCell(widget: FileIcon(fileFormat: e.type)),
-                    _buildTextDataCell(e.name, false),
-                    _buildTextDataCell(dateFormat.format(e.uploadDate), true),
-                    _buildTextDataCell(e.uploader, true),
-                    _buildTextDataCell(e.size.toHumanReadableFileSize(), true),
+                    _buildTextDataCell(appThemeExtension, e.name, false),
+                    _buildTextDataCell(appThemeExtension,
+                        dateFormat.format(e.uploadDate), true),
+                    _buildTextDataCell(appThemeExtension, e.uploader, true),
+                    _buildTextDataCell(appThemeExtension,
+                        e.size.toHumanReadableFileSize(), true),
                     const TTableDataCell(
                         widget: Padding(
                       padding: EdgeInsets.only(right: 16),
@@ -109,17 +112,20 @@ class FilesPageView extends ConsumerWidget {
     );
   }
 
-  TTableDataCell _buildHeaderCell(String title) => TTableDataCell(
-      widget: Text(title,
-          style: ThemeConfig.fileTableTitleTextStyle,
-          overflow: TextOverflow.ellipsis));
+  TTableDataCell _buildHeaderCell(
+          AppThemeExtension appThemeExtension, String title) =>
+      TTableDataCell(
+          widget: Text(title,
+              style: appThemeExtension.fileTableTitleTextStyle,
+              overflow: TextOverflow.ellipsis));
 
-  TTableDataCell _buildTextDataCell(String text, bool isSecondary) =>
+  TTableDataCell _buildTextDataCell(
+          AppThemeExtension appThemeExtension, String text, bool isSecondary) =>
       TTableDataCell(
           widget: Text(
         text,
         overflow: TextOverflow.ellipsis,
         maxLines: 2,
-        style: isSecondary ? ThemeConfig.fileTableSecondaryTextStyle : null,
+        style: isSecondary ? appThemeExtension.fileTableCellTextStyle : null,
       ));
 }

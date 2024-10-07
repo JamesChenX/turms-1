@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 
-import '../../../themes/theme_config.dart';
+import '../../../themes/index.dart';
 
 class THorizontalDivider extends StatelessWidget {
-  const THorizontalDivider(
-      {Key? key, this.color = ThemeConfig.dividerColor, this.thickness = 1.0})
+  const THorizontalDivider({Key? key, this.color, this.thickness = 1.0})
       : super(key: key);
 
-  final Color color;
+  final Color? color;
   final double thickness;
 
   @override
@@ -16,6 +15,6 @@ class THorizontalDivider extends StatelessWidget {
       height: thickness,
       child: DecoratedBox(
           decoration: BoxDecoration(
-        color: color,
+        color: color ?? context.theme.dividerColor,
       )));
 }

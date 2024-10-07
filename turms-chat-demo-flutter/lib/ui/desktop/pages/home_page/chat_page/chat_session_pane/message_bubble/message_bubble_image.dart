@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../../../../infra/env/env_vars.dart';
 import '../../../../../../../infra/ui/size_utils.dart';
-import '../../../../../../themes/theme_config.dart';
+import '../../../../../../themes/index.dart';
 import '../../../../../components/index.dart';
 import 'message_image_provider.dart';
 
@@ -71,7 +71,7 @@ class _MessageBubbleImageState extends State<MessageBubbleImage> {
           if (loadingProgress == null &&
               ((child as Semantics).child as RawImage).image != null) {
             return ClipRRect(
-              borderRadius: ThemeConfig.borderRadius4,
+              borderRadius: Sizes.borderRadiusCircular4,
               child: Padding(
                 padding: const EdgeInsets.all(_imageBorderWidth),
                 child: child,
@@ -82,7 +82,7 @@ class _MessageBubbleImageState extends State<MessageBubbleImage> {
               width: _width,
               height: _height,
               child: const ClipRRect(
-                borderRadius: ThemeConfig.borderRadius4,
+                borderRadius: Sizes.borderRadiusCircular4,
                 child: DecoratedBox(
                     decoration: BoxDecoration(color: Colors.black12),
                     child:

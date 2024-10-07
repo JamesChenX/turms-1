@@ -3,7 +3,8 @@ import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../../../../../infra/built_in_types/built_in_type_helpers.dart';
 import '../../../../../../../infra/env/env_vars.dart';
-import '../../../../../../themes/theme_config.dart';
+import '../../../../../../themes/index.dart';
+
 import '../../../../../components/giphy/client/models/gif.dart';
 import '../../../../../components/index.dart';
 import 'emoji_picker_pane.dart';
@@ -31,13 +32,10 @@ class _StickerPickerState extends State<StickerPicker> {
   Widget build(BuildContext context) => Material(
         color: Colors.transparent,
         child: SizedBox(
-          height: 460,
-          width: 460,
+          width: Sizes.stickerPickerWidth,
+          height: Sizes.stickerPickerHeight,
           child: DecoratedBox(
-            decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: ThemeConfig.borderRadius8,
-                boxShadow: ThemeConfig.boxShadow),
+            decoration: context.appThemeExtension.popupDecoration,
             child: Padding(
               padding: const EdgeInsets.only(top: 16),
               child: _isGiphyEnabled
@@ -45,7 +43,7 @@ class _StickerPickerState extends State<StickerPicker> {
                       children: [
                         Flexible(
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            padding: Sizes.paddingH16,
                             child: TLazyIndexedStack(
                               index: switch (_currentTab) {
                                 _Tab.emoji => 0,

@@ -6,7 +6,7 @@ import '../../../../../../../domain/message/models/message_delivery_status.dart'
 import '../../../../../../../domain/message/models/message_type.dart';
 import '../../../../../../../domain/user/models/user.dart';
 import '../../../../../../l10n/view_models/date_format_view_models.dart';
-import '../../../../../../themes/theme_config.dart';
+import '../../../../../../themes/index.dart';
 import '../../../shared_components/user_profile_popup.dart';
 import '../message.dart';
 import 'message_bubble_audio.dart';
@@ -39,7 +39,7 @@ class _MessageBubbleState extends ConsumerState<MessageBubble> {
   Widget build(BuildContext context) {
     _now = DateTime.now();
     return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+        padding: Sizes.paddingV4H8,
         child: widget.messages.first.sentByMe
             ? _buildSentMessageBubble(context)
             : _buildReceivedMessageBubble(context));
@@ -56,7 +56,7 @@ class _MessageBubbleState extends ConsumerState<MessageBubble> {
       children: [
         if (messageCount == 1)
           _buildMessage(context, MainAxisAlignment.start, messages.first,
-              CrossAxisAlignment.end, ThemeConfig.borderRadius4)
+              CrossAxisAlignment.end, Sizes.borderRadiusCircular4)
         else
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -87,7 +87,7 @@ class _MessageBubbleState extends ConsumerState<MessageBubble> {
           ),
         UserProfilePopup(
           user: widget.sender,
-          faceLeft: true,
+          popupAnchor: Alignment.topRight,
         )
       ],
     );
@@ -103,7 +103,7 @@ class _MessageBubbleState extends ConsumerState<MessageBubble> {
         UserProfilePopup(user: widget.sender),
         if (messageCount == 1)
           _buildMessage(context, MainAxisAlignment.end, messages.first,
-              CrossAxisAlignment.start, ThemeConfig.borderRadius4)
+              CrossAxisAlignment.start, Sizes.borderRadiusCircular4)
         else
           Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -142,6 +142,7 @@ class _MessageBubbleState extends ConsumerState<MessageBubble> {
       CrossAxisAlignment? infoAlignment,
       BorderRadius borderRadius) {
     final deliveryStatus = message.status;
+    final appThemeExtension = context.appThemeExtension;
     return Row(
       mainAxisAlignment: mainAxisAlignment,
       spacing: 12,
@@ -153,16 +154,17 @@ class _MessageBubbleState extends ConsumerState<MessageBubble> {
               onTap: () async {
                 await widget.onRetry!();
               },
-              child: const DecoratedBox(
+              child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: ThemeConfig.messageBubbleErrorIconBackgroundColor,
+                  color:
+                      appThemeExtension.messageBubbleErrorIconBackgroundColor,
                   shape: BoxShape.circle,
                 ),
                 child: Padding(
-                  padding: EdgeInsets.all(1),
+                  padding: const EdgeInsets.all(1),
                   child: Icon(
                     Symbols.exclamation_rounded,
-                    color: ThemeConfig.messageBubbleErrorIconColor,
+                    color: appThemeExtension.messageBubbleErrorIconColor,
                     size: 20,
                   ),
                 ),

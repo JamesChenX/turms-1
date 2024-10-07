@@ -20,7 +20,7 @@ import '../../../../l10n/view_models/app_localizations_view_model.dart';
 import '../../../../l10n/view_models/system_locale_info_view_model.dart';
 import '../../../../themes/app_theme_extension.dart';
 import '../../../../themes/app_theme_view_model.dart';
-import '../../../../themes/theme_config.dart';
+
 import '../../../components/index.dart';
 import '../action_to_shortcut_view_model.dart';
 import '../home_page_action.dart';

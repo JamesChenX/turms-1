@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/user/view_models/user_settings_view_model.dart';
 import '../l10n/view_models/index.dart';
-import 'theme_config.dart';
+import 'themes.dart';
 
 final themeViewModel = StateProvider<ThemeData>((ref) {
   final observer = _PlatformBrightnessObserver(ref);
@@ -16,8 +16,8 @@ final themeViewModel = StateProvider<ThemeData>((ref) {
   final localeInfo = ref.watch(localeInfoViewModel);
   final fontFamily = _getFontFamily(localeInfo.locale);
   return switch (userSettings?.theme) {
-    ThemeMode.light => ThemeConfig.getLightTheme(fontFamily: fontFamily),
-    ThemeMode.dark => ThemeConfig.getDarkTheme(fontFamily: fontFamily),
+    ThemeMode.light => getLightTheme(fontFamily: fontFamily),
+    ThemeMode.dark => getDarkTheme(fontFamily: fontFamily),
     _ =>
       _getThemeData(binding.platformDispatcher.platformBrightness, fontFamily),
   };
@@ -25,8 +25,8 @@ final themeViewModel = StateProvider<ThemeData>((ref) {
 
 ThemeData _getThemeData(Brightness brightness, String? fontFamily) =>
     switch (brightness) {
-      Brightness.dark => ThemeConfig.getDarkTheme(fontFamily: fontFamily),
-      Brightness.light => ThemeConfig.getLightTheme(fontFamily: fontFamily),
+      Brightness.dark => getDarkTheme(fontFamily: fontFamily),
+      Brightness.light => getLightTheme(fontFamily: fontFamily),
     };
 
 String? _getFontFamily(Locale? locale) {

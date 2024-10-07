@@ -10,13 +10,4 @@ class DateTimeUtils {
   static bool isBetween(DateTime date, DateTime? start, DateTime? end) =>
       (start != null && date.isAfter(start)) &&
       (end != null && date.isBefore(end));
-
-// static List<String> getDaysOfWeek([String locale]) {
-//   final now = DateTime.now();
-//   final firstDayOfWeek = now.subtract(Duration(days: now.weekday - 1));
-//   return List.generate(7, (index) => index)
-//       .map((value) => DateFormat(DateFormat.WEEKDAY, locale)
-//           .format(firstDayOfWeek.add(Duration(days: value))))
-//       .toList();
-// }
 }

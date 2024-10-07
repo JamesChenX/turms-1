@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../domain/user/models/contact.dart';
 import '../../../../l10n/view_models/app_localizations_view_model.dart';
+import '../../../../themes/index.dart';
 import '../../../components/index.dart';
 import 'new_relationship_page_view.dart';
 
@@ -37,8 +38,7 @@ class RelationshipInfoTile extends ConsumerWidget {
               text: isGroup
                   ? appLocalizations.joinGroup
                   : appLocalizations.addContact,
-              containerPadding:
-                  const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              containerPadding: Sizes.paddingV4H8,
               onTap: onTap),
         ]));
   }

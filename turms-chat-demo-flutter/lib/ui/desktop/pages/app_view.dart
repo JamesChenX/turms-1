@@ -3,8 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 import '../../../infra/io/global_keyboard_listener.dart';
 import '../../l10n/app_localizations.dart';
-import '../../themes/app_theme_extension.dart';
-import '../../themes/theme_config.dart';
+import '../../themes/index.dart';
 import 'app_controller.dart';
 import 'home_page/home_page.dart';
 import 'login_page/login_page.dart';
@@ -39,13 +38,13 @@ class AppView extends StatelessWidget {
             onKeyEvent: appController.onKeyEvent,
             child: appController.shouldDisplayLoginPage
                 ? const ClipRRect(
-                    borderRadius: ThemeConfig.borderRadius8,
+                    borderRadius: Sizes.borderRadiusCircular8,
                     child: LoginPage(),
                   )
                 : ClipRRect(
                     borderRadius: appController.isWindowMaximized
-                        ? ThemeConfig.borderRadius0
-                        : ThemeConfig.borderRadius8,
+                        ? Sizes.borderRadius0
+                        : Sizes.borderRadiusCircular8,
                     child: const HomePage(),
                   ),
           ),

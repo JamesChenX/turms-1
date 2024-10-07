@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../l10n/view_models/app_localizations_view_model.dart';
+import '../../../themes/index.dart';
 import '../index.dart';
 import '../t_loading_indicator/t_loading_indicator.dart';
 import 'client/client.dart';
@@ -102,7 +103,7 @@ class _GiphyPickerBodyState extends ConsumerState<GiphyPickerBody> {
         mainAxisSpacing: _spacing,
         crossAxisSpacing: _spacing,
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      padding: Sizes.paddingH8,
       scrollDirection: _scrollDirection,
       controller: widget.scrollController,
       itemCount: gifs.length,
@@ -116,7 +117,7 @@ class _GiphyPickerBodyState extends ConsumerState<GiphyPickerBody> {
     final _aspectRatio = double.parse(image.width) / double.parse(image.height);
     final url = image.url;
     return ClipRRect(
-      borderRadius: BorderRadius.circular(10.0),
+      borderRadius: Sizes.borderRadiusCircular8,
       child: MouseRegion(
         cursor: SystemMouseCursors.click,
         child: GestureDetector(

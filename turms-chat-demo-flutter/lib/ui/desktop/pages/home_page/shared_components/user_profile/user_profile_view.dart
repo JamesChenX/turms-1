@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../themes/index.dart';
 import 'user_profile_controller.dart';
 import 'user_profile_image.dart';
 
@@ -21,7 +22,7 @@ class UserProfileView extends StatelessWidget {
           UserProfileImage(userProfileController: userProfileController),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
+              padding: Sizes.paddingV4,
               child: SelectionArea(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

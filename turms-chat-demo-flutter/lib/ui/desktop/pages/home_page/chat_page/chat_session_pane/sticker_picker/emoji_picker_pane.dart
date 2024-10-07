@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../../themes/theme_config.dart';
+import '../../../../../../themes/index.dart';
+
 import '../../../../../components/index.dart';
 
 const _emoticons = [
@@ -109,8 +110,8 @@ class EmojiPickerPane extends StatelessWidget {
           return TTextButton(
               text: text,
               textStyle: TextStyle(
-                fontFamily: ThemeConfig.emojiFontFamily,
-                fontFamilyFallback: ThemeConfig.emojiFontFamilyFallback,
+                fontFamily: Fonts.emojiFontFamily,
+                fontFamilyFallback: Fonts.emojiFontFamilyFallback,
                 fontSize: 26,
               ),
               containerPadding: EdgeInsets.zero,

@@ -15,7 +15,8 @@ import '../../../../infra/rust/api/system.dart';
 import '../../../../infra/task/task_utils.dart';
 import '../../../../infra/units/file_size_extensions.dart';
 import '../../../l10n/view_models/app_localizations_view_model.dart';
-import '../../../themes/theme_config.dart';
+import '../../../themes/index.dart';
+
 import '../../components/index.dart';
 import 'about_page/about_page.dart';
 import 'action_to_shortcut_view_model.dart';
@@ -42,6 +43,7 @@ class HomePageLandscape extends ConsumerStatefulWidget {
 class _HomePageLandscapeState extends ConsumerState<HomePageLandscape> {
   @override
   Widget build(BuildContext context) {
+    final appThemeExtension = context.appThemeExtension;
     final tab = ref.watch(homePageTabViewModel);
     final actionToShortcut = ref.watch(actionToShortcutViewModel);
     final bindings = <ShortcutActivator, VoidCallback>{};
@@ -101,8 +103,8 @@ class _HomePageLandscapeState extends ConsumerState<HomePageLandscape> {
                 ))
               ],
             ),
-            const TTitleBar(
-                backgroundColor: ThemeConfig.homePageBackgroundColor),
+            TTitleBar(
+                backgroundColor: appThemeExtension.homePageBackgroundColor),
           ],
         ),
       ),

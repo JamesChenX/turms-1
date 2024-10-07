@@ -16,7 +16,9 @@ class UserSettings {
   static (UserSettings, StackfulException?) fromTableData(
       List<UserSettingTableData> records) {
     final nameToSettingId = UserSettingId.values.asNameMap();
-    const settings = UserSettings({});
+    // don't use const as the map should be mutable.
+    // ignore: prefer_const_constructors
+    final settings = UserSettings({});
     StackfulException? exception;
     for (final record in records) {
       final settingId = nameToSettingId[record.id];

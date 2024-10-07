@@ -20,7 +20,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../domain/user/models/index.dart';
 import '../../../../l10n/view_models/app_localizations_view_model.dart';
-import '../../../../themes/theme_config.dart';
+import '../../../../themes/index.dart';
+
 import '../../../components/t_avatar/t_avatar.dart';
 import '../../../components/t_button/t_text_button.dart';
 import '../../../components/t_image_viewer/t_image_viewer.dart';
@@ -34,12 +35,12 @@ class UserProfilePopup extends ConsumerStatefulWidget {
     super.key,
     required this.user,
     this.editable = false,
-    this.faceLeft = false,
+    this.popupAnchor = Alignment.topLeft,
   });
 
   final User user;
   final bool editable;
-  final bool faceLeft;
+  final Alignment popupAnchor;
 
   @override
   ConsumerState<UserProfilePopup> createState() => _UserProfilePopupState();
@@ -56,6 +57,7 @@ class _UserProfilePopupState extends ConsumerState<UserProfilePopup> {
 
   @override
   Widget build(BuildContext context) {
+    final appThemeExtension = context.appThemeExtension;
     final appLocalizations = ref.watch(appLocalizationsViewModel);
     final user = widget.user;
     final image = user.image;
@@ -66,7 +68,7 @@ class _UserProfilePopupState extends ConsumerState<UserProfilePopup> {
     return TPopup(
       controller: _popupController,
       targetAnchor: Alignment.center,
-      followerAnchor: widget.faceLeft ? Alignment.topRight : Alignment.topLeft,
+      followerAnchor: widget.popupAnchor,
       target: MouseRegion(
         cursor: SystemMouseCursors.click,
         child: image == null
@@ -79,17 +81,14 @@ class _UserProfilePopupState extends ConsumerState<UserProfilePopup> {
               ),
       ),
       follower: Material(
-        borderRadius: ThemeConfig.borderRadius4,
+        borderRadius: Sizes.borderRadiusCircular4,
         child: SizedBox(
-          height: 160,
-          width: 280,
+          width: Sizes.userProfilePopupWidth,
+          height: Sizes.userProfilePopupHeight,
           child: DecoratedBox(
-            decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: ThemeConfig.borderRadius4,
-                boxShadow: ThemeConfig.boxShadow),
+            decoration: appThemeExtension.popupDecoration,
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: Sizes.paddingV16H16,
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -3,7 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import '../../../../themes/theme_config.dart';
+import '../../../../themes/index.dart';
+
 import '../../../components/t_checkbox/t_checkbox.dart';
 import 'login_form_controller.dart';
 
@@ -14,12 +15,14 @@ class LoginFormView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = context.theme;
     final localizations = loginFormController.appLocalizations;
     loginFormController.rememberMe ??=
         loginFormController.appSettings.getRememberMe() ?? false;
     final isWaitingLoginRequest = loginFormController.isWaitingLoginRequest;
     final userLoginInfo = loginFormController.userLoginInfos.firstOrNull;
+    final borderError = UnderlineInputBorder(
+        borderSide: BorderSide(color: theme.colorScheme.error));
     return FocusScope(
       onKeyEvent: (node, event) {
         if (event is KeyDownEvent &&
@@ -37,7 +40,7 @@ class LoginFormView extends StatelessWidget {
               TextFormField(
                 autofocus: true,
                 initialValue: userLoginInfo?.userId.toString(),
-                cursorColor: ThemeConfig.primary,
+                cursorColor: theme.primaryColor,
                 // Length for the max digit of 8-bytes number
                 maxLength: 20,
                 keyboardType: TextInputType.number,
@@ -48,21 +51,19 @@ class LoginFormView extends StatelessWidget {
                     helperText: ' ',
                     // hide length counter
                     counterText: '',
-                    prefixIcon: const Icon(Symbols.person_outline_rounded,
-                        color: ThemeConfig.textColorSecondary),
+                    prefixIcon: Icon(Symbols.person_outline_rounded,
+                        color: theme.inputDecorationTheme.iconColor),
+                    // color: ThemeConfig.textColorSecondary),
                     isCollapsed: true,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 16),
-                    enabledBorder: const UnderlineInputBorder(
-                        borderSide: BorderSide(color: ThemeConfig.borderColor)),
-                    focusedBorder: const UnderlineInputBorder(
+                    contentPadding: Sizes.paddingV16,
+                    enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: theme.dividerColor)),
+                    focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(
-                      color: ThemeConfig.primary,
+                      color: theme.primaryColor,
                     )),
-                    errorBorder: const UnderlineInputBorder(
-                        borderSide: BorderSide(color: ThemeConfig.error)),
-                    focusedErrorBorder: const UnderlineInputBorder(
-                        borderSide:
-                            BorderSide(color: ThemeConfig.focusedError)),
+                    errorBorder: borderError,
+                    focusedErrorBorder: borderError,
                     hintText: localizations.userId),
                 onFieldSubmitted: (value) => loginFormController.submit(),
                 onSaved: loginFormController.setUserId,
@@ -75,28 +76,25 @@ class LoginFormView extends StatelessWidget {
               ),
               TextFormField(
                 initialValue: userLoginInfo?.password,
-                cursorColor: ThemeConfig.primary,
+                cursorColor: theme.primaryColor,
                 obscureText: true,
                 textAlignVertical: TextAlignVertical.center,
                 decoration: InputDecoration(
                     // fix height regardless of whether or not an error is displayed.
                     helperText: ' ',
                     // contentPadding: EdgeInsets.only(bottom: 8),
-                    prefixIcon: const Icon(Symbols.lock_outline_rounded,
-                        color: ThemeConfig.textColorSecondary),
+                    prefixIcon: Icon(Symbols.lock_outline_rounded,
+                        color: theme.inputDecorationTheme.iconColor),
                     isCollapsed: true,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 16),
-                    enabledBorder: const UnderlineInputBorder(
-                        borderSide: BorderSide(color: ThemeConfig.borderColor)),
-                    focusedBorder: const UnderlineInputBorder(
+                    contentPadding: Sizes.paddingV16,
+                    enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: theme.dividerColor)),
+                    focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(
-                      color: ThemeConfig.primary,
+                      color: theme.primaryColor,
                     )),
-                    errorBorder: const UnderlineInputBorder(
-                        borderSide: BorderSide(color: ThemeConfig.error)),
-                    focusedErrorBorder: const UnderlineInputBorder(
-                        borderSide:
-                            BorderSide(color: ThemeConfig.focusedError)),
+                    errorBorder: borderError,
+                    focusedErrorBorder: borderError,
                     hintText: localizations.userPassword),
                 onFieldSubmitted: (value) => loginFormController.submit(),
                 onSaved: loginFormController.setPassword,
@@ -107,9 +105,7 @@ class LoginFormView extends StatelessWidget {
                   return null;
                 },
               ),
-              const SizedBox(
-                height: 12,
-              ),
+              Sizes.sizedBoxH12,
               TCheckbox(
                 loginFormController.rememberMe!,
                 localizations.rememberMe,
@@ -117,9 +113,7 @@ class LoginFormView extends StatelessWidget {
                   loginFormController.rememberMe = checked;
                 },
               ),
-              const SizedBox(
-                height: 32,
-              ),
+              Sizes.sizedBoxH32,
               _buildLoginButton(isWaitingLoginRequest, localizations, theme)
             ],
           )),
@@ -133,14 +127,14 @@ class LoginFormView extends StatelessWidget {
         style: FilledButton.styleFrom(
           minimumSize: const Size(0, 56),
           shape: const RoundedRectangleBorder(
-            borderRadius: ThemeConfig.borderRadius4,
+            borderRadius: Sizes.borderRadiusCircular4,
           ),
-          disabledBackgroundColor: ThemeConfig.primaryDisabled,
+          disabledBackgroundColor: theme.disabledColor,
         ),
         child: isWaitingLoginRequest
             ? const SizedBox(
-                height: 25,
-                width: 25,
+                height: 24,
+                width: 24,
                 child: RepaintBoundary(
                   child: CircularProgressIndicator(
                     color: Colors.white,

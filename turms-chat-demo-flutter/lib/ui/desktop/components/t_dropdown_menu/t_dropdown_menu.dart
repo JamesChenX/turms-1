@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
-import '../../../themes/theme_config.dart';
+import '../../../themes/index.dart';
+
 import '../t_popup/t_popup.dart';
 import '../t_text_field/t_text_field.dart';
 
@@ -60,10 +61,7 @@ class _TDropdownMenuState<T> extends ConsumerState<TDropdownMenu<T>> {
       ),
       follower: Material(
         child: DecoratedBox(
-          decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: ThemeConfig.borderRadius4,
-              boxShadow: ThemeConfig.boxShadow),
+          decoration: context.appThemeExtension.popupDecoration,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -79,7 +77,7 @@ class _TDropdownMenuState<T> extends ConsumerState<TDropdownMenu<T>> {
                     child: Row(
                       children: [
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: Sizes.paddingV8H8,
                           child: Text(entry.label),
                         ),
                       ],

@@ -8,7 +8,7 @@ import '../../../../../../infra/built_in_types/built_in_type_helpers.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../l10n/view_models/app_localizations_view_model.dart';
 import '../../../../../l10n/view_models/date_format_view_models.dart';
-import '../../../../../themes/theme_config.dart';
+import '../../../../../themes/index.dart';
 import '../../../../components/index.dart';
 import '../chat_session_pane/message.dart';
 
@@ -47,21 +47,24 @@ class _ConversationTileState extends ConsumerState<ConversationTile> {
   @override
   Widget build(BuildContext context) {
     final appLocalizations = ref.watch(appLocalizationsViewModel);
+    final appThemeExtension = context.appThemeExtension;
     _useBoldText =
         !widget.isSearchMode && widget.conversation.unreadMessageCount > 0;
     return TListTile(
       onTap: widget.onTap,
       focused: widget.selected,
       backgroundColor: widget.highlighted
-          ? ThemeConfig.conversationBackgroundColorHighlighted
-          : ThemeConfig.conversationBackgroundColor,
+          ? appThemeExtension.conversationBackgroundHighlightedColor
+          : appThemeExtension.conversationBackgroundColor,
       padding:
           // use more right padding to reserve space for scrollbar
           // TODO: adapt the padding to not hide part of text (e.g. contact name).
           const EdgeInsets.only(left: 10, right: 14, top: 12, bottom: 12),
       child: Row(mainAxisSize: MainAxisSize.min, spacing: 8, children: [
         _buildAvatar(),
-        Expanded(child: _buildConversation(appLocalizations, context))
+        Expanded(
+            child: _buildConversation(
+                appThemeExtension, appLocalizations, context))
       ]),
     );
   }
@@ -102,7 +105,7 @@ class _ConversationTileState extends ConsumerState<ConversationTile> {
         bottom: 0,
       );
 
-  Column _buildConversation(
+  Column _buildConversation(AppThemeExtension appThemeExtension,
       AppLocalizations localizations, BuildContext context) {
     final dateFormat = ref.watch(dateFormatViewModel_jm);
     final conversation = widget.conversation;
@@ -133,22 +136,20 @@ class _ConversationTileState extends ConsumerState<ConversationTile> {
                     ? ''
                     : dateFormat.format(lastMessage.timestamp),
                 style: _useBoldText
-                    ? const TextStyle(
-                        color: ThemeConfig.gray7,
-                        fontSize: 14,
-                        fontWeight: _fontWeightBold)
-                    : const TextStyle(color: ThemeConfig.gray7, fontSize: 14),
+                    ? appThemeExtension.conversationTileTimestampTextStyle
+                        .copyWith(fontWeight: _fontWeightBold)
+                    : appThemeExtension.conversationTileTimestampTextStyle,
                 strutStyle:
                     const StrutStyle(fontSize: 14, forceStrutHeight: true),
               )
             ],
           )),
-          _buildMessage(draft, localizations, lastMessage)
+          _buildMessage(draft, appThemeExtension, localizations, lastMessage)
         ]);
   }
 
-  Row _buildMessage(
-      String? draft, AppLocalizations localizations, ChatMessage? lastMessage) {
+  Row _buildMessage(String? draft, AppThemeExtension appThemeExtension,
+      AppLocalizations localizations, ChatMessage? lastMessage) {
     final children = draft?.isNotBlank ?? false
         ? [
             // Note: the draft is always a text instead of image, video, or etc as
@@ -156,9 +157,9 @@ class _ConversationTileState extends ConsumerState<ConversationTile> {
             TextSpan(
                 text: '[${localizations.draft}]',
                 style: _useBoldText
-                    ? ThemeConfig.textStyleHighlight
+                    ? appThemeExtension.highlightTextStyle
                         .copyWith(fontWeight: _fontWeightBold)
-                    : ThemeConfig.textStyleHighlight),
+                    : appThemeExtension.highlightTextStyle),
             TextSpan(text: draft),
           ]
         : lastMessage != null
@@ -203,10 +204,11 @@ class _ConversationTileState extends ConsumerState<ConversationTile> {
           child: widget.isSearchMode
               ? Text.rich(
                   TextSpan(children: widget.messageTextSpans),
-                  style:
-                      const TextStyle(color: ThemeConfig.gray7, fontSize: 14),
-                  strutStyle:
-                      const StrutStyle(fontSize: 14, forceStrutHeight: true),
+                  style: appThemeExtension.conversationTileMessageTextStyle,
+                  strutStyle: StrutStyle(
+                      fontSize: appThemeExtension
+                          .conversationTileMessageTextStyle.fontSize,
+                      forceStrutHeight: true),
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                   softWrap: false,
@@ -214,14 +216,9 @@ class _ConversationTileState extends ConsumerState<ConversationTile> {
               : Text.rich(
                   TextSpan(children: children),
                   style: _useBoldText
-                      ? const TextStyle(
-                          color: ThemeConfig.gray7,
-                          fontSize: 14,
-                          fontWeight: _fontWeightBold)
-                      : const TextStyle(
-                          color: ThemeConfig.gray7,
-                          fontSize: 14,
-                        ),
+                      ? appThemeExtension.conversationTileMessageTextStyle
+                          .copyWith(fontWeight: _fontWeightBold)
+                      : appThemeExtension.conversationTileMessageTextStyle,
                   strutStyle:
                       const StrutStyle(fontSize: 14, forceStrutHeight: true),
                   overflow: TextOverflow.ellipsis,

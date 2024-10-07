@@ -5,7 +5,8 @@ import '../../../../../domain/user/models/index.dart';
 import '../../../../../infra/built_in_types/built_in_type_helpers.dart';
 import '../../../../../infra/ui/text_utils.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../../themes/theme_config.dart';
+
+import '../../../../themes/index.dart';
 import '../../../components/index.dart';
 import 'create_group_page_controller.dart';
 
@@ -17,21 +18,21 @@ class CreateGroupPageView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appLocalizations = createGroupPageController.appLocalizations;
-    return _buildBody(appLocalizations);
+    return _buildBody(context, appLocalizations);
   }
 
-  Widget _buildBody(AppLocalizations appLocalizations) => Padding(
-        padding: ThemeConfig.paddingV8H16,
+  Widget _buildBody(BuildContext context, AppLocalizations appLocalizations) =>
+      Padding(
+        padding: Sizes.paddingV8H16,
         child: Column(children: [
           Text(appLocalizations.createGroup),
-          const SizedBox(
-            height: 16,
-          ),
+          Sizes.sizedBoxH16,
           Expanded(
             child: DecoratedBox(
               decoration: BoxDecoration(
-                  border: Border.all(color: ThemeConfig.dividerColor),
-                  borderRadius: ThemeConfig.borderRadius4),
+                  border: Border.all(
+                      color: createGroupPageController.theme.dividerColor),
+                  borderRadius: Sizes.borderRadiusCircular4),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 1),
                 child: Column(
@@ -41,7 +42,7 @@ class CreateGroupPageView extends StatelessWidget {
                         children: [
                           Expanded(
                               child: Padding(
-                            padding: ThemeConfig.paddingH8,
+                            padding: Sizes.paddingH8,
                             child: TSearchBar(
                               hintText: appLocalizations.search,
                               onChanged:
@@ -73,10 +74,8 @@ class CreateGroupPageView extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(
-            height: 12,
-          ),
-          _buildActions()
+          Sizes.sizedBoxH12,
+          _buildActions(context)
         ]),
       );
 
@@ -88,7 +87,8 @@ class CreateGroupPageView extends StatelessWidget {
       final spans = TextUtils.highlightSearchText(
           text: contact.name,
           searchText: searchText,
-          searchTextStyle: ThemeConfig.textStyleHighlight);
+          searchTextStyle:
+              createGroupPageController.appThemeExtension.highlightTextStyle);
       if (spans.length == 1 && isSearchMode) {
         return [];
       }
@@ -108,7 +108,7 @@ class CreateGroupPageView extends StatelessWidget {
           return TListTile(
             key: Key(userContact.id),
             backgroundColor: Colors.white,
-            padding: ThemeConfig.paddingH8,
+            padding: Sizes.paddingH8,
             height: 40,
             child: Row(
               spacing: 8,
@@ -160,7 +160,7 @@ class CreateGroupPageView extends StatelessWidget {
           return TListTile(
             key: Key(userContact.id),
             backgroundColor: Colors.white,
-            padding: ThemeConfig.paddingH8,
+            padding: Sizes.paddingH8,
             height: 40,
             child: Row(
               children: [
@@ -168,7 +168,7 @@ class CreateGroupPageView extends StatelessWidget {
                   name: userContact.name,
                   size: TAvatarSize.small,
                 ),
-                const SizedBox(width: 8),
+                Sizes.sizedBoxW8,
                 Expanded(
                   child: Text(
                     userContact.name,
@@ -179,7 +179,8 @@ class CreateGroupPageView extends StatelessWidget {
                 ),
                 TIconButton(
                   iconData: Symbols.close_rounded,
-                  iconColor: ThemeConfig.textColorSecondary,
+                  iconColor: createGroupPageController
+                      .appThemeExtension.descriptionTextStyle.color!,
                   iconSize: 16,
                   addContainer: false,
                   onTap: () {
@@ -193,13 +194,14 @@ class CreateGroupPageView extends StatelessWidget {
         });
   }
 
-  Widget _buildActions() => Row(
+  Widget _buildActions(BuildContext context) => Row(
         mainAxisAlignment: MainAxisAlignment.end,
         spacing: 16,
         children: [
           TTextButton.outlined(
+            theme: createGroupPageController.theme,
             text: createGroupPageController.appLocalizations.cancel,
-            containerPadding: ThemeConfig.paddingV4H8,
+            containerPadding: Sizes.paddingV4H8,
             containerWidth: 64,
             onTap: createGroupPageController.close,
           ),
@@ -208,7 +210,7 @@ class CreateGroupPageView extends StatelessWidget {
             disabled:
                 createGroupPageController.selectedUserContactIds.length <= 1,
             text: createGroupPageController.appLocalizations.create,
-            containerPadding: ThemeConfig.paddingV4H8,
+            containerPadding: Sizes.paddingV4H8,
             containerWidth: 64,
             onTap: createGroupPageController.createGroup,
           )

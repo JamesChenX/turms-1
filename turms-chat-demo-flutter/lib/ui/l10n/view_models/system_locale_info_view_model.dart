@@ -12,14 +12,12 @@ class LocaleInfo {
 }
 
 class LocaleInfoViewModelNotifier extends Notifier<LocaleInfo> {
-  LocaleInfoViewModelNotifier() {
+  @override
+  LocaleInfo build() {
     final observer = _LocaleObserver(ref);
     WidgetsBinding.instance.addObserver(observer);
     ref.onDispose(() => WidgetsBinding.instance.removeObserver(observer));
-  }
 
-  @override
-  LocaleInfo build() {
     final locale = ref.watch(userSettingsViewModel)?.locale;
     if (locale == null) {
       return _getDefaultLocaleInfo();

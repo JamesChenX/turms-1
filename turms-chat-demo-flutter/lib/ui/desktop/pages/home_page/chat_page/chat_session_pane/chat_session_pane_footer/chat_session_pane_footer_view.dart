@@ -5,7 +5,8 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:super_drag_and_drop/super_drag_and_drop.dart';
 
 import '../../../../../../l10n/app_localizations.dart';
-import '../../../../../../themes/theme_config.dart';
+
+import '../../../../../../themes/index.dart';
 import '../../../../../components/giphy/client/models/gif.dart';
 import '../../../../../components/index.dart';
 import '../attachment.dart';
@@ -19,6 +20,7 @@ class ChatSessionPaneFooterView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.theme;
     final appLocalizations = chatPageFooterController.appLocalizations;
     return Stack(
       children: [
@@ -34,141 +36,124 @@ class ChatSessionPaneFooterView extends StatelessWidget {
             onPerformDrop: chatPageFooterController.onPerformDrop,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: _buildEditor(context, appLocalizations),
+              child: _buildEditor(context, theme, appLocalizations),
             )),
-        _buildDropZoneMask(appLocalizations)
+        _buildDropZoneMask(theme, appLocalizations)
       ],
     );
   }
 
-  Widget _buildEditor(
-          BuildContext context, AppLocalizations appLocalizations) =>
-      Column(
-        children: [
-          Expanded(
-            child: ColoredBox(
-              color: ThemeConfig.homePageBackgroundColor,
-              child: CallbackShortcuts(
-                bindings: {
-                  const SingleActivator(LogicalKeyboardKey.enter):
-                      chatPageFooterController.sendMessage
-                },
-                child: TEditor(
-                  controller: chatPageFooterController.editorController,
-                  autofocus: true,
-                  focusNode: chatPageFooterController.editorFocusNode,
-                  contentPadding: const EdgeInsets.only(top: 8),
-                ),
+  Widget _buildEditor(BuildContext context, ThemeData theme,
+      AppLocalizations appLocalizations) {
+    final appThemeExtension = context.appThemeExtension;
+    return Column(
+      children: [
+        Expanded(
+          child: ColoredBox(
+            color: appThemeExtension.homePageBackgroundColor,
+            child: CallbackShortcuts(
+              bindings: {
+                const SingleActivator(LogicalKeyboardKey.enter):
+                    chatPageFooterController.sendMessage
+              },
+              child: TEditor(
+                controller: chatPageFooterController.editorController,
+                autofocus: true,
+                focusNode: chatPageFooterController.editorFocusNode,
+                contentPadding: const EdgeInsets.only(top: 8),
               ),
             ),
           ),
-          //   child: QuillEditor.basic(
-          //       focusNode: chatPageFooterController.editorFocusNode,
-          //       configurations: QuillEditorConfigurations(
-          //         floatingCursorDisabled: true,
-          //         embedBuilders: [
-          //           // ...FlutterQuillEmbeds.defaultEditorBuilders(),
-          //           EmojiEmbedBuilder(),
-          //         ],
-          //         onImagePaste: (imageFile) {
-          //           // tryAddNewFile([imageFile]);
-          //           return Future.value();
-          //         },
-          //         customStyles: DefaultStyles.getInstance(context),
-          //         minHeight: 2000,
-          //         expands: true,
-          //         controller: chatPageFooterController.editorController,
-          //       )),
-          // )),
-          if (chatPageFooterController.localFiles.isNotEmpty)
-            Align(
-              alignment: Alignment.topLeft,
-              child: Wrap(
-                runSpacing: 4,
-                spacing: 4,
-                children: chatPageFooterController.localFiles
-                    .map((file) => Attachment(
-                          fileName: file.fileName ?? '',
-                          onRemoveAttachmentTapped: () {
-                            chatPageFooterController.removeFiles(file);
-                          },
-                        ))
-                    .toList(growable: false),
-              ),
+        ),
+        if (chatPageFooterController.localFiles.isNotEmpty)
+          Align(
+            alignment: Alignment.topLeft,
+            child: Wrap(
+              runSpacing: 4,
+              spacing: 4,
+              children: chatPageFooterController.localFiles
+                  .map((file) => Attachment(
+                        fileName: file.fileName ?? '',
+                        onRemoveAttachmentTapped: () {
+                          chatPageFooterController.removeFiles(file);
+                        },
+                      ))
+                  .toList(growable: false),
             ),
-          const SizedBox(
-            height: 12,
           ),
-          Container(
-            // height: 40,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        const SizedBox(
+          height: 12,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
               children: [
-                Row(
-                  children: [
-                    TPopup(
-                        controller: chatPageFooterController
-                            .stickerPickerPopupController,
-                        targetAnchor: Alignment.topCenter,
-                        followerAnchor: Alignment.bottomCenter,
-                        offset: const Offset(-5, -5),
-                        target: TIconButton(
-                          iconData: Symbols.emoji_emotions_rounded,
-                          iconColor: Colors.black54,
-                          iconColorHovered: Colors.black87,
-                          iconColorPressed: ThemeConfig.primary,
-                          tooltip: appLocalizations.sticker,
-                        ),
-                        follower: StickerPicker(
-                          onGiphyGifSelected: (GiphyGif value) {
-                            final images = value.images;
-                            final original = images?.original;
-                            final previewWebp = images?.previewWebp;
-                            if (original == null || previewWebp == null) {
-                              return;
-                            }
-                            chatPageFooterController.sendImage(
-                                original.webp ?? original.url,
-                                previewWebp.url,
-                                int.parse(original.width),
-                                int.parse(original.height));
-                          },
-                          onEmojiSelected: chatPageFooterController.insertEmoji,
-                        )),
-                    TIconButton(
-                      iconData: Symbols.folder_rounded,
+                TPopup(
+                    controller:
+                        chatPageFooterController.stickerPickerPopupController,
+                    targetAnchor: Alignment.topCenter,
+                    followerAnchor: Alignment.bottomCenter,
+                    offset: const Offset(-5, -5),
+                    target: TIconButton(
+                      iconData: Symbols.emoji_emotions_rounded,
                       iconColor: Colors.black54,
                       iconColorHovered: Colors.black87,
-                      iconColorPressed: ThemeConfig.primary,
+                      iconColorPressed: theme.primaryColor,
                       tooltip: appLocalizations.sticker,
-                      onTap: () async {
-                        final file = await chatPageFooterController.pickFile();
-                      },
                     ),
-                    TIconButton(
-                      iconData: Symbols.history_rounded,
-                      iconColor: Colors.black54,
-                      iconColorHovered: Colors.black87,
-                      iconColorPressed: ThemeConfig.primary,
-                      tooltip: appLocalizations.chatHistory,
-                      onTap: () async {
-                        final file = await chatPageFooterController.pickFile();
+                    follower: StickerPicker(
+                      onGiphyGifSelected: (GiphyGif value) {
+                        final images = value.images;
+                        final original = images?.original;
+                        final previewWebp = images?.previewWebp;
+                        if (original == null || previewWebp == null) {
+                          return;
+                        }
+                        chatPageFooterController.sendImage(
+                            original.webp ?? original.url,
+                            previewWebp.url,
+                            int.parse(original.width),
+                            int.parse(original.height));
                       },
-                    )
-                  ],
+                      onEmojiSelected: chatPageFooterController.insertEmoji,
+                    )),
+                TIconButton(
+                  iconData: Symbols.folder_rounded,
+                  iconColor: Colors.black54,
+                  iconColorHovered: Colors.black87,
+                  iconColorPressed: theme.primaryColor,
+                  tooltip: appLocalizations.sticker,
+                  onTap: () async {
+                    // TODO
+                    final file = await chatPageFooterController.pickFile();
+                  },
                 ),
                 TIconButton(
-                    iconData: Symbols.send_rounded,
-                    iconColorHovered: ThemeConfig.primary,
-                    tooltip: appLocalizations.send,
-                    onTap: chatPageFooterController.sendMessage)
+                  iconData: Symbols.history_rounded,
+                  iconColor: Colors.black54,
+                  iconColorHovered: Colors.black87,
+                  iconColorPressed: theme.primaryColor,
+                  tooltip: appLocalizations.chatHistory,
+                  onTap: () async {
+                    final file = await chatPageFooterController.pickFile();
+                  },
+                )
               ],
             ),
-          ),
-        ],
-      );
+            TIconButton(
+                iconData: Symbols.send_rounded,
+                iconColorHovered: theme.primaryColor,
+                tooltip: appLocalizations.send,
+                onTap: chatPageFooterController.sendMessage)
+          ],
+        ),
+      ],
+    );
+  }
 
-  IgnorePointer _buildDropZoneMask(AppLocalizations localizations) =>
+  IgnorePointer _buildDropZoneMask(
+          ThemeData theme, AppLocalizations localizations) =>
       // Ignore pointer to not obstruct "DropRegion"
       IgnorePointer(
           child: AnimatedOpacity(
@@ -179,7 +164,7 @@ class ChatSessionPaneFooterView extends StatelessWidget {
                 child: DottedBorder(
                   borderType: BorderType.RRect,
                   dashPattern: [12, 10],
-                  color: ThemeConfig.primary,
+                  color: theme.primaryColor,
                   strokeWidth: 2,
                   radius: const Radius.circular(8),
                   child: ClipRRect(
@@ -188,7 +173,7 @@ class ChatSessionPaneFooterView extends StatelessWidget {
                       child: Center(
                         child: Text(
                           localizations.dropFilesHere,
-                          style: const TextStyle(color: ThemeConfig.primary),
+                          style: TextStyle(color: theme.primaryColor),
                         ),
                       ),
                     ),

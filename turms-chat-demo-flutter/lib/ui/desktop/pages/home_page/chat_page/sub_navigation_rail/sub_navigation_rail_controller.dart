@@ -20,7 +20,8 @@ import '../../../../../../infra/ui/text_utils.dart';
 import '../../../../../../infra/window/window_utils.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../l10n/view_models/app_localizations_view_model.dart';
-import '../../../../../themes/theme_config.dart';
+
+import '../../../../../themes/index.dart';
 import '../chat_session_pane/message.dart';
 import '../view_models/conversations_view_model.dart';
 import '../view_models/is_conversations_initialized_view_model.dart';
@@ -37,6 +38,7 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
   BuildContext? conversationTilesBuildContext;
 
   late AppLocalizations appLocalizations;
+  late AppThemeExtension appThemeExtension;
   late List<Conversation> conversations;
   List<StyledConversation> styledConversations = [];
   Conversation? selectedConversation;
@@ -102,6 +104,7 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
   @override
   Widget build(BuildContext context) {
     appLocalizations = ref.watch(appLocalizationsViewModel);
+    appThemeExtension = context.appThemeExtension;
     conversations = ref.watch(conversationsViewModel);
     final previousSelectedConversationId = selectedConversation?.id;
     selectedConversation = ref.watch(selectedConversationViewModel);
@@ -127,7 +130,7 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
           final nameTextSpans = TextUtils.highlightSearchText(
               text: conversation.name,
               searchText: searchText,
-              searchTextStyle: ThemeConfig.textStyleHighlight);
+              searchTextStyle: appThemeExtension.highlightTextStyle);
           final matchedMessages = conversation.messages
               .where((message) =>
                   message.text.toLowerCase().contains(searchText.toLowerCase()))

@@ -5,7 +5,7 @@ import '../../../../../../domain/user/models/contact.dart';
 import '../../../../../../domain/user/models/index.dart';
 import '../../../../../../infra/built_in_types/built_in_type_helpers.dart';
 import '../../../../../l10n/view_models/app_localizations_view_model.dart';
-import '../../../../../themes/theme_config.dart';
+import '../../../../../themes/index.dart';
 import '../../../../components/index.dart';
 import '../request_notifications_page/request_notifications_page.dart';
 import 'contact_profile_controller.dart';
@@ -33,7 +33,7 @@ class ContactProfilePageView extends ConsumerWidget {
         const TWindowControlZone(
           toggleMaximizeOnDoubleTap: true,
           child: SizedBox(
-            height: ThemeConfig.homePageHeaderHeight,
+            height: Sizes.homePageHeaderHeight,
             width: double.infinity,
           ),
         ),
@@ -61,7 +61,7 @@ class ContactProfilePageView extends ConsumerWidget {
                     ),
                     Expanded(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        padding: Sizes.paddingV4,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.start,

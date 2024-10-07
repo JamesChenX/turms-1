@@ -8,7 +8,7 @@ import '../../../../../../../domain/user/models/user.dart';
 import '../../../../../../../infra/built_in_types/built_in_type_helpers.dart';
 import '../../../../../../../infra/ui/text_utils.dart';
 import '../../../../../../l10n/view_models/app_localizations_view_model.dart';
-import '../../../../../../themes/theme_config.dart';
+import '../../../../../../themes/index.dart';
 import '../../../../../components/index.dart';
 import '../../../../../components/t_switch/t_switch.dart';
 
@@ -29,6 +29,8 @@ class _ChatSessionDetailsGroupConversationState
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.theme;
+    final appThemeExtension = theme.appThemeExtension;
     final appLocalizations = ref.watch(appLocalizationsViewModel);
     const divider = THorizontalDivider();
     final intro = widget.contact.intro;
@@ -45,27 +47,21 @@ class _ChatSessionDetailsGroupConversationState
           )),
         ),
         if (intro.isNotBlank) ...[
-          const SizedBox(
-            height: 8,
-          ),
+          Sizes.sizedBoxH8,
           SizedBox(
             child: SelectionArea(
               child: Text(
                 intro,
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
-                style: ThemeConfig.textStyleSecondary,
+                style: appThemeExtension.descriptionTextStyle,
               ),
             ),
           )
         ],
-        const SizedBox(
-          height: 8,
-        ),
+        Sizes.sizedBoxH8,
         divider,
-        const SizedBox(
-          height: 8,
-        ),
+        Sizes.sizedBoxH8,
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -79,9 +75,7 @@ class _ChatSessionDetailsGroupConversationState
             ),
           ],
         ),
-        const SizedBox(
-          height: 4,
-        ),
+        Sizes.sizedBoxH4,
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -95,50 +89,43 @@ class _ChatSessionDetailsGroupConversationState
             ),
           ],
         ),
-        const SizedBox(
-          height: 4,
-        ),
+        Sizes.sizedBoxH4,
         divider,
-        const SizedBox(
-          height: 8,
-        ),
+        Sizes.sizedBoxH8,
         TTextButton.outlined(
-          containerPadding: ThemeConfig.paddingV4H8,
+          theme: theme,
+          containerPadding: Sizes.paddingV4H8,
           text: appLocalizations.addNewMember,
           prefix: const Icon(
             Symbols.person_add_rounded,
             size: 20,
           ),
         ),
-        const SizedBox(
-          height: 8,
-        ),
+        Sizes.sizedBoxH8,
         Expanded(
             child: _ChatSessionDetailsGroupConversationMemberList(
                 widget.contact.members)),
-        const SizedBox(
-          height: 8,
-        ),
+        Sizes.sizedBoxH8,
         divider,
         SizedBox(
           width: double.infinity,
           child: TTextButton(
-            containerPadding: const EdgeInsets.symmetric(vertical: 8),
+            containerPadding: Sizes.paddingV8,
             containerColor: Colors.transparent,
             containerColorHovered: Colors.transparent,
             text: appLocalizations.clearChatHistory,
-            textStyle: ThemeConfig.textStyleWarning,
+            textStyle: appThemeExtension.dangerTextStyle,
           ),
         ),
         divider,
         SizedBox(
           width: double.infinity,
           child: TTextButton(
-            containerPadding: const EdgeInsets.symmetric(vertical: 8),
+            containerPadding: Sizes.paddingV8,
             containerColor: Colors.transparent,
             containerColorHovered: Colors.transparent,
             text: appLocalizations.leaveGroup,
-            textStyle: ThemeConfig.textStyleWarning,
+            textStyle: appThemeExtension.dangerTextStyle,
           ),
         )
       ],
@@ -170,7 +157,7 @@ class __ChatSessionDetailsGroupConversationMemberListState
       final nameTextSpans = TextUtils.highlightSearchText(
           text: member.name,
           searchText: _searchText,
-          searchTextStyle: ThemeConfig.textStyleHighlight);
+          searchTextStyle: context.appThemeExtension.highlightTextStyle);
       if (nameTextSpans.length == 1 && isSearchMode) {
         return [];
       }

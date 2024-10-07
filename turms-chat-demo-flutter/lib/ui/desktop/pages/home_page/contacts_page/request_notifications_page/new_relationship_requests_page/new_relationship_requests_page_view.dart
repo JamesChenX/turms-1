@@ -6,6 +6,7 @@ import '../../../../../../../domain/common/models/new_relationship_request.dart'
 import '../../../../../../../domain/common/models/request_status.dart';
 import '../../../../../../l10n/app_localizations.dart';
 import '../../../../../../l10n/view_models/date_format_view_models.dart';
+import '../../../../../../themes/index.dart';
 import '../../../../../components/t_divider/t_horizontal_divider.dart';
 import 'new_relationship_request_tile.dart';
 import 'new_relationship_requests_page_controller.dart';
@@ -33,7 +34,7 @@ class NewRelationshipRequestsPageView extends ConsumerWidget {
       padding: const EdgeInsets.only(right: 24),
       findChildIndexCallback: (key) => newRelationshipRequestsPageController
           .groupIdToIndex[(key as ValueKey<Int64>).value],
-      separatorBuilder: (context, index) => const SizedBox(height: 16),
+      separatorBuilder: (context, index) => Sizes.sizedBoxH16,
       itemBuilder: (context, index) {
         final entry = newRelationshipRequestsPageController
             .creationDateAndRequests[index];
@@ -58,9 +59,9 @@ class NewRelationshipRequestsPageView extends ConsumerWidget {
             Text(ref.watch(dateFormatViewModel_Md).format(creationDate))
           else
             Text(ref.watch(dateFormatViewModel_yMd).format(creationDate)),
-          const SizedBox(height: 8),
+          Sizes.sizedBoxH8,
           const THorizontalDivider(),
-          const SizedBox(height: 12),
+          Sizes.sizedBoxH12,
           ...requests.indexed.expand((item) {
             final (requestIndex, request) = item;
             return [

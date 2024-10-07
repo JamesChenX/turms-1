@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../themes/theme_config.dart';
+import '../../../themes/index.dart';
 import 't_button.dart';
 
 class TIconButton extends StatelessWidget {
@@ -29,7 +29,8 @@ class TIconButton extends StatelessWidget {
       this.onPanDown});
 
   factory TIconButton.outlined(
-          {required IconData iconData,
+          {required ThemeData theme,
+          required IconData iconData,
           bool? iconFill,
           double? iconSize,
           double? iconWeight,
@@ -55,8 +56,8 @@ class TIconButton extends StatelessWidget {
         onTap: onTap,
         containerSize: containerSize,
         containerColor: Colors.white,
-        containerBorder: Border.all(color: ThemeConfig.dividerColor),
-        containerBorderHovered: Border.all(color: ThemeConfig.primary),
+        containerBorder: Border.all(color: theme.dividerColor),
+        containerBorderHovered: Border.all(color: theme.primaryColor),
         disabled: disabled,
         tooltip: tooltip,
       );
@@ -99,7 +100,7 @@ class TIconButton extends StatelessWidget {
         containerBorder: containerBorder,
         containerBorderHovered: containerBorderHovered,
         containerBorderRadius:
-            containerBorderRadius ?? ThemeConfig.borderRadius4,
+            containerBorderRadius ?? Sizes.borderRadiusCircular4,
         disabled: disabled,
         tooltip: tooltip,
         onTap: onTap,

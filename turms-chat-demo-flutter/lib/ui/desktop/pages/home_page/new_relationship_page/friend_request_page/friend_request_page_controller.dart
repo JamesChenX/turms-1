@@ -4,10 +4,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../l10n/view_models/app_localizations_view_model.dart';
+import '../../../../../themes/index.dart';
 import 'friend_request_page.dart';
 import 'friend_request_page_view.dart';
 
 class FriendRequestPageController extends ConsumerState<FriendRequestPage> {
+  late ThemeData theme;
+  late AppThemeExtension appThemeExtension;
   late AppLocalizations appLocalizations;
   late TextEditingController messageEditingController;
 

@@ -6,7 +6,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../../infra/app/app_config.dart';
 import '../../../../../infra/assets/assets.gen.dart';
 import '../../../../../infra/github/github_client.dart';
-import '../../../../themes/theme_config.dart';
+import '../../../../themes/index.dart';
+
 import '../../../components/t_button/t_text_button.dart';
 import '../../../components/t_title_bar/t_title_bar.dart';
 import '../../../components/t_toast/t_toast.dart';
@@ -20,13 +21,14 @@ class AboutPageView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appLocalizations = aboutPageController.appLocalizations;
+    final appThemeExtension = context.appThemeExtension;
     return SizedBox(
-      width: 450,
-      height: 300,
+      width: Sizes.aboutPageWidth,
+      height: Sizes.aboutPageHeight,
       child: Stack(
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: 36, bottom: 18),
+            padding: const EdgeInsets.only(top: 32, bottom: 16),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -73,10 +75,9 @@ class AboutPageView extends StatelessWidget {
                         text: 'github.com/turms-im/turms',
                         containerColor: Colors.transparent,
                         containerColorHovered: Colors.transparent,
-                        textStyle:
-                            const TextStyle(color: ThemeConfig.linkColor),
-                        textStyleHovered: const TextStyle(
-                            color: ThemeConfig.linkColorHovered),
+                        textStyle: appThemeExtension.linkTextStyle,
+                        textStyleHovered:
+                            appThemeExtension.linkHoveredTextStyle,
                         onTap: aboutPageController.openGitHub)
                   ],
                 )

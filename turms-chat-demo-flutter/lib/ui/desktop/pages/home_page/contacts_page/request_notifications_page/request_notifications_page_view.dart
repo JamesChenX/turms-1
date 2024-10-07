@@ -19,7 +19,7 @@ class _RequestNotificationsPageView extends StatelessWidget {
           Align(
             alignment: Alignment.centerLeft,
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16),
+              padding: Sizes.paddingV16,
               child: TabBar(
                 isScrollable: true,
                 tabAlignment: TabAlignment.start,

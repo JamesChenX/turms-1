@@ -4,7 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../../../domain/common/models/new_relationship_request.dart';
 import '../../../../../../../domain/common/models/request_status.dart';
 import '../../../../../../l10n/view_models/app_localizations_view_model.dart';
-import '../../../../../../themes/theme_config.dart';
+import '../../../../../../themes/index.dart';
+
 import '../../../../../components/t_avatar/t_avatar.dart';
 import '../../../../../components/t_button/t_text_button.dart';
 
@@ -31,6 +32,8 @@ class _NewRelationshipRequestTileState
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.theme;
+    final appThemeExtension = theme.appThemeExtension;
     final appLocalizations = ref.watch(appLocalizationsViewModel);
     final request = widget.request;
     final sender = request.sender;
@@ -42,9 +45,7 @@ class _NewRelationshipRequestTileState
           name: sender.name,
           image: sender.image,
         ),
-        const SizedBox(
-          width: 16,
-        ),
+        Sizes.sizedBoxW16,
         Expanded(
           child: SelectionArea(
             child: Column(
@@ -58,9 +59,9 @@ class _NewRelationshipRequestTileState
                 ),
                 Text(
                   message,
-                  style: ThemeConfig.textStyleSecondary,
+                  style: appThemeExtension.descriptionTextStyle,
                   strutStyle: StrutStyle.fromTextStyle(
-                      ThemeConfig.textStyleSecondary,
+                      appThemeExtension.descriptionTextStyle,
                       forceStrutHeight: true),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -69,18 +70,19 @@ class _NewRelationshipRequestTileState
             ),
           ),
         ),
-        const SizedBox(width: 16),
+        Sizes.sizedBoxW16,
         // TODO: support decline
         status == RequestStatus.accepted
             ? TTextButton.outlined(
+                theme: theme,
                 containerWidth: 80,
-                containerPadding: ThemeConfig.paddingV4H8,
+                containerPadding: Sizes.paddingV4H8,
                 text: appLocalizations.messages,
                 onTap: widget.onStartConversation,
               )
             : TTextButton(
                 containerWidth: 80,
-                containerPadding: ThemeConfig.paddingV4H8,
+                containerPadding: Sizes.paddingV4H8,
                 text: appLocalizations.accept,
                 isLoading: _isHandling,
                 onTap: () async {
@@ -91,7 +93,7 @@ class _NewRelationshipRequestTileState
                   setState(() {});
                 },
               ),
-        const SizedBox(width: 8),
+        Sizes.sizedBoxW8,
       ],
     );
   }

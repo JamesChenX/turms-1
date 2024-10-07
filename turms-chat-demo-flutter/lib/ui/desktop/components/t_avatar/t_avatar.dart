@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
-import '../../../themes/theme_config.dart';
+import '../../../themes/index.dart';
 
 part 't_avatar_size.dart';
 
@@ -49,10 +49,11 @@ class TAvatar extends StatelessWidget {
   /// the user presence indicator can display nicely with the avatar.
   @override
   Widget build(BuildContext context) => ClipOval(
-        child: _buildAvatar(),
+        child: _buildAvatar(context.theme),
       );
 
-  Widget _buildAvatar() {
+  Widget _buildAvatar(ThemeData theme) {
+    final appThemeExtension = theme.appThemeExtension;
     final img = image;
     final containerSize = size.containerSize;
     if (null != img) {
@@ -67,7 +68,7 @@ class TAvatar extends StatelessWidget {
         height: containerSize,
         width: containerSize,
         child: ColoredBox(
-            color: ThemeConfig.primary,
+            color: theme.primaryColor,
             child: Icon(
               icon,
               fill: 1,
@@ -80,13 +81,13 @@ class TAvatar extends StatelessWidget {
         height: containerSize,
         width: containerSize,
         child: ColoredBox(
-          color: ThemeConfig.defaultAvatarBackgroundColor,
+          color: appThemeExtension.avatarBackgroundColor,
           child: Icon(Symbols.person_rounded,
               fill: 1,
-              color: ThemeConfig.defaultAvatarIconColor,
+              color: appThemeExtension.avatarIconColor,
               // The "person" icon seems smaller than other icons,
               // so we need to enlarge it.
-              size: size.iconSize * 1.2),
+              size: size.iconSize * 1.25),
         ),
       );
     } else {

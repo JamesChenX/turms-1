@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../l10n/view_models/app_localizations_view_model.dart';
-import '../../../../themes/theme_config.dart';
+import '../../../../themes/index.dart';
+
 import '../../../components/t_tabs/t_tabs.dart';
 import 'setting_form_field_groups.dart';
 
@@ -19,17 +20,17 @@ class _SubNavigationRailState extends ConsumerState<SubNavigationRail> {
   @override
   Widget build(BuildContext context) {
     final appLocalizations = ref.watch(appLocalizationsViewModel);
+    final appThemeExtension = context.appThemeExtension;
     return SizedBox(
       width: 140,
       child: DecoratedBox(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
             border: Border(
                 right: BorderSide(
-                    color:
-                        ThemeConfig.settingPageSubNavigationRailDividerColor))),
+                    color: appThemeExtension
+                        .settingPageSubNavigationRailDividerColor))),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          // mainAxisAlignment: ,
           children: [
             Padding(
               padding: const EdgeInsets.only(
@@ -37,8 +38,8 @@ class _SubNavigationRailState extends ConsumerState<SubNavigationRail> {
               child: Text(
                   textAlign: TextAlign.start,
                   appLocalizations.settings,
-                  style: const TextStyle(
-                      fontSize: 16, color: ThemeConfig.textColorSecondary)),
+                  style: appThemeExtension
+                      .settingsPageSubNavigationRailTitleTextStyle),
             ),
             // Note that we don't change the tab color when the tab is selected
             // because we have only a few settings, and the UI will be weired

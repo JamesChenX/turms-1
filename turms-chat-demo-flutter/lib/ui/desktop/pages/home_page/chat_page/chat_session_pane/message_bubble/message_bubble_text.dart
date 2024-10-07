@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 import '../../../../../../../domain/user/models/user.dart';
-import '../../../../../../themes/theme_config.dart';
+import '../../../../../../themes/index.dart';
+
 import '../../../../../components/index.dart';
 import '../message.dart';
 import 'message_text_editing_controller.dart';
@@ -32,9 +33,11 @@ class _MessageBubbleTextState extends State<MessageBubbleText> {
   @override
   void initState() {
     super.initState();
-    _controller = MessageTextEditingController.fromValue(widget.message.text);
-    _isMentioned = _controller.isMentioned(widget.currentUser.userId) &&
-        !widget.message.sentByMe;
+    final message = widget.message;
+    _controller = MessageTextEditingController.fromValue(message.text);
+    _isMentioned = !message.sentByMe &&
+        (message.mentionAll ||
+            message.mentionedUserIds.contains(widget.currentUser.userId));
   }
 
   @override
@@ -66,10 +69,10 @@ class _MessageBubbleTextState extends State<MessageBubbleText> {
           constraints:
               BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.5),
           child: Padding(
-            padding: const EdgeInsets.all(8),
+            padding: Sizes.paddingV8H8,
             child: TEditor(
               controller: _controller,
-              contentPadding: ThemeConfig.paddingV4H4,
+              contentPadding: Sizes.paddingV4H4,
               readOnly: true,
             ),
           ),

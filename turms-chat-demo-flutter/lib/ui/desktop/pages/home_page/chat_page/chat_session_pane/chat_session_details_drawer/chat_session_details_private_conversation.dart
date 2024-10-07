@@ -4,7 +4,8 @@ import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../../../../../domain/user/models/contact.dart';
 import '../../../../../../l10n/app_localizations.dart';
-import '../../../../../../themes/theme_config.dart';
+import '../../../../../../themes/index.dart';
+
 import '../../../../../components/t_button/t_text_button.dart';
 import '../../../../../components/t_divider/t_horizontal_divider.dart';
 import '../../../../../components/t_switch/t_switch.dart';
@@ -45,9 +46,7 @@ class _ChatSessionDetailsPrivateConversationState
             ),
           ],
         ),
-        const SizedBox(
-          height: 4,
-        ),
+        Sizes.sizedBoxH4,
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -61,34 +60,28 @@ class _ChatSessionDetailsPrivateConversationState
             ),
           ],
         ),
-        const SizedBox(
-          height: 4,
-        ),
+        Sizes.sizedBoxH4,
         divider,
-        const SizedBox(
-          height: 8,
-        ),
+        Sizes.sizedBoxH8,
         TTextButton.outlined(
-          containerPadding: ThemeConfig.paddingV4H8,
+          theme: context.theme,
+          containerPadding: Sizes.paddingV4H8,
           text: appLocalizations.addNewMember,
           prefix: const Icon(
             Symbols.person_add_rounded,
             size: 20,
           ),
         ),
-        const SizedBox(
-          height: 8,
-        ),
+        Sizes.sizedBoxH8,
         divider,
         SizedBox(
           width: double.infinity,
           child: TTextButton(
-            containerPadding: const EdgeInsets.symmetric(vertical: 16),
-            // addContainer: false,
+            containerPadding: Sizes.paddingV16,
             containerColor: Colors.transparent,
             containerColorHovered: Colors.transparent,
             text: appLocalizations.leaveGroup,
-            textStyle: ThemeConfig.textStyleWarning,
+            textStyle: context.appThemeExtension.dangerTextStyle,
           ),
         )
       ],

@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 
 import '../../../../../../domain/user/models/index.dart';
 import '../../../../../../infra/built_in_types/built_in_type_helpers.dart';
-import '../../../../../themes/theme_config.dart';
+import '../../../../../themes/index.dart';
+
 import '../../../../components/t_avatar/t_avatar.dart';
 import '../../../../components/t_button/t_text_button.dart';
 import '../../../../components/t_text_field/t_text_field.dart';
@@ -18,22 +19,23 @@ class FriendRequestPageView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appLocalizations = friendRequestPageController.appLocalizations;
+    final appThemeExtension = friendRequestPageController.appThemeExtension;
     final contact = friendRequestPageController.widget.contact;
     return SizedBox(
-      width: 400,
-      height: 300,
+      width: Sizes.friendRequestDialogWidth,
+      height: Sizes.friendRequestDialogHeight,
       child: Stack(
         children: [
           Positioned.fill(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: Sizes.paddingV16H16,
               child: Column(children: [
                 Text(appLocalizations.addContact),
-                const SizedBox(height: 16),
+                Sizes.sizedBoxH16,
                 Row(
+                  spacing: 8,
                   children: [
                     TAvatar(name: contact.name, image: contact.image),
-                    const SizedBox(width: 8),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,7 +48,7 @@ class FriendRequestPageView extends StatelessWidget {
                           if (contact.intro.isNotBlank)
                             Text(
                               contact.intro,
-                              style: ThemeConfig.textStyleSecondary,
+                              style: appThemeExtension.descriptionTextStyle,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             )
@@ -55,12 +57,12 @@ class FriendRequestPageView extends StatelessWidget {
                     )
                   ],
                 ),
-                const SizedBox(height: 8),
+                Sizes.sizedBoxH8,
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(appLocalizations.message),
                 ),
-                const SizedBox(height: 8),
+                Sizes.sizedBoxH8,
                 Expanded(
                     child: TTextField(
                   autofocus: true,
@@ -68,21 +70,22 @@ class FriendRequestPageView extends StatelessWidget {
                   textEditingController:
                       friendRequestPageController.messageEditingController,
                 )),
-                const SizedBox(height: 12),
+                Sizes.sizedBoxH12,
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   spacing: 16,
                   children: [
                     TTextButton.outlined(
+                      theme: friendRequestPageController.theme,
                       text: appLocalizations.cancel,
-                      containerPadding: ThemeConfig.paddingV4H8,
+                      containerPadding: Sizes.paddingV4H8,
                       containerWidth: 64,
                       onTap: friendRequestPageController.close,
                     ),
                     TTextButton(
                       isLoading: friendRequestPageController.isSending,
                       text: appLocalizations.send,
-                      containerPadding: ThemeConfig.paddingV4H8,
+                      containerPadding: Sizes.paddingV4H8,
                       containerWidth: 64,
                       onTap: () {
                         friendRequestPageController.sendFriendRequest(
@@ -98,11 +101,8 @@ class FriendRequestPageView extends StatelessWidget {
               ]),
             ),
           ),
-          // const Expanded(
-          //   child: SettingsPane(),
-          // ),
-          const TTitleBar(
-            backgroundColor: ThemeConfig.homePageBackgroundColor,
+          TTitleBar(
+            backgroundColor: appThemeExtension.homePageBackgroundColor,
             displayCloseOnly: true,
             popOnCloseTapped: true,
           )

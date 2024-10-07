@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../../themes/theme_config.dart';
+import '../../../../themes/index.dart';
+
 import '../../../components/index.dart';
 import 'settings_page_controller.dart';
 import 'settings_pane.dart';
@@ -13,8 +14,8 @@ class SettingsPageView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-        width: ThemeConfig.dialogWidthMedium,
-        height: ThemeConfig.dialogHeightMedium,
+        width: Sizes.dialogWidthMedium,
+        height: Sizes.dialogHeightMedium,
         child: Row(
           children: [
             SubNavigationRail(onTabSelected: settingsPageController.selectTab),

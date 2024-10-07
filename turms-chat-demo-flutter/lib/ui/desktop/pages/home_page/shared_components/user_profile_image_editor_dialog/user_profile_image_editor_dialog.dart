@@ -10,7 +10,7 @@ import '../../../../../../infra/io/io_extensions.dart';
 import '../../../../../../infra/units/math_extensions.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../l10n/view_models/app_localizations_view_model.dart';
-import '../../../../../themes/theme_config.dart';
+import '../../../../../themes/index.dart';
 import '../../../../components/index.dart';
 
 const _allowedExtensions = ['png', 'jpg', 'jpeg'];
@@ -47,6 +47,7 @@ class _UserProfileImageEditorDialogState
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.theme;
     final appLocalizations = ref.watch(appLocalizationsViewModel);
     final selectedImage = _selectedImage;
     final enableOperations = selectedImage != null;
@@ -56,14 +57,12 @@ class _UserProfileImageEditorDialogState
       child: Column(
         children: [
           Text(appLocalizations.editProfileImage),
-          const SizedBox(
-            height: 8,
-          ),
+          Sizes.sizedBoxH8,
           Row(
             spacing: 16,
             children: [
               ClipRRect(
-                borderRadius: ThemeConfig.borderRadius4,
+                borderRadius: Sizes.borderRadiusCircular4,
                 child: SizedBox(
                     width: _imageSize,
                     height: _imageSize,
@@ -125,6 +124,7 @@ class _UserProfileImageEditorDialogState
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         TIconButton.outlined(
+                          theme: theme,
                           iconData: Symbols.rotate_left_rounded,
                           containerSize: const Size.square(32),
                           tooltip: appLocalizations.rotateLeft,
@@ -135,6 +135,7 @@ class _UserProfileImageEditorDialogState
                           },
                         ),
                         TIconButton.outlined(
+                          theme: theme,
                           iconData: Symbols.rotate_right_rounded,
                           containerSize: const Size.square(32),
                           tooltip: appLocalizations.rotateRight,
@@ -145,6 +146,7 @@ class _UserProfileImageEditorDialogState
                           },
                         ),
                         TIconButton.outlined(
+                          theme: theme,
                           iconData: Symbols.flip_rounded,
                           containerSize: const Size.square(32),
                           tooltip: appLocalizations.flipHorizontally,
@@ -155,6 +157,7 @@ class _UserProfileImageEditorDialogState
                           },
                         ),
                         TIconButton.outlined(
+                          theme: theme,
                           iconData: Symbols.flip_rounded,
                           containerSize: const Size.square(32),
                           iconRotate: 90.degreesToRadians(),
@@ -175,20 +178,20 @@ class _UserProfileImageEditorDialogState
           Expanded(
             child: Align(
                 alignment: Alignment.bottomRight,
-                child: _buildActions(context, appLocalizations)),
+                child: _buildActions(context, theme, appLocalizations)),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildActions(
-          BuildContext context, AppLocalizations appLocalizations) =>
+  Widget _buildActions(BuildContext context, ThemeData theme,
+          AppLocalizations appLocalizations) =>
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           TTextButton(
-              containerPadding: ThemeConfig.paddingV4H8,
+              containerPadding: Sizes.paddingV4H8,
               text: appLocalizations.selectProfileImage,
               onTap: () async {
                 final result = await FileUtils.pickFile(
@@ -213,30 +216,26 @@ class _UserProfileImageEditorDialogState
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               TTextButton.outlined(
+                theme: theme,
                 text: appLocalizations.cancel,
-                containerPadding: ThemeConfig.paddingV4H8,
+                containerPadding: Sizes.paddingV4H8,
                 containerWidth: 72,
                 onTap: () => Navigator.of(context).pop(),
                 // onTap: createGroupPageController.close,
               ),
-              const SizedBox(
-                width: 16,
-              ),
+              Sizes.sizedBoxW16,
               TTextButton(
                 // isLoading: createGroupPageController.isCreating,
                 // disabled:
                 //     createGroupPageController.selectedUserContactIds.length <= 1,
                 text: appLocalizations.confirm,
-                containerPadding: ThemeConfig.paddingV4H8,
+                containerPadding: Sizes.paddingV4H8,
                 containerWidth: 72,
                 onTap: () {
-                  // TODO
+                  // TODO: appLocalizations.confirm
                 },
-                // onTap: appLocalizations.confirm,
               ),
-              const SizedBox(
-                width: 16,
-              ),
+              Sizes.sizedBoxW16
             ],
           ),
         ],
@@ -248,8 +247,8 @@ Future<void> showUserProfileImageEditorDialog(
     showSimpleTDialog(
       routeName: '/user-profile-image-dialog',
       context: context,
-      width: 520,
-      height: 440,
+      width: Sizes.userProfileImageDialogWidth,
+      height: Sizes.userProfileImageDialogHeight,
       child: UserProfileImageEditorDialog(
         user: user,
       ),

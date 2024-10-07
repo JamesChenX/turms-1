@@ -4,7 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../infra/env/env_vars.dart';
-import '../../../themes/theme_config.dart';
+
+import '../../../themes/index.dart';
 import '../t_dialog/t_dialog.dart';
 import '../t_title_bar/t_title_bar.dart';
 
@@ -40,13 +41,14 @@ class _TImageViewerState extends State<TImageViewer> {
       height: _height,
       child: Column(
         children: [
-          const Align(
+          Align(
             alignment: Alignment.topRight,
             child: TTitleBar(
               displayCloseOnly: true,
               popOnCloseTapped: true,
               usePositioned: false,
-              backgroundColor: ThemeConfig.homePageBackgroundColor,
+              backgroundColor:
+                  context.appThemeExtension.homePageBackgroundColor,
             ),
           ),
           Expanded(

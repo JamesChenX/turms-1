@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../themes/theme_config.dart';
+import '../../../themes/index.dart';
 
 class TRadio<T> extends StatefulWidget {
   const TRadio({
@@ -12,43 +12,31 @@ class TRadio<T> extends StatefulWidget {
     this.radioColor = const Color(0xff10DC60),
     this.activeBgColor = Colors.white,
     this.inactiveBgColor = Colors.white,
-    this.activeBorderColor = ThemeConfig.borderColor,
-    this.inactiveBorderColor = ThemeConfig.borderColor,
+    this.activeBorderColor,
+    this.inactiveBorderColor,
     this.toggleable = false,
     this.label,
   }) : super(key: key);
 
-  /// type of [double] which is GFSize ie, small, medium and large and can use any double value
   final double size;
 
-  /// type pf [Color] used to change the checkcolor when the radio button is active
   final Color radioColor;
 
-  /// type of [Color] used to change the backgroundColor of the active radio button
   final Color activeBgColor;
 
-  /// type of [Color] used to change the backgroundColor of the inactive radio button
   final Color inactiveBgColor;
 
-  /// type of [Color] used to change the border color of the active radio button
-  final Color activeBorderColor;
+  final Color? activeBorderColor;
 
-  /// type of [Color] used to change the border color of the inactive radio button
-  final Color inactiveBorderColor;
+  final Color? inactiveBorderColor;
 
-  /// Called when the user checks or unchecks the radio button
   final ValueChanged<T> onChanged;
 
-  /// The value represented by this radio button.
   final T value;
 
-  /// The currently selected value for a group of radio buttons. Radio button is considered selected if its [value] matches the
-  /// [groupValue].
   final T groupValue;
 
-  /// sets the radio value
   final bool toggleable;
-
   final String? label;
 
   @override
@@ -73,14 +61,16 @@ class _TRadioState<T> extends State<TRadio<T>> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     selected = widget.value == widget.groupValue;
+    final label = widget.label;
+    final size = widget.size;
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: onStatusChange,
-        child: Row(mainAxisSize: MainAxisSize.min, children: [
+        child: Row(spacing: 8, mainAxisSize: MainAxisSize.min, children: [
           SizedBox(
-            height: widget.size,
-            width: widget.size,
+            height: size,
+            width: size,
             child: DecoratedBox(
               decoration: BoxDecoration(
                   color:
@@ -88,26 +78,22 @@ class _TRadioState<T> extends State<TRadio<T>> with TickerProviderStateMixin {
                   shape: BoxShape.circle,
                   border: Border.all(
                       color: selected
-                          ? widget.activeBorderColor
-                          : widget.inactiveBorderColor)),
+                          ? (widget.activeBorderColor ??
+                              context.theme.dividerColor)
+                          : (widget.inactiveBorderColor ??
+                              context.theme.dividerColor))),
               child: selected
                   ? Center(
                       child: DecoratedBox(
                         decoration: BoxDecoration(
                             shape: BoxShape.circle, color: widget.radioColor),
-                        child: SizedBox(
-                            width: widget.size * 0.5,
-                            height: widget.size * 0.5),
+                        child: SizedBox(width: size * 0.5, height: size * 0.5),
                       ),
                     )
                   : null,
             ),
           ),
-          if (widget.label != null)
-            const SizedBox(
-              width: 8,
-            ),
-          if (widget.label != null) Text(widget.label!)
+          if (label != null) Text(label)
         ]),
       ),
     );

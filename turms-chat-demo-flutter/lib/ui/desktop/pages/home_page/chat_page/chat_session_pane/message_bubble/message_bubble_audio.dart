@@ -16,7 +16,8 @@ import '../../../../../../../infra/http/http_utils.dart';
 import '../../../../../../../infra/io/path_utils.dart';
 import '../../../../../../../infra/units/file_size_extensions.dart';
 import '../../../../../../l10n/view_models/app_localizations_view_model.dart';
-import '../../../../../../themes/theme_config.dart';
+import '../../../../../../themes/index.dart';
+
 import '../../../../../components/index.dart';
 
 const _width = 286.0;
@@ -115,7 +116,7 @@ class _MessageBubbleAudioState extends ConsumerState<MessageBubbleAudio> {
                   };
                   return DecoratedBox(
                     decoration: BoxDecoration(
-                      color: ThemeConfig.maskColor,
+                      color: context.appThemeExtension.maskColor,
                     ),
                     child: Center(
                       child: Text(

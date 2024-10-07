@@ -5,6 +5,7 @@ import 'package:flutter/rendering.dart';
 
 import '../../../../infra/animation/animation_utils.dart';
 import '../../../../infra/animation/dismissed_status_change_type.dart';
+import '../../../themes/index.dart';
 
 // Modified:
 // * Disappear instead of keeping displaying when hovering.
@@ -378,7 +379,7 @@ class TTooltipState extends State<TTooltip>
               color: Colors.black, fontSize: _getDefaultFontSize(platform)),
           BoxDecoration(
               color: Colors.white.withValues(alpha: 0.9),
-              borderRadius: const BorderRadius.all(Radius.circular(4))),
+              borderRadius: Sizes.borderRadiusCircular4),
         ),
       ThemeData(
         brightness: Brightness.light,
@@ -390,7 +391,7 @@ class TTooltipState extends State<TTooltip>
               color: Colors.white, fontSize: _getDefaultFontSize(platform)),
           BoxDecoration(
               color: Colors.grey[700]!.withValues(alpha: 0.9),
-              borderRadius: const BorderRadius.all(Radius.circular(4))),
+              borderRadius: Sizes.borderRadiusCircular4),
         ),
     };
 

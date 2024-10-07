@@ -126,7 +126,7 @@ class _TTableRowViewState extends State<_TTableRowView> {
     final decoration =
         isHovered ? BoxDecoration(color: Colors.grey[200]) : null;
     return SizedBox(
-      height: 50,
+      height: 48,
       child: RepaintBoundary(
         child: decoration == null
             ? child

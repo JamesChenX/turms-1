@@ -43,6 +43,7 @@ class _TDateRangeInputState extends ConsumerState<_TDateRangeInput> {
 
   @override
   Widget build(BuildContext context) {
+    final appThemeExtension = context.appThemeExtension;
     final previewStartDate = widget.previewStartDate;
     final previewEndDate = widget.previewEndDate;
     final usePreviewStartDate = previewStartDate != null;
@@ -66,6 +67,8 @@ class _TDateRangeInputState extends ConsumerState<_TDateRangeInput> {
     _endDateInputController.text = endDate == null
         ? ''
         : ref.read(dateFormatViewModel_yMd).format(endDate);
+    final textStyle =
+        appThemeExtension.descriptionTextStyle.copyWith(height: 1.25);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -76,13 +79,12 @@ class _TDateRangeInputState extends ConsumerState<_TDateRangeInput> {
             focusNode: widget.startDateFocusNode,
             readOnly: true,
             showCursor: false,
-            style: const TextStyle(
-                color: ThemeConfig.textColorSecondary, height: 1.2),
+            style: textStyle,
             onTapOutside: onTapOutside,
           ),
         ),
         const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 4),
+          padding: Sizes.paddingH4,
           child: Icon(Symbols.arrow_forward_rounded, size: 16),
         ),
         SizedBox(
@@ -92,8 +94,7 @@ class _TDateRangeInputState extends ConsumerState<_TDateRangeInput> {
             focusNode: widget.endDateFocusNode,
             readOnly: true,
             showCursor: false,
-            style: const TextStyle(
-                color: ThemeConfig.textColorSecondary, height: 1.2),
+            style: textStyle,
             onTapOutside: onTapOutside,
           ),
         ),

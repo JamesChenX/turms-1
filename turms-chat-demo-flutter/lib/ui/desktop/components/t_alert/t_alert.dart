@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../l10n/view_models/app_localizations_view_model.dart';
-import '../../../themes/theme_config.dart';
+import '../../../themes/index.dart';
 import '../t_button/t_text_button.dart';
 import '../t_dialog/t_dialog.dart';
 
@@ -25,11 +25,12 @@ class TAlert extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final appLocalizations = ref.watch(appLocalizationsViewModel);
+    final theme = context.theme;
     return SizedBox(
-      height: 140,
-      width: 320,
+      width: Sizes.alertWidth,
+      height: Sizes.alertHeight,
       child: Padding(
-        padding: ThemeConfig.paddingV16H16,
+        padding: Sizes.paddingV16H16,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -37,7 +38,7 @@ class TAlert extends ConsumerWidget {
             if (title != null) ...[
               Text(
                 title!,
-                style: ThemeConfig.textStyleTitle,
+                style: theme.textTheme.titleMedium,
               ),
             ],
             content,
@@ -49,12 +50,12 @@ class TAlert extends ConsumerWidget {
                   if (onTapCancel != null)
                     TTextButton(
                       text: appLocalizations.cancel,
-                      containerPadding: ThemeConfig.paddingV4H8,
+                      containerPadding: Sizes.paddingV4H8,
                       onTap: onTapCancel,
                     ),
                   TTextButton(
                       text: appLocalizations.confirm,
-                      containerPadding: ThemeConfig.paddingV4H8,
+                      containerPadding: Sizes.paddingV4H8,
                       onTap: onTapConfirm),
                 ],
               ),
@@ -74,7 +75,7 @@ Future<void> showAlertDialog(BuildContext context,
     showCustomTDialog(
         routeName: '/t-alert',
         context: context,
-        borderRadius: ThemeConfig.borderRadius8,
+        borderRadius: Sizes.borderRadiusCircular8,
         child: TAlert(
           title: title,
           content: Text(

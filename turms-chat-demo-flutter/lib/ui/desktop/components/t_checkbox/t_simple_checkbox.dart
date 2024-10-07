@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
-import '../../../themes/theme_config.dart';
+import '../../../themes/index.dart';
 
 class TSimpleCheckbox extends StatefulWidget {
   const TSimpleCheckbox({
     Key? key,
     this.size = 16,
-    this.activeBgColor = Colors.white,
-    this.inactiveBgColor = Colors.white,
-    this.activeBorderColor = ThemeConfig.borderColor,
-    this.inactiveBorderColor = ThemeConfig.borderColor,
+    this.activeBackgroundColor = Colors.white,
+    this.inactiveBackgroundColor = Colors.white,
+    this.activeBorderColor,
+    this.inactiveBorderColor,
     required this.value,
     this.activeIcon = const Icon(
       Symbols.check_rounded,
@@ -26,13 +26,13 @@ class TSimpleCheckbox extends StatefulWidget {
 
   final double size;
 
-  final Color activeBgColor;
+  final Color activeBackgroundColor;
 
-  final Color inactiveBgColor;
+  final Color inactiveBackgroundColor;
 
-  final Color activeBorderColor;
+  final Color? activeBorderColor;
 
-  final Color inactiveBorderColor;
+  final Color? inactiveBorderColor;
 
   final ValueChanged<bool> onChanged;
 
@@ -63,12 +63,15 @@ class _TSimpleCheckboxState extends State<TSimpleCheckbox> {
       width: widget.size,
       child: DecoratedBox(
         decoration: BoxDecoration(
-            color: widget.value ? widget.activeBgColor : widget.inactiveBgColor,
-            borderRadius: BorderRadius.circular(4),
+            color: widget.value
+                ? widget.activeBackgroundColor
+                : widget.inactiveBackgroundColor,
+            borderRadius: Sizes.borderRadiusCircular4,
             border: Border.all(
                 color: widget.value
-                    ? widget.activeBorderColor
-                    : widget.inactiveBorderColor)),
+                    ? (widget.activeBorderColor ?? context.theme.dividerColor)
+                    : (widget.inactiveBorderColor ??
+                        context.theme.dividerColor))),
         child: widget.value ? widget.activeIcon : widget.inactiveIcon,
       ),
     );

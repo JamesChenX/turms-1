@@ -3,7 +3,7 @@ import 'package:fixnum/fixnum.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/src/intl/date_format.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../../../domain/conversation/models/conversation.dart';
 import '../../../../../../domain/message/models/message_delivery_status.dart';
@@ -17,7 +17,7 @@ import '../../../../../../infra/random/random_utils.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../l10n/view_models/app_localizations_view_model.dart';
 import '../../../../../l10n/view_models/date_format_view_models.dart';
-import '../../../../../themes/theme_config.dart';
+import '../../../../../themes/index.dart';
 import '../view_models/selected_conversation_view_model.dart';
 import 'message.dart';
 import 'message_bubble/message_bubble.dart';
@@ -64,10 +64,11 @@ class _ChatSessionPaneBodyState extends ConsumerState<ChatSessionPaneBody> {
 
   @override
   Widget build(BuildContext context) {
+    final appThemeExtension = context.appThemeExtension;
     final selectedConversation = widget.selectedConversation;
     final messages = selectedConversation.messages;
     return ColoredBox(
-        color: ThemeConfig.homePageBackgroundColor,
+        color: appThemeExtension.homePageBackgroundColor,
         child: messages.isEmpty
             ? null
             : _buildMessageBubbles(selectedConversation));
@@ -167,7 +168,7 @@ class _ChatSessionPaneBodyState extends ConsumerState<ChatSessionPaneBody> {
     };
     final yesterday = DateTime.now().subtract(const Duration(days: 1));
     return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: Sizes.paddingV8H16,
       controller: _scrollController,
       // Reverse the list to display conversations from bottom to top
       reverse: true,
@@ -194,7 +195,7 @@ class _ChatSessionPaneBodyState extends ConsumerState<ChatSessionPaneBody> {
     if (_isLoading) {
       return const Padding(
         key: _chatSessionItemLoadingIndicatorKey,
-        padding: EdgeInsets.symmetric(vertical: 8),
+        padding: Sizes.paddingV8,
         child: CupertinoActivityIndicator(radius: 8),
       );
     } else {
@@ -213,15 +214,15 @@ class _ChatSessionPaneBodyState extends ConsumerState<ChatSessionPaneBody> {
           AppLocalizations appLocalizations,
           DateFormat dateFormat) =>
       Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16),
+        padding: Sizes.paddingV16,
         child: Center(
           child: DecoratedBox(
             key: ValueKey(item.id),
             decoration: const BoxDecoration(
                 color: Color.fromARGB(255, 218, 218, 218),
-                borderRadius: ThemeConfig.borderRadius4),
+                borderRadius: Sizes.borderRadiusCircular4),
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
+              padding: Sizes.paddingV2H4,
               child: Text(
                 DateUtils.isSameDay(yesterday, datetime)
                     ? appLocalizations.yesterday

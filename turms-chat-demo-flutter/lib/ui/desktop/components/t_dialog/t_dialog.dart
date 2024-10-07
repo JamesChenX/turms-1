@@ -2,7 +2,8 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../themes/theme_config.dart';
+import '../../../themes/index.dart';
+
 import '../t_title_bar/t_title_bar.dart';
 
 const config = FadeScaleTransitionConfiguration(
@@ -18,7 +19,7 @@ bool isTDialogRoute(Route<dynamic> route) =>
 Future<void> showCustomTDialog(
         {required String routeName,
         required BuildContext context,
-        BorderRadiusGeometry borderRadius = ThemeConfig.borderRadius4,
+        BorderRadiusGeometry borderRadius = Sizes.borderRadiusCircular4,
         required Widget child}) =>
     showModal(
         routeSettings:
@@ -32,7 +33,7 @@ Future<void> showCustomTDialog(
                     decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: borderRadius,
-                        boxShadow: ThemeConfig.boxShadow),
+                        boxShadow: Styles.boxShadow),
                     child: RepaintBoundary(child: child)),
               ),
             ));
@@ -48,8 +49,8 @@ Future<void> showSimpleTDialog(
         routeName: routeName,
         child: Consumer(
           builder: (BuildContext context, WidgetRef ref, Widget? _) => SizedBox(
-            width: width ?? ThemeConfig.dialogWidthMedium,
-            height: height ?? ThemeConfig.dialogHeightMedium,
+            width: width ?? Sizes.dialogWidthMedium,
+            height: height ?? Sizes.dialogHeightMedium,
             child: Stack(
               children: [
                 Positioned.fill(

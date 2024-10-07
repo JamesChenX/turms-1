@@ -17,7 +17,8 @@ import '../../../../../../../infra/io/path_utils.dart';
 import '../../../../../../../infra/ui/size_utils.dart';
 import '../../../../../../../infra/units/file_size_extensions.dart';
 import '../../../../../../l10n/view_models/app_localizations_view_model.dart';
-import '../../../../../../themes/theme_config.dart';
+import '../../../../../../themes/index.dart';
+
 import '../../../../../components/index.dart';
 
 const _maxAllowedMb = 100;
@@ -125,7 +126,7 @@ class _MessageBubbleVideoState extends ConsumerState<MessageBubbleVideo> {
                   };
                   return DecoratedBox(
                     decoration: BoxDecoration(
-                      color: ThemeConfig.maskColor,
+                      color: context.appThemeExtension.maskColor,
                     ),
                     child: Center(
                       child: Row(

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../../themes/theme_config.dart';
+import '../../../../../themes/index.dart';
 import '../../../../components/index.dart';
 import '../view_models/selected_conversation_view_model.dart';
 import 'chat_session_details_drawer/chat_session_details_drawer.dart';
@@ -20,20 +20,21 @@ class ChatSessionPane extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final appThemeExtension = context.appThemeExtension;
     final selectedConversation = ref.watch(selectedConversationViewModel);
     if (selectedConversation == null) {
-      return const ColoredBox(
-        color: ThemeConfig.homePageBackgroundColor,
-        child: TWindowControlZone(
+      return ColoredBox(
+        color: appThemeExtension.homePageBackgroundColor,
+        child: const TWindowControlZone(
             toggleMaximizeOnDoubleTap: true, child: TEmpty()),
       );
     }
     return ColoredBox(
-      color: ThemeConfig.homePageBackgroundColor,
+      color: appThemeExtension.homePageBackgroundColor,
       child: Column(
         children: [
           SizedBox(
-            height: ThemeConfig.homePageHeaderHeight,
+            height: Sizes.homePageHeaderHeight,
             child: DecoratedBox(
               decoration: const BoxDecoration(
                   border: Border(
@@ -86,55 +87,59 @@ class _ChatSessionPaneFooterState extends State<_ChatSessionPaneFooter> {
   double _baseHeight = 0;
 
   @override
-  Widget build(BuildContext context) => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Listener(
-            onPointerCancel: (event) {
-              _isResizing = false;
+  Widget build(BuildContext context) {
+    final theme = context.theme;
+    final appThemeExtension = context.appThemeExtension;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Listener(
+          onPointerCancel: (event) {
+            _isResizing = false;
+            setState(() {});
+          },
+          onPointerUp: (event) {
+            _isResizing = false;
+            setState(() {});
+          },
+          onPointerDown: (PointerDownEvent event) {
+            _baseHeight = _height;
+            _pointerDownDy = event.position.dy;
+            _isResizing = true;
+            setState(() {});
+          },
+          onPointerMove: (event) {
+            final delta = _pointerDownDy - event.position.dy;
+            final newHeight =
+                (_baseHeight + delta).clamp(130, 500).roundToDouble();
+            if (newHeight != _height) {
+              _height = newHeight;
               setState(() {});
-            },
-            onPointerUp: (event) {
-              _isResizing = false;
-              setState(() {});
-            },
-            onPointerDown: (PointerDownEvent event) {
-              _baseHeight = _height;
-              _pointerDownDy = event.position.dy;
-              _isResizing = true;
-              setState(() {});
-            },
-            onPointerMove: (event) {
-              final delta = _pointerDownDy - event.position.dy;
-              final newHeight =
-                  (_baseHeight + delta).clamp(130, 500).roundToDouble();
-              if (newHeight != _height) {
-                _height = newHeight;
-                setState(() {});
-              }
-            },
-            child: MouseRegion(
-              cursor: SystemMouseCursors.resizeUpDown,
-              child: _isResizing
-                  ? const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 2),
-                      child: THorizontalDivider(
-                        color: ThemeConfig.primary,
-                        thickness: 4,
-                      ),
-                    )
-                  : const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 4),
-                      child: THorizontalDivider(
-                        color: ThemeConfig.chatSessionPaneDividerColor,
-                      ),
+            }
+          },
+          child: MouseRegion(
+            cursor: SystemMouseCursors.resizeUpDown,
+            child: _isResizing
+                ? Padding(
+                    padding: Sizes.paddingV2,
+                    child: THorizontalDivider(
+                      color: theme.primaryColor,
+                      thickness: 4,
                     ),
-            ),
+                  )
+                : Padding(
+                    padding: Sizes.paddingV4,
+                    child: THorizontalDivider(
+                      color: appThemeExtension.chatSessionPaneDividerColor,
+                    ),
+                  ),
           ),
-          ConstrainedBox(
-            constraints: BoxConstraints.tightFor(height: _height),
-            child: const ChatSessionPaneFooter(),
-          )
-        ],
-      );
+        ),
+        ConstrainedBox(
+          constraints: BoxConstraints.tightFor(height: _height),
+          child: const ChatSessionPaneFooter(),
+        )
+      ],
+    );
+  }
 }

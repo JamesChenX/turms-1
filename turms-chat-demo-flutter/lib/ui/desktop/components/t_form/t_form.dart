@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../themes/index.dart';
 import '../t_checkbox/t_simple_checkbox.dart';
 import '../t_divider/t_horizontal_divider.dart';
 import '../t_dropdown_menu/t_dropdown_menu.dart';
@@ -21,7 +22,7 @@ class TForm extends StatelessWidget {
           final children = <Widget>[];
           if (index > 0) {
             children.add(const Padding(
-              padding: EdgeInsets.symmetric(vertical: 16),
+              padding: Sizes.paddingV16,
               // child: SizedBox.shrink(),
               child: THorizontalDivider(),
             ));
@@ -45,11 +46,7 @@ class TForm extends StatelessWidget {
       );
 
   List<Widget> _buildFormField(int index, TFormField field) =>
-      <Widget>[
-        const SizedBox(
-          height: 8,
-        )
-      ] +
+      <Widget>[Sizes.sizedBoxH8] +
       switch (field) {
         TFormFieldCheckbox() => <Widget>[
             TSimpleCheckbox(
@@ -85,11 +82,8 @@ class TForm extends StatelessWidget {
             ),
           ],
         TFormFieldShortcutTextField() => <Widget>[
-            Row(mainAxisSize: MainAxisSize.min, children: [
+            Row(spacing: 16, mainAxisSize: MainAxisSize.min, children: [
               Text(field.label),
-              const SizedBox(
-                width: 16,
-              ),
               SizedBox(
                 width: 180,
                 child: TShortcutTextField(

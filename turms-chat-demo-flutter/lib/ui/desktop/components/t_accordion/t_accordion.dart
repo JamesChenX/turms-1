@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
+import '../../../themes/index.dart';
+
 class TAccordion extends StatefulWidget {
   const TAccordion(
       {Key? key,
@@ -8,7 +10,7 @@ class TAccordion extends StatefulWidget {
       required this.contentChild,
       this.collapsedTitleBackgroundColor = Colors.white,
       this.expandedTitleBackgroundColor = Colors.white,
-      this.titlePadding = const EdgeInsets.all(4),
+      this.titlePadding = Sizes.paddingV4H4,
       this.contentBackgroundColor,
       this.contentPadding = EdgeInsets.zero,
       this.titleBorder = const Border(),

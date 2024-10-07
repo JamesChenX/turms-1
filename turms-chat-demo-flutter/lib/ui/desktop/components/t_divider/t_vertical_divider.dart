@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 
-import '../../../themes/theme_config.dart';
+import '../../../themes/index.dart';
 
 class TVerticalDivider extends StatelessWidget {
-  const TVerticalDivider({Key? key}) : super(key: key);
+  const TVerticalDivider({Key? key, this.color}) : super(key: key);
+
+  final Color? color;
 
   @override
-  Widget build(BuildContext context) => const SizedBox(
+  Widget build(BuildContext context) => SizedBox(
       width: 1,
       height: double.infinity,
       child: DecoratedBox(
           decoration: BoxDecoration(
-        color: ThemeConfig.dividerColor,
+        color: color ?? context.theme.dividerColor,
       )));
 }

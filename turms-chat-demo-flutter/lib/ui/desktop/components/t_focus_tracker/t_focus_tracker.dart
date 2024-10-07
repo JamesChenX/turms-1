@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../themes/index.dart';
+
 class TFocusTracker extends StatefulWidget {
   const TFocusTracker({Key? key, required this.child}) : super(key: key);
 
@@ -65,7 +67,7 @@ class _TFocusTrackerState extends State<TFocusTracker> {
                     height: rect.height,
                     child: DecoratedBox(
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: Sizes.borderRadiusCircular4,
                         color: Colors.black.withValues(alpha: 0.3),
                       ),
                       child: const SizedBox.shrink(),

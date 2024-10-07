@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../themes/theme_config.dart';
+import '../../../themes/index.dart';
 import 't_button.dart';
 
 class TTextButton extends StatelessWidget {
@@ -12,7 +12,7 @@ class TTextButton extends StatelessWidget {
       this.addContainer = true,
       this.containerWidth,
       this.containerHeight,
-      this.containerColor = ThemeConfig.primary,
+      this.containerColor,
       this.containerColorHovered,
       EdgeInsets? containerPadding,
       this.containerBorder,
@@ -21,10 +21,11 @@ class TTextButton extends StatelessWidget {
       this.disabled = false,
       this.prefix,
       this.onTap})
-      : containerPadding = containerPadding ?? ThemeConfig.paddingV8H16;
+      : containerPadding = containerPadding ?? Sizes.paddingV8H16;
 
   factory TTextButton.outlined(
-          {required String text,
+          {required ThemeData theme,
+          required String text,
           double? containerWidth,
           double? containerHeight,
           EdgeInsets? containerPadding,
@@ -33,9 +34,9 @@ class TTextButton extends StatelessWidget {
       TTextButton(
         text: text,
         textStyle: const TextStyle(color: Colors.black),
-        textStyleHovered: const TextStyle(color: ThemeConfig.primary),
-        containerBorder: Border.all(color: ThemeConfig.dividerColor),
-        containerBorderHovered: Border.all(color: ThemeConfig.primary),
+        textStyleHovered: TextStyle(color: theme.primaryColor),
+        containerBorder: Border.all(color: theme.dividerColor),
+        containerBorderHovered: Border.all(color: theme.primaryColor),
         containerColor: Colors.white,
         containerWidth: containerWidth,
         containerHeight: containerHeight,
@@ -47,7 +48,7 @@ class TTextButton extends StatelessWidget {
   final bool addContainer;
   final double? containerWidth;
   final double? containerHeight;
-  final Color containerColor;
+  final Color? containerColor;
   final Color? containerColorHovered;
   final EdgeInsets containerPadding;
   final BoxBorder? containerBorder;
@@ -67,7 +68,7 @@ class TTextButton extends StatelessWidget {
       addContainer: addContainer,
       containerWidth: containerWidth,
       containerHeight: containerHeight,
-      containerColor: containerColor,
+      containerColor: containerColor ?? context.theme.primaryColor,
       containerColorHovered: containerColorHovered,
       containerPadding: containerPadding,
       containerBorder: containerBorder,

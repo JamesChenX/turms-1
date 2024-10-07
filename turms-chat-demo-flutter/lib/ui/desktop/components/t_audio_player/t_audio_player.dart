@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
+import '../../../themes/index.dart';
+
 class TAudioPlayer extends StatefulWidget {
   const TAudioPlayer({Key? key}) : super(key: key);
 
@@ -13,9 +15,9 @@ class _TAudioPlayerState extends State<TAudioPlayer> {
   Widget build(BuildContext context) => SizedBox(
         height: 64,
         child: DecoratedBox(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             color: Colors.black87,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: Sizes.borderRadiusCircular8,
           ),
           child: Row(
             children: [

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../themes/theme_config.dart';
+import '../../../../themes/index.dart';
 import 'contact_profile_page/contact_profile_page.dart';
 import 'sub_navigation_rail/sub_navigation_rail.dart';
 
@@ -8,28 +8,33 @@ class ContactsPage extends StatelessWidget {
   const ContactsPage({super.key});
 
   @override
-  Widget build(BuildContext context) => Row(
-        children: [
-          _buildSubNavigationRail(),
-          _buildContactProfilePage(),
-        ],
-      );
+  Widget build(BuildContext context) {
+    final appThemeExtension = context.appThemeExtension;
+    return Row(
+      children: [
+        _buildSubNavigationRail(appThemeExtension),
+        _buildContactProfilePage(appThemeExtension),
+      ],
+    );
+  }
 
-  Widget _buildSubNavigationRail() => const SizedBox(
-        width: ThemeConfig.subNavigationRailWidth,
+  Widget _buildSubNavigationRail(AppThemeExtension appThemeExtension) =>
+      SizedBox(
+        width: Sizes.subNavigationRailWidth,
         child: DecoratedBox(
           decoration: BoxDecoration(
               border: Border(
                   right: BorderSide(
-                      color: ThemeConfig.subNavigationRailDividerColor))),
-          child: SubNavigationRail(),
+                      color: appThemeExtension.subNavigationRailDividerColor))),
+          child: const SubNavigationRail(),
         ),
       );
 
-  Widget _buildContactProfilePage() => const Expanded(
+  Widget _buildContactProfilePage(AppThemeExtension appThemeExtension) =>
+      Expanded(
         child: ColoredBox(
-          color: ThemeConfig.homePageBackgroundColor,
-          child: ContactProfilePage(),
+          color: appThemeExtension.homePageBackgroundColor,
+          child: const ContactProfilePage(),
         ),
       );
 }

@@ -2,7 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
-import '../../../../../themes/theme_config.dart';
+import '../../../../../themes/index.dart';
+
 import '../../../../components/index.dart';
 import '../../create_group_page/create_group_page.dart';
 import '../../new_relationship_page/new_relationship_page.dart';
@@ -15,22 +16,25 @@ class SubNavigationRailView extends StatelessWidget {
   final SubNavigationRailController subNavigationRailController;
 
   @override
-  Widget build(BuildContext context) => GestureDetector(
-        child: Focus(
-          onKeyEvent: subNavigationRailController.onKeyEvent,
-          child: ColoredBox(
-              color: ThemeConfig.conversationBackgroundColor,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildSearchBar(context),
-                  if (subNavigationRailController.isConversationsLoading)
-                    _buildLoadingIndicator(),
-                  _buildConversationTiles(context)
-                ],
-              )),
-        ),
-      );
+  Widget build(BuildContext context) {
+    final appThemeExtension = context.appThemeExtension;
+    return GestureDetector(
+      child: Focus(
+        onKeyEvent: subNavigationRailController.onKeyEvent,
+        child: ColoredBox(
+            color: appThemeExtension.conversationBackgroundColor,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSearchBar(context, appThemeExtension),
+                if (subNavigationRailController.isConversationsLoading)
+                  _buildLoadingIndicator(),
+                _buildConversationTiles(context)
+              ],
+            )),
+      ),
+    );
+  }
 
   Widget _buildLoadingIndicator() => const SizedBox(
         height: 40,
@@ -43,14 +47,15 @@ class SubNavigationRailView extends StatelessWidget {
         ),
       );
 
-  Widget _buildSearchBar(BuildContext context) {
+  Widget _buildSearchBar(
+      BuildContext context, AppThemeExtension appThemeExtension) {
     final appLocalizations = subNavigationRailController.appLocalizations;
     return SizedBox(
-      height: ThemeConfig.homePageHeaderHeight,
+      height: Sizes.homePageHeaderHeight,
       child: ColoredBox(
-        color: const Color.fromARGB(255, 247, 247, 247),
+        color: appThemeExtension.subNavigationRailSearchBarBackgroundColor,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          padding: Sizes.paddingH12,
           child: Center(
             child: Row(
               spacing: 8,

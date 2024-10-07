@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 
-import '../../../themes/theme_config.dart';
+import '../../../themes/app_theme_extension.dart';
 
 class TLoadingIndicator extends StatelessWidget {
   const TLoadingIndicator({super.key, required this.text});
@@ -10,16 +10,14 @@ class TLoadingIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Row(
         mainAxisAlignment: MainAxisAlignment.center,
+        spacing: 8,
         children: [
           const RepaintBoundary(
             child: CupertinoActivityIndicator(),
           ),
-          const SizedBox(
-            width: 8,
-          ),
           Text(
             text,
-            style: ThemeConfig.textStyleSecondary,
+            style: context.appThemeExtension.descriptionTextStyle,
           ),
         ],
       );

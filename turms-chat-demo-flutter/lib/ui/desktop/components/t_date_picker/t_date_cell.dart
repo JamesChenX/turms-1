@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../l10n/view_models/date_format_view_models.dart';
-import '../../../themes/theme_config.dart';
+import '../../../themes/index.dart';
+
 import '../index.dart';
 
 enum RangePosition {
@@ -48,6 +49,7 @@ class _TDateCellState extends ConsumerState<TDateCell> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.theme;
     Widget child;
     final disabled = widget.disableRangePosition != RangePosition.none;
     if (disabled) {
@@ -74,14 +76,13 @@ class _TDateCellState extends ConsumerState<TDateCell> {
                   child: DecoratedBox(
                     decoration: BoxDecoration(
                       border: widget.isToday
-                          ? Border.all(color: ThemeConfig.textColorDisabled)
+                          ? Border.all(color: theme.disabledColor)
                           : null,
-                      borderRadius: ThemeConfig.borderRadius4,
+                      borderRadius: Sizes.borderRadiusCircular4,
                     ),
                     child: Center(
                         child: Text(widget.day,
-                            style: const TextStyle(
-                                color: ThemeConfig.textColorDisabled))),
+                            style: TextStyle(color: theme.disabledColor))),
                   ),
                 ),
               ),
@@ -103,7 +104,7 @@ class _TDateCellState extends ConsumerState<TDateCell> {
                       height: 24,
                       child: DecoratedBox(
                           decoration: BoxDecoration(
-                            borderRadius: ThemeConfig.borderRadius4,
+                            borderRadius: Sizes.borderRadiusCircular4,
                             color: _isHovered
                                 ? const Color.fromARGB(255, 245, 245, 245)
                                 : null,
@@ -156,7 +157,7 @@ class _TDateCellState extends ConsumerState<TDateCell> {
                     child: DecoratedBox(
                       decoration: BoxDecoration(
                         border: widget.isToday
-                            ? Border.all(color: ThemeConfig.primary)
+                            ? Border.all(color: theme.primaryColor)
                             : null,
                         borderRadius: switch (widget.selectRangePosition) {
                           RangePosition.middle => null,
@@ -164,16 +165,16 @@ class _TDateCellState extends ConsumerState<TDateCell> {
                               left: Radius.circular(4)),
                           RangePosition.end => const BorderRadius.horizontal(
                               right: Radius.circular(4)),
-                          RangePosition.none => ThemeConfig.borderRadius4,
+                          RangePosition.none => Sizes.borderRadiusCircular4,
                         },
                         color: _isHovered
-                            ? ThemeConfig.primary
+                            ? theme.primaryColor
                             : switch (widget.selectRangePosition) {
                                 RangePosition.none => null,
                                 RangePosition.middle =>
                                   const Color.fromARGB(255, 230, 244, 255),
-                                RangePosition.start => ThemeConfig.primary,
-                                RangePosition.end => ThemeConfig.primary,
+                                RangePosition.start => theme.primaryColor,
+                                RangePosition.end => theme.primaryColor,
                               },
                       ),
                       child: Center(

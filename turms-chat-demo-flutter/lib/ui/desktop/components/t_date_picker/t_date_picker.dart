@@ -3,8 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 
-import '../../../../infra/datetime/datetime_utils.dart';
+import '../../../../infra/time/datetime_utils.dart';
 import '../../../l10n/view_models/app_localizations_view_model.dart';
+import '../../../themes/index.dart';
 import '../index.dart';
 import 't_date_cell.dart';
 
@@ -60,7 +61,7 @@ class TDatePicker extends ConsumerWidget {
   }
 
   Widget _buildTitle(String dateStr) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+        padding: Sizes.paddingV4H4,
         child: Row(children: [
           if (showPrevButtons)
             TIconButton(
@@ -147,7 +148,7 @@ class TDatePicker extends ConsumerWidget {
     }
     return Expanded(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: Sizes.paddingH16,
         child: GridView.count(
           crossAxisCount: DateTime.daysPerWeek,
           children: children,

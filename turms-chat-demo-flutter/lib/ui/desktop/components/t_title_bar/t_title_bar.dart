@@ -20,7 +20,7 @@ class TTitleBar extends ConsumerStatefulWidget {
       this.displayCloseOnly = false,
       this.popOnCloseTapped = false,
       this.usePositioned = true,
-      required this.backgroundColor});
+      this.backgroundColor = Colors.transparent});
 
   final bool displayCloseOnly;
   final bool popOnCloseTapped;

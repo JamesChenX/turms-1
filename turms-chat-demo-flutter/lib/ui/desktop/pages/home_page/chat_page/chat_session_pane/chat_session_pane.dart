@@ -23,11 +23,8 @@ class ChatSessionPane extends ConsumerWidget {
     final appThemeExtension = context.appThemeExtension;
     final selectedConversation = ref.watch(selectedConversationViewModel);
     if (selectedConversation == null) {
-      return ColoredBox(
-        color: appThemeExtension.homePageBackgroundColor,
-        child: const TWindowControlZone(
-            toggleMaximizeOnDoubleTap: true, child: TEmpty()),
-      );
+      return const TWindowControlZone(
+          toggleMaximizeOnDoubleTap: true, child: TEmpty());
     }
     return ColoredBox(
       color: appThemeExtension.homePageBackgroundColor,

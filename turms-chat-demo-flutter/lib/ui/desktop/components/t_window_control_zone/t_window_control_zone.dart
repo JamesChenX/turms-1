@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../domain/window/view_models/window_maximized_view_model.dart';
 import '../../../../infra/window/window_utils.dart';
+import '../../../themes/index.dart';
 
 class TWindowControlZone extends ConsumerWidget {
   const TWindowControlZone(
@@ -27,6 +28,6 @@ class TWindowControlZone extends ConsumerWidget {
                 }
               }
             : null,
-        child: child ?? const SizedBox.expand(),
+        child: child ?? Sizes.sizedBoxInfinity,
       );
 }

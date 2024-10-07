@@ -30,6 +30,7 @@ class Sizes {
 
   // Sized boxes
   static const sizedBox0 = SizedBox.shrink();
+  static const sizedBoxInfinity = SizedBox.expand();
   static const sizedBoxW4 = SizedBox(width: 4);
   static const sizedBoxH4 = SizedBox(height: 4);
   static const sizedBoxW8 = SizedBox(width: 8);

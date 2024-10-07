@@ -57,7 +57,6 @@ Future<void> showSimpleTDialog(
                   child: child,
                 ),
                 const TTitleBar(
-                  backgroundColor: Colors.transparent,
                   displayCloseOnly: true,
                   popOnCloseTapped: true,
                 )

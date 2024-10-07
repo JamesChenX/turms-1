@@ -135,7 +135,7 @@ class _MessageBubbleState extends ConsumerState<MessageBubble> {
     );
   }
 
-  Row _buildMessage(
+  Widget _buildMessage(
       BuildContext context,
       MainAxisAlignment mainAxisAlignment,
       ChatMessage message,
@@ -143,7 +143,8 @@ class _MessageBubbleState extends ConsumerState<MessageBubble> {
       BorderRadius borderRadius) {
     final deliveryStatus = message.status;
     final appThemeExtension = context.appThemeExtension;
-    return Row(
+
+    final content = Row(
       mainAxisAlignment: mainAxisAlignment,
       spacing: 12,
       children: [
@@ -173,59 +174,54 @@ class _MessageBubbleState extends ConsumerState<MessageBubble> {
           )
         else if (deliveryStatus == MessageDeliveryStatus.delivering)
           const RepaintBoundary(child: CupertinoActivityIndicator()),
-        _buildMessageBubble(context, message, infoAlignment, borderRadius)
+        IntrinsicWidth(
+          // TODO: we may support compound messages in the future.
+          child: switch (message.type) {
+            MessageType.text => MessageBubbleText(
+                currentUser: widget.currentUser,
+                message: message,
+                borderRadius: borderRadius,
+              ),
+            MessageType.video => MessageBubbleVideo(
+                url: Uri.parse(message.originalUrl!),
+                width: message.originalWidth!,
+                height: message.originalHeight!,
+              ),
+            MessageType.audio =>
+              MessageBubbleAudio(url: Uri.parse(message.originalUrl!)),
+            MessageType.image => MessageBubbleImage(
+                url: message.originalUrl!,
+                width: message.originalWidth!,
+                height: message.originalHeight!,
+              ),
+            MessageType.file => Text(message.originalUrl ?? ''),
+            MessageType.youtube => Text(message.originalUrl!),
+          },
+        ),
       ],
     );
-  }
-
-  Widget _buildMessageBubble(BuildContext context, ChatMessage message,
-      CrossAxisAlignment? infoAlignment, BorderRadius borderRadius) {
-    final child = IntrinsicWidth(
-      // TODO: we may support compound messages in the future.
-      child: switch (message.type) {
-        MessageType.text => MessageBubbleText(
-            currentUser: widget.currentUser,
-            message: message,
-            borderRadius: borderRadius,
-          ),
-        MessageType.video => MessageBubbleVideo(
-            url: Uri.parse(message.originalUrl!),
-            width: message.originalWidth!,
-            height: message.originalHeight!,
-          ),
-        MessageType.audio =>
-          MessageBubbleAudio(url: Uri.parse(message.originalUrl!)),
-        MessageType.image => MessageBubbleImage(
-            url: message.originalUrl!,
-            width: message.originalWidth!,
-            height: message.originalHeight!,
-          ),
-        MessageType.file => Text(message.originalUrl ?? ''),
-        MessageType.youtube => Text(message.originalUrl!),
-      },
-    );
-    if (infoAlignment != null) {
-      final sender = widget.sender;
-      return Column(
-        crossAxisAlignment: infoAlignment,
-        spacing: 4,
-        children: [
-          Row(
-            spacing: 8,
-            children: [
-              if (sender.userId != widget.currentUser.userId)
-                Text(sender.name,
-                    style: const TextStyle(
-                        fontSize: 12, fontWeight: FontWeight.w600)),
-              Text(_formatMessageTimestamp(widget.messages.first.timestamp),
-                  style: const TextStyle(fontSize: 12)),
-            ],
-          ),
-          child,
-        ],
-      );
+    if (infoAlignment == null) {
+      return content;
     }
-    return child;
+    final sender = widget.sender;
+    return Column(
+      crossAxisAlignment: infoAlignment,
+      spacing: 4,
+      children: [
+        Row(
+          spacing: 8,
+          children: [
+            if (sender.userId != widget.currentUser.userId)
+              Text(sender.name,
+                  style: const TextStyle(
+                      fontSize: 12, fontWeight: FontWeight.w600)),
+            Text(_formatMessageTimestamp(widget.messages.first.timestamp),
+                style: const TextStyle(fontSize: 12)),
+          ],
+        ),
+        content,
+      ],
+    );
   }
 
   String _formatMessageTimestamp(DateTime timestamp) {

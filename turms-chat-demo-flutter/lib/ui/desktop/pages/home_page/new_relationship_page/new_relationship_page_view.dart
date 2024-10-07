@@ -28,8 +28,7 @@ class NewRelationshipPageView extends StatelessWidget {
           Positioned.fill(
             child: _buildPage(appLocalizations),
           ),
-          TTitleBar(
-            backgroundColor: context.appThemeExtension.homePageBackgroundColor,
+          const TTitleBar(
             displayCloseOnly: true,
             popOnCloseTapped: true,
           )

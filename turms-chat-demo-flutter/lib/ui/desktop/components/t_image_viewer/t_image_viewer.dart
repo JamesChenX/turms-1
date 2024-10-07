@@ -41,14 +41,12 @@ class _TImageViewerState extends State<TImageViewer> {
       height: _height,
       child: Column(
         children: [
-          Align(
+          const Align(
             alignment: Alignment.topRight,
             child: TTitleBar(
               displayCloseOnly: true,
               popOnCloseTapped: true,
               usePositioned: false,
-              backgroundColor:
-                  context.appThemeExtension.homePageBackgroundColor,
             ),
           ),
           Expanded(

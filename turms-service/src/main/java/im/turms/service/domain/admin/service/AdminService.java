@@ -259,7 +259,7 @@ public class AdminService extends BaseAdminService {
                 : passwordManager.encodeAdminPassword(RandomStringUtils.randomAlphabetic(10));
         displayName = StringUtils.hasText(displayName)
                 ? displayName
-                : RandomStringUtils.randomAlphabetic(8);
+                : loginName;
         registrationDate = registrationDate == null
                 ? new Date()
                 : registrationDate;

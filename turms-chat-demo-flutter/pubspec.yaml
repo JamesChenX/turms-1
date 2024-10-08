@@ -132,7 +132,7 @@ dependencies:
   youtube_explode_dart: ^2.2.0
   rust_lib_turms_chat_demo:
     path: rust_builder
-  flutter_rust_bridge: 2.4.0
+  flutter_rust_bridge: ^2.5.0
   responsive_framework: ^1.5.1
 
 dev_dependencies:

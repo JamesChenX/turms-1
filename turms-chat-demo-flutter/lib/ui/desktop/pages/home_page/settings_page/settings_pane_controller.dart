@@ -70,10 +70,12 @@ class _SettingsPaneController extends ConsumerState<SettingsPane> {
     final Locale locale;
     if (value == SettingLocale.system) {
       locale = ref.read(localeInfoViewModel.notifier).useSystemLocale().locale;
-      await userSettingsRepository.delete(
+      await userSettingsRepository.upsert(
         ref.read(loggedInUserViewModel)!.userId,
         UserSettingId.locale.name,
+        UserSettings.unsetValue,
       );
+      ref.read(userSettingsViewModel.notifier).state!.locale = null;
     } else {
       final newLocale = ref
           .read(localeInfoViewModel.notifier)
@@ -85,8 +87,8 @@ class _SettingsPaneController extends ConsumerState<SettingsPane> {
           ref.read(loggedInUserViewModel)!.userId,
           UserSettingId.locale.name,
           UserSettingId.locale.convertValueToString(locale));
+      ref.read(userSettingsViewModel.notifier).state!.locale = locale;
     }
-    ref.read(userSettingsViewModel.notifier).state!.locale = locale;
     userSettingsViewModelRef.notifyListeners();
   }
 

@@ -85,7 +85,7 @@ class AboutPageView extends StatelessWidget {
             ),
           ),
           const TTitleBar(
-            backgroundColor: Colors.transparent,
+            backgroundColor: Colors.white,
             displayCloseOnly: true,
             popOnCloseTapped: true,
           )

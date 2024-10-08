@@ -2,8 +2,10 @@ import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../../domain/group/services/group_service.dart';
 import '../../../../../domain/user/models/contact.dart';
 import '../../../../../domain/user/models/index.dart';
+import '../../../../../domain/user/services/user_service.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../l10n/view_models/app_localizations_view_model.dart';
 import 'friend_request_page/friend_request_page.dart';
@@ -57,30 +59,17 @@ class NewRelationshipPageController extends ConsumerState<NewRelationshipPage>
     }
     isSearching = true;
     setState(() {});
-    // TODO: use real API
-    await Future<void>.delayed(const Duration(seconds: 3));
     switch (searchType) {
       case SearchType.user:
-        contacts = [
-          UserContact(
-            userId: num,
-            name: 'a fake user name: $value' * 10,
-            intro: 'a fake user intro',
-            relationshipGroupId: Int64(-1),
-          )
-        ];
+        contacts = await userService.searchUserContacts(num, value);
       case SearchType.group:
-        contacts = [
-          GroupContact(
-            groupId: num,
-            name: 'a fake group name: $value' * 10,
-            intro: 'a fake group intro',
-            members: [],
-          )
-        ];
+        contacts = await groupService.searchGroupContacts(num, value);
     }
     isSearching = false;
     isSearchResultEmpty = false;
+    if (!mounted) {
+      return;
+    }
     setState(() {});
   }
 

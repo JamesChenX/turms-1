@@ -11,7 +11,7 @@ import '../../../../../../domain/message/models/message_group.dart';
 import '../../../../../../domain/message/models/message_type.dart';
 import '../../../../../../domain/message/services/message_service.dart';
 import '../../../../../../domain/user/models/user.dart';
-import '../../../../../../domain/user/services/UserService.dart';
+import '../../../../../../domain/user/services/user_service.dart';
 import '../../../../../../domain/user/view_models/logged_in_user_info_view_model.dart';
 import '../../../../../../infra/random/random_utils.dart';
 import '../../../../../l10n/app_localizations.dart';

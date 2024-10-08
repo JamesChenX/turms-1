@@ -17,6 +17,7 @@ class TButton extends StatefulWidget {
       this.containerBorder,
       this.containerBorderHovered,
       this.containerBorderRadius = Sizes.borderRadiusCircular4,
+      this.duration = Durations.short4,
       this.isLoading = false,
       this.disabled = false,
       this.tooltip,
@@ -36,6 +37,7 @@ class TButton extends StatefulWidget {
   final BoxBorder? containerBorder;
   final BoxBorder? containerBorderHovered;
   final BorderRadiusGeometry? containerBorderRadius;
+  final Duration duration;
 
   final bool isLoading;
   final bool disabled;
@@ -98,7 +100,7 @@ class _TButtonState extends State<TButton> {
     }
     if (widget.addContainer) {
       child = AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
+          duration: widget.duration,
           decoration: BoxDecoration(
             color: widget.disabled
                 ? theme.disabledColor
@@ -122,7 +124,7 @@ class _TButtonState extends State<TButton> {
       child = TTooltip(
         message: widget.tooltip,
         preferBelow: true,
-        waitDuration: const Duration(milliseconds: 1000),
+        waitDuration: Durations.extralong4,
         child: child,
       );
     }

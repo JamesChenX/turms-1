@@ -29,6 +29,7 @@ class NewRelationshipPageView extends StatelessWidget {
             child: _buildPage(appLocalizations),
           ),
           const TTitleBar(
+            backgroundColor: Colors.white,
             displayCloseOnly: true,
             popOnCloseTapped: true,
           )

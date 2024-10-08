@@ -1,5 +1,6 @@
 import 'package:fixnum/fixnum.dart';
 
+import '../models/group_member.dart';
 import '../models/index.dart';
 
 class ContactConversation {
@@ -185,11 +186,11 @@ final contactToMessages = <Int64, List<String>>{
 
 final fixtureGroupContacts = fixtureUserContacts.indexed.map((item) {
   final (index, _) = item;
-  final members = <User>[];
+  final members = <GroupMember>[];
   final memberCount = index + 1;
   for (var i = 0; i < memberCount; i++) {
-    // TODO: oneself
-    members.add(fixtureUserContacts[i]);
+    // TODO: add oneself
+    members.add(GroupMember.fromUser(fixtureUserContacts[i], isAdmin: i == 0));
   }
   return GroupContact(
       groupId: Int64(index + 1),

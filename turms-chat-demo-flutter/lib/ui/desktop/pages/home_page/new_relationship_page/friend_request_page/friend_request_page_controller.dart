@@ -2,9 +2,11 @@ import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../../../domain/user/services/user_service.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../l10n/view_models/app_localizations_view_model.dart';
 import '../../../../../themes/index.dart';
+import '../../../app_controller.dart';
 import 'friend_request_page.dart';
 import 'friend_request_page_view.dart';
 
@@ -37,13 +39,12 @@ class FriendRequestPageController extends ConsumerState<FriendRequestPage> {
   Future<void> sendFriendRequest(Int64 userId, String content) async {
     isSending = true;
     setState(() {});
-    // TODO: use real API
-    await Future<void>.delayed(const Duration(seconds: 3));
+    await userService.sendFriendRequest(userId, content);
     isSending = false;
     close();
   }
 
   void close() {
-    Navigator.of(context, rootNavigator: true).pop();
+    AppController.popTopIfNameMatched(friendRequestDialogRouteName);
   }
 }

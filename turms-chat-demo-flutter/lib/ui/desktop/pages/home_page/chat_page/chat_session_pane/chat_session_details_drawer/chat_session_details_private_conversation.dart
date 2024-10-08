@@ -73,14 +73,15 @@ class _ChatSessionDetailsPrivateConversationState
           ),
         ),
         Sizes.sizedBoxH8,
+        const Spacer(),
         divider,
         SizedBox(
           width: double.infinity,
           child: TTextButton(
-            containerPadding: Sizes.paddingV16,
+            containerPadding: Sizes.paddingV8,
             containerColor: Colors.transparent,
             containerColorHovered: Colors.transparent,
-            text: appLocalizations.leaveGroup,
+            text: appLocalizations.clearChatHistory,
             textStyle: context.appThemeExtension.dangerTextStyle,
           ),
         )

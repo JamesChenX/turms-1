@@ -15,8 +15,10 @@ class FriendRequestPage extends ConsumerStatefulWidget {
       FriendRequestPageController();
 }
 
+const friendRequestDialogRouteName = '/friend-request-dialog';
+
 Future<void> showFriendRequestDialog(BuildContext context, Contact contact) =>
     showCustomTDialog(
-        routeName: '/friend-request-dialog',
+        routeName: friendRequestDialogRouteName,
         context: context,
         child: FriendRequestPage(contact));

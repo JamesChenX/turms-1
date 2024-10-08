@@ -17,7 +17,7 @@ import 'app.dart';
 import 'app_view.dart';
 
 class AppController extends ConsumerState<App> with WindowListener {
-  final GlobalKey<NavigatorState> navigatorKey = GlobalKey();
+  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey();
 
   late Locale locale;
   late ThemeData themeData;
@@ -104,8 +104,8 @@ class AppController extends ConsumerState<App> with WindowListener {
     if (event is KeyDownEvent &&
         event.logicalKey == LogicalKeyboardKey.escape) {
       final currentState = navigatorKey.currentState;
-      if (currentState?.mounted ?? false) {
-        currentState!.popUntil((route) {
+      if (currentState != null && currentState.mounted) {
+        currentState.popUntil((route) {
           // Check "!hasRouteRemoved" to only remove the first TDialog route.
           if (!hasRouteRemoved && isTDialogRoute(route) && route.isActive) {
             hasRouteRemoved = true;
@@ -121,4 +121,19 @@ class AppController extends ConsumerState<App> with WindowListener {
   Locale? resolveLocale(
           List<Locale>? locales, Iterable<Locale> supportedLocales) =>
       ref.read(localeInfoViewModel).locale;
+
+  static void popTopIfNameMatched(String name) {
+    final currentState = navigatorKey.currentState;
+    if (currentState == null || !currentState.mounted) {
+      return;
+    }
+    String? currentPath;
+    currentState.popUntil((route) {
+      currentPath = route.settings.name;
+      return true;
+    });
+    if (currentPath == name) {
+      currentState.pop();
+    }
+  }
 }

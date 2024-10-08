@@ -35,11 +35,13 @@ class UserProfilePopup extends ConsumerStatefulWidget {
     super.key,
     required this.user,
     this.editable = false,
+    this.size = TAvatarSize.medium,
     this.popupAnchor = Alignment.topLeft,
   });
 
   final User user;
   final bool editable;
+  final TAvatarSize size;
   final Alignment popupAnchor;
 
   @override
@@ -63,6 +65,7 @@ class _UserProfilePopupState extends ConsumerState<UserProfilePopup> {
     final image = user.image;
     final avatar = TAvatar(
       name: user.name,
+      size: widget.size,
       image: image,
     );
     return TPopup(

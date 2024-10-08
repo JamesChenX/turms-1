@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import '../../../../../../domain/user/fixtures/contacts.dart';
 import '../../../../../../domain/user/fixtures/relationship_groups.dart';
 import '../../../../../../domain/user/models/index.dart';
-import '../../../../../../domain/user/services/UserService.dart';
+import '../../../../../../domain/user/services/user_service.dart';
 import '../../../../../../infra/built_in_types/built_in_type_helpers.dart';
 import '../../../../../../infra/ui/text_utils.dart';
 import '../../../../../themes/index.dart';

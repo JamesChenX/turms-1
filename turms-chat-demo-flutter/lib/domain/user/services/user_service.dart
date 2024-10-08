@@ -34,6 +34,23 @@ class UserService {
 
   User queryUsers(Int64 senderId) =>
       fixtureUserContacts.firstWhere((element) => element.userId == senderId);
+
+  Future<List<UserContact>> searchUserContacts(
+      Int64 userId, String searchText) async {
+    await Future<void>.delayed(const Duration(seconds: 3));
+    return [
+      UserContact(
+        userId: userId,
+        name: 'a fake user name: $searchText' * 10,
+        intro: 'a fake user intro',
+        relationshipGroupId: Int64(-1),
+      )
+    ];
+  }
+
+  Future<void> sendFriendRequest(Int64 userId, String content) async {
+    await Future<void>.delayed(const Duration(seconds: 3));
+  }
 }
 
 final userService = UserService();

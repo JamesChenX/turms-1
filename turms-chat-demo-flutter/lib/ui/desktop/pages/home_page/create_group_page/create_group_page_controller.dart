@@ -2,10 +2,12 @@ import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../../domain/group/services/group_service.dart';
 import '../../../../../domain/user/models/index.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../l10n/view_models/app_localizations_view_model.dart';
 import '../../../../themes/index.dart';
+import '../../app_controller.dart';
 import '../contacts_page/view_models/contacts_view_model.dart';
 import 'create_group_page.dart';
 import 'create_group_page_view.dart';
@@ -32,14 +34,13 @@ class CreateGroupPageController extends ConsumerState<CreateGroupPage> {
   }
 
   void close() {
-    Navigator.of(context, rootNavigator: true).pop();
+    AppController.popTopIfNameMatched(createGroupDialogRouteName);
   }
 
   Future<void> createGroup() async {
     isCreating = true;
     setState(() {});
-    // TODO: use real API
-    await Future<void>.delayed(const Duration(seconds: 3));
+    await groupService.createGroup();
     isCreating = false;
     close();
   }

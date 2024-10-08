@@ -212,9 +212,23 @@ class _MessageBubbleState extends ConsumerState<MessageBubble> {
           spacing: 8,
           children: [
             if (sender.userId != widget.currentUser.userId)
-              Text(sender.name,
-                  style: const TextStyle(
-                      fontSize: 12, fontWeight: FontWeight.w600)),
+              if (message.isGroupMessage)
+                MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: GestureDetector(
+                    onTap: () {
+                      // TODO
+                      // widget.mentionUser(message.senderId);
+                    },
+                    child: Text(sender.name,
+                        style: const TextStyle(
+                            fontSize: 12, fontWeight: FontWeight.w600)),
+                  ),
+                )
+              else
+                Text(sender.name,
+                    style: const TextStyle(
+                        fontSize: 12, fontWeight: FontWeight.w600)),
             Text(_formatMessageTimestamp(widget.messages.first.timestamp),
                 style: const TextStyle(fontSize: 12)),
           ],

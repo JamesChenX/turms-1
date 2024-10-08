@@ -13,5 +13,5 @@ class GroupContact extends Contact {
   @override
   final String id;
   final Int64 groupId;
-  final List<User> members;
+  final List<GroupMember> members;
 }

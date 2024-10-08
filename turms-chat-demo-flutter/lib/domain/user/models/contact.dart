@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 
+import 'group_member.dart';
 import 'user.dart';
 
 part 'group_contact.dart';
@@ -32,11 +33,13 @@ sealed class Contact {
     if (_cachedImage != null) {
       return _cachedImage;
     }
-    if (imageBytes != null) {
-      return _cachedImage = MemoryImage(imageBytes!);
+    final localImageBytes = imageBytes;
+    if (localImageBytes != null) {
+      return _cachedImage = MemoryImage(localImageBytes);
     }
-    if (imageUrl != null) {
-      return _cachedImage = NetworkImage(imageUrl!);
+    final localImageUrl = imageUrl;
+    if (localImageUrl != null) {
+      return _cachedImage = NetworkImage(localImageUrl);
     }
     return null;
   }

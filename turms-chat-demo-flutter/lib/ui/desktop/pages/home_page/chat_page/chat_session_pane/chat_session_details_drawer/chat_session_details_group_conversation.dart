@@ -4,13 +4,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../../../../../domain/user/models/contact.dart';
-import '../../../../../../../domain/user/models/user.dart';
+import '../../../../../../../domain/user/models/group_member.dart';
+import '../../../../../../../domain/user/view_models/logged_in_user_info_view_model.dart';
 import '../../../../../../../infra/built_in_types/built_in_type_helpers.dart';
 import '../../../../../../../infra/ui/text_utils.dart';
 import '../../../../../../l10n/view_models/app_localizations_view_model.dart';
 import '../../../../../../themes/index.dart';
 import '../../../../../components/index.dart';
 import '../../../../../components/t_switch/t_switch.dart';
+import '../../../shared_components/user_profile_popup.dart';
 
 class ChatSessionDetailsGroupConversation extends ConsumerStatefulWidget {
   const ChatSessionDetailsGroupConversation({super.key, required this.contact});
@@ -26,26 +28,49 @@ class _ChatSessionDetailsGroupConversationState
     extends ConsumerState<ChatSessionDetailsGroupConversation> {
   bool _muteNotifications = false;
   bool _stickOnTop = false;
+  bool _editingGroupName = false;
 
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
     final appThemeExtension = theme.appThemeExtension;
     final appLocalizations = ref.watch(appLocalizationsViewModel);
+    final loggedInUser = ref.watch(loggedInUserViewModel)!;
     const divider = THorizontalDivider();
     final intro = widget.contact.intro;
 
+    final members = widget.contact.members;
+    // TODO: final isCurrentUserAdmin = members.any((m) => m.userId == loggedInUser.userId);
+    const isCurrentUserAdmin = true;
+
+    final groupNameText = SelectionArea(
+        child: Text(
+      widget.contact.name,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+    ));
     return Column(
       children: [
-        Align(
-          alignment: Alignment.topLeft,
-          child: SelectionArea(
-              child: Text(
-            widget.contact.name,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          )),
-        ),
+        isCurrentUserAdmin
+            ? Row(
+                children: [
+                  Flexible(child: groupNameText),
+                  MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: GestureDetector(
+                      onTap: () {
+                        _editingGroupName = true;
+                        setState(() {});
+                      },
+                      child: const Icon(
+                        Symbols.edit_rounded,
+                        size: 18,
+                      ),
+                    ),
+                  )
+                ],
+              )
+            : groupNameText,
         if (intro.isNotBlank) ...[
           Sizes.sizedBoxH8,
           SizedBox(
@@ -103,8 +128,7 @@ class _ChatSessionDetailsGroupConversationState
         ),
         Sizes.sizedBoxH8,
         Expanded(
-            child: _ChatSessionDetailsGroupConversationMemberList(
-                widget.contact.members)),
+            child: _ChatSessionDetailsGroupConversationMemberList(members)),
         Sizes.sizedBoxH8,
         divider,
         SizedBox(
@@ -137,7 +161,7 @@ class _ChatSessionDetailsGroupConversationMemberList
     extends ConsumerStatefulWidget {
   const _ChatSessionDetailsGroupConversationMemberList(this.members);
 
-  final List<User> members;
+  final List<GroupMember> members;
 
   @override
   ConsumerState createState() =>
@@ -186,24 +210,28 @@ class __ChatSessionDetailsGroupConversationMemberListState
           findChildIndexCallback: (key) =>
               matchedMemberIdToIndex[(key as ValueKey<Int64>).value],
           itemBuilder: (context, index) {
-            final member = matchedMembers[index];
+            final item = matchedMembers[index];
+            final member = item.member;
             return Row(
               spacing: 8,
               children: [
-                TAvatar(name: member.member.name, size: TAvatarSize.small),
+                UserProfilePopup(
+                    user: member,
+                    popupAnchor: Alignment.topRight,
+                    size: TAvatarSize.small),
                 Expanded(
                     child: Text.rich(
-                  TextSpan(children: member.nameTextSpans),
+                  TextSpan(children: item.nameTextSpans),
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                   softWrap: false,
-                )
-                    //     Text(
-                    //   member.name,
-                    //   overflow: TextOverflow.ellipsis,
-                    // )
-                    ),
-                const Icon(Symbols.supervisor_account_rounded)
+                )),
+                if (member.isAdmin)
+                  Icon(
+                    Symbols.supervisor_account_rounded,
+                    size: 22,
+                    color: Colors.yellow[800],
+                  )
               ],
             );
           },
@@ -219,6 +247,6 @@ class __ChatSessionDetailsGroupConversationMemberListState
 class _StyledMember {
   const _StyledMember({required this.member, required this.nameTextSpans});
 
-  final User member;
+  final GroupMember member;
   final List<TextSpan> nameTextSpans;
 }

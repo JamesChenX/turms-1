@@ -554,6 +554,12 @@ abstract class AppLocalizations {
   /// **'New Message Notification'**
   String get newMessageNotification;
 
+  /// No description provided for @noMatchingGroupMembersFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching members found'**
+  String get noMatchingGroupMembersFound;
+
   /// No description provided for @noResultsFound.
   ///
   /// In en, this message translates to:

@@ -241,6 +241,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get newMessageNotification => 'New Message Notification';
 
   @override
+  String get noMatchingGroupMembersFound => 'No matching members found';
+
+  @override
   String get noResultsFound => 'No results found';
 
   @override

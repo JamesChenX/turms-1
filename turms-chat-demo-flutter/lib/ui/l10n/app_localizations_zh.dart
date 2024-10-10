@@ -241,6 +241,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get newMessageNotification => '新消息通知';
 
   @override
+  String get noMatchingGroupMembersFound => '未找到匹配的成员';
+
+  @override
   String get noResultsFound => '没有找到结果';
 
   @override

@@ -111,8 +111,7 @@ class _TPopupState extends State<TPopup> {
   }
 
   void _removeOverlayEntry() {
-    final overlayEntry = _overlayEntry;
-    if (overlayEntry != null) {
+    if (_overlayEntry case final OverlayEntry overlayEntry) {
       overlayEntry.remove();
       _overlayEntry = null;
     }

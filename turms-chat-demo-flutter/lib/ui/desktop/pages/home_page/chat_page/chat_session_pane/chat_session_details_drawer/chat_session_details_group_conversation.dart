@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
+import '../../../../../../../domain/group/services/group_service.dart';
 import '../../../../../../../domain/user/models/contact.dart';
 import '../../../../../../../domain/user/models/group_member.dart';
 import '../../../../../../../domain/user/view_models/logged_in_user_info_view_model.dart';
@@ -28,7 +31,6 @@ class _ChatSessionDetailsGroupConversationState
     extends ConsumerState<ChatSessionDetailsGroupConversation> {
   bool _muteNotifications = false;
   bool _stickOnTop = false;
-  bool _editingGroupName = false;
 
   @override
   Widget build(BuildContext context) {
@@ -43,34 +45,18 @@ class _ChatSessionDetailsGroupConversationState
     // TODO: final isCurrentUserAdmin = members.any((m) => m.userId == loggedInUser.userId);
     const isCurrentUserAdmin = true;
 
-    final groupNameText = SelectionArea(
-        child: Text(
-      widget.contact.name,
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-    ));
     return Column(
       children: [
         isCurrentUserAdmin
-            ? Row(
-                children: [
-                  Flexible(child: groupNameText),
-                  MouseRegion(
-                    cursor: SystemMouseCursors.click,
-                    child: GestureDetector(
-                      onTap: () {
-                        _editingGroupName = true;
-                        setState(() {});
-                      },
-                      child: const Icon(
-                        Symbols.edit_rounded,
-                        size: 18,
-                      ),
-                    ),
-                  )
-                ],
+            ? _ChatSessionDetailsGroupConversationName(
+                groupName: widget.contact.name,
               )
-            : groupNameText,
+            : SelectionArea(
+                child: Text(
+                widget.contact.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              )),
         if (intro.isNotBlank) ...[
           Sizes.sizedBoxH8,
           SizedBox(
@@ -165,15 +151,16 @@ class _ChatSessionDetailsGroupConversationMemberList
 
   @override
   ConsumerState createState() =>
-      __ChatSessionDetailsGroupConversationMemberListState();
+      _ChatSessionDetailsGroupConversationMemberListState();
 }
 
-class __ChatSessionDetailsGroupConversationMemberListState
+class _ChatSessionDetailsGroupConversationMemberListState
     extends ConsumerState<_ChatSessionDetailsGroupConversationMemberList> {
   String _searchText = '';
 
   @override
   Widget build(BuildContext context) {
+    final appThemeExtension = context.appThemeExtension;
     final appLocalizations = ref.watch(appLocalizationsViewModel);
 
     final isSearchMode = _searchText.isNotBlank;
@@ -181,7 +168,7 @@ class __ChatSessionDetailsGroupConversationMemberListState
       final nameTextSpans = TextUtils.highlightSearchText(
           text: member.name,
           searchText: _searchText,
-          searchTextStyle: context.appThemeExtension.highlightTextStyle);
+          searchTextStyle: appThemeExtension.highlightTextStyle);
       if (nameTextSpans.length == 1 && isSearchMode) {
         return [];
       }
@@ -203,45 +190,126 @@ class __ChatSessionDetailsGroupConversationMemberListState
           },
         ),
         Expanded(
-            child: ListView.separated(
-          // Used to not overlay on the scrollbar
-          padding: const EdgeInsets.only(right: 12),
-          itemCount: itemCount,
-          findChildIndexCallback: (key) =>
-              matchedMemberIdToIndex[(key as ValueKey<Int64>).value],
-          itemBuilder: (context, index) {
-            final item = matchedMembers[index];
-            final member = item.member;
-            return Row(
-              spacing: 8,
-              children: [
-                UserProfilePopup(
-                    user: member,
-                    popupAnchor: Alignment.topRight,
-                    size: TAvatarSize.small),
-                Expanded(
-                    child: Text.rich(
-                  TextSpan(children: item.nameTextSpans),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                  softWrap: false,
-                )),
-                if (member.isAdmin)
-                  Icon(
-                    Symbols.supervisor_account_rounded,
-                    size: 22,
-                    color: Colors.yellow[800],
-                  )
-              ],
-            );
-          },
-          separatorBuilder: (BuildContext context, int index) => const SizedBox(
-            height: 4,
-          ),
-        ))
+            child: isSearchMode && itemCount == 0
+                ? Center(
+                    child: Text(
+                    appLocalizations.noMatchingGroupMembersFound,
+                    style: appThemeExtension.descriptionTextStyle,
+                  ))
+                : ListView.separated(
+                    // Used to not overlay on the scrollbar
+                    padding: const EdgeInsets.only(right: 12),
+                    itemCount: itemCount,
+                    findChildIndexCallback: (key) =>
+                        matchedMemberIdToIndex[(key as ValueKey<Int64>).value],
+                    itemBuilder: (context, index) {
+                      final item = matchedMembers[index];
+                      final member = item.member;
+                      return Row(
+                        spacing: 8,
+                        children: [
+                          UserProfilePopup(
+                              user: member,
+                              popupAnchor: Alignment.topRight,
+                              size: TAvatarSize.small),
+                          Expanded(
+                              child: Text.rich(
+                            TextSpan(children: item.nameTextSpans),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            softWrap: false,
+                          )),
+                          if (member.isAdmin)
+                            Icon(
+                              Symbols.supervisor_account_rounded,
+                              size: 22,
+                              color: Colors.yellow[800],
+                            )
+                        ],
+                      );
+                    },
+                    separatorBuilder: (BuildContext context, int index) =>
+                        const SizedBox(
+                      height: 4,
+                    ),
+                  ))
       ],
     );
   }
+}
+
+class _ChatSessionDetailsGroupConversationName extends StatefulWidget {
+  const _ChatSessionDetailsGroupConversationName({required this.groupName});
+
+  final String groupName;
+
+  @override
+  State<_ChatSessionDetailsGroupConversationName> createState() =>
+      _ChatSessionDetailsGroupConversationNameState();
+}
+
+class _ChatSessionDetailsGroupConversationNameState
+    extends State<_ChatSessionDetailsGroupConversationName> {
+  TextEditingController? _textEditingController;
+  bool _editingGroupName = false;
+  bool _isHovered = false;
+
+  @override
+  void dispose() {
+    super.dispose();
+    _textEditingController?.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => _editingGroupName
+      ? TTextField(
+          textEditingController: _textEditingController!,
+          autofocus: true,
+          onSubmitted: (value) async {
+            if (value.isBlank || value == widget.groupName) {
+              _editingGroupName = false;
+              setState(() {});
+              return;
+            }
+            unawaited(groupService.updateGroupName(value));
+            _editingGroupName = false;
+            setState(() {});
+          },
+        )
+      : MouseRegion(
+          onEnter: (_) => setState(() => _isHovered = true),
+          onExit: (_) => setState(() => _isHovered = false),
+          child: Row(
+            children: [
+              Flexible(
+                  child: SelectionArea(
+                      child: Text(
+                widget.groupName,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ))),
+              if (_isHovered)
+                MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: GestureDetector(
+                    onTap: () {
+                      final name = widget.groupName;
+                      _textEditingController ??=
+                          TextEditingController(text: name)
+                            ..selection = TextSelection(
+                                baseOffset: 0, extentOffset: name.length);
+                      _editingGroupName = true;
+                      setState(() {});
+                    },
+                    child: const Icon(
+                      Symbols.edit_rounded,
+                      size: 18,
+                    ),
+                  ),
+                )
+            ],
+          ),
+        );
 }
 
 class _StyledMember {

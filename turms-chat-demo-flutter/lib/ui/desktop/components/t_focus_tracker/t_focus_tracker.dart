@@ -32,8 +32,7 @@ class _TFocusTrackerState extends State<TFocusTracker> {
   Widget build(BuildContext context) => widget.child;
 
   void removeOverlayEntry() {
-    final overlayEntry = _overlayEntry;
-    if (overlayEntry != null) {
+    if (_overlayEntry case final OverlayEntry overlayEntry) {
       overlayEntry.remove();
       _overlayEntry = null;
     }

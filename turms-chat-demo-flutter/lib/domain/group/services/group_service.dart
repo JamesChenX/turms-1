@@ -23,6 +23,10 @@ class GroupService {
   Future<void> createGroup() async {
     await Future<void>.delayed(const Duration(seconds: 3));
   }
+
+  Future<void> updateGroupName(String name) async {
+    await Future<void>.delayed(const Duration(seconds: 3));
+  }
 }
 
 final groupService = GroupService();

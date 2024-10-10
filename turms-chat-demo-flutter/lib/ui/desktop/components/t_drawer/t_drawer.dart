@@ -23,15 +23,15 @@ class _TDrawerState extends State<TDrawer> with SingleTickerProviderStateMixin {
     controller?.hide = hide;
   }
 
-  late Widget currentChild;
-  Widget? nextChild;
-  late AnimationController animationController;
+  late Widget _currentChild;
+  Widget? _nextChild;
+  late AnimationController _animationController;
 
   @override
   void initState() {
     super.initState();
-    currentChild = widget.child;
-    animationController = AnimationController(
+    _currentChild = widget.child;
+    _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 200),
     );
@@ -43,14 +43,14 @@ class _TDrawerState extends State<TDrawer> with SingleTickerProviderStateMixin {
     controller?.toggle = null;
     controller?.show = null;
     controller?.hide = null;
-    animationController.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) => _TDrawerView(
-        animation: animationController,
-        child: currentChild,
+        animation: _animationController,
+        child: _currentChild,
       );
 
   @override
@@ -63,16 +63,16 @@ class _TDrawerState extends State<TDrawer> with SingleTickerProviderStateMixin {
     // Only change to show the next child
     // if the drawer is not visible,
     // or the drawer is hidden and show again.
-    if (animationController.status.isNotDismissed) {
-      nextChild = widget.child;
+    if (_animationController.status.isNotDismissed) {
+      _nextChild = widget.child;
     } else {
-      nextChild = null;
-      currentChild = widget.child;
+      _nextChild = null;
+      _currentChild = widget.child;
     }
   }
 
   void toggle() {
-    if (animationController.status.isDismissed) {
+    if (_animationController.status.isDismissed) {
       show();
     } else {
       hide();
@@ -80,16 +80,16 @@ class _TDrawerState extends State<TDrawer> with SingleTickerProviderStateMixin {
   }
 
   void show() {
-    animationController.forward();
-    if (nextChild != null) {
-      currentChild = nextChild!;
-      nextChild = null;
+    _animationController.forward();
+    if (_nextChild case final Widget nextChild) {
+      _currentChild = nextChild;
+      _nextChild = null;
       setState(() {});
     }
   }
 
   void hide() {
-    animationController.reverse();
+    _animationController.reverse();
   }
 }
 

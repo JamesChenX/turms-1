@@ -75,6 +75,7 @@
   "muteNotifications": "Mute Notifications",
   "network": "Network",
   "newMessageNotification": "New Message Notification",
+  "noMatchingGroupMembersFound": "No matching members found",
   "noResultsFound": "No results found",
   "none": "None",
   "notifications": "Notifications",

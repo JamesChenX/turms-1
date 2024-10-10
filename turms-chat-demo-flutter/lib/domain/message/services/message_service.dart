@@ -132,8 +132,7 @@ class MessageService {
         if (value == MentionSyntax.mentionAllValue) {
           mentionAll = true;
         } else {
-          final userId = Int64.tryParseInt(value);
-          if (userId != null) {
+          if (Int64.tryParseInt(value) case final Int64 userId) {
             mentionedUserIds.add(userId);
           }
         }

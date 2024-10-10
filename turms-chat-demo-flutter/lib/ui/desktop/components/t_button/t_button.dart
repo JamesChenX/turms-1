@@ -66,8 +66,7 @@ class _TButtonState extends State<TButton> {
         : _isHovered
             ? widget.childHovered ?? widget.child
             : widget.child;
-    final prefix = widget.prefix;
-    if (prefix != null) {
+    if (widget.prefix case final Widget prefix) {
       child = Row(
           mainAxisSize: MainAxisSize.min,
           spacing: 8,
@@ -120,9 +119,9 @@ class _TButtonState extends State<TButton> {
           height: widget.containerHeight,
           child: child);
     }
-    if (widget.tooltip != null) {
+    if (widget.tooltip case final String tooltip) {
       child = TTooltip(
-        message: widget.tooltip,
+        message: tooltip,
         preferBelow: true,
         waitDuration: Durations.extralong4,
         child: child,

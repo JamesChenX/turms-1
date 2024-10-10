@@ -17,21 +17,33 @@ class SubNavigationRailView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final appThemeExtension = context.appThemeExtension;
+    final theme = context.theme;
+    final appThemeExtension = theme.appThemeExtension;
     return GestureDetector(
       child: Focus(
         onKeyEvent: subNavigationRailController.onKeyEvent,
-        child: ColoredBox(
-            color: appThemeExtension.conversationBackgroundColor,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildSearchBar(context, appThemeExtension),
-                if (subNavigationRailController.isConversationsLoading)
-                  _buildLoadingIndicator(),
-                _buildConversationTiles(context)
-              ],
-            )),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            border: Border(
+              right: BorderSide(color: theme.dividerColor),
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.only(right: 1),
+            child: ColoredBox(
+              color: appThemeExtension.conversationBackgroundColor,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildSearchBar(context, appThemeExtension),
+                  if (subNavigationRailController.isConversationsLoading)
+                    _buildLoadingIndicator(),
+                  _buildConversationTiles(context)
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -61,6 +73,7 @@ class SubNavigationRailView extends StatelessWidget {
               spacing: 8,
               children: [
                 Expanded(
+                  // todo: adapt height
                   child: TSearchBar(
                     focusNode: subNavigationRailController.searchBarFocusNode,
                     hintText: appLocalizations.search,
@@ -97,7 +110,13 @@ class SubNavigationRailView extends StatelessWidget {
                     ],
                     child: TIconButton(
                         iconData: Symbols.add_rounded,
-                        addContainer: false,
+                        iconSize: 20,
+                        // todo: adapt height
+                        containerSize: const Size(30, 30),
+                        containerColor:
+                            const Color.fromARGB(255, 226, 226, 226),
+                        containerColorHovered:
+                            const Color.fromARGB(255, 209, 209, 209),
                         onTap: () {
                           subNavigationRailController.menuController.open();
                         }))

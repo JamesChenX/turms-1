@@ -22,25 +22,36 @@ class SubNavigationRailView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final appThemeExtension = context.appThemeExtension;
-    return ColoredBox(
-        color: backgroundColor,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildSearchBar(context, appThemeExtension),
-            if (subNavigationRailController.isContactsLoading)
-              _buildLoadingIndicator(appThemeExtension),
-            Expanded(
-              child: subNavigationRailController.searchText.isNotBlank
-                  ? _buildSearchResults(appThemeExtension)
-                  // TODO: use builder
-                  : ListView(
-                      children: _buildRelationshipGroups(context),
-                    ),
-            ),
-          ],
-        ));
+    final theme = context.theme;
+    final appThemeExtension = theme.appThemeExtension;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        border: Border(
+          right: BorderSide(color: theme.dividerColor),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.only(right: 1),
+        child: ColoredBox(
+            color: backgroundColor,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSearchBar(context, appThemeExtension),
+                if (subNavigationRailController.isContactsLoading)
+                  _buildLoadingIndicator(appThemeExtension),
+                Expanded(
+                  child: subNavigationRailController.searchText.isNotBlank
+                      ? _buildSearchResults(appThemeExtension)
+                      // TODO: use builder
+                      : ListView(
+                          children: _buildRelationshipGroups(context),
+                        ),
+                ),
+              ],
+            )),
+      ),
+    );
   }
 
   Widget _buildLoadingIndicator(AppThemeExtension appThemeExtension) =>

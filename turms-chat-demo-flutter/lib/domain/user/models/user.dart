@@ -23,11 +23,11 @@ class User {
     if (_cachedImage != null) {
       return _cachedImage;
     }
-    if (imageBytes != null) {
-      return _cachedImage = MemoryImage(imageBytes!);
+    if (imageBytes case final Uint8List imageBytes) {
+      return _cachedImage = MemoryImage(imageBytes);
     }
-    if (imageUrl != null) {
-      return _cachedImage = NetworkImage(imageUrl!);
+    if (imageUrl case final String imageUrl) {
+      return _cachedImage = NetworkImage(imageUrl);
     }
     return null;
   }

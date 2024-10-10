@@ -19,6 +19,8 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
     required this.avatarBackgroundColor,
     required this.checkboxColor,
     required this.checkboxTextStyle,
+    required this.menuItemColor,
+    required this.menuItemHoveredColor,
     required this.tabTextStyle,
     required this.homePageBackgroundColor,
     required this.subNavigationRailSearchBarBackgroundColor,
@@ -47,133 +49,145 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
     required this.popupDecoration,
   });
 
-  static const light = AppThemeExtension(
+  static final light = AppThemeExtension(
       themeMode: ThemeMode.light,
       successColor: AppColors.green6,
       warningColor: AppColors.gold6,
       errorColor: Colors.red,
       infoColor: AppColors.blue6,
       dangerColor: Colors.red,
-      dangerTextStyle: TextStyle(color: Colors.red),
-      highlightTextStyle: TextStyle(color: Colors.red),
+      dangerTextStyle: const TextStyle(color: Colors.red),
+      highlightTextStyle: const TextStyle(color: Colors.red),
       maskColor: Colors.black54,
       avatarIconColor: Colors.white,
-      avatarBackgroundColor: Color.fromARGB(255, 117, 117, 117),
+      avatarBackgroundColor: const Color.fromARGB(255, 117, 117, 117),
       checkboxColor: AppColors.gray6,
-      checkboxTextStyle: TextStyle(color: Color(0xA6000000), fontSize: 16),
-      tabTextStyle: TextStyle(color: Color.fromARGB(255, 89, 89, 89)),
-      homePageBackgroundColor: Color.fromARGB(255, 245, 245, 245),
+      checkboxTextStyle:
+          const TextStyle(color: Color(0xA6000000), fontSize: 16),
+      menuItemColor: Colors.white,
+      menuItemHoveredColor: Colors.grey[200]!,
+      tabTextStyle: const TextStyle(color: Color.fromARGB(255, 89, 89, 89)),
+      homePageBackgroundColor: const Color.fromARGB(255, 245, 245, 245),
       subNavigationRailSearchBarBackgroundColor:
-          Color.fromARGB(255, 247, 247, 247),
+          const Color.fromARGB(255, 247, 247, 247),
       subNavigationRailLoadingIndicatorBackgroundColor:
-          Color.fromARGB(255, 237, 237, 237),
-      subNavigationRailDividerColor: Color.fromARGB(255, 213, 213, 213),
-      chatSessionPaneDividerColor: Color.fromARGB(255, 231, 231, 231),
+          const Color.fromARGB(255, 237, 237, 237),
+      subNavigationRailDividerColor: const Color.fromARGB(255, 213, 213, 213),
+      chatSessionPaneDividerColor: const Color.fromARGB(255, 231, 231, 231),
       chatSessionDetailsDrawerBackgroundColor: Colors.white,
-      conversationBackgroundColor: Color.fromARGB(255, 233, 233, 233),
+      conversationBackgroundColor: const Color.fromARGB(255, 233, 233, 233),
       conversationBackgroundHighlightedColor:
-          Color.fromARGB(255, 210, 210, 210),
-      conversationBackgroundHoveredColor: Color.fromARGB(255, 218, 218, 218),
-      conversationBackgroundFocusedColor: Color.fromARGB(255, 200, 200, 200),
-      conversationTileMessageTextStyle: TextStyle(
+          const Color.fromARGB(255, 210, 210, 210),
+      conversationBackgroundHoveredColor:
+          const Color.fromARGB(255, 218, 218, 218),
+      conversationBackgroundFocusedColor:
+          const Color.fromARGB(255, 200, 200, 200),
+      conversationTileMessageTextStyle: const TextStyle(
         color: AppColors.gray7,
-        fontSize: 14,
+        fontSize: 12,
       ),
       conversationTileTimestampTextStyle:
-          TextStyle(color: AppColors.gray7, fontSize: 14),
-      messageAttachmentColor: Color.fromARGB(255, 250, 250, 250),
+          const TextStyle(color: AppColors.gray7, fontSize: 12),
+      messageAttachmentColor: const Color.fromARGB(255, 250, 250, 250),
       messageAttachmentHoveredColor: Colors.white,
-      messageBubbleErrorIconBackgroundColor: Color.fromARGB(255, 250, 81, 81),
+      messageBubbleErrorIconBackgroundColor:
+          const Color.fromARGB(255, 250, 81, 81),
       messageBubbleErrorIconColor: Colors.white,
       fileTableTitleTextStyle:
-          TextStyle(color: Color.fromARGB(255, 51, 51, 51)),
+          const TextStyle(color: Color.fromARGB(255, 51, 51, 51)),
       fileTableCellTextStyle:
-          TextStyle(color: Color.fromARGB(255, 102, 102, 102)),
+          const TextStyle(color: Color.fromARGB(255, 102, 102, 102)),
       settingPageSubNavigationRailDividerColor:
-          Color.fromARGB(255, 240, 240, 240),
+          const Color.fromARGB(255, 240, 240, 240),
       settingsPageSubNavigationRailTitleTextStyle:
-          TextStyle(fontSize: 16, color: Colors.grey),
-      descriptionTextStyle: TextStyle(
+          const TextStyle(fontSize: 16, color: Colors.grey),
+      descriptionTextStyle: const TextStyle(
         // TODO: Or Color(0xA6000000)?
         color: Colors.grey,
       ),
-      linkTextStyle: TextStyle(
+      linkTextStyle: const TextStyle(
         color: AppColors.blue5,
       ),
-      linkHoveredTextStyle: TextStyle(
+      linkHoveredTextStyle: const TextStyle(
         color: AppColors.blue6,
       ),
-      toastDecoration: BoxDecoration(
+      toastDecoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: Sizes.borderRadiusCircular8,
         boxShadow: Styles.boxShadow,
       ),
-      popupDecoration: BoxDecoration(
+      popupDecoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: Sizes.borderRadiusCircular4,
           boxShadow: Styles.boxShadow));
 
-  static const dark = AppThemeExtension(
+  static final dark = AppThemeExtension(
       themeMode: ThemeMode.dark,
       successColor: AppColors.green6,
       warningColor: AppColors.gold6,
       errorColor: Colors.red,
       infoColor: AppColors.blue6,
       dangerColor: Colors.red,
-      dangerTextStyle: TextStyle(color: Colors.red),
-      highlightTextStyle: TextStyle(color: Colors.red),
+      dangerTextStyle: const TextStyle(color: Colors.red),
+      highlightTextStyle: const TextStyle(color: Colors.red),
       maskColor: Colors.white70,
       avatarIconColor: Colors.black,
-      avatarBackgroundColor: Color.fromARGB(255, 117, 117, 117),
+      avatarBackgroundColor: const Color.fromARGB(255, 117, 117, 117),
       checkboxColor: AppColors.gray6,
-      checkboxTextStyle: TextStyle(color: Color(0xA6000000), fontSize: 16),
-      tabTextStyle: TextStyle(color: Color.fromARGB(255, 89, 89, 89)),
-      homePageBackgroundColor: Color.fromARGB(255, 245, 245, 245),
+      checkboxTextStyle:
+          const TextStyle(color: Color(0xA6000000), fontSize: 16),
+      menuItemColor: Colors.white,
+      menuItemHoveredColor: Colors.grey[200]!,
+      tabTextStyle: const TextStyle(color: Color.fromARGB(255, 89, 89, 89)),
+      homePageBackgroundColor: const Color.fromARGB(255, 245, 245, 245),
       subNavigationRailSearchBarBackgroundColor:
-          Color.fromARGB(255, 247, 247, 247),
+          const Color.fromARGB(255, 247, 247, 247),
       subNavigationRailLoadingIndicatorBackgroundColor:
-          Color.fromARGB(255, 237, 237, 237),
-      subNavigationRailDividerColor: Color.fromARGB(255, 213, 213, 213),
-      chatSessionPaneDividerColor: Color.fromARGB(255, 231, 231, 231),
+          const Color.fromARGB(255, 237, 237, 237),
+      subNavigationRailDividerColor: const Color.fromARGB(255, 213, 213, 213),
+      chatSessionPaneDividerColor: const Color.fromARGB(255, 231, 231, 231),
       chatSessionDetailsDrawerBackgroundColor: Colors.black87,
-      conversationBackgroundColor: Color.fromARGB(255, 233, 233, 233),
+      conversationBackgroundColor: const Color.fromARGB(255, 233, 233, 233),
       conversationBackgroundHighlightedColor:
-          Color.fromARGB(255, 210, 210, 210),
-      conversationBackgroundHoveredColor: Color.fromARGB(255, 218, 218, 218),
-      conversationBackgroundFocusedColor: Color.fromARGB(255, 200, 200, 200),
-      conversationTileMessageTextStyle: TextStyle(
+          const Color.fromARGB(255, 210, 210, 210),
+      conversationBackgroundHoveredColor:
+          const Color.fromARGB(255, 218, 218, 218),
+      conversationBackgroundFocusedColor:
+          const Color.fromARGB(255, 200, 200, 200),
+      conversationTileMessageTextStyle: const TextStyle(
         color: AppColors.gray7,
-        fontSize: 14,
+        fontSize: 12,
       ),
       conversationTileTimestampTextStyle:
-          TextStyle(color: AppColors.gray7, fontSize: 14),
-      messageAttachmentColor: Color.fromARGB(255, 250, 250, 250),
+          const TextStyle(color: AppColors.gray7, fontSize: 12),
+      messageAttachmentColor: const Color.fromARGB(255, 250, 250, 250),
       messageAttachmentHoveredColor: Colors.white,
-      messageBubbleErrorIconBackgroundColor: Color.fromARGB(255, 250, 81, 81),
+      messageBubbleErrorIconBackgroundColor:
+          const Color.fromARGB(255, 250, 81, 81),
       messageBubbleErrorIconColor: Colors.white,
       fileTableTitleTextStyle:
-          TextStyle(color: Color.fromARGB(255, 51, 51, 51)),
+          const TextStyle(color: Color.fromARGB(255, 51, 51, 51)),
       fileTableCellTextStyle:
-          TextStyle(color: Color.fromARGB(255, 102, 102, 102)),
+          const TextStyle(color: Color.fromARGB(255, 102, 102, 102)),
       settingPageSubNavigationRailDividerColor:
-          Color.fromARGB(255, 240, 240, 240),
+          const Color.fromARGB(255, 240, 240, 240),
       settingsPageSubNavigationRailTitleTextStyle:
-          TextStyle(fontSize: 16, color: Colors.grey),
-      descriptionTextStyle: TextStyle(
+          const TextStyle(fontSize: 16, color: Colors.grey),
+      descriptionTextStyle: const TextStyle(
         color: Colors.grey,
       ),
-      linkTextStyle: TextStyle(
+      linkTextStyle: const TextStyle(
         color: AppColors.blue5,
       ),
-      linkHoveredTextStyle: TextStyle(
+      linkHoveredTextStyle: const TextStyle(
         color: AppColors.blue6,
       ),
-      toastDecoration: BoxDecoration(
+      toastDecoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: Sizes.borderRadiusCircular8,
         boxShadow: Styles.boxShadow,
       ),
-      popupDecoration: BoxDecoration(
+      popupDecoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: Sizes.borderRadiusCircular4,
           boxShadow: Styles.boxShadow));
@@ -199,6 +213,9 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
 
   final Color checkboxColor;
   final TextStyle checkboxTextStyle;
+
+  final Color menuItemColor;
+  final Color menuItemHoveredColor;
 
   final TextStyle tabTextStyle;
 
@@ -254,6 +271,8 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
     Color? avatarBackgroundColor,
     Color? checkboxColor,
     TextStyle? checkboxTextStyle,
+    Color? menuItemColor,
+    Color? menuItemHoveredColor,
     TextStyle? tabTextStyle,
     Color? homePageBackgroundColor,
     Color? subNavigationRailSearchBarBackgroundColor,
@@ -296,6 +315,8 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
             avatarBackgroundColor ?? this.avatarBackgroundColor,
         checkboxColor: checkboxColor ?? this.checkboxColor,
         checkboxTextStyle: checkboxTextStyle ?? this.checkboxTextStyle,
+        menuItemColor: menuItemColor ?? this.menuItemColor,
+        menuItemHoveredColor: menuItemHoveredColor ?? this.menuItemHoveredColor,
         tabTextStyle: tabTextStyle ?? this.tabTextStyle,
         homePageBackgroundColor:
             homePageBackgroundColor ?? this.homePageBackgroundColor,
@@ -377,6 +398,9 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
       checkboxColor: Color.lerp(checkboxColor, other.checkboxColor, t)!,
       checkboxTextStyle:
           TextStyle.lerp(checkboxTextStyle, other.checkboxTextStyle, t)!,
+      menuItemColor: Color.lerp(menuItemColor, other.menuItemColor, t)!,
+      menuItemHoveredColor:
+          Color.lerp(menuItemHoveredColor, other.menuItemHoveredColor, t)!,
       tabTextStyle: TextStyle.lerp(tabTextStyle, other.tabTextStyle, t)!,
       homePageBackgroundColor: Color.lerp(
           homePageBackgroundColor, other.homePageBackgroundColor, t)!,

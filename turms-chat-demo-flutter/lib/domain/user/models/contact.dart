@@ -33,13 +33,11 @@ sealed class Contact {
     if (_cachedImage != null) {
       return _cachedImage;
     }
-    final localImageBytes = imageBytes;
-    if (localImageBytes != null) {
-      return _cachedImage = MemoryImage(localImageBytes);
+    if (imageBytes case final Uint8List imageBytes) {
+      return _cachedImage = MemoryImage(imageBytes);
     }
-    final localImageUrl = imageUrl;
-    if (localImageUrl != null) {
-      return _cachedImage = NetworkImage(localImageUrl);
+    if (imageUrl case final String imageUrl) {
+      return _cachedImage = NetworkImage(imageUrl);
     }
     return null;
   }

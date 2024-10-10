@@ -74,7 +74,8 @@ class _ChatSessionPaneBodyState extends ConsumerState<ChatSessionPaneBody> {
             : _buildMessageBubbles(selectedConversation));
   }
 
-  /// We don't use sealed classes to limit possible values for better performance (don't need to create new objects).
+  /// We don't use sealed classes to limit possible values
+  /// for better performance (don't need to create new objects).
   List<_ChatSessionItem> _generateItems(List<ChatMessage> messages) {
     final items = <_ChatSessionItem>[const _ChatSessionItemLoadingIndicator()];
     final messageCount = messages.length;
@@ -104,11 +105,13 @@ class _ChatSessionPaneBodyState extends ConsumerState<ChatSessionPaneBody> {
       final timestamp = message.timestamp;
       if (lastMessage == null) {
         items.add(_ChatSessionItemDaySeparator(timestamp));
+        if (i == lastMessageIndex) {
+          items.add(_ChatSessionItemMessage(message));
+          return items;
+        }
       } else {
         final lastMessageTimestamp = lastMessage.timestamp;
-        assert(
-            lastMessageTimestamp.timeZoneName ==
-                lastMessageTimestamp.timeZoneName,
+        assert(lastMessageTimestamp.timeZoneName == timestamp.timeZoneName,
             'The timestamp of messages should have the same time zone name');
         if (DateUtils.isSameDay(lastMessageTimestamp, timestamp)) {
           if (lastMessage.type == MessageType.text &&
@@ -134,25 +137,23 @@ class _ChatSessionPaneBodyState extends ConsumerState<ChatSessionPaneBody> {
             lastMessageGroup = null;
           }
         } else {
-          lastMessageGroup = null;
-          if (lastMessageGroup != null &&
-              lastMessage.messageId ==
+          items.add(_ChatSessionItemDaySeparator(timestamp));
+          if (lastMessageGroup == null ||
+              lastMessage.messageId !=
                   lastMessageGroup.messages.last.messageId) {
             items.add(_ChatSessionItemMessage(lastMessage));
           }
-          items.add(_ChatSessionItemDaySeparator(timestamp));
+          lastMessageGroup = null;
+        }
+        if (i == lastMessageIndex) {
+          if (lastMessageGroup == null ||
+              message.messageId != lastMessageGroup.messages.last.messageId) {
+            items.add(_ChatSessionItemMessage(message));
+          }
+          return items;
         }
       }
-      if (i == lastMessageIndex) {
-        if (lastMessageGroup == null ||
-            lastMessage == null ||
-            lastMessage.messageId != lastMessageGroup.messages.last.messageId) {
-          items.add(_ChatSessionItemMessage(message));
-        }
-        return items;
-      } else {
-        lastMessage = message;
-      }
+      lastMessage = message;
     }
     throw AssertionError('Unreachable code reached');
   }
@@ -163,9 +164,7 @@ class _ChatSessionPaneBodyState extends ConsumerState<ChatSessionPaneBody> {
     final dateFormat = ref.watch(dateFormatViewModel_yMd);
     final items = _generateItems(conversation.messages);
     final itemCount = items.length;
-    final itemIdToIndex = {
-      for (var i = 0; i < itemCount; i++) items[i].id: itemCount - i - 1
-    };
+    final itemIdToIndex = {for (var i = 0; i < itemCount; i++) items[i].id: i};
     final yesterday = DateTime.now().subtract(const Duration(days: 1));
     return ListView.builder(
       padding: Sizes.paddingV8H16,

@@ -2,11 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../themes/index.dart';
-import '../t_checkbox/t_simple_checkbox.dart';
-import '../t_divider/t_horizontal_divider.dart';
-import '../t_dropdown_menu/t_dropdown_menu.dart';
-import '../t_radio/t_radio.dart';
-import '../t_shortcut_text_field/t_shortcut_text_field.dart';
+import '../index.dart';
 
 class TForm extends StatelessWidget {
   const TForm({super.key, required this.formData});
@@ -101,10 +97,10 @@ class TForm extends StatelessWidget {
               ),
               SizedBox(
                 width: 180,
-                child: TDropdownMenu(
+                child: TTextFieldMenuPopup(
                   value: field.value,
                   entries: field.entries,
-                  onSelected: (TDropdownMenuEntry item) {
+                  onSelected: (TMenuEntry item) {
                     // TODO: Wait for "declaration-site variance"
                     // https://github.com/dart-lang/language/issues/524
                     (field as dynamic).onSelected.call(item.value);
@@ -193,6 +189,6 @@ class TFormFieldSelect<T> extends TFormField {
       required this.onSelected});
 
   final T? value;
-  final List<TDropdownMenuEntry<T>> entries;
+  final List<TMenuEntry<T>> entries;
   final void Function(T value) onSelected;
 }

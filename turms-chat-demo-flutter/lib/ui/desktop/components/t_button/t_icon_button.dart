@@ -129,9 +129,9 @@ class TIconButton extends StatelessWidget {
         child: child,
       );
     }
-    if (iconRotate != null) {
+    if (iconRotate case final double iconRotate) {
       child = Transform.rotate(
-        angle: iconRotate!,
+        angle: iconRotate,
         child: child,
       );
     }

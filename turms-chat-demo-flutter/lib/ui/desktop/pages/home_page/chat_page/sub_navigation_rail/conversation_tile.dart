@@ -198,6 +198,9 @@ class _ConversationTileState extends ConsumerState<ConversationTile> {
                   ],
               }
             : <TextSpan>[];
+    final strutStyle = StrutStyle(
+        fontSize: appThemeExtension.conversationTileMessageTextStyle.fontSize!,
+        forceStrutHeight: true);
     return Row(
       children: [
         Flexible(
@@ -205,10 +208,7 @@ class _ConversationTileState extends ConsumerState<ConversationTile> {
               ? Text.rich(
                   TextSpan(children: widget.messageTextSpans),
                   style: appThemeExtension.conversationTileMessageTextStyle,
-                  strutStyle: StrutStyle(
-                      fontSize: appThemeExtension
-                          .conversationTileMessageTextStyle.fontSize,
-                      forceStrutHeight: true),
+                  strutStyle: strutStyle,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                   softWrap: false,
@@ -219,8 +219,7 @@ class _ConversationTileState extends ConsumerState<ConversationTile> {
                       ? appThemeExtension.conversationTileMessageTextStyle
                           .copyWith(fontWeight: _fontWeightBold)
                       : appThemeExtension.conversationTileMessageTextStyle,
-                  strutStyle:
-                      const StrutStyle(fontSize: 14, forceStrutHeight: true),
+                  strutStyle: strutStyle,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                   softWrap: false,

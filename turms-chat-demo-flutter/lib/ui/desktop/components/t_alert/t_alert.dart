@@ -35,9 +35,9 @@ class TAlert extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            if (title != null) ...[
+            if (title case final String title) ...[
               Text(
-                title!,
+                title,
                 style: theme.textTheme.titleMedium,
               ),
             ],

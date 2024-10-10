@@ -21,7 +21,7 @@ class AppView extends StatelessWidget {
     return MaterialApp(
         locale: appController.locale,
         debugShowCheckedModeBanner: false,
-        navigatorKey: appController.navigatorKey,
+        navigatorKey: AppController.navigatorKey,
         themeMode: themeMode,
         theme: themeMode == ThemeMode.light ? themeData : null,
         darkTheme: themeMode == ThemeMode.dark ? themeData : null,

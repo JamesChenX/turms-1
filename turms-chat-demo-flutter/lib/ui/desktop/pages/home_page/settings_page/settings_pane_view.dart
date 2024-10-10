@@ -177,11 +177,11 @@ class _SettingsPaneView extends StatelessWidget {
                   : _nameToLocale[
                       _settingsPaneController.appLocalizations.localeName]!,
               entries: [
-                TDropdownMenuEntry(
+                TMenuEntry(
                     label: appLocalizations.systemLanguage,
                     value: SettingLocale.system),
-                TDropdownMenuEntry(label: 'English', value: SettingLocale.en),
-                TDropdownMenuEntry(label: '简体中文', value: SettingLocale.zhCn),
+                const TMenuEntry(label: 'English', value: SettingLocale.en),
+                const TMenuEntry(label: '简体中文', value: SettingLocale.zhCn),
               ],
               onSelected: (SettingLocale value) async {
                 await _settingsPaneController.updateLocale(value);
@@ -192,12 +192,12 @@ class _SettingsPaneView extends StatelessWidget {
               value: _settingsPaneController.userSettings.theme ??
                   ThemeMode.system,
               entries: [
-                TDropdownMenuEntry(
+                TMenuEntry(
                     label: appLocalizations.systemTheme,
                     value: ThemeMode.system),
-                TDropdownMenuEntry(
+                TMenuEntry(
                     label: appLocalizations.lightTheme, value: ThemeMode.light),
-                TDropdownMenuEntry(
+                TMenuEntry(
                     label: appLocalizations.darkTheme, value: ThemeMode.dark),
               ],
               onSelected: (ThemeMode value) async {

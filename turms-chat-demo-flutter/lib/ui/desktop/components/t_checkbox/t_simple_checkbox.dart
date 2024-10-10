@@ -75,8 +75,7 @@ class _TSimpleCheckboxState extends State<TSimpleCheckbox> {
         child: widget.value ? widget.activeIcon : widget.inactiveIcon,
       ),
     );
-    final label = widget.label;
-    if (label != null) {
+    if (widget.label case final String label) {
       child = Row(
         spacing: 8,
         mainAxisSize: MainAxisSize.min,

@@ -6,8 +6,7 @@ import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../../infra/task/debouncer.dart';
 import '../../../l10n/view_models/app_localizations_view_model.dart';
-import '../t_button/t_icon_button.dart';
-import '../t_dropdown_menu/t_dropdown_menu.dart';
+import '../index.dart';
 
 class TTextField extends ConsumerStatefulWidget {
   const TTextField(
@@ -18,6 +17,7 @@ class TTextField extends ConsumerStatefulWidget {
       this.mouseCursor,
       this.hintText,
       this.prefixIcon,
+      this.prefixIconConstraints,
       this.suffixIcon,
       this.showDeleteButtonIfHasText = false,
       this.showCursor = true,
@@ -26,6 +26,7 @@ class TTextField extends ConsumerStatefulWidget {
       this.maxLength,
       this.expands = false,
       this.style,
+      this.textAlign = TextAlign.start,
       TextAlignVertical? textAlignVertical,
       this.debounceTimeout,
       this.transformValue,
@@ -43,6 +44,7 @@ class TTextField extends ConsumerStatefulWidget {
   final SystemMouseCursor? mouseCursor;
   final String? hintText;
   final Widget? prefixIcon;
+  final BoxConstraints? prefixIconConstraints;
   final Widget? suffixIcon;
   final bool showDeleteButtonIfHasText;
   final bool showCursor;
@@ -50,6 +52,7 @@ class TTextField extends ConsumerStatefulWidget {
   final bool? enableInteractiveSelection;
   final int? maxLength;
   final bool expands;
+  final TextAlign textAlign;
   final TextAlignVertical textAlignVertical;
   final TextStyle? style;
   final Duration? debounceTimeout;
@@ -107,6 +110,7 @@ class _TTextFieldState extends ConsumerState<TTextField> {
       readOnly: widget.readOnly,
       maxLines: widget.expands ? null : 1,
       maxLength: widget.maxLength,
+      textAlign: widget.textAlign,
       textAlignVertical: widget.textAlignVertical,
       enableInteractiveSelection: widget.enableInteractiveSelection,
       expands: widget.expands,
@@ -156,13 +160,14 @@ class _TTextFieldState extends ConsumerState<TTextField> {
               height: 1.2),
       decoration: InputDecoration(
         hintText: widget.hintText,
+        hintStyle: TextStyle(color: Colors.grey[600]!),
         filled: true,
         fillColor: const Color.fromARGB(255, 226, 226, 226),
         contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
         prefixIcon: prefixIcon,
         prefixIconConstraints: prefixIcon == null
             ? null
-            : const BoxConstraints.tightFor(width: 30),
+            : const BoxConstraints.tightFor(width: 24),
         suffixIcon: suffixIcon ??
             (showSuffixIcon
                 ? TIconButton(

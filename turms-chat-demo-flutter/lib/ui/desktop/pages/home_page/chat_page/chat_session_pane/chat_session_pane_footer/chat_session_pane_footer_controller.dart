@@ -47,9 +47,9 @@ class ChatSessionPaneFooterController
 
   @override
   void dispose() {
-    super.dispose();
     editorController.dispose();
     editorFocusNode.dispose();
+    super.dispose();
   }
 
   @override

@@ -4,11 +4,16 @@ import '../../../themes/index.dart';
 
 class TMenu<T> extends StatefulWidget {
   const TMenu(
-      {super.key, this.value, required this.entries, required this.onSelected});
+      {super.key,
+      this.value,
+      required this.entries,
+      required this.onSelected,
+      this.dense = false});
 
   final T? value;
   final List<TMenuEntry<T>> entries;
   final void Function(TMenuEntry<T> item) onSelected;
+  final bool dense;
 
   @override
   State<TMenu<T>> createState() => _TMenuState<T>();
@@ -20,6 +25,7 @@ class _TMenuState<T> extends State<TMenu<T>> {
   @override
   Widget build(BuildContext context) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           for (final entry in widget.entries)
             MouseRegion(
@@ -41,13 +47,18 @@ class _TMenuState<T> extends State<TMenu<T>> {
                   color: hoveredEntryValue == entry.value
                       ? context.appThemeExtension.menuItemHoveredColor
                       : context.appThemeExtension.menuItemColor,
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: Padding(
-                      padding: Sizes.paddingV8H8,
-                      child: Text(entry.label),
-                    ),
-                  ),
+                  child: widget.dense
+                      ? Padding(
+                          padding: Sizes.paddingV8H8,
+                          child: Text(entry.label),
+                        )
+                      : SizedBox(
+                          width: double.infinity,
+                          child: Padding(
+                            padding: Sizes.paddingV8H8,
+                            child: Text(entry.label),
+                          ),
+                        ),
                 ),
               ),
             )

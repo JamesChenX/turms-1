@@ -256,8 +256,8 @@ class _ChatSessionDetailsGroupConversationNameState
 
   @override
   void dispose() {
-    super.dispose();
     _textEditingController?.dispose();
+    super.dispose();
   }
 
   @override

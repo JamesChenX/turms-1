@@ -95,10 +95,11 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
 
   @override
   void dispose() {
-    super.dispose();
+    menuController.close();
     searchBarTextEditingController.dispose();
     searchBarFocusNode.dispose();
     conversationTilesScrollController.dispose();
+    super.dispose();
   }
 
   @override

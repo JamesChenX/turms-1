@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../themes/index.dart';
+import '../t_text_field/t_text_field.dart';
 
 class TEditor extends StatefulWidget {
   const TEditor(
@@ -38,14 +39,15 @@ class TEditorState extends State<TEditor> {
 
   @override
   void dispose() {
-    super.dispose();
     _focusNode?.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final readOnly = widget.readOnly;
     return TextField(
+      contextMenuBuilder: contextMenuBuilder,
       maxLength: 1000,
       maxLines: null,
       decoration: InputDecoration(

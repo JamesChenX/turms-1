@@ -35,6 +35,7 @@ class SubNavigationRailView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // todo: use independent widget to reserve status
                   _buildSearchBar(context, appThemeExtension),
                   if (subNavigationRailController.isConversationsLoading)
                     _buildLoadingIndicator(),

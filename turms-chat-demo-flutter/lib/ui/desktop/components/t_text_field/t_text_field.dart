@@ -8,6 +8,8 @@ import '../../../../infra/task/debouncer.dart';
 import '../../../l10n/view_models/app_localizations_view_model.dart';
 import '../index.dart';
 
+const _kToolbarScreenPadding = 8.0;
+
 class TTextField extends ConsumerStatefulWidget {
   const TTextField(
       {super.key,
@@ -103,6 +105,7 @@ class _TTextFieldState extends ConsumerState<TTextField> {
     final suffixIcon = widget.suffixIcon;
     return TextField(
       controller: controller,
+      contextMenuBuilder: contextMenuBuilder,
       autofocus: widget.autofocus,
       focusNode: widget.focusNode,
       mouseCursor: widget.mouseCursor,
@@ -257,4 +260,54 @@ class _TTextFieldState extends ConsumerState<TTextField> {
 
     return point.point;
   }
+}
+
+final _allowedContextButtonTypes = Set.unmodifiable([
+  ContextMenuButtonType.cut,
+  ContextMenuButtonType.copy,
+  ContextMenuButtonType.paste,
+  ContextMenuButtonType.selectAll,
+  ContextMenuButtonType.delete,
+  ContextMenuButtonType.custom,
+]);
+
+Widget contextMenuBuilder(
+    BuildContext context, EditableTextState editableTextState) {
+  final labelToOnPressed = <String, VoidCallback>{};
+  final menuEntries = <TMenuEntry<String>>[];
+  for (final item in editableTextState.contextMenuButtonItems) {
+    final onPressed = item.onPressed;
+    if (onPressed != null && _allowedContextButtonTypes.contains(item.type)) {
+      final label = item.label ??
+          AdaptiveTextSelectionToolbar.getButtonLabel(context, item);
+      labelToOnPressed[label] = onPressed;
+      menuEntries.add(TMenuEntry(label: label, value: label));
+    }
+  }
+  final paddingAbove =
+      MediaQuery.paddingOf(context).top + _kToolbarScreenPadding;
+  final localAdjustment = Offset(_kToolbarScreenPadding, paddingAbove);
+  return Padding(
+    padding: EdgeInsets.fromLTRB(
+      _kToolbarScreenPadding,
+      paddingAbove,
+      _kToolbarScreenPadding,
+      _kToolbarScreenPadding,
+    ),
+    child: CustomSingleChildLayout(
+      delegate: DesktopTextSelectionToolbarLayoutDelegate(
+        anchor: editableTextState.contextMenuAnchors.primaryAnchor -
+            localAdjustment,
+      ),
+      child: Material(
+        child: TMenu(
+          dense: true,
+          entries: menuEntries,
+          onSelected: (item) {
+            labelToOnPressed[item.value]?.call();
+          },
+        ),
+      ),
+    ),
+  );
 }

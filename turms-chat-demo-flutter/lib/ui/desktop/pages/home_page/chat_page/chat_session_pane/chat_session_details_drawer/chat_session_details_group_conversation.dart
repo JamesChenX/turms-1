@@ -1,21 +1,8 @@
-import 'dart:async';
+part of 'chat_session_details_drawer.dart';
 
-import 'package:fixnum/fixnum.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_symbols_icons/symbols.dart';
-
-import '../../../../../../../domain/group/services/group_service.dart';
-import '../../../../../../../domain/user/models/contact.dart';
-import '../../../../../../../domain/user/models/group_member.dart';
-import '../../../../../../../domain/user/view_models/logged_in_user_info_view_model.dart';
-import '../../../../../../../infra/built_in_types/built_in_type_helpers.dart';
-import '../../../../../../../infra/ui/text_utils.dart';
-import '../../../../../../l10n/view_models/app_localizations_view_model.dart';
-import '../../../../../../themes/index.dart';
-import '../../../../../components/index.dart';
-import '../../../../../components/t_switch/t_switch.dart';
-import '../../../shared_components/user_profile_popup.dart';
+const _avatarSize = TAvatarSize.small;
+const _participantItemElementSpacing = 8.0;
+const _participantItemSpacing = Sizes.sizedBoxH4;
 
 class ChatSessionDetailsGroupConversation extends ConsumerStatefulWidget {
   const ChatSessionDetailsGroupConversation({super.key, required this.contact});
@@ -103,16 +90,6 @@ class _ChatSessionDetailsGroupConversationState
         Sizes.sizedBoxH4,
         divider,
         Sizes.sizedBoxH8,
-        TTextButton.outlined(
-          theme: theme,
-          containerPadding: Sizes.paddingV4H8,
-          text: appLocalizations.addNewMember,
-          prefix: const Icon(
-            Symbols.person_add_rounded,
-            size: 20,
-          ),
-        ),
-        Sizes.sizedBoxH8,
         Expanded(
             child: _ChatSessionDetailsGroupConversationMemberList(members)),
         Sizes.sizedBoxH8,
@@ -160,7 +137,8 @@ class _ChatSessionDetailsGroupConversationMemberListState
 
   @override
   Widget build(BuildContext context) {
-    final appThemeExtension = context.appThemeExtension;
+    final theme = context.theme;
+    final appThemeExtension = theme.appThemeExtension;
     final appLocalizations = ref.watch(appLocalizationsViewModel);
 
     final isSearchMode = _searchText.isNotBlank;
@@ -180,7 +158,6 @@ class _ChatSessionDetailsGroupConversationMemberListState
       for (var i = 0; i < itemCount; i++) matchedMembers[i].member.userId: i
     };
     return Column(
-      spacing: 8,
       children: [
         TSearchBar(
           hintText: appLocalizations.search,
@@ -189,6 +166,11 @@ class _ChatSessionDetailsGroupConversationMemberListState
             setState(() {});
           },
         ),
+        Sizes.sizedBoxH8,
+        if (!isSearchMode) ...[
+          _buildAddParticipantItem(theme, appLocalizations.addNewMember),
+          _participantItemSpacing
+        ],
         Expanded(
             child: isSearchMode && itemCount == 0
                 ? Center(
@@ -206,12 +188,12 @@ class _ChatSessionDetailsGroupConversationMemberListState
                       final item = matchedMembers[index];
                       final member = item.member;
                       return Row(
-                        spacing: 8,
+                        spacing: _participantItemElementSpacing,
                         children: [
                           UserProfilePopup(
                               user: member,
                               popupAnchor: Alignment.topRight,
-                              size: TAvatarSize.small),
+                              size: _avatarSize),
                           Expanded(
                               child: Text.rich(
                             TextSpan(children: item.nameTextSpans),
@@ -223,20 +205,33 @@ class _ChatSessionDetailsGroupConversationMemberListState
                             Icon(
                               Symbols.supervisor_account_rounded,
                               size: 22,
-                              color: Colors.yellow[800],
+                              color: Colors.yellow.shade800,
                             )
                         ],
                       );
                     },
                     separatorBuilder: (BuildContext context, int index) =>
-                        const SizedBox(
-                      height: 4,
-                    ),
+                        _participantItemSpacing,
                   ))
       ],
     );
   }
 }
+
+Row _buildAddParticipantItem(ThemeData theme, String hint) => Row(
+      spacing: _participantItemElementSpacing,
+      children: [
+        TIconButton(
+          iconData: Symbols.person_add_rounded,
+          containerSize: Size.square(_avatarSize.containerSize),
+          iconSize: 20,
+          iconColor: Colors.grey.shade600,
+          containerBorder: Border.all(color: theme.dividerColor),
+          containerBorderHovered: Border.all(color: theme.primaryColor),
+        ),
+        Flexible(child: Text(hint))
+      ],
+    );
 
 class _ChatSessionDetailsGroupConversationName extends StatefulWidget {
   const _ChatSessionDetailsGroupConversationName({required this.groupName});

@@ -35,6 +35,8 @@ class _ChatSessionPaneHeaderState extends ConsumerState<ChatSessionPaneHeader> {
                     right: 128,
                   ),
                   child: SelectionArea(
+                    // TODO
+                    // contextMenuBuilder: contextMenuBuilder,
                     child: Text(
                       ref.watch(selectedConversationViewModel)?.name ?? '',
                       maxLines: 1,

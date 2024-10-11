@@ -390,7 +390,7 @@ class TTooltipState extends State<TTooltip>
           textTheme.bodyMedium!.copyWith(
               color: Colors.white, fontSize: _getDefaultFontSize(platform)),
           BoxDecoration(
-              color: Colors.grey[700]!.withValues(alpha: 0.9),
+              color: Colors.grey.shade700.withValues(alpha: 0.9),
               borderRadius: Sizes.borderRadiusCircular4),
         ),
     };

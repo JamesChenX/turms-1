@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 
 import 'colors.dart';
+import 'fonts.dart';
 import 'sizes.dart';
 import 'styles.dart';
 
+// TODO: we need to provide different font styles for different fonts
+// as even using the same font properties, the text will display quite different.
 class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
   const AppThemeExtension({
     required this.themeMode,
@@ -19,15 +22,21 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
     required this.avatarBackgroundColor,
     required this.checkboxColor,
     required this.checkboxTextStyle,
+    required this.menuDecoration,
     required this.menuItemColor,
     required this.menuItemHoveredColor,
+    required this.menuItemTextStyle,
+    required this.popupDecoration,
     required this.tabTextStyle,
+    required this.toastDecoration,
     required this.homePageBackgroundColor,
     required this.subNavigationRailSearchBarBackgroundColor,
     required this.subNavigationRailLoadingIndicatorBackgroundColor,
     required this.subNavigationRailDividerColor,
     required this.chatSessionPaneDividerColor,
     required this.chatSessionDetailsDrawerBackgroundColor,
+    required this.chatSessionMessageTextStyle,
+    required this.chatSessionMessageEmojiTextStyle,
     required this.conversationBackgroundColor,
     required this.conversationBackgroundHighlightedColor,
     required this.conversationBackgroundHoveredColor,
@@ -45,8 +54,6 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
     required this.descriptionTextStyle,
     required this.linkTextStyle,
     required this.linkHoveredTextStyle,
-    required this.toastDecoration,
-    required this.popupDecoration,
   });
 
   static final light = AppThemeExtension(
@@ -64,9 +71,28 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
       checkboxColor: AppColors.gray6,
       checkboxTextStyle:
           const TextStyle(color: Color(0xA6000000), fontSize: 16),
+      menuDecoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: Sizes.borderRadiusCircular2,
+        border: Border.all(color: Colors.grey.shade400),
+        // border: Border.all(color: AppColors.gray5),
+        boxShadow: Styles.boxShadow,
+      ),
+      menuItemTextStyle: const TextStyle(
+        fontSize: 12,
+      ),
       menuItemColor: Colors.white,
-      menuItemHoveredColor: Colors.grey[200]!,
+      menuItemHoveredColor: Colors.grey.shade300,
+      popupDecoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: Sizes.borderRadiusCircular4,
+          boxShadow: Styles.boxShadow),
       tabTextStyle: const TextStyle(color: Color.fromARGB(255, 89, 89, 89)),
+      toastDecoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: Sizes.borderRadiusCircular8,
+        boxShadow: Styles.boxShadow,
+      ),
       homePageBackgroundColor: const Color.fromARGB(255, 245, 245, 245),
       subNavigationRailSearchBarBackgroundColor:
           const Color.fromARGB(255, 247, 247, 247),
@@ -75,6 +101,13 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
       subNavigationRailDividerColor: const Color.fromARGB(255, 213, 213, 213),
       chatSessionPaneDividerColor: const Color.fromARGB(255, 231, 231, 231),
       chatSessionDetailsDrawerBackgroundColor: Colors.white,
+      chatSessionMessageTextStyle: const TextStyle(
+        fontSize: 14,
+      ),
+      chatSessionMessageEmojiTextStyle: TextStyle(
+          fontSize: 14,
+          fontFamily: Fonts.emojiFontFamily,
+          fontFamilyFallback: Fonts.emojiFontFamilyFallback),
       conversationBackgroundColor: const Color.fromARGB(255, 233, 233, 233),
       conversationBackgroundHighlightedColor:
           const Color.fromARGB(255, 210, 210, 210),
@@ -110,16 +143,7 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
       ),
       linkHoveredTextStyle: const TextStyle(
         color: AppColors.blue6,
-      ),
-      toastDecoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: Sizes.borderRadiusCircular8,
-        boxShadow: Styles.boxShadow,
-      ),
-      popupDecoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: Sizes.borderRadiusCircular4,
-          boxShadow: Styles.boxShadow));
+      ));
 
   static final dark = AppThemeExtension(
       themeMode: ThemeMode.dark,
@@ -136,9 +160,27 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
       checkboxColor: AppColors.gray6,
       checkboxTextStyle:
           const TextStyle(color: Color(0xA6000000), fontSize: 16),
+      menuDecoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: Sizes.borderRadiusCircular2,
+        border: Border.all(color: Colors.grey.shade400),
+        boxShadow: Styles.boxShadow,
+      ),
       menuItemColor: Colors.white,
-      menuItemHoveredColor: Colors.grey[200]!,
+      menuItemHoveredColor: Colors.grey.shade300,
+      menuItemTextStyle: const TextStyle(
+        fontSize: 12,
+      ),
+      popupDecoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: Sizes.borderRadiusCircular4,
+          boxShadow: Styles.boxShadow),
       tabTextStyle: const TextStyle(color: Color.fromARGB(255, 89, 89, 89)),
+      toastDecoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: Sizes.borderRadiusCircular8,
+        boxShadow: Styles.boxShadow,
+      ),
       homePageBackgroundColor: const Color.fromARGB(255, 245, 245, 245),
       subNavigationRailSearchBarBackgroundColor:
           const Color.fromARGB(255, 247, 247, 247),
@@ -147,6 +189,13 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
       subNavigationRailDividerColor: const Color.fromARGB(255, 213, 213, 213),
       chatSessionPaneDividerColor: const Color.fromARGB(255, 231, 231, 231),
       chatSessionDetailsDrawerBackgroundColor: Colors.black87,
+      chatSessionMessageTextStyle: const TextStyle(
+        fontSize: 14,
+      ),
+      chatSessionMessageEmojiTextStyle: TextStyle(
+          fontSize: 14,
+          fontFamily: Fonts.emojiFontFamily,
+          fontFamilyFallback: Fonts.emojiFontFamilyFallback),
       conversationBackgroundColor: const Color.fromARGB(255, 233, 233, 233),
       conversationBackgroundHighlightedColor:
           const Color.fromARGB(255, 210, 210, 210),
@@ -181,16 +230,7 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
       ),
       linkHoveredTextStyle: const TextStyle(
         color: AppColors.blue6,
-      ),
-      toastDecoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: Sizes.borderRadiusCircular8,
-        boxShadow: Styles.boxShadow,
-      ),
-      popupDecoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: Sizes.borderRadiusCircular4,
-          boxShadow: Styles.boxShadow));
+      ));
 
   final ThemeMode themeMode;
 
@@ -214,19 +254,27 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
   final Color checkboxColor;
   final TextStyle checkboxTextStyle;
 
+  final BoxDecoration menuDecoration;
   final Color menuItemColor;
   final Color menuItemHoveredColor;
+  final TextStyle menuItemTextStyle;
+
+  final BoxDecoration popupDecoration;
 
   final TextStyle tabTextStyle;
+
+  final BoxDecoration toastDecoration;
 
   // Page colors/styles
   final Color homePageBackgroundColor;
   final Color subNavigationRailSearchBarBackgroundColor;
   final Color subNavigationRailLoadingIndicatorBackgroundColor;
-
   final Color subNavigationRailDividerColor;
+
   final Color chatSessionPaneDividerColor;
   final Color chatSessionDetailsDrawerBackgroundColor;
+  final TextStyle chatSessionMessageTextStyle;
+  final TextStyle chatSessionMessageEmojiTextStyle;
 
   final Color conversationBackgroundColor;
   final Color conversationBackgroundHighlightedColor;
@@ -252,10 +300,6 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
   final TextStyle linkTextStyle;
   final TextStyle linkHoveredTextStyle;
 
-  // Box decorations
-  final BoxDecoration toastDecoration;
-  final BoxDecoration popupDecoration;
-
   @override
   AppThemeExtension copyWith({
     ThemeMode? themeMode,
@@ -271,15 +315,21 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
     Color? avatarBackgroundColor,
     Color? checkboxColor,
     TextStyle? checkboxTextStyle,
+    BoxDecoration? menuDecoration,
     Color? menuItemColor,
     Color? menuItemHoveredColor,
+    TextStyle? menuItemTextStyle,
+    BoxDecoration? popupDecoration,
     TextStyle? tabTextStyle,
+    BoxDecoration? toastDecoration,
     Color? homePageBackgroundColor,
     Color? subNavigationRailSearchBarBackgroundColor,
     Color? subNavigationRailLoadingIndicatorBackgroundColor,
     Color? subNavigationRailDividerColor,
     Color? chatSessionPaneDividerColor,
     Color? chatSessionDetailsDrawerBackgroundColor,
+    TextStyle? chatSessionMessageEditorTextStyle,
+    TextStyle? chatSessionMessageEditorEmojiTextStyle,
     Color? conversationBackgroundColor,
     Color? conversationBackgroundHighlightedColor,
     Color? conversationBackgroundHoveredColor,
@@ -297,8 +347,6 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
     TextStyle? descriptionTextStyle,
     TextStyle? linkTextStyle,
     TextStyle? linkHoveredTextStyle,
-    BoxDecoration? toastDecoration,
-    BoxDecoration? popupDecoration,
   }) =>
       AppThemeExtension(
         themeMode: themeMode ?? this.themeMode,
@@ -315,9 +363,13 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
             avatarBackgroundColor ?? this.avatarBackgroundColor,
         checkboxColor: checkboxColor ?? this.checkboxColor,
         checkboxTextStyle: checkboxTextStyle ?? this.checkboxTextStyle,
+        menuDecoration: menuDecoration ?? this.menuDecoration,
         menuItemColor: menuItemColor ?? this.menuItemColor,
         menuItemHoveredColor: menuItemHoveredColor ?? this.menuItemHoveredColor,
+        menuItemTextStyle: menuItemTextStyle ?? this.menuItemTextStyle,
+        popupDecoration: popupDecoration ?? this.popupDecoration,
         tabTextStyle: tabTextStyle ?? this.tabTextStyle,
+        toastDecoration: toastDecoration ?? this.toastDecoration,
         homePageBackgroundColor:
             homePageBackgroundColor ?? this.homePageBackgroundColor,
         subNavigationRailSearchBarBackgroundColor:
@@ -333,6 +385,11 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
         chatSessionDetailsDrawerBackgroundColor:
             chatSessionDetailsDrawerBackgroundColor ??
                 this.chatSessionDetailsDrawerBackgroundColor,
+        chatSessionMessageTextStyle:
+            chatSessionMessageEditorTextStyle ?? chatSessionMessageTextStyle,
+        chatSessionMessageEmojiTextStyle:
+            chatSessionMessageEditorEmojiTextStyle ??
+                chatSessionMessageEmojiTextStyle,
         conversationBackgroundColor:
             conversationBackgroundColor ?? this.conversationBackgroundColor,
         conversationBackgroundHighlightedColor:
@@ -371,8 +428,6 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
         descriptionTextStyle: descriptionTextStyle ?? this.descriptionTextStyle,
         linkTextStyle: linkTextStyle ?? this.linkTextStyle,
         linkHoveredTextStyle: linkHoveredTextStyle ?? this.linkHoveredTextStyle,
-        toastDecoration: toastDecoration ?? this.toastDecoration,
-        popupDecoration: popupDecoration ?? this.popupDecoration,
       );
 
   @override
@@ -398,10 +453,18 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
       checkboxColor: Color.lerp(checkboxColor, other.checkboxColor, t)!,
       checkboxTextStyle:
           TextStyle.lerp(checkboxTextStyle, other.checkboxTextStyle, t)!,
+      menuDecoration:
+          BoxDecoration.lerp(menuDecoration, other.menuDecoration, t)!,
       menuItemColor: Color.lerp(menuItemColor, other.menuItemColor, t)!,
       menuItemHoveredColor:
           Color.lerp(menuItemHoveredColor, other.menuItemHoveredColor, t)!,
+      menuItemTextStyle:
+          TextStyle.lerp(menuItemTextStyle, other.menuItemTextStyle, t)!,
+      popupDecoration:
+          BoxDecoration.lerp(popupDecoration, other.popupDecoration, t)!,
       tabTextStyle: TextStyle.lerp(tabTextStyle, other.tabTextStyle, t)!,
+      toastDecoration:
+          BoxDecoration.lerp(toastDecoration, other.toastDecoration, t)!,
       homePageBackgroundColor: Color.lerp(
           homePageBackgroundColor, other.homePageBackgroundColor, t)!,
       subNavigationRailSearchBarBackgroundColor: Color.lerp(
@@ -419,6 +482,12 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
       chatSessionDetailsDrawerBackgroundColor: Color.lerp(
           chatSessionDetailsDrawerBackgroundColor,
           other.chatSessionDetailsDrawerBackgroundColor,
+          t)!,
+      chatSessionMessageTextStyle: TextStyle.lerp(
+          chatSessionMessageTextStyle, other.chatSessionMessageTextStyle, t)!,
+      chatSessionMessageEmojiTextStyle: TextStyle.lerp(
+          chatSessionMessageEmojiTextStyle,
+          other.chatSessionMessageEmojiTextStyle,
           t)!,
       conversationBackgroundColor: Color.lerp(
           conversationBackgroundColor, other.conversationBackgroundColor, t)!,
@@ -469,10 +538,6 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
       linkTextStyle: TextStyle.lerp(linkTextStyle, other.linkTextStyle, t)!,
       linkHoveredTextStyle:
           TextStyle.lerp(linkHoveredTextStyle, other.linkHoveredTextStyle, t)!,
-      toastDecoration:
-          BoxDecoration.lerp(toastDecoration, other.toastDecoration, t)!,
-      popupDecoration:
-          BoxDecoration.lerp(popupDecoration, other.popupDecoration, t)!,
     );
   }
 }

@@ -35,7 +35,7 @@ class ChatSessionPaneFooterView extends StatelessWidget {
             },
             onPerformDrop: chatPageFooterController.onPerformDrop,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: Sizes.paddingV8H16,
               child: _buildEditor(context, theme, appLocalizations),
             )),
         _buildDropZoneMask(theme, appLocalizations)
@@ -56,7 +56,7 @@ class ChatSessionPaneFooterView extends StatelessWidget {
                 const SingleActivator(LogicalKeyboardKey.enter):
                     chatPageFooterController.sendMessage
               },
-              child: TEditor(
+              child: MessageEditor(
                 controller: chatPageFooterController.editorController,
                 autofocus: true,
                 focusNode: chatPageFooterController.editorFocusNode,

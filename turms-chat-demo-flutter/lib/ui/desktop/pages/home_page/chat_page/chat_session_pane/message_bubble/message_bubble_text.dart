@@ -6,7 +6,6 @@ import '../../../../../../themes/index.dart';
 
 import '../../../../../components/index.dart';
 import '../message.dart';
-import 'message_text_editing_controller.dart';
 
 class MessageBubbleText extends StatefulWidget {
   const MessageBubbleText({
@@ -27,27 +26,22 @@ class MessageBubbleText extends StatefulWidget {
 const _mentionIconSize = 22.0;
 
 class _MessageBubbleTextState extends State<MessageBubbleText> {
-  late MessageTextEditingController _controller;
   late bool _isMentioned;
+  TextSpan? _textSpan;
 
   @override
   void initState() {
     super.initState();
     final message = widget.message;
-    _controller = MessageTextEditingController.fromValue(message.text);
     _isMentioned = !message.sentByMe &&
         (message.mentionAll ||
             message.mentionedUserIds.contains(widget.currentUser.userId));
   }
 
   @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final appThemeExtension = context.appThemeExtension;
+    _textSpan ??= generateTextSpan(appThemeExtension, widget.message.text);
     const color = Color.fromARGB(255, 204, 74, 49);
     Widget content = IntrinsicWidth(
       child: DecoratedBox(
@@ -70,10 +64,11 @@ class _MessageBubbleTextState extends State<MessageBubbleText> {
               BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.5),
           child: Padding(
             padding: Sizes.paddingV8H8,
-            child: TEditor(
-              controller: _controller,
-              contentPadding: Sizes.paddingV4H4,
-              readOnly: true,
+            child: Text.rich(
+              _textSpan!,
+              strutStyle: StrutStyle.fromTextStyle(
+                  appThemeExtension.chatSessionMessageTextStyle,
+                  forceStrutHeight: true),
             ),
           ),
         ),

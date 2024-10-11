@@ -1,4 +1,4 @@
-import '../../../../../components/t_editor/t_editor.dart';
+import '../chat_session_pane_footer/message_editor.dart';
 
 class MessageTextEditingController extends EmojiTextEditingController {
   factory MessageTextEditingController.fromValue(String text) {

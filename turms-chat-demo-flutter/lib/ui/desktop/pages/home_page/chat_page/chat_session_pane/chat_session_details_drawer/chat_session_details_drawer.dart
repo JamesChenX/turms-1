@@ -1,10 +1,25 @@
+import 'dart:async';
+
+import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../../../../../domain/conversation/models/conversation.dart';
+import '../../../../../../../domain/group/services/group_service.dart';
+import '../../../../../../../domain/user/models/contact.dart';
+import '../../../../../../../domain/user/models/group_member.dart';
+import '../../../../../../../domain/user/models/user.dart';
+import '../../../../../../../domain/user/view_models/logged_in_user_info_view_model.dart';
+import '../../../../../../../infra/built_in_types/built_in_type_helpers.dart';
+import '../../../../../../../infra/ui/text_utils.dart';
+import '../../../../../../l10n/view_models/index.dart';
 import '../../../../../../themes/index.dart';
+import '../../../../../components/index.dart';
+import '../../../shared_components/user_profile_popup.dart';
 
-import 'chat_session_details_group_conversation.dart';
-import 'chat_session_details_private_conversation.dart';
+part 'chat_session_details_group_conversation.dart';
+part 'chat_session_details_private_conversation.dart';
 
 class ChatSessionDetailsDrawer extends StatelessWidget {
   const ChatSessionDetailsDrawer({super.key, required this.conversation});

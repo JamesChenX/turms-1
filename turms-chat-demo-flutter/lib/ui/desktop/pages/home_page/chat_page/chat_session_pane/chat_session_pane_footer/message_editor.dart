@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../../../themes/index.dart';
-import '../t_text_field/t_text_field.dart';
+import '../../../../../../themes/index.dart';
+import '../../../../../components/t_text_field/t_text_field.dart';
 
-class TEditor extends StatefulWidget {
-  const TEditor(
+class MessageEditor extends StatefulWidget {
+  const MessageEditor(
       {super.key,
       this.text,
       this.contentPadding = EdgeInsets.zero,
@@ -23,10 +23,10 @@ class TEditor extends StatefulWidget {
   final TapRegionCallback? onTapOutside;
 
   @override
-  State<StatefulWidget> createState() => TEditorState();
+  State<StatefulWidget> createState() => TMessageEditorState();
 }
 
-class TEditorState extends State<TEditor> {
+class TMessageEditorState extends State<MessageEditor> {
   FocusNode? _focusNode;
 
   @override
@@ -46,6 +46,7 @@ class TEditorState extends State<TEditor> {
   @override
   Widget build(BuildContext context) {
     final readOnly = widget.readOnly;
+    final textStyleBodyMedium = Theme.of(context).textTheme.bodyMedium!;
     return TextField(
       contextMenuBuilder: contextMenuBuilder,
       maxLength: 1000,
@@ -64,10 +65,9 @@ class TEditorState extends State<TEditor> {
       onTapOutside: widget.onTapOutside,
       autofocus: widget.autofocus,
       showCursor: !readOnly,
-      style: Theme.of(context).textTheme.bodyMedium!,
-      strutStyle: StrutStyle.fromTextStyle(
-          Theme.of(context).textTheme.bodyMedium!,
-          forceStrutHeight: true),
+      style: textStyleBodyMedium,
+      strutStyle:
+          StrutStyle.fromTextStyle(textStyleBodyMedium, forceStrutHeight: true),
     );
   }
 }
@@ -87,23 +87,23 @@ class EmojiTextEditingController extends TextEditingController {
     TextStyle? style,
     bool? withComposing,
   }) {
-    style ??= const TextStyle();
-    final spans = <TextSpan>[];
-    // find out all emoji text and non-emoji text into different spans
-    text.splitMapJoin(_emojiRegex, onMatch: (match) {
-      spans.add(TextSpan(
-          text: match.group(0)!,
-          style: style!.copyWith(
-            fontWeight: FontWeight.bold,
-            fontSize: style.fontSize! * 1.5,
-            fontFamily: Fonts.emojiFontFamily,
-            fontFamilyFallback: Fonts.emojiFontFamilyFallback,
-          )));
-      return '';
-    }, onNonMatch: (nonMatch) {
-      spans.add(TextSpan(text: nonMatch));
-      return '';
-    });
-    return TextSpan(style: style, children: spans);
+    final appThemeExtension = context.appThemeExtension;
+    return generateTextSpan(appThemeExtension, text);
   }
+}
+
+TextSpan generateTextSpan(AppThemeExtension appThemeExtension, String text) {
+  final messageTextStyle = appThemeExtension.chatSessionMessageTextStyle;
+  final messageEmojiTextStyle =
+      appThemeExtension.chatSessionMessageEmojiTextStyle;
+  final spans = <TextSpan>[];
+  // find out all emoji text and non-emoji text into different spans
+  text.splitMapJoin(_emojiRegex, onMatch: (match) {
+    spans.add(TextSpan(text: match.group(0)!, style: messageEmojiTextStyle));
+    return '';
+  }, onNonMatch: (nonMatch) {
+    spans.add(TextSpan(text: nonMatch, style: messageTextStyle));
+    return '';
+  });
+  return TextSpan(children: spans);
 }

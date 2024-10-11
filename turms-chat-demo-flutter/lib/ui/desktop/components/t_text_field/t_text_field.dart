@@ -6,6 +6,7 @@ import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../../infra/task/debouncer.dart';
 import '../../../l10n/view_models/app_localizations_view_model.dart';
+import '../../../themes/index.dart';
 import '../index.dart';
 
 const _kToolbarScreenPadding = 8.0;
@@ -163,7 +164,7 @@ class _TTextFieldState extends ConsumerState<TTextField> {
               height: 1.2),
       decoration: InputDecoration(
         hintText: widget.hintText,
-        hintStyle: TextStyle(color: Colors.grey[600]!),
+        hintStyle: TextStyle(color: Colors.grey.shade600),
         filled: true,
         fillColor: const Color.fromARGB(255, 226, 226, 226),
         contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
@@ -299,13 +300,18 @@ Widget contextMenuBuilder(
         anchor: editableTextState.contextMenuAnchors.primaryAnchor -
             localAdjustment,
       ),
-      child: Material(
-        child: TMenu(
-          dense: true,
-          entries: menuEntries,
-          onSelected: (item) {
-            labelToOnPressed[item.value]?.call();
-          },
+      child: SizedBox(
+        width: 100,
+        child: Material(
+          borderRadius: context.appThemeExtension.menuDecoration.borderRadius!,
+          child: TMenu(
+            entries: menuEntries,
+            padding: Sizes.paddingV4H4,
+            textAlign: TextAlign.center,
+            onSelected: (item) {
+              labelToOnPressed[item.value]?.call();
+            },
+          ),
         ),
       ),
     ),

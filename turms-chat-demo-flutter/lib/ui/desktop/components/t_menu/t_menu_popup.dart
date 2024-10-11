@@ -29,16 +29,14 @@ class TMenuPopup<T> extends StatelessWidget {
       followerAnchor: Alignment.topCenter,
       target: anchor,
       follower: Material(
-        child: DecoratedBox(
-          decoration: context.appThemeExtension.popupDecoration,
-          child: TMenu(
-            value: value,
-            entries: entries,
-            onSelected: (item) {
-              onSelected(item);
-              _popupController.hidePopover?.call();
-            },
-          ),
+        borderRadius: context.appThemeExtension.popupDecoration.borderRadius!,
+        child: TMenu(
+          value: value,
+          entries: entries,
+          onSelected: (item) {
+            onSelected(item);
+            _popupController.hidePopover?.call();
+          },
         ),
       ));
 }

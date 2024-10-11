@@ -1,14 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_symbols_icons/symbols.dart';
-
-import '../../../../../../../domain/user/models/contact.dart';
-import '../../../../../../l10n/app_localizations.dart';
-import '../../../../../../themes/index.dart';
-
-import '../../../../../components/t_button/t_text_button.dart';
-import '../../../../../components/t_divider/t_horizontal_divider.dart';
-import '../../../../../components/t_switch/t_switch.dart';
+part of 'chat_session_details_drawer.dart';
 
 class ChatSessionDetailsPrivateConversation extends ConsumerStatefulWidget {
   const ChatSessionDetailsPrivateConversation(
@@ -29,7 +19,9 @@ class _ChatSessionDetailsPrivateConversationState
 
   @override
   Widget build(BuildContext context) {
-    final appLocalizations = AppLocalizations.of(context);
+    final theme = context.theme;
+    final appLocalizations = ref.watch(appLocalizationsViewModel);
+    final loggedInUser = ref.watch(loggedInUserViewModel)!;
     const divider = THorizontalDivider();
     return Column(
       children: [
@@ -63,16 +55,11 @@ class _ChatSessionDetailsPrivateConversationState
         Sizes.sizedBoxH4,
         divider,
         Sizes.sizedBoxH8,
-        TTextButton.outlined(
-          theme: context.theme,
-          containerPadding: Sizes.paddingV4H8,
-          text: appLocalizations.addNewMember,
-          prefix: const Icon(
-            Symbols.person_add_rounded,
-            size: 20,
-          ),
-        ),
-        Sizes.sizedBoxH8,
+        _buildAddParticipantItem(theme, appLocalizations.createGroup),
+        _participantItemSpacing,
+        _buildParticipantItem(loggedInUser),
+        _participantItemSpacing,
+        _buildParticipantItem(widget.contact),
         const Spacer(),
         divider,
         SizedBox(
@@ -88,4 +75,19 @@ class _ChatSessionDetailsPrivateConversationState
       ],
     );
   }
+
+  Row _buildParticipantItem(User user) => Row(
+        spacing: _participantItemElementSpacing,
+        children: [
+          UserProfilePopup(
+              user: user, popupAnchor: Alignment.topRight, size: _avatarSize),
+          Expanded(
+              child: Text(
+            user.name,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+            softWrap: false,
+          )),
+        ],
+      );
 }

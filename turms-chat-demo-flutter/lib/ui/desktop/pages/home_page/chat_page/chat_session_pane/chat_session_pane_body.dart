@@ -22,6 +22,8 @@ import '../view_models/selected_conversation_view_model.dart';
 import 'message.dart';
 import 'message_bubble/message_bubble.dart';
 
+const _loadMoreDistanceThreshold = 8;
+
 class ChatSessionPaneBody extends ConsumerStatefulWidget {
   const ChatSessionPaneBody(this.selectedConversation, {super.key});
 
@@ -44,16 +46,7 @@ class _ChatSessionPaneBodyState extends ConsumerState<ChatSessionPaneBody> {
   @override
   void initState() {
     super.initState();
-
-    _scrollController.addListener(() {
-      final position = _scrollController.position;
-      final pixels = position.pixels;
-      if (pixels + 8 >= position.maxScrollExtent) {
-        // User has scrolled to the top
-        // Display loading message and load more messages
-        _loadMoreMessages();
-      } else if (pixels == position.minScrollExtent) {}
-    });
+    _scrollController.addListener(_loadMoreIfScrollToTop);
   }
 
   @override
@@ -72,6 +65,14 @@ class _ChatSessionPaneBodyState extends ConsumerState<ChatSessionPaneBody> {
         child: messages.isEmpty
             ? null
             : _buildMessageBubbles(selectedConversation));
+  }
+
+  void _loadMoreIfScrollToTop() {
+    final position = _scrollController.position;
+    if (position.maxScrollExtent - position.pixels <
+        _loadMoreDistanceThreshold) {
+      _loadMoreMessages();
+    }
   }
 
   /// We don't use sealed classes to limit possible values
@@ -158,7 +159,7 @@ class _ChatSessionPaneBodyState extends ConsumerState<ChatSessionPaneBody> {
     throw AssertionError('Unreachable code reached');
   }
 
-  ListView _buildMessageBubbles(Conversation conversation) {
+  Widget _buildMessageBubbles(Conversation conversation) {
     final appLocalizations = ref.watch(appLocalizationsViewModel);
     final loggedInUser = ref.watch(loggedInUserViewModel)!;
     final dateFormat = ref.watch(dateFormatViewModel_yMd);
@@ -166,27 +167,29 @@ class _ChatSessionPaneBodyState extends ConsumerState<ChatSessionPaneBody> {
     final itemCount = items.length;
     final itemIdToIndex = {for (var i = 0; i < itemCount; i++) items[i].id: i};
     final yesterday = DateTime.now().subtract(const Duration(days: 1));
-    return ListView.builder(
-      padding: Sizes.paddingV8H16,
-      controller: _scrollController,
-      // Reverse the list to display conversations from bottom to top
-      reverse: true,
-      itemCount: itemCount,
-      findChildIndexCallback: (key) =>
-          itemIdToIndex[(key as ValueKey<Int64>).value],
-      itemBuilder: (context, index) {
-        final actualIndex = itemCount - index - 1;
-        final item = items[actualIndex];
-        return switch (item) {
-          _ChatSessionItemLoadingIndicator() => _buildLoadingIndicator(),
-          _ChatSessionItemDaySeparator(:final datetime) => _buildDaySeparator(
-              item, yesterday, datetime, appLocalizations, dateFormat),
-          _ChatSessionItemMessage(:final message) =>
-            _buildMessages(conversation, [message], loggedInUser, item),
-          _ChatSessionItemMessageGroup(:final messageGroup) => _buildMessages(
-              conversation, messageGroup.messages, loggedInUser, item)
-        };
-      },
+    return SelectionArea(
+      child: ListView.builder(
+        padding: Sizes.paddingV8H16,
+        controller: _scrollController,
+        // Reverse the list to display conversations from bottom to top
+        reverse: true,
+        itemCount: itemCount,
+        findChildIndexCallback: (key) =>
+            itemIdToIndex[(key as ValueKey<Int64>).value],
+        itemBuilder: (context, index) {
+          final actualIndex = itemCount - index - 1;
+          final item = items[actualIndex];
+          return switch (item) {
+            _ChatSessionItemLoadingIndicator() => _buildLoadingIndicator(),
+            _ChatSessionItemDaySeparator(:final datetime) => _buildDaySeparator(
+                item, yesterday, datetime, appLocalizations, dateFormat),
+            _ChatSessionItemMessage(:final message) =>
+              _buildMessages(conversation, [message], loggedInUser, item),
+            _ChatSessionItemMessageGroup(:final messageGroup) => _buildMessages(
+                conversation, messageGroup.messages, loggedInUser, item)
+          };
+        },
+      ),
     );
   }
 

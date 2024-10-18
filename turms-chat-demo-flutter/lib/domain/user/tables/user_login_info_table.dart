@@ -13,5 +13,8 @@ class UserLoginInfoTable extends Table {
   String get tableName => 'user_login_info';
 
   @override
+  bool get withoutRowId => true;
+
+  @override
   Set<Column> get primaryKey => {userId};
 }

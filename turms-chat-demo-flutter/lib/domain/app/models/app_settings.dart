@@ -1,5 +1,4 @@
 import '../../../infra/built_in_types/built_in_type_helpers.dart';
-import '../../../infra/sqlite/app_database.dart';
 import 'app_setting_ids.dart';
 
 class AppSettings {

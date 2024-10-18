@@ -7,10 +7,13 @@ class LogEntryTable extends Table {
 
   IntColumn get level => integer().map(LogLevelConverter())();
 
-  DateTimeColumn get timestamp => dateTime()();
+  DateTimeColumn get createdDate => dateTime()();
 
   TextColumn get message => text()();
 
   @override
   String get tableName => 'log_entry';
+
+  @override
+  bool get withoutRowId => true;
 }

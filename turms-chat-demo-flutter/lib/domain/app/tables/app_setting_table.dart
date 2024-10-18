@@ -1,9 +1,11 @@
 import 'package:drift/drift.dart';
 
-class AppSettingTable extends Table {
-  TextColumn get id => text()();
+import '../../user/tables/user_setting_table.dart';
 
-  TextColumn get value => text().nullable()();
+class AppSettingTable extends Table {
+  IntColumn get id => integer()();
+
+  Column<DriftAny> get value => customType(DriftAnyType())();
 
   DateTimeColumn get createdDate => dateTime()();
 
@@ -11,6 +13,9 @@ class AppSettingTable extends Table {
 
   @override
   String get tableName => 'app_setting';
+
+  @override
+  bool get withoutRowId => true;
 
   @override
   Set<Column> get primaryKey => {id};

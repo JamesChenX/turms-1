@@ -1,9 +1,9 @@
 import 'package:drift/drift.dart';
 
 class UserSettingTable extends Table {
-  TextColumn get id => text()();
+  IntColumn get id => integer()();
 
-  TextColumn get value => text().nullable()();
+  Column<DriftAny> get value => customType(DriftAnyType())();
 
   DateTimeColumn get createdDate => dateTime()();
 
@@ -13,5 +13,23 @@ class UserSettingTable extends Table {
   String get tableName => 'user_setting';
 
   @override
+  bool get withoutRowId => true;
+
+  @override
   Set<Column> get primaryKey => {id};
+}
+
+class DriftAnyType implements CustomSqlType<DriftAny> {
+  @override
+  String mapToSqlLiteral(DriftAny dartValue) =>
+      dartValue.rawSqlValue.toString();
+
+  @override
+  Object mapToSqlParameter(DriftAny dartValue) => dartValue;
+
+  @override
+  DriftAny read(Object fromSql) => fromSql as DriftAny;
+
+  @override
+  String sqlTypeName(GenerationContext context) => 'ANY';
 }

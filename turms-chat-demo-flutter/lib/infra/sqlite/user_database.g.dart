@@ -17,7 +17,7 @@ class $LogEntryTableTable extends LogEntryTable
       'id', aliasedName, false,
       hasAutoIncrement: true,
       type: DriftSqlType.int,
-      requiredDuringInsert: false,
+      requiredDuringInsert: true,
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
   static const VerificationMeta _levelMeta = const VerificationMeta('level');
@@ -26,11 +26,11 @@ class $LogEntryTableTable extends LogEntryTable
       GeneratedColumn<int>('level', aliasedName, false,
               type: DriftSqlType.int, requiredDuringInsert: true)
           .withConverter<LogLevel>($LogEntryTableTable.$converterlevel);
-  static const VerificationMeta _timestampMeta =
-      const VerificationMeta('timestamp');
+  static const VerificationMeta _createdDateMeta =
+      const VerificationMeta('createdDate');
   @override
-  late final GeneratedColumn<DateTime> timestamp = GeneratedColumn<DateTime>(
-      'timestamp', aliasedName, false,
+  late final GeneratedColumn<DateTime> createdDate = GeneratedColumn<DateTime>(
+      'created_date', aliasedName, false,
       type: DriftSqlType.dateTime, requiredDuringInsert: true);
   static const VerificationMeta _messageMeta =
       const VerificationMeta('message');
@@ -40,7 +40,7 @@ class $LogEntryTableTable extends LogEntryTable
       type: DriftSqlType.string, requiredDuringInsert: true);
 
   @override
-  List<GeneratedColumn> get $columns => [id, level, timestamp, message];
+  List<GeneratedColumn> get $columns => [id, level, createdDate, message];
 
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -56,13 +56,17 @@ class $LogEntryTableTable extends LogEntryTable
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
     }
     context.handle(_levelMeta, const VerificationResult.success());
-    if (data.containsKey('timestamp')) {
-      context.handle(_timestampMeta,
-          timestamp.isAcceptableOrUnknown(data['timestamp']!, _timestampMeta));
+    if (data.containsKey('created_date')) {
+      context.handle(
+          _createdDateMeta,
+          createdDate.isAcceptableOrUnknown(
+              data['created_date']!, _createdDateMeta));
     } else if (isInserting) {
-      context.missing(_timestampMeta);
+      context.missing(_createdDateMeta);
     }
     if (data.containsKey('message')) {
       context.handle(_messageMeta,
@@ -85,8 +89,8 @@ class $LogEntryTableTable extends LogEntryTable
       level: $LogEntryTableTable.$converterlevel.fromSql(attachedDatabase
           .typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}level'])!),
-      timestamp: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}timestamp'])!,
+      createdDate: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_date'])!,
       message: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}message'])!,
     );
@@ -98,19 +102,22 @@ class $LogEntryTableTable extends LogEntryTable
   }
 
   static TypeConverter<LogLevel, int> $converterlevel = LogLevelConverter();
+
+  @override
+  bool get withoutRowId => true;
 }
 
 class LogEntryTableData extends DataClass
     implements Insertable<LogEntryTableData> {
   final int id;
   final LogLevel level;
-  final DateTime timestamp;
+  final DateTime createdDate;
   final String message;
 
   const LogEntryTableData(
       {required this.id,
       required this.level,
-      required this.timestamp,
+      required this.createdDate,
       required this.message});
 
   @override
@@ -121,7 +128,7 @@ class LogEntryTableData extends DataClass
       map['level'] =
           Variable<int>($LogEntryTableTable.$converterlevel.toSql(level));
     }
-    map['timestamp'] = Variable<DateTime>(timestamp);
+    map['created_date'] = Variable<DateTime>(createdDate);
     map['message'] = Variable<String>(message);
     return map;
   }
@@ -130,7 +137,7 @@ class LogEntryTableData extends DataClass
     return LogEntryTableCompanion(
       id: Value(id),
       level: Value(level),
-      timestamp: Value(timestamp),
+      createdDate: Value(createdDate),
       message: Value(message),
     );
   }
@@ -141,7 +148,7 @@ class LogEntryTableData extends DataClass
     return LogEntryTableData(
       id: serializer.fromJson<int>(json['id']),
       level: serializer.fromJson<LogLevel>(json['level']),
-      timestamp: serializer.fromJson<DateTime>(json['timestamp']),
+      createdDate: serializer.fromJson<DateTime>(json['createdDate']),
       message: serializer.fromJson<String>(json['message']),
     );
   }
@@ -152,17 +159,17 @@ class LogEntryTableData extends DataClass
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'level': serializer.toJson<LogLevel>(level),
-      'timestamp': serializer.toJson<DateTime>(timestamp),
+      'createdDate': serializer.toJson<DateTime>(createdDate),
       'message': serializer.toJson<String>(message),
     };
   }
 
   LogEntryTableData copyWith(
-          {int? id, LogLevel? level, DateTime? timestamp, String? message}) =>
+          {int? id, LogLevel? level, DateTime? createdDate, String? message}) =>
       LogEntryTableData(
         id: id ?? this.id,
         level: level ?? this.level,
-        timestamp: timestamp ?? this.timestamp,
+        createdDate: createdDate ?? this.createdDate,
         message: message ?? this.message,
       );
 
@@ -170,7 +177,8 @@ class LogEntryTableData extends DataClass
     return LogEntryTableData(
       id: data.id.present ? data.id.value : this.id,
       level: data.level.present ? data.level.value : this.level,
-      timestamp: data.timestamp.present ? data.timestamp.value : this.timestamp,
+      createdDate:
+          data.createdDate.present ? data.createdDate.value : this.createdDate,
       message: data.message.present ? data.message.value : this.message,
     );
   }
@@ -180,14 +188,14 @@ class LogEntryTableData extends DataClass
     return (StringBuffer('LogEntryTableData(')
           ..write('id: $id, ')
           ..write('level: $level, ')
-          ..write('timestamp: $timestamp, ')
+          ..write('createdDate: $createdDate, ')
           ..write('message: $message')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, level, timestamp, message);
+  int get hashCode => Object.hash(id, level, createdDate, message);
 
   @override
   bool operator ==(Object other) =>
@@ -195,42 +203,43 @@ class LogEntryTableData extends DataClass
       (other is LogEntryTableData &&
           other.id == this.id &&
           other.level == this.level &&
-          other.timestamp == this.timestamp &&
+          other.createdDate == this.createdDate &&
           other.message == this.message);
 }
 
 class LogEntryTableCompanion extends UpdateCompanion<LogEntryTableData> {
   final Value<int> id;
   final Value<LogLevel> level;
-  final Value<DateTime> timestamp;
+  final Value<DateTime> createdDate;
   final Value<String> message;
 
   const LogEntryTableCompanion({
     this.id = const Value.absent(),
     this.level = const Value.absent(),
-    this.timestamp = const Value.absent(),
+    this.createdDate = const Value.absent(),
     this.message = const Value.absent(),
   });
 
   LogEntryTableCompanion.insert({
-    this.id = const Value.absent(),
+    required int id,
     required LogLevel level,
-    required DateTime timestamp,
+    required DateTime createdDate,
     required String message,
-  })  : level = Value(level),
-        timestamp = Value(timestamp),
+  })  : id = Value(id),
+        level = Value(level),
+        createdDate = Value(createdDate),
         message = Value(message);
 
   static Insertable<LogEntryTableData> custom({
     Expression<int>? id,
     Expression<int>? level,
-    Expression<DateTime>? timestamp,
+    Expression<DateTime>? createdDate,
     Expression<String>? message,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (level != null) 'level': level,
-      if (timestamp != null) 'timestamp': timestamp,
+      if (createdDate != null) 'created_date': createdDate,
       if (message != null) 'message': message,
     });
   }
@@ -238,12 +247,12 @@ class LogEntryTableCompanion extends UpdateCompanion<LogEntryTableData> {
   LogEntryTableCompanion copyWith(
       {Value<int>? id,
       Value<LogLevel>? level,
-      Value<DateTime>? timestamp,
+      Value<DateTime>? createdDate,
       Value<String>? message}) {
     return LogEntryTableCompanion(
       id: id ?? this.id,
       level: level ?? this.level,
-      timestamp: timestamp ?? this.timestamp,
+      createdDate: createdDate ?? this.createdDate,
       message: message ?? this.message,
     );
   }
@@ -258,8 +267,8 @@ class LogEntryTableCompanion extends UpdateCompanion<LogEntryTableData> {
       map['level'] =
           Variable<int>($LogEntryTableTable.$converterlevel.toSql(level.value));
     }
-    if (timestamp.present) {
-      map['timestamp'] = Variable<DateTime>(timestamp.value);
+    if (createdDate.present) {
+      map['created_date'] = Variable<DateTime>(createdDate.value);
     }
     if (message.present) {
       map['message'] = Variable<String>(message.value);
@@ -272,7 +281,7 @@ class LogEntryTableCompanion extends UpdateCompanion<LogEntryTableData> {
     return (StringBuffer('LogEntryTableCompanion(')
           ..write('id: $id, ')
           ..write('level: $level, ')
-          ..write('timestamp: $timestamp, ')
+          ..write('createdDate: $createdDate, ')
           ..write('message: $message')
           ..write(')'))
         .toString();
@@ -585,16 +594,16 @@ abstract class _$UserDatabase extends GeneratedDatabase {
 
 typedef $$LogEntryTableTableCreateCompanionBuilder = LogEntryTableCompanion
     Function({
-  Value<int> id,
+  required int id,
   required LogLevel level,
-  required DateTime timestamp,
+  required DateTime createdDate,
   required String message,
 });
 typedef $$LogEntryTableTableUpdateCompanionBuilder = LogEntryTableCompanion
     Function({
   Value<int> id,
   Value<LogLevel> level,
-  Value<DateTime> timestamp,
+  Value<DateTime> createdDate,
   Value<String> message,
 });
 
@@ -616,8 +625,8 @@ class $$LogEntryTableTableFilterComposer
           column: $table.level,
           builder: (column) => ColumnWithTypeConverterFilters(column));
 
-  ColumnFilters<DateTime> get timestamp => $composableBuilder(
-      column: $table.timestamp, builder: (column) => ColumnFilters(column));
+  ColumnFilters<DateTime> get createdDate => $composableBuilder(
+      column: $table.createdDate, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<String> get message => $composableBuilder(
       column: $table.message, builder: (column) => ColumnFilters(column));
@@ -639,8 +648,8 @@ class $$LogEntryTableTableOrderingComposer
   ColumnOrderings<int> get level => $composableBuilder(
       column: $table.level, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<DateTime> get timestamp => $composableBuilder(
-      column: $table.timestamp, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<DateTime> get createdDate => $composableBuilder(
+      column: $table.createdDate, builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<String> get message => $composableBuilder(
       column: $table.message, builder: (column) => ColumnOrderings(column));
@@ -662,8 +671,8 @@ class $$LogEntryTableTableAnnotationComposer
   GeneratedColumnWithTypeConverter<LogLevel, int> get level =>
       $composableBuilder(column: $table.level, builder: (column) => column);
 
-  GeneratedColumn<DateTime> get timestamp =>
-      $composableBuilder(column: $table.timestamp, builder: (column) => column);
+  GeneratedColumn<DateTime> get createdDate => $composableBuilder(
+      column: $table.createdDate, builder: (column) => column);
 
   GeneratedColumn<String> get message =>
       $composableBuilder(column: $table.message, builder: (column) => column);
@@ -697,25 +706,25 @@ class $$LogEntryTableTableTableManager extends RootTableManager<
           updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
             Value<LogLevel> level = const Value.absent(),
-            Value<DateTime> timestamp = const Value.absent(),
+            Value<DateTime> createdDate = const Value.absent(),
             Value<String> message = const Value.absent(),
           }) =>
               LogEntryTableCompanion(
             id: id,
             level: level,
-            timestamp: timestamp,
+            createdDate: createdDate,
             message: message,
           ),
           createCompanionCallback: ({
-            Value<int> id = const Value.absent(),
+            required int id,
             required LogLevel level,
-            required DateTime timestamp,
+            required DateTime createdDate,
             required String message,
           }) =>
               LogEntryTableCompanion.insert(
             id: id,
             level: level,
-            timestamp: timestamp,
+            createdDate: createdDate,
             message: message,
           ),
           withReferenceMapper: (p0) => p0

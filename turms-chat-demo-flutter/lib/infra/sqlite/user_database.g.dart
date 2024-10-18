@@ -8,7 +8,9 @@ class $LogEntryTableTable extends LogEntryTable
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
+
   $LogEntryTableTable(this.attachedDatabase, [this._alias]);
+
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
@@ -36,13 +38,17 @@ class $LogEntryTableTable extends LogEntryTable
   late final GeneratedColumn<String> message = GeneratedColumn<String>(
       'message', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+
   @override
   List<GeneratedColumn> get $columns => [id, level, timestamp, message];
+
   @override
   String get aliasedName => _alias ?? actualTableName;
+
   @override
   String get actualTableName => $name;
   static const String $name = 'log_entry';
+
   @override
   VerificationContext validateIntegrity(Insertable<LogEntryTableData> instance,
       {bool isInserting = false}) {
@@ -69,6 +75,7 @@ class $LogEntryTableTable extends LogEntryTable
 
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
+
   @override
   LogEntryTableData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
@@ -99,11 +106,13 @@ class LogEntryTableData extends DataClass
   final LogLevel level;
   final DateTime timestamp;
   final String message;
+
   const LogEntryTableData(
       {required this.id,
       required this.level,
       required this.timestamp,
       required this.message});
+
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -136,6 +145,7 @@ class LogEntryTableData extends DataClass
       message: serializer.fromJson<String>(json['message']),
     );
   }
+
   @override
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
@@ -155,6 +165,16 @@ class LogEntryTableData extends DataClass
         timestamp: timestamp ?? this.timestamp,
         message: message ?? this.message,
       );
+
+  LogEntryTableData copyWithCompanion(LogEntryTableCompanion data) {
+    return LogEntryTableData(
+      id: data.id.present ? data.id.value : this.id,
+      level: data.level.present ? data.level.value : this.level,
+      timestamp: data.timestamp.present ? data.timestamp.value : this.timestamp,
+      message: data.message.present ? data.message.value : this.message,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('LogEntryTableData(')
@@ -168,6 +188,7 @@ class LogEntryTableData extends DataClass
 
   @override
   int get hashCode => Object.hash(id, level, timestamp, message);
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -183,12 +204,14 @@ class LogEntryTableCompanion extends UpdateCompanion<LogEntryTableData> {
   final Value<LogLevel> level;
   final Value<DateTime> timestamp;
   final Value<String> message;
+
   const LogEntryTableCompanion({
     this.id = const Value.absent(),
     this.level = const Value.absent(),
     this.timestamp = const Value.absent(),
     this.message = const Value.absent(),
   });
+
   LogEntryTableCompanion.insert({
     this.id = const Value.absent(),
     required LogLevel level,
@@ -197,6 +220,7 @@ class LogEntryTableCompanion extends UpdateCompanion<LogEntryTableData> {
   })  : level = Value(level),
         timestamp = Value(timestamp),
         message = Value(message);
+
   static Insertable<LogEntryTableData> custom({
     Expression<int>? id,
     Expression<int>? level,
@@ -260,17 +284,19 @@ class $UserSettingTableTable extends UserSettingTable
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
+
   $UserSettingTableTable(this.attachedDatabase, [this._alias]);
+
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   static const VerificationMeta _valueMeta = const VerificationMeta('value');
   @override
-  late final GeneratedColumn<String> value = GeneratedColumn<String>(
-      'value', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
+  late final GeneratedColumn<DriftAny> value = GeneratedColumn<DriftAny>(
+      'value', aliasedName, false,
+      type: DriftSqlType.any, requiredDuringInsert: true);
   static const VerificationMeta _createdDateMeta =
       const VerificationMeta('createdDate');
   @override
@@ -283,14 +309,18 @@ class $UserSettingTableTable extends UserSettingTable
   late final GeneratedColumn<DateTime> lastModifiedDate =
       GeneratedColumn<DateTime>('last_modified_date', aliasedName, false,
           type: DriftSqlType.dateTime, requiredDuringInsert: true);
+
   @override
   List<GeneratedColumn> get $columns =>
       [id, value, createdDate, lastModifiedDate];
+
   @override
   String get aliasedName => _alias ?? actualTableName;
+
   @override
   String get actualTableName => $name;
   static const String $name = 'user_setting';
+
   @override
   VerificationContext validateIntegrity(
       Insertable<UserSettingTableData> instance,
@@ -305,6 +335,8 @@ class $UserSettingTableTable extends UserSettingTable
     if (data.containsKey('value')) {
       context.handle(
           _valueMeta, value.isAcceptableOrUnknown(data['value']!, _valueMeta));
+    } else if (isInserting) {
+      context.missing(_valueMeta);
     }
     if (data.containsKey('created_date')) {
       context.handle(
@@ -327,14 +359,15 @@ class $UserSettingTableTable extends UserSettingTable
 
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
+
   @override
   UserSettingTableData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return UserSettingTableData(
       id: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       value: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}value']),
+          .read(DriftSqlType.any, data['${effectivePrefix}value'])!,
       createdDate: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_date'])!,
       lastModifiedDate: attachedDatabase.typeMapping.read(
@@ -346,26 +379,29 @@ class $UserSettingTableTable extends UserSettingTable
   $UserSettingTableTable createAlias(String alias) {
     return $UserSettingTableTable(attachedDatabase, alias);
   }
+
+  @override
+  bool get withoutRowId => true;
 }
 
 class UserSettingTableData extends DataClass
     implements Insertable<UserSettingTableData> {
-  final String id;
-  final String? value;
+  final int id;
+  final DriftAny value;
   final DateTime createdDate;
   final DateTime lastModifiedDate;
+
   const UserSettingTableData(
       {required this.id,
-      this.value,
+      required this.value,
       required this.createdDate,
       required this.lastModifiedDate});
+
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['id'] = Variable<String>(id);
-    if (!nullToAbsent || value != null) {
-      map['value'] = Variable<String>(value);
-    }
+    map['id'] = Variable<int>(id);
+    map['value'] = Variable<DriftAny>(value);
     map['created_date'] = Variable<DateTime>(createdDate);
     map['last_modified_date'] = Variable<DateTime>(lastModifiedDate);
     return map;
@@ -374,8 +410,7 @@ class UserSettingTableData extends DataClass
   UserSettingTableCompanion toCompanion(bool nullToAbsent) {
     return UserSettingTableCompanion(
       id: Value(id),
-      value:
-          value == null && nullToAbsent ? const Value.absent() : Value(value),
+      value: Value(value),
       createdDate: Value(createdDate),
       lastModifiedDate: Value(lastModifiedDate),
     );
@@ -385,34 +420,48 @@ class UserSettingTableData extends DataClass
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return UserSettingTableData(
-      id: serializer.fromJson<String>(json['id']),
-      value: serializer.fromJson<String?>(json['value']),
+      id: serializer.fromJson<int>(json['id']),
+      value: serializer.fromJson<DriftAny>(json['value']),
       createdDate: serializer.fromJson<DateTime>(json['createdDate']),
       lastModifiedDate: serializer.fromJson<DateTime>(json['lastModifiedDate']),
     );
   }
+
   @override
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<String>(id),
-      'value': serializer.toJson<String?>(value),
+      'id': serializer.toJson<int>(id),
+      'value': serializer.toJson<DriftAny>(value),
       'createdDate': serializer.toJson<DateTime>(createdDate),
       'lastModifiedDate': serializer.toJson<DateTime>(lastModifiedDate),
     };
   }
 
   UserSettingTableData copyWith(
-          {String? id,
-          Value<String?> value = const Value.absent(),
+          {int? id,
+          DriftAny? value,
           DateTime? createdDate,
           DateTime? lastModifiedDate}) =>
       UserSettingTableData(
         id: id ?? this.id,
-        value: value.present ? value.value : this.value,
+        value: value ?? this.value,
         createdDate: createdDate ?? this.createdDate,
         lastModifiedDate: lastModifiedDate ?? this.lastModifiedDate,
       );
+
+  UserSettingTableData copyWithCompanion(UserSettingTableCompanion data) {
+    return UserSettingTableData(
+      id: data.id.present ? data.id.value : this.id,
+      value: data.value.present ? data.value.value : this.value,
+      createdDate:
+          data.createdDate.present ? data.createdDate.value : this.createdDate,
+      lastModifiedDate: data.lastModifiedDate.present
+          ? data.lastModifiedDate.value
+          : this.lastModifiedDate,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('UserSettingTableData(')
@@ -426,6 +475,7 @@ class UserSettingTableData extends DataClass
 
   @override
   int get hashCode => Object.hash(id, value, createdDate, lastModifiedDate);
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -437,55 +487,52 @@ class UserSettingTableData extends DataClass
 }
 
 class UserSettingTableCompanion extends UpdateCompanion<UserSettingTableData> {
-  final Value<String> id;
-  final Value<String?> value;
+  final Value<int> id;
+  final Value<DriftAny> value;
   final Value<DateTime> createdDate;
   final Value<DateTime> lastModifiedDate;
-  final Value<int> rowid;
+
   const UserSettingTableCompanion({
     this.id = const Value.absent(),
     this.value = const Value.absent(),
     this.createdDate = const Value.absent(),
     this.lastModifiedDate = const Value.absent(),
-    this.rowid = const Value.absent(),
   });
+
   UserSettingTableCompanion.insert({
-    required String id,
-    this.value = const Value.absent(),
+    required int id,
+    required DriftAny value,
     required DateTime createdDate,
     required DateTime lastModifiedDate,
-    this.rowid = const Value.absent(),
   })  : id = Value(id),
+        value = Value(value),
         createdDate = Value(createdDate),
         lastModifiedDate = Value(lastModifiedDate);
+
   static Insertable<UserSettingTableData> custom({
-    Expression<String>? id,
-    Expression<String>? value,
+    Expression<int>? id,
+    Expression<DriftAny>? value,
     Expression<DateTime>? createdDate,
     Expression<DateTime>? lastModifiedDate,
-    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (value != null) 'value': value,
       if (createdDate != null) 'created_date': createdDate,
       if (lastModifiedDate != null) 'last_modified_date': lastModifiedDate,
-      if (rowid != null) 'rowid': rowid,
     });
   }
 
   UserSettingTableCompanion copyWith(
-      {Value<String>? id,
-      Value<String?>? value,
+      {Value<int>? id,
+      Value<DriftAny>? value,
       Value<DateTime>? createdDate,
-      Value<DateTime>? lastModifiedDate,
-      Value<int>? rowid}) {
+      Value<DateTime>? lastModifiedDate}) {
     return UserSettingTableCompanion(
       id: id ?? this.id,
       value: value ?? this.value,
       createdDate: createdDate ?? this.createdDate,
       lastModifiedDate: lastModifiedDate ?? this.lastModifiedDate,
-      rowid: rowid ?? this.rowid,
     );
   }
 
@@ -493,19 +540,16 @@ class UserSettingTableCompanion extends UpdateCompanion<UserSettingTableData> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (id.present) {
-      map['id'] = Variable<String>(id.value);
+      map['id'] = Variable<int>(id.value);
     }
     if (value.present) {
-      map['value'] = Variable<String>(value.value);
+      map['value'] = Variable<DriftAny>(value.value);
     }
     if (createdDate.present) {
       map['created_date'] = Variable<DateTime>(createdDate.value);
     }
     if (lastModifiedDate.present) {
       map['last_modified_date'] = Variable<DateTime>(lastModifiedDate.value);
-    }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
     }
     return map;
   }
@@ -516,8 +560,7 @@ class UserSettingTableCompanion extends UpdateCompanion<UserSettingTableData> {
           ..write('id: $id, ')
           ..write('value: $value, ')
           ..write('createdDate: $createdDate, ')
-          ..write('lastModifiedDate: $lastModifiedDate, ')
-          ..write('rowid: $rowid')
+          ..write('lastModifiedDate: $lastModifiedDate')
           ..write(')'))
         .toString();
   }
@@ -525,13 +568,347 @@ class UserSettingTableCompanion extends UpdateCompanion<UserSettingTableData> {
 
 abstract class _$UserDatabase extends GeneratedDatabase {
   _$UserDatabase(QueryExecutor e) : super(e);
+
+  $UserDatabaseManager get managers => $UserDatabaseManager(this);
   late final $LogEntryTableTable logEntryTable = $LogEntryTableTable(this);
   late final $UserSettingTableTable userSettingTable =
       $UserSettingTableTable(this);
+
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
+
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
       [logEntryTable, userSettingTable];
+}
+
+typedef $$LogEntryTableTableCreateCompanionBuilder = LogEntryTableCompanion
+    Function({
+  Value<int> id,
+  required LogLevel level,
+  required DateTime timestamp,
+  required String message,
+});
+typedef $$LogEntryTableTableUpdateCompanionBuilder = LogEntryTableCompanion
+    Function({
+  Value<int> id,
+  Value<LogLevel> level,
+  Value<DateTime> timestamp,
+  Value<String> message,
+});
+
+class $$LogEntryTableTableFilterComposer
+    extends Composer<_$UserDatabase, $LogEntryTableTable> {
+  $$LogEntryTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnWithTypeConverterFilters<LogLevel, LogLevel, int> get level =>
+      $composableBuilder(
+          column: $table.level,
+          builder: (column) => ColumnWithTypeConverterFilters(column));
+
+  ColumnFilters<DateTime> get timestamp => $composableBuilder(
+      column: $table.timestamp, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get message => $composableBuilder(
+      column: $table.message, builder: (column) => ColumnFilters(column));
+}
+
+class $$LogEntryTableTableOrderingComposer
+    extends Composer<_$UserDatabase, $LogEntryTableTable> {
+  $$LogEntryTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get level => $composableBuilder(
+      column: $table.level, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get timestamp => $composableBuilder(
+      column: $table.timestamp, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get message => $composableBuilder(
+      column: $table.message, builder: (column) => ColumnOrderings(column));
+}
+
+class $$LogEntryTableTableAnnotationComposer
+    extends Composer<_$UserDatabase, $LogEntryTableTable> {
+  $$LogEntryTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<LogLevel, int> get level =>
+      $composableBuilder(column: $table.level, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get timestamp =>
+      $composableBuilder(column: $table.timestamp, builder: (column) => column);
+
+  GeneratedColumn<String> get message =>
+      $composableBuilder(column: $table.message, builder: (column) => column);
+}
+
+class $$LogEntryTableTableTableManager extends RootTableManager<
+    _$UserDatabase,
+    $LogEntryTableTable,
+    LogEntryTableData,
+    $$LogEntryTableTableFilterComposer,
+    $$LogEntryTableTableOrderingComposer,
+    $$LogEntryTableTableAnnotationComposer,
+    $$LogEntryTableTableCreateCompanionBuilder,
+    $$LogEntryTableTableUpdateCompanionBuilder,
+    (
+      LogEntryTableData,
+      BaseReferences<_$UserDatabase, $LogEntryTableTable, LogEntryTableData>
+    ),
+    LogEntryTableData,
+    PrefetchHooks Function()> {
+  $$LogEntryTableTableTableManager(_$UserDatabase db, $LogEntryTableTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$LogEntryTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$LogEntryTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$LogEntryTableTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<LogLevel> level = const Value.absent(),
+            Value<DateTime> timestamp = const Value.absent(),
+            Value<String> message = const Value.absent(),
+          }) =>
+              LogEntryTableCompanion(
+            id: id,
+            level: level,
+            timestamp: timestamp,
+            message: message,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required LogLevel level,
+            required DateTime timestamp,
+            required String message,
+          }) =>
+              LogEntryTableCompanion.insert(
+            id: id,
+            level: level,
+            timestamp: timestamp,
+            message: message,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$LogEntryTableTableProcessedTableManager = ProcessedTableManager<
+    _$UserDatabase,
+    $LogEntryTableTable,
+    LogEntryTableData,
+    $$LogEntryTableTableFilterComposer,
+    $$LogEntryTableTableOrderingComposer,
+    $$LogEntryTableTableAnnotationComposer,
+    $$LogEntryTableTableCreateCompanionBuilder,
+    $$LogEntryTableTableUpdateCompanionBuilder,
+    (
+      LogEntryTableData,
+      BaseReferences<_$UserDatabase, $LogEntryTableTable, LogEntryTableData>
+    ),
+    LogEntryTableData,
+    PrefetchHooks Function()>;
+typedef $$UserSettingTableTableCreateCompanionBuilder
+    = UserSettingTableCompanion Function({
+  required int id,
+  required DriftAny value,
+  required DateTime createdDate,
+  required DateTime lastModifiedDate,
+});
+typedef $$UserSettingTableTableUpdateCompanionBuilder
+    = UserSettingTableCompanion Function({
+  Value<int> id,
+  Value<DriftAny> value,
+  Value<DateTime> createdDate,
+  Value<DateTime> lastModifiedDate,
+});
+
+class $$UserSettingTableTableFilterComposer
+    extends Composer<_$UserDatabase, $UserSettingTableTable> {
+  $$UserSettingTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DriftAny> get value => $composableBuilder(
+      column: $table.value, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdDate => $composableBuilder(
+      column: $table.createdDate, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get lastModifiedDate => $composableBuilder(
+      column: $table.lastModifiedDate,
+      builder: (column) => ColumnFilters(column));
+}
+
+class $$UserSettingTableTableOrderingComposer
+    extends Composer<_$UserDatabase, $UserSettingTableTable> {
+  $$UserSettingTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DriftAny> get value => $composableBuilder(
+      column: $table.value, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdDate => $composableBuilder(
+      column: $table.createdDate, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get lastModifiedDate => $composableBuilder(
+      column: $table.lastModifiedDate,
+      builder: (column) => ColumnOrderings(column));
+}
+
+class $$UserSettingTableTableAnnotationComposer
+    extends Composer<_$UserDatabase, $UserSettingTableTable> {
+  $$UserSettingTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DriftAny> get value =>
+      $composableBuilder(column: $table.value, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdDate => $composableBuilder(
+      column: $table.createdDate, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastModifiedDate => $composableBuilder(
+      column: $table.lastModifiedDate, builder: (column) => column);
+}
+
+class $$UserSettingTableTableTableManager extends RootTableManager<
+    _$UserDatabase,
+    $UserSettingTableTable,
+    UserSettingTableData,
+    $$UserSettingTableTableFilterComposer,
+    $$UserSettingTableTableOrderingComposer,
+    $$UserSettingTableTableAnnotationComposer,
+    $$UserSettingTableTableCreateCompanionBuilder,
+    $$UserSettingTableTableUpdateCompanionBuilder,
+    (
+      UserSettingTableData,
+      BaseReferences<_$UserDatabase, $UserSettingTableTable,
+          UserSettingTableData>
+    ),
+    UserSettingTableData,
+    PrefetchHooks Function()> {
+  $$UserSettingTableTableTableManager(
+      _$UserDatabase db, $UserSettingTableTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$UserSettingTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$UserSettingTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$UserSettingTableTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<DriftAny> value = const Value.absent(),
+            Value<DateTime> createdDate = const Value.absent(),
+            Value<DateTime> lastModifiedDate = const Value.absent(),
+          }) =>
+              UserSettingTableCompanion(
+            id: id,
+            value: value,
+            createdDate: createdDate,
+            lastModifiedDate: lastModifiedDate,
+          ),
+          createCompanionCallback: ({
+            required int id,
+            required DriftAny value,
+            required DateTime createdDate,
+            required DateTime lastModifiedDate,
+          }) =>
+              UserSettingTableCompanion.insert(
+            id: id,
+            value: value,
+            createdDate: createdDate,
+            lastModifiedDate: lastModifiedDate,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$UserSettingTableTableProcessedTableManager = ProcessedTableManager<
+    _$UserDatabase,
+    $UserSettingTableTable,
+    UserSettingTableData,
+    $$UserSettingTableTableFilterComposer,
+    $$UserSettingTableTableOrderingComposer,
+    $$UserSettingTableTableAnnotationComposer,
+    $$UserSettingTableTableCreateCompanionBuilder,
+    $$UserSettingTableTableUpdateCompanionBuilder,
+    (
+      UserSettingTableData,
+      BaseReferences<_$UserDatabase, $UserSettingTableTable,
+          UserSettingTableData>
+    ),
+    UserSettingTableData,
+    PrefetchHooks Function()>;
+
+class $UserDatabaseManager {
+  final _$UserDatabase _db;
+
+  $UserDatabaseManager(this._db);
+
+  $$LogEntryTableTableTableManager get logEntryTable =>
+      $$LogEntryTableTableTableManager(_db, _db.logEntryTable);
+
+  $$UserSettingTableTableTableManager get userSettingTable =>
+      $$UserSettingTableTableTableManager(_db, _db.userSettingTable);
 }

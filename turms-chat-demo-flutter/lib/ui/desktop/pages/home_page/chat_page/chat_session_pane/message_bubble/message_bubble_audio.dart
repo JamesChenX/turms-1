@@ -35,7 +35,7 @@ class MessageBubbleAudio extends ConsumerStatefulWidget {
 }
 
 class _MessageBubbleAudioState extends ConsumerState<MessageBubbleAudio> {
-  late VideoPlayerController _controller;
+  VideoPlayerController? _controller;
   late Future<void> _initializeAudioControllerFuture;
 
   @override
@@ -95,7 +95,7 @@ class _MessageBubbleAudioState extends ConsumerState<MessageBubbleAudio> {
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
@@ -132,49 +132,52 @@ class _MessageBubbleAudioState extends ConsumerState<MessageBubbleAudio> {
               )));
 
   // TODO
-  Widget _buildStack() => Stack(
-        children: [
-          AspectRatio(
-            aspectRatio: _controller.value.aspectRatio,
-            child: VideoPlayer(_controller),
-          ),
-          if (!_controller.value.isPlaying)
-            Center(
-              child: SizedBox(
-                width: 36,
-                height: 36,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(128, 0, 0, 0),
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white),
-                  ),
-                  child: const Center(
-                    child: Icon(
-                      Symbols.play_arrow_rounded,
-                      color: Colors.white,
-                      size: 20,
-                    ),
+  Widget _buildStack() {
+    final controller = _controller!;
+    return Stack(
+      children: [
+        AspectRatio(
+          aspectRatio: controller.value.aspectRatio,
+          child: VideoPlayer(controller),
+        ),
+        if (!controller.value.isPlaying)
+          Center(
+            child: SizedBox(
+              width: 36,
+              height: 36,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(128, 0, 0, 0),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white),
+                ),
+                child: const Center(
+                  child: Icon(
+                    Symbols.play_arrow_rounded,
+                    color: Colors.white,
+                    size: 20,
                   ),
                 ),
               ),
             ),
-          Positioned.fill(
-            child: MouseRegion(
-              cursor: SystemMouseCursors.click,
-              child: GestureDetector(
-                behavior: HitTestBehavior.translucent,
-                onTap: () async {
-                  if (_controller.value.isPlaying) {
-                    await _controller.pause();
-                  } else {
-                    await _controller.play();
-                  }
-                  setState(() {});
-                },
-              ),
+          ),
+        Positioned.fill(
+          child: MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () async {
+                if (controller.value.isPlaying) {
+                  await controller.pause();
+                } else {
+                  await controller.play();
+                }
+                setState(() {});
+              },
             ),
-          )
-        ],
-      );
+          ),
+        )
+      ],
+    );
+  }
 }

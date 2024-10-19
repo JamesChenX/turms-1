@@ -18,6 +18,7 @@ import '../../../../../l10n/app_localizations.dart';
 import '../../../../../l10n/view_models/app_localizations_view_model.dart';
 import '../../../../../l10n/view_models/date_format_view_models.dart';
 import '../../../../../themes/index.dart';
+import '../../../../components/index.dart';
 import '../view_models/selected_conversation_view_model.dart';
 import 'message.dart';
 import 'message_bubble/message_bubble.dart';
@@ -168,30 +169,43 @@ class _ChatSessionPaneBodyState extends ConsumerState<ChatSessionPaneBody> {
     final itemIdToIndex = {for (var i = 0; i < itemCount; i++) items[i].id: i};
     final yesterday = DateTime.now().subtract(const Duration(days: 1));
     return SelectionArea(
-      child: ListView.builder(
-        padding: Sizes.paddingV8H16,
-        controller: _scrollController,
-        // Reverse the list to display conversations from bottom to top
-        reverse: true,
-        itemCount: itemCount,
-        findChildIndexCallback: (key) =>
-            itemIdToIndex[(key as ValueKey<Int64>).value],
-        itemBuilder: (context, index) {
-          final actualIndex = itemCount - index - 1;
-          final item = items[actualIndex];
-          return switch (item) {
-            _ChatSessionItemLoadingIndicator() => _buildLoadingIndicator(),
-            _ChatSessionItemDaySeparator(:final datetime) => _buildDaySeparator(
-                item, yesterday, datetime, appLocalizations, dateFormat),
-            _ChatSessionItemMessage(:final message) =>
-              _buildMessages(conversation, [message], loggedInUser, item),
-            _ChatSessionItemMessageGroup(:final messageGroup) => _buildMessages(
-                conversation, messageGroup.messages, loggedInUser, item)
-          };
-        },
+      child: TSelectionContainer(
+        visible: false,
+        child: ListView.builder(
+          physics: const PositionRetainedScrollPhysics(),
+          padding: Sizes.paddingV8H16,
+          controller: _scrollController,
+          // Reverse the list to display conversations from bottom to top
+          reverse: true,
+          itemCount: itemCount,
+          findChildIndexCallback: (key) {
+            final index = itemIdToIndex[(key as ValueKey<Int64>).value];
+            if (index == null) {
+              return null;
+            }
+            return _getActualIndex(itemCount, index);
+          },
+          itemBuilder: (context, index) {
+            final actualIndex = _getActualIndex(itemCount, index);
+            final item = items[actualIndex];
+            return switch (item) {
+              _ChatSessionItemLoadingIndicator() => _buildLoadingIndicator(),
+              _ChatSessionItemDaySeparator(:final datetime) =>
+                _buildDaySeparator(
+                    item, yesterday, datetime, appLocalizations, dateFormat),
+              _ChatSessionItemMessage(:final message) =>
+                _buildMessages(conversation, [message], loggedInUser, item),
+              _ChatSessionItemMessageGroup(:final messageGroup) =>
+                _buildMessages(
+                    conversation, messageGroup.messages, loggedInUser, item)
+            };
+          },
+        ),
       ),
     );
   }
+
+  int _getActualIndex(int itemCount, int index) => itemCount - index - 1;
 
   SingleChildRenderObjectWidget _buildLoadingIndicator() {
     if (_isLoading) {
@@ -216,10 +230,10 @@ class _ChatSessionPaneBodyState extends ConsumerState<ChatSessionPaneBody> {
           AppLocalizations appLocalizations,
           DateFormat dateFormat) =>
       Padding(
+        key: ValueKey(item.id),
         padding: Sizes.paddingV16,
         child: Center(
           child: DecoratedBox(
-            key: ValueKey(item.id),
             decoration: const BoxDecoration(
                 color: Color.fromARGB(255, 218, 218, 218),
                 borderRadius: Sizes.borderRadiusCircular4),

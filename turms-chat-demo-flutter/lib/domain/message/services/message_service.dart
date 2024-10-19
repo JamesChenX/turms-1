@@ -63,8 +63,8 @@ class MessageService {
       if (sizeDividerIndex < 0) {
         return _parseTextMessageFromNode(nodes, element);
       }
-      final xIndex = alt.lastIndexOf('x', sizeDividerIndex + 1);
-      if (xIndex < 0) {
+      final xIndex = alt.lastIndexOf('x');
+      if (xIndex < 0 || xIndex <= sizeDividerIndex) {
         return _parseTextMessageFromNode(nodes, element);
       }
       final width =
@@ -79,8 +79,8 @@ class MessageService {
       return MessageInfo(
         type: MessageType.video,
         originalUrl: src,
-        originalHeight: height,
-        originalWidth: width,
+        originalHeight: height.floorToDouble(),
+        originalWidth: width.floorToDouble(),
         nodes: nodes,
       );
     } else if (src.endsWith('.mp3') || src.endsWith('.wav')) {
@@ -110,8 +110,8 @@ class MessageService {
       return MessageInfo(
         type: MessageType.image,
         originalUrl: src,
-        originalHeight: height,
-        originalWidth: width,
+        originalHeight: height.floorToDouble(),
+        originalWidth: width.floorToDouble(),
         nodes: nodes,
       );
     } else {

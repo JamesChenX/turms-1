@@ -9,19 +9,6 @@ import 'chat_history_page_view.dart';
 class ChatHistoryPageController extends ConsumerState<ChatHistoryPage>
     with SingleTickerProviderStateMixin {
   late AppLocalizations appLocalizations;
-  late TabController tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    tabController = TabController(length: 2, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    tabController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {

@@ -1,18 +1,16 @@
-import 'dart:convert';
-
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 class ShortcutUtils {
   ShortcutUtils._();
 
-  static String toStoredString(ShortcutActivator activator) {
+  static Uint8List toSqlBlob(ShortcutActivator activator) {
     final finalKeys = <int>[];
     switch (activator) {
       case LogicalKeySet():
         final keys = activator.keys;
         if (keys.isEmpty) {
-          return '[]';
+          return Uint8List.fromList([]);
         }
         for (final key in keys) {
           finalKeys.add(key.keyId);
@@ -36,15 +34,17 @@ class ShortcutUtils {
       default:
         throw UnsupportedError('Unsupported ShortcutActivator: $activator');
     }
-    return jsonEncode(finalKeys);
+    return Uint8List.fromList(finalKeys);
   }
 
-  static LogicalKeySet fromStoredString(String string) {
-    final storedKeys = jsonDecode(string) as List;
-    final keys = <LogicalKeyboardKey>{};
-    for (final key in storedKeys) {
-      keys.add(LogicalKeyboardKey(key as int));
+  static LogicalKeySet? fromSqlBlob(Uint8List keys) {
+    if (keys.isEmpty) {
+      return null;
     }
-    return LogicalKeySet.fromSet(keys);
+    final result = <LogicalKeyboardKey>{};
+    for (final key in keys) {
+      result.add(LogicalKeyboardKey(key));
+    }
+    return LogicalKeySet.fromSet(result);
   }
 }

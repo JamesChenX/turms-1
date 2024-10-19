@@ -105,7 +105,7 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
         fontSize: 14,
       ),
       chatSessionMessageEmojiTextStyle: TextStyle(
-          fontSize: 14,
+          fontSize: 20,
           fontFamily: Fonts.emojiFontFamily,
           fontFamilyFallback: Fonts.emojiFontFamilyFallback),
       conversationBackgroundColor: const Color.fromARGB(255, 233, 233, 233),
@@ -193,7 +193,7 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
         fontSize: 14,
       ),
       chatSessionMessageEmojiTextStyle: TextStyle(
-          fontSize: 14,
+          fontSize: 20,
           fontFamily: Fonts.emojiFontFamily,
           fontFamilyFallback: Fonts.emojiFontFamilyFallback),
       conversationBackgroundColor: const Color.fromARGB(255, 233, 233, 233),

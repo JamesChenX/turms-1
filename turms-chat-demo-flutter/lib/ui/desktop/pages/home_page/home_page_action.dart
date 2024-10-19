@@ -6,29 +6,29 @@ import '../../../../domain/user/models/user_setting_ids.dart';
 
 enum HomePageAction {
   showChatPage(
-      userSettingId: UserSettingId.shortcutShowChatPage,
+      userSetting: UserSetting.shortcutShowChatPage,
       defaultShortcutActivator:
           SingleActivator(LogicalKeyboardKey.digit1, alt: true)),
   showContactsPage(
-      userSettingId: UserSettingId.shortcutShowContactsPage,
+      userSetting: UserSetting.shortcutShowContactsPage,
       defaultShortcutActivator:
           SingleActivator(LogicalKeyboardKey.digit2, alt: true)),
   showFilesPage(
-      userSettingId: UserSettingId.shortcutShowFilesPage,
+      userSetting: UserSetting.shortcutShowFilesPage,
       defaultShortcutActivator:
           SingleActivator(LogicalKeyboardKey.digit3, alt: true)),
   showSettingsDialog(
-      userSettingId: UserSettingId.shortcutShowSettingsDialog,
+      userSetting: UserSetting.shortcutShowSettingsDialog,
       defaultShortcutActivator:
           SingleActivator(LogicalKeyboardKey.digit4, alt: true)),
   showAboutDialog(
-      userSettingId: UserSettingId.shortcutShowAboutDialog,
+      userSetting: UserSetting.shortcutShowAboutDialog,
       defaultShortcutActivator:
           SingleActivator(LogicalKeyboardKey.digit5, alt: true));
 
   const HomePageAction(
-      {required this.userSettingId, required this.defaultShortcutActivator});
+      {required this.userSetting, required this.defaultShortcutActivator});
 
-  final UserSettingId userSettingId;
+  final UserSetting<ShortcutActivator, Uint8List> userSetting;
   final ShortcutActivator defaultShortcutActivator;
 }

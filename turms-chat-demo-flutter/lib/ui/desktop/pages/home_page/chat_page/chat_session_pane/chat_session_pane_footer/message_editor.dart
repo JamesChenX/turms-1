@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 import '../../../../../../themes/index.dart';
@@ -68,6 +70,7 @@ class TMessageEditorState extends State<MessageEditor> {
       style: textStyleBodyMedium,
       strutStyle:
           StrutStyle.fromTextStyle(textStyleBodyMedium, forceStrutHeight: true),
+      selectionHeightStyle: BoxHeightStyle.max,
     );
   }
 }
@@ -88,21 +91,25 @@ class EmojiTextEditingController extends TextEditingController {
     bool? withComposing,
   }) {
     final appThemeExtension = context.appThemeExtension;
-    return generateTextSpan(appThemeExtension, text);
+    return generateTextSpan(appThemeExtension, style, text);
   }
 }
 
-TextSpan generateTextSpan(AppThemeExtension appThemeExtension, String text) {
-  final messageTextStyle = appThemeExtension.chatSessionMessageTextStyle;
-  final messageEmojiTextStyle =
-      appThemeExtension.chatSessionMessageEmojiTextStyle;
+TextSpan generateTextSpan(
+    AppThemeExtension appThemeExtension, TextStyle? style, String text) {
+  final messageTextStyle = style == null
+      ? appThemeExtension.chatSessionMessageTextStyle
+      : style.merge(appThemeExtension.chatSessionMessageTextStyle);
+  final messageEmojiTextStyle = style == null
+      ? appThemeExtension.chatSessionMessageEmojiTextStyle
+      : style.merge(appThemeExtension.chatSessionMessageEmojiTextStyle);
   final spans = <TextSpan>[];
   // find out all emoji text and non-emoji text into different spans
-  text.splitMapJoin(_emojiRegex, onMatch: (match) {
-    spans.add(TextSpan(text: match.group(0)!, style: messageEmojiTextStyle));
+  text.splitMapJoin(_emojiRegex, onMatch: (text) {
+    spans.add(TextSpan(text: text.group(0)!, style: messageEmojiTextStyle));
     return '';
-  }, onNonMatch: (nonMatch) {
-    spans.add(TextSpan(text: nonMatch, style: messageTextStyle));
+  }, onNonMatch: (text) {
+    spans.add(TextSpan(text: text, style: messageTextStyle));
     return '';
   });
   return TextSpan(children: spans);

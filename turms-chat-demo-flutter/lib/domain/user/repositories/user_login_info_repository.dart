@@ -17,7 +17,7 @@ class UserLoginInfoRepository {
     final now = DateTime.now();
     await appDatabase.into(appDatabase.userLoginInfoTable).insert(
         UserLoginInfoTableCompanion.insert(
-            userId: Value(BigInt.parse(userId)),
+            userId: BigInt.parse(userId),
             password: password,
             createdDate: now,
             lastModifiedDate: now),

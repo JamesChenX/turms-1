@@ -13,7 +13,4 @@ class LogEntryTable extends Table {
 
   @override
   String get tableName => 'log_entry';
-
-  @override
-  bool get withoutRowId => true;
 }

@@ -40,7 +40,7 @@ extension ShortcutActivatorExtensions on ShortcutActivator {
     }
   }
 
-  String toStoredString() => ShortcutUtils.toStoredString(this);
+  Uint8List toSqlBlob() => ShortcutUtils.toSqlBlob(this);
 
   String get description {
     // LogicalKeySet

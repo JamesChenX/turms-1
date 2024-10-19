@@ -1,6 +1,12 @@
 import 'dart:collection';
 
+extension IntExtensions on int {
+  bool toBool() => this != 0;
+}
+
 extension BoolExtensions on bool {
+  int toInt() => this ? 1 : 0;
+
   String toIntString() => this ? '1' : '0';
 }
 

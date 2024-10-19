@@ -15,15 +15,17 @@ import '../chat_session_pane/message.dart';
 const diameter = 12.0;
 
 class ConversationTile extends ConsumerStatefulWidget {
-  const ConversationTile(
-      {super.key,
-      required this.conversation,
-      required this.nameTextSpans,
-      required this.messageTextSpans,
-      required this.isSearchMode,
-      this.selected = false,
-      this.highlighted = false,
-      required this.onTap});
+  const ConversationTile({
+    super.key,
+    required this.conversation,
+    required this.nameTextSpans,
+    required this.messageTextSpans,
+    required this.isSearchMode,
+    this.selected = false,
+    this.highlighted = false,
+    required this.onTap,
+    required this.onSecondaryTap,
+  });
 
   final Conversation conversation;
   final List<TextSpan> nameTextSpans;
@@ -34,6 +36,7 @@ class ConversationTile extends ConsumerStatefulWidget {
   final bool highlighted;
 
   final GestureTapCallback onTap;
+  final GestureTapCallback onSecondaryTap;
 
   @override
   ConsumerState<ConversationTile> createState() => _ConversationTileState();

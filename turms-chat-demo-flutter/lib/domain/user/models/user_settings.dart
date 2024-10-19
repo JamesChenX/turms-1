@@ -4,30 +4,28 @@ import '../../../infra/exception/stackful_exception.dart';
 import '../../../infra/shortcut/shortcut.dart';
 import '../../../infra/sqlite/user_database.dart';
 import 'setting_action_on_close.dart';
-import 'user_setting_ids.dart';
+import 'user_setting.dart';
 
 class UserSettings {
-  const UserSettings(this._idToSetting);
-
-  /// Set to an empty string instead of null
-  /// to distinguish from the default value.
-  static const unsetValue = '';
+  const UserSettings(this._settingToValue);
 
   static (UserSettings, StackfulException?) fromTableData(
       List<UserSettingTableData> records) {
-    final nameToSettingId = UserSettingId.values.asNameMap();
+    final idToSetting = {
+      for (final record in UserSetting.values) record.id: record,
+    };
     // don't use const as the map should be mutable.
     // ignore: prefer_const_constructors
     final settings = UserSettings({});
     StackfulException? exception;
     for (final record in records) {
-      final settingId = nameToSettingId[record.id];
+      final setting = idToSetting[record.id];
       final recordValue = record.value;
-      if (settingId == null || recordValue == null) {
+      if (setting == null) {
         continue;
       }
       try {
-        _setSetting(settings, settingId, recordValue);
+        _setSetting(settings, setting, recordValue.rawSqlValue);
       } on Exception catch (e, s) {
         exception ??= StackfulException(
             cause: Exception('Failed to set the user settings'),
@@ -35,7 +33,7 @@ class UserSettings {
             suppressed: []);
         exception.addSuppressed(StackfulException(
             cause: Exception(
-                'Failed to set the user setting "$settingId" with the value "$recordValue"'),
+                'Failed to set the user setting "${setting.name}" with the value "$recordValue"'),
             stackTrace: s,
             suppressed: [e]));
       }
@@ -43,122 +41,124 @@ class UserSettings {
     return (settings, exception);
   }
 
-  static void _setSetting(
-      UserSettings settings, UserSettingId settingId, String recordValue) {
-    switch (settingId) {
-      case UserSettingId.actionOnClose:
-        settings.actionOnClose = settingId.convertStringToValue(recordValue);
+  static void _setSetting(UserSettings settings,
+      UserSetting<dynamic, dynamic> setting, Object sqlValue) {
+    if (setting == UserSetting.launchOnStartup) {
+      return;
+    }
+    final value = setting.convertSqlToValue(sqlValue);
+    switch (setting) {
+      case UserSetting.actionOnClose:
+        settings.actionOnClose = value as SettingActionOnClose;
         break;
-      case UserSettingId.checkForUpdatesAutomatically:
-        settings.checkForUpdatesAutomatically =
-            settingId.convertStringToValue(recordValue);
+      case UserSetting.checkForUpdatesAutomatically:
+        settings.checkForUpdatesAutomatically = value as bool;
         break;
-      case UserSettingId.launchOnStartup:
+      case UserSetting.launchOnStartup:
         // do nothing.
         // The setting should be detected according to whether autostart is enabled in system settings,
         // so it should not follow the stored setting.
         break;
-      case UserSettingId.locale:
-        settings.locale = settingId.convertStringToValue(recordValue);
+      case UserSetting.locale:
+        settings.locale = value as Locale;
         break;
-      case UserSettingId.newMessageNotification:
-        settings.newMessageNotification =
-            settingId.convertStringToValue(recordValue);
+      case UserSetting.newMessageNotification:
+        settings.newMessageNotification = value as bool;
         break;
-      case UserSettingId.shortcutShowChatPage:
+      case UserSetting.shortcutShowChatPage:
         settings.shortcutShowChatPage =
-            Shortcut(settingId.convertStringToValue(recordValue), true);
+            value == null ? null : Shortcut(value as ShortcutActivator, true);
         break;
-      case UserSettingId.shortcutShowContactsPage:
+      case UserSetting.shortcutShowContactsPage:
         settings.shortcutShowContactsPage =
-            Shortcut(settingId.convertStringToValue(recordValue), true);
+            value == null ? null : Shortcut(value as ShortcutActivator, true);
         break;
-      case UserSettingId.shortcutShowFilesPage:
+      case UserSetting.shortcutShowFilesPage:
         settings.shortcutShowFilesPage =
-            Shortcut(settingId.convertStringToValue(recordValue), true);
+            value == null ? null : Shortcut(value as ShortcutActivator, true);
         break;
-      case UserSettingId.shortcutShowSettingsDialog:
+      case UserSetting.shortcutShowSettingsDialog:
         settings.shortcutShowSettingsDialog =
-            Shortcut(settingId.convertStringToValue(recordValue), true);
+            value == null ? null : Shortcut(value as ShortcutActivator, true);
         break;
-      case UserSettingId.shortcutShowAboutDialog:
+      case UserSetting.shortcutShowAboutDialog:
         settings.shortcutShowAboutDialog =
-            Shortcut(settingId.convertStringToValue(recordValue), true);
+            value == null ? null : Shortcut(value as ShortcutActivator, true);
         break;
-      case UserSettingId.theme:
-        settings.theme = settingId.convertStringToValue(recordValue);
+      case UserSetting.theme:
+        settings.theme = value as ThemeMode;
     }
   }
 
-  final Map<UserSettingId, Object?> _idToSetting;
+  final Map<UserSetting<dynamic, dynamic>, Object?> _settingToValue;
 
   SettingActionOnClose? get actionOnClose =>
-      _idToSetting[UserSettingId.actionOnClose] as SettingActionOnClose?;
+      _settingToValue[UserSetting.actionOnClose] as SettingActionOnClose?;
 
   set actionOnClose(SettingActionOnClose? value) {
-    _idToSetting[UserSettingId.actionOnClose] = value;
+    _settingToValue[UserSetting.actionOnClose] = value;
   }
 
   bool? get checkForUpdatesAutomatically =>
-      _idToSetting[UserSettingId.checkForUpdatesAutomatically] as bool?;
+      _settingToValue[UserSetting.checkForUpdatesAutomatically] as bool?;
 
   set checkForUpdatesAutomatically(bool? value) {
-    _idToSetting[UserSettingId.checkForUpdatesAutomatically] = value;
+    _settingToValue[UserSetting.checkForUpdatesAutomatically] = value;
   }
 
   bool? get launchOnStartup =>
-      _idToSetting[UserSettingId.launchOnStartup] as bool?;
+      _settingToValue[UserSetting.launchOnStartup] as bool?;
 
   set launchOnStartup(bool? value) {
-    _idToSetting[UserSettingId.launchOnStartup] = value;
+    _settingToValue[UserSetting.launchOnStartup] = value;
   }
 
-  Locale? get locale => _idToSetting[UserSettingId.locale] as Locale?;
+  Locale? get locale => _settingToValue[UserSetting.locale] as Locale?;
 
-  set locale(Locale? value) => _idToSetting[UserSettingId.locale] = value;
+  set locale(Locale? value) => _settingToValue[UserSetting.locale] = value;
 
   bool? get newMessageNotification =>
-      _idToSetting[UserSettingId.newMessageNotification] as bool?;
+      _settingToValue[UserSetting.newMessageNotification] as bool?;
 
   set newMessageNotification(bool? value) =>
-      _idToSetting[UserSettingId.newMessageNotification] = value;
+      _settingToValue[UserSetting.newMessageNotification] = value;
 
   Shortcut get shortcutShowChatPage =>
-      _idToSetting[UserSettingId.shortcutShowChatPage] as Shortcut? ??
+      _settingToValue[UserSetting.shortcutShowChatPage] as Shortcut? ??
       Shortcut.unset;
 
   set shortcutShowChatPage(Shortcut? value) =>
-      _idToSetting[UserSettingId.shortcutShowChatPage] = value;
+      _settingToValue[UserSetting.shortcutShowChatPage] = value;
 
   Shortcut get shortcutShowContactsPage =>
-      _idToSetting[UserSettingId.shortcutShowContactsPage] as Shortcut? ??
+      _settingToValue[UserSetting.shortcutShowContactsPage] as Shortcut? ??
       Shortcut.unset;
 
   set shortcutShowContactsPage(Shortcut? value) =>
-      _idToSetting[UserSettingId.shortcutShowContactsPage] = value;
+      _settingToValue[UserSetting.shortcutShowContactsPage] = value;
 
   Shortcut get shortcutShowFilesPage =>
-      _idToSetting[UserSettingId.shortcutShowFilesPage] as Shortcut? ??
+      _settingToValue[UserSetting.shortcutShowFilesPage] as Shortcut? ??
       Shortcut.unset;
 
   set shortcutShowFilesPage(Shortcut? value) =>
-      _idToSetting[UserSettingId.shortcutShowFilesPage] = value;
+      _settingToValue[UserSetting.shortcutShowFilesPage] = value;
 
   Shortcut get shortcutShowSettingsDialog =>
-      _idToSetting[UserSettingId.shortcutShowSettingsDialog] as Shortcut? ??
+      _settingToValue[UserSetting.shortcutShowSettingsDialog] as Shortcut? ??
       Shortcut.unset;
 
   set shortcutShowSettingsDialog(Shortcut? value) =>
-      _idToSetting[UserSettingId.shortcutShowSettingsDialog] = value;
+      _settingToValue[UserSetting.shortcutShowSettingsDialog] = value;
 
   Shortcut get shortcutShowAboutDialog =>
-      _idToSetting[UserSettingId.shortcutShowAboutDialog] as Shortcut? ??
+      _settingToValue[UserSetting.shortcutShowAboutDialog] as Shortcut? ??
       Shortcut.unset;
 
   set shortcutShowAboutDialog(Shortcut? value) =>
-      _idToSetting[UserSettingId.shortcutShowAboutDialog] = value;
+      _settingToValue[UserSetting.shortcutShowAboutDialog] = value;
 
-  ThemeMode? get theme => _idToSetting[UserSettingId.theme] as ThemeMode?;
+  ThemeMode? get theme => _settingToValue[UserSetting.theme] as ThemeMode?;
 
-  set theme(ThemeMode? value) => _idToSetting[UserSettingId.theme] = value;
+  set theme(ThemeMode? value) => _settingToValue[UserSetting.theme] = value;
 }

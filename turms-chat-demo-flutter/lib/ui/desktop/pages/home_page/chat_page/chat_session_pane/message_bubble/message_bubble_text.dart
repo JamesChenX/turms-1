@@ -4,7 +4,7 @@ import 'package:material_symbols_icons/material_symbols_icons.dart';
 import '../../../../../../../domain/user/models/user.dart';
 import '../../../../../../themes/index.dart';
 
-import '../../../../../components/index.dart';
+import '../chat_session_pane_footer/message_editor.dart';
 import '../message.dart';
 
 class MessageBubbleText extends StatefulWidget {
@@ -41,7 +41,8 @@ class _MessageBubbleTextState extends State<MessageBubbleText> {
   @override
   Widget build(BuildContext context) {
     final appThemeExtension = context.appThemeExtension;
-    _textSpan ??= generateTextSpan(appThemeExtension, widget.message.text);
+    _textSpan ??=
+        generateTextSpan(appThemeExtension, null, widget.message.text);
     const color = Color.fromARGB(255, 204, 74, 49);
     Widget content = IntrinsicWidth(
       child: DecoratedBox(
@@ -64,11 +65,18 @@ class _MessageBubbleTextState extends State<MessageBubbleText> {
               BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.5),
           child: Padding(
             padding: Sizes.paddingV8H8,
+            // Don't waste time on SelectableText as it brings more problems than it solves.
+            // Don't use [MessageEditor] or [TextField] as the user will be not able to
+            // select multiple message texts if we use them.
             child: Text.rich(
               _textSpan!,
               strutStyle: StrutStyle.fromTextStyle(
                   appThemeExtension.chatSessionMessageTextStyle,
                   forceStrutHeight: true),
+              // TODO: Wait for:
+              // 1. https://github.com/flutter/flutter/pull/140982
+              // 2. https://github.com/flutter/flutter/issues/104547
+              // selectionHeightStyle: BoxHeightStyle.max,
             ),
           ),
         ),

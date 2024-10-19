@@ -23,6 +23,7 @@ import '../../view_models/selected_conversation_view_model.dart';
 import '../message.dart';
 import 'chat_session_pane_footer.dart';
 import 'chat_session_pane_footer_view.dart';
+import 'message_editor.dart';
 
 class ChatSessionPaneFooterController
     extends ConsumerState<ChatSessionPaneFooter> {

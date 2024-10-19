@@ -101,10 +101,13 @@ List<ContactConversation> contactConversations = [
   // America
   ContactConversation('Nina Simone', [
     '![Nina Simone - Stars / Feelings (Medley / Live at Montreux, 1976)](https://www.youtube.com/watch?v=Mf_5l1yTKNY)',
-    '![butterfly](https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4)'
+    '![butterfly|1280x720](https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4)'
   ]),
   // Brazil
-  ContactConversation('Elis Regina', ['Como Nossos Pais']),
+  ContactConversation('Elis Regina', [
+    'Como Nossos Pais',
+    '![](https://flutter.github.io/assets-for-api-docs/assets/audio/rooster.mp3)'
+  ]),
   // Cambodia
   ContactConversation('រស់ សេរីសុទ្ធា', [
     'បើបងស្រឡាញ់ខ្ញុំ',

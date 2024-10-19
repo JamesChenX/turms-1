@@ -7,6 +7,7 @@ import '../../../../../../../domain/message/models/message_type.dart';
 import '../../../../../../../domain/user/models/user.dart';
 import '../../../../../../l10n/view_models/date_format_view_models.dart';
 import '../../../../../../themes/index.dart';
+import '../../../../../components/index.dart';
 import '../../../shared_components/user_profile_popup.dart';
 import '../message.dart';
 import 'message_bubble_audio.dart';
@@ -177,10 +178,13 @@ class _MessageBubbleState extends ConsumerState<MessageBubble> {
         IntrinsicWidth(
           // TODO: we may support compound messages in the future.
           child: switch (message.type) {
-            MessageType.text => MessageBubbleText(
-                currentUser: widget.currentUser,
-                message: message,
-                borderRadius: borderRadius,
+            MessageType.text => TSelectionContainer(
+                visible: true,
+                child: MessageBubbleText(
+                  currentUser: widget.currentUser,
+                  message: message,
+                  borderRadius: borderRadius,
+                ),
               ),
             MessageType.video => MessageBubbleVideo(
                 url: Uri.parse(message.originalUrl!),

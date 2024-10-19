@@ -30,19 +30,15 @@ class _SettingsPaneController extends ConsumerState<SettingsPane> {
 
   Future<void> updateActionOnClose(SettingActionOnClose value) async {
     final userSettingsController = ref.read(userSettingsViewModel.notifier);
-    await userSettingsRepository.upsert(
-        ref.read(loggedInUserViewModel)!.userId,
-        UserSettingId.actionOnClose.name,
-        UserSettingId.actionOnClose.convertValueToString(value));
+    await userSettingsRepository.upsert(ref.read(loggedInUserViewModel)!.userId,
+        UserSetting.actionOnClose, value);
     userSettingsController.state!.actionOnClose = value;
     userSettingsViewModelRef.notifyListeners();
   }
 
   Future<void> updateCheckForUpdatesAutomatically(bool value) async {
-    await userSettingsRepository.upsert(
-        ref.read(loggedInUserViewModel)!.userId,
-        UserSettingId.checkForUpdatesAutomatically.name,
-        UserSettingId.checkForUpdatesAutomatically.convertValueToString(value));
+    await userSettingsRepository.upsert(ref.read(loggedInUserViewModel)!.userId,
+        UserSetting.checkForUpdatesAutomatically, value);
     ref
         .read(userSettingsViewModel.notifier)
         .state!
@@ -70,10 +66,9 @@ class _SettingsPaneController extends ConsumerState<SettingsPane> {
     final Locale locale;
     if (value == SettingLocale.system) {
       locale = ref.read(localeInfoViewModel.notifier).useSystemLocale().locale;
-      await userSettingsRepository.upsert(
+      await userSettingsRepository.delete(
         ref.read(loggedInUserViewModel)!.userId,
-        UserSettingId.locale.name,
-        UserSettings.unsetValue,
+        UserSetting.locale,
       );
       ref.read(userSettingsViewModel.notifier).state!.locale = null;
     } else {
@@ -84,19 +79,15 @@ class _SettingsPaneController extends ConsumerState<SettingsPane> {
       assert(newLocale != null, 'Unsupported locale: ${value.name}');
       locale = newLocale!;
       await userSettingsRepository.upsert(
-          ref.read(loggedInUserViewModel)!.userId,
-          UserSettingId.locale.name,
-          UserSettingId.locale.convertValueToString(locale));
+          ref.read(loggedInUserViewModel)!.userId, UserSetting.locale, locale);
       ref.read(userSettingsViewModel.notifier).state!.locale = locale;
     }
     userSettingsViewModelRef.notifyListeners();
   }
 
   Future<void> updateNewMessageNotification(bool value) async {
-    await userSettingsRepository.upsert(
-        ref.read(loggedInUserViewModel)!.userId,
-        UserSettingId.newMessageNotification.name,
-        UserSettingId.newMessageNotification.convertValueToString(value));
+    await userSettingsRepository.upsert(ref.read(loggedInUserViewModel)!.userId,
+        UserSetting.newMessageNotification, value);
     ref.read(userSettingsViewModel.notifier).state!.newMessageNotification =
         value;
     userSettingsViewModelRef.notifyListeners();
@@ -107,14 +98,14 @@ class _SettingsPaneController extends ConsumerState<SettingsPane> {
       bool resetConflictedShortcuts = true,
       required HomePageAction action,
       ShortcutActivator? shortcutActivator}) async {
-    final userSettingId = action.userSettingId;
+    final userSetting = action.userSetting;
     final userId = ref.read(loggedInUserViewModel)!.userId;
     final userSettingsController = ref.read(userSettingsViewModel.notifier);
     if (shortcutActivator == null) {
       await userSettingsRepository.upsert(
         userId,
-        userSettingId.name,
-        UserSettings.unsetValue,
+        userSetting,
+        null,
       );
     } else {
       if (resetConflictedShortcuts) {
@@ -128,8 +119,8 @@ class _SettingsPaneController extends ConsumerState<SettingsPane> {
           }
         }
       }
-      await userSettingsRepository.upsert(userId, userSettingId.name,
-          userSettingId.convertValueToString(shortcutActivator));
+      await userSettingsRepository.upsert(
+          userId, userSetting, shortcutActivator);
     }
     final userSettings = userSettingsController.state!;
     switch (action) {
@@ -160,9 +151,7 @@ class _SettingsPaneController extends ConsumerState<SettingsPane> {
   Future<void> updateThemeMode(ThemeMode value) async {
     final userSettingsController = ref.read(userSettingsViewModel.notifier);
     await userSettingsRepository.upsert(
-        ref.read(loggedInUserViewModel)!.userId,
-        UserSettingId.theme.name,
-        UserSettingId.theme.convertValueToString(value));
+        ref.read(loggedInUserViewModel)!.userId, UserSetting.theme, value);
     userSettingsController.state!.theme = value;
     userSettingsViewModelRef.notifyListeners();
   }

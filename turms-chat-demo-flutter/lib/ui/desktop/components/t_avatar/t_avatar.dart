@@ -48,7 +48,8 @@ class TAvatar extends StatelessWidget {
   /// Use oval instead of rounded rect so that
   /// the user presence indicator can display nicely with the avatar.
   @override
-  Widget build(BuildContext context) => ClipOval(
+  Widget build(BuildContext context) => ClipRRect(
+        borderRadius: Sizes.borderRadiusCircular4,
         child: _buildAvatar(context.theme),
       );
 

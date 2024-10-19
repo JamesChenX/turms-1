@@ -102,9 +102,6 @@ class $LogEntryTableTable extends LogEntryTable
   }
 
   static TypeConverter<LogLevel, int> $converterlevel = LogLevelConverter();
-
-  @override
-  bool get withoutRowId => true;
 }
 
 class LogEntryTableData extends DataClass

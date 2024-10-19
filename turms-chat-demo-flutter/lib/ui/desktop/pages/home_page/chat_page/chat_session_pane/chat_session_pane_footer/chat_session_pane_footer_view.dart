@@ -12,6 +12,7 @@ import '../../../../../components/index.dart';
 import '../attachment.dart';
 import '../sticker_picker/sticker_picker.dart';
 import 'chat_session_pane_footer_controller.dart';
+import 'message_editor.dart';
 
 class ChatSessionPaneFooterView extends StatelessWidget {
   const ChatSessionPaneFooterView(this.chatPageFooterController, {super.key});

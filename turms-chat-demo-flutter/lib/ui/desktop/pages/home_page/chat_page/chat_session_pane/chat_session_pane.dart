@@ -30,14 +30,19 @@ class ChatSessionPane extends ConsumerWidget {
       color: appThemeExtension.homePageBackgroundColor,
       child: Column(
         children: [
-          SizedBox(
-            height: Sizes.homePageHeaderHeight,
-            child: DecoratedBox(
-              decoration: const BoxDecoration(
-                  border: Border(
-                      bottom: BorderSide(
-                          color: Color.fromARGB(255, 231, 231, 231)))),
-              child: ChatSessionPaneHeader(drawerController),
+          DecoratedBox(
+            decoration: const BoxDecoration(
+                border: Border(
+                    bottom:
+                        BorderSide(color: Color.fromARGB(255, 231, 231, 231)))),
+            child: Padding(
+              // Note that we need the padding to make the border
+              // the same height  with the header of the sub navigation rail.
+              padding: const EdgeInsets.only(bottom: 1),
+              child: SizedBox(
+                height: Sizes.homePageHeaderHeight,
+                child: ChatSessionPaneHeader(drawerController),
+              ),
             ),
           ),
           Expanded(

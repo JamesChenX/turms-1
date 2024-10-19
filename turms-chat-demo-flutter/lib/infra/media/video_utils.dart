@@ -5,6 +5,7 @@ import 'package:video_player_media_kit/video_player_media_kit.dart';
 final class VideoUtils {
   VideoUtils._();
 
+  /// TODO: disable logs: https://github.com/media-kit/media-kit/issues/260
   static void ensureInitialized() {
     if (Platform.isAndroid || Platform.isFuchsia) {
       VideoPlayerMediaKit.ensureInitialized(

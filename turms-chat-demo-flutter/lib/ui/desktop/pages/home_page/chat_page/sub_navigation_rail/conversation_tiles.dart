@@ -50,6 +50,7 @@ class _ConversationTilesState extends ConsumerState<ConversationTiles> {
         nameTextSpans: [],
         messageTextSpans: [],
         onTap: () {},
+        onSecondaryTap: () {},
       ),
       findChildIndexCallback: (key) =>
           conversationIdToIndex[(key as ValueKey<String>).value],
@@ -84,6 +85,9 @@ class _ConversationTilesState extends ConsumerState<ConversationTiles> {
               : [],
           onTap: () {
             subNavigationRailController.selectConversation(conversation);
+          },
+          onSecondaryTap: () {
+            // TODO
           },
         );
       },

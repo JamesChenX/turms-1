@@ -22,6 +22,7 @@ class _TDrawerRoute<T> extends PopupRoute<T> {
           Animation<double> secondaryAnimation) =>
       RepaintBoundary(
         child: Material(
+          color: Colors.transparent,
           child: _TDrawerView(
             animation: animation,
             child: child,

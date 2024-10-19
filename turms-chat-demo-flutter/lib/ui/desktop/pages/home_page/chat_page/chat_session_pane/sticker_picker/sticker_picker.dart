@@ -65,7 +65,7 @@ class _StickerPickerState extends State<StickerPicker> {
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(
-                              vertical: 8, horizontal: 16),
+                              vertical: 4, horizontal: 16),
                           child: Row(
                             spacing: 16,
                             children: [

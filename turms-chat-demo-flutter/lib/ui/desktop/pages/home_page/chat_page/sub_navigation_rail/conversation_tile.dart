@@ -13,6 +13,7 @@ import '../../../../components/index.dart';
 import '../chat_session_pane/message.dart';
 
 const diameter = 12.0;
+const _messageIconSize = 16.0;
 
 class ConversationTile extends ConsumerStatefulWidget {
   const ConversationTile({
@@ -169,32 +170,41 @@ class _ConversationTileState extends ConsumerState<ConversationTile> {
             ? switch (lastMessage.type) {
                 MessageType.text => [TextSpan(text: lastMessage.text)],
                 MessageType.image => [
-                    const WidgetSpan(child: Icon(Symbols.image_rounded)),
+                    const WidgetSpan(
+                        child: Icon(Symbols.image_rounded,
+                            size: _messageIconSize)),
                     TextSpan(
                       text: localizations.image,
                     )
                   ],
                 MessageType.file => [
-                    const WidgetSpan(child: Icon(Symbols.description_rounded)),
+                    const WidgetSpan(
+                        child: Icon(Symbols.description_rounded,
+                            size: _messageIconSize)),
                     TextSpan(
                       text: localizations.file,
                     )
                   ],
                 MessageType.video => [
-                    const WidgetSpan(child: Icon(Symbols.video_file_rounded)),
+                    const WidgetSpan(
+                        child: Icon(Symbols.video_file_rounded,
+                            size: _messageIconSize)),
                     TextSpan(
                       text: localizations.video,
                     )
                   ],
                 MessageType.audio => [
-                    const WidgetSpan(child: Icon(Symbols.audio_file_rounded)),
+                    const WidgetSpan(
+                        child: Icon(Symbols.audio_file_rounded,
+                            size: _messageIconSize)),
                     TextSpan(
                       text: localizations.audio,
                     )
                   ],
                 MessageType.youtube => [
                     const WidgetSpan(
-                        child: Icon(Symbols.smart_display_rounded)),
+                        child: Icon(Symbols.smart_display_rounded,
+                            size: _messageIconSize)),
                     TextSpan(
                       text: localizations.youtube,
                     )

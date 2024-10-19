@@ -30,24 +30,45 @@ class _TMenuState<T> extends State<TMenu<T>> {
   Widget build(BuildContext context) {
     final appThemeExtension = context.appThemeExtension;
     final menuDecoration = appThemeExtension.menuDecoration;
-    return DecoratedBox(
-      decoration: menuDecoration,
-      child: Padding(
-        padding: menuDecoration.padding,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            for (final entry in widget.entries)
-              _buildItem(context, appThemeExtension, entry)
-          ],
-        ),
-      ),
-    );
+    if (widget.dense) {
+      return LayoutBuilder(builder: (context, constraints) {
+        final minWidth =
+            constraints.minWidth - menuDecoration.padding.horizontal;
+        if (minWidth > 0) {
+          return _buildContent(
+              context, appThemeExtension, menuDecoration, minWidth);
+        }
+        return _buildContent(context, appThemeExtension, menuDecoration, null);
+      });
+    }
+    return _buildContent(context, appThemeExtension, menuDecoration, null);
   }
 
-  MouseRegion _buildItem(BuildContext context,
-      AppThemeExtension appThemeExtension, TMenuEntry<T> entry) {
+  DecoratedBox _buildContent(
+          BuildContext context,
+          AppThemeExtension appThemeExtension,
+          BoxDecoration menuDecoration,
+          double? minWidth) =>
+      DecoratedBox(
+        decoration: menuDecoration,
+        child: Padding(
+          padding: menuDecoration.padding,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (final entry in widget.entries)
+                _buildItem(context, appThemeExtension, entry, minWidth)
+            ],
+          ),
+        ),
+      );
+
+  MouseRegion _buildItem(
+      BuildContext context,
+      AppThemeExtension appThemeExtension,
+      TMenuEntry<T> entry,
+      double? minWidth) {
     final text = Padding(
       padding: widget.padding,
       child: Text(
@@ -76,7 +97,12 @@ class _TMenuState<T> extends State<TMenu<T>> {
               ? appThemeExtension.menuItemHoveredColor
               : appThemeExtension.menuItemColor,
           child: widget.dense
-              ? text
+              ? minWidth == null
+                  ? text
+                  : SizedBox(
+                      width: minWidth,
+                      child: text,
+                    )
               : SizedBox(
                   width: double.infinity,
                   child: text,

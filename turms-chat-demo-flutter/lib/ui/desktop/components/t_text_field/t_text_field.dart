@@ -62,7 +62,7 @@ class TTextField extends ConsumerStatefulWidget {
   final String Function(String value)? transformValue;
   final ValueChanged<String>? onChanged;
   final ValueChanged<String>? onSubmitted;
-  final ValueChanged<Offset>? onCaretMoved;
+  final ValueChanged<Rect>? onCaretMoved;
   final ValueChanged<PointerDownEvent>? onTapOutside;
 
   @override
@@ -70,7 +70,7 @@ class TTextField extends ConsumerStatefulWidget {
 }
 
 class _TTextFieldState extends ConsumerState<TTextField> {
-  late GlobalKey _fieldKey;
+  GlobalKey? _textFieldKey;
   TextEditingController? _textEditingController;
   Debouncer? _debouncer;
 
@@ -85,7 +85,7 @@ class _TTextFieldState extends ConsumerState<TTextField> {
       _debouncer = Debouncer(timeout: debounceTimeout);
     }
     if (widget.onCaretMoved != null) {
-      _fieldKey = GlobalKey();
+      _textFieldKey = GlobalKey();
     }
   }
 
@@ -105,6 +105,7 @@ class _TTextFieldState extends ConsumerState<TTextField> {
         (widget.showDeleteButtonIfHasText && controller.text.isNotEmpty);
     final suffixIcon = widget.suffixIcon;
     return TextField(
+      key: _textFieldKey,
       controller: controller,
       contextMenuBuilder: contextMenuBuilder,
       autofocus: widget.autofocus,
@@ -141,11 +142,11 @@ class _TTextFieldState extends ConsumerState<TTextField> {
           if (localDebouncer != null) {
             localDebouncer.run(() {
               widget.onChanged?.call(value);
-              _tryNotifyCaretPositionChanged();
+              tryNotifyCaretMoved();
             });
           } else {
             widget.onChanged?.call(value);
-            _tryNotifyCaretPositionChanged();
+            tryNotifyCaretMoved();
           }
           setState(() {});
         });
@@ -182,7 +183,6 @@ class _TTextFieldState extends ConsumerState<TTextField> {
                     onTap: () {
                       controller.clear();
                       widget.onChanged?.call('');
-                      _tryNotifyCaretPositionChanged();
                       setState(() {});
                     },
                   )
@@ -200,67 +200,74 @@ class _TTextFieldState extends ConsumerState<TTextField> {
     );
   }
 
-  void _tryNotifyCaretPositionChanged() {
+  void tryNotifyCaretMoved() {
     final onCaretMoved = widget.onCaretMoved;
-    if (onCaretMoved == null) {
-      return;
-    }
-    final currentContext = _fieldKey.currentContext;
-    if (currentContext == null) {
-      return;
-    }
-    final fieldBox = currentContext.findRenderObject();
-    final caretPosition =
-        fieldBox is RenderBox ? _getCaretPosition(fieldBox) : null;
-    if (caretPosition == null) {
-      return;
-    }
-    onCaretMoved.call(caretPosition);
-  }
-
-  RenderEditable? _findRenderEditable(RenderObject root) {
-    RenderEditable? renderEditable;
-    void recursiveFinder(RenderObject child) {
-      if (child is RenderEditable) {
-        renderEditable = child;
-        return;
+    if (onCaretMoved != null) {
+      final rect = getCaretRect(_textFieldKey!);
+      if (rect != null) {
+        onCaretMoved(rect);
       }
-      child.visitChildren(recursiveFinder);
     }
+  }
+}
 
-    root.visitChildren(recursiveFinder);
-    return renderEditable;
+Rect? getCaretRect(GlobalKey textFieldKey) {
+  final currentContext = textFieldKey.currentContext;
+  if (currentContext == null) {
+    return null;
+  }
+  final fieldBox = currentContext.findRenderObject();
+  final caretRect = fieldBox is RenderBox ? _getCaretRect(fieldBox) : null;
+  if (caretRect == null) {
+    return null;
+  }
+  return caretRect;
+}
+
+RenderEditable? _findRenderEditable(RenderObject root) {
+  RenderEditable? renderEditable;
+  void recursiveFinder(RenderObject child) {
+    if (child is RenderEditable) {
+      renderEditable = child;
+      return;
+    }
+    child.visitChildren(recursiveFinder);
   }
 
-  TextSelectionPoint _globalize(TextSelectionPoint point, RenderBox box) =>
-      TextSelectionPoint(
-        box.localToGlobal(point.point),
-        point.direction,
-      );
+  root.visitChildren(recursiveFinder);
+  return renderEditable;
+}
 
-  Offset? _getCaretPosition(RenderBox box) {
-    final renderEditable = _findRenderEditable(box);
-    if (renderEditable == null || !renderEditable.hasFocus) {
-      return null;
-    }
-    final selection = renderEditable.selection;
-    if (selection == null) {
-      return null;
-    }
-    final firstEndpoint =
-        renderEditable.getEndpointsForSelection(selection).firstOrNull;
-    if (firstEndpoint == null) {
-      return null;
-    }
-    final point = _globalize(
-      firstEndpoint,
-      renderEditable,
-    );
-
-    final cursorOffset = renderEditable.cursorOffset;
-
-    return point.point;
+Rect? _getCaretRect(RenderBox box) {
+  final renderEditable = _findRenderEditable(box);
+  if (renderEditable == null || !renderEditable.hasFocus) {
+    return null;
   }
+  final selection = renderEditable.selection;
+  if (selection == null) {
+    return null;
+  }
+  final firstEndpoint =
+      renderEditable.getEndpointsForSelection(selection).firstOrNull;
+  if (firstEndpoint == null) {
+    return null;
+  }
+
+  final point = TextSelectionPoint(
+    box.localToGlobal(firstEndpoint.point),
+    firstEndpoint.direction,
+  );
+
+  // final cursorOffset = renderEditable.cursorOffset;
+  // renderEditable.getLocalRectForCaret(TextPosition(offset : Offset(0,0)))
+  final p = point.point;
+  final cursorHeight = renderEditable.cursorHeight;
+  return Rect.fromLTWH(
+    p.dx,
+    p.dy - cursorHeight,
+    renderEditable.cursorWidth,
+    cursorHeight,
+  );
 }
 
 final _allowedContextButtonTypes = Set.unmodifiable([
@@ -303,6 +310,7 @@ Widget contextMenuBuilder(
       child: SizedBox(
         width: 100,
         child: Material(
+          color: Colors.transparent,
           borderRadius: context.appThemeExtension.menuDecoration.borderRadius!,
           child: TMenu(
             entries: menuEntries,

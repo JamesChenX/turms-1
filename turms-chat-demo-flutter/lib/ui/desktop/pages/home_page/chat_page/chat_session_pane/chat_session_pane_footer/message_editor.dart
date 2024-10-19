@@ -1,20 +1,25 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
+import '../../../../../../../infra/io/global_keyboard_listener.dart';
 import '../../../../../../themes/index.dart';
-import '../../../../../components/t_text_field/t_text_field.dart';
+import '../../../../../components/index.dart';
+
+const _mentionIndicator = '@';
 
 class MessageEditor extends StatefulWidget {
-  const MessageEditor(
-      {super.key,
-      this.text,
-      this.contentPadding = EdgeInsets.zero,
-      this.autofocus = false,
-      this.readOnly = false,
-      required this.controller,
-      this.focusNode,
-      this.onTapOutside});
+  const MessageEditor({
+    super.key,
+    this.text,
+    this.contentPadding = EdgeInsets.zero,
+    this.autofocus = false,
+    this.readOnly = false,
+    required this.controller,
+    this.focusNode,
+    this.onTapOutside,
+  });
 
   final String? text;
   final EdgeInsets contentPadding;
@@ -29,11 +34,17 @@ class MessageEditor extends StatefulWidget {
 }
 
 class TMessageEditorState extends State<MessageEditor> {
+  late GlobalKey _textFieldKey;
+  late OverlayState _overlayState;
+  OverlayEntry? _mentionUserMenuOverlayEntry;
   FocusNode? _focusNode;
+
+  int? _lastCaretOffset;
 
   @override
   void initState() {
     super.initState();
+    _textFieldKey = GlobalKey();
     if (widget.focusNode == null) {
       _focusNode = FocusNode();
     }
@@ -42,6 +53,7 @@ class TMessageEditorState extends State<MessageEditor> {
   @override
   void dispose() {
     _focusNode?.dispose();
+    _removeMentionMenu();
     super.dispose();
   }
 
@@ -49,29 +61,115 @@ class TMessageEditorState extends State<MessageEditor> {
   Widget build(BuildContext context) {
     final readOnly = widget.readOnly;
     final textStyleBodyMedium = Theme.of(context).textTheme.bodyMedium!;
-    return TextField(
-      contextMenuBuilder: contextMenuBuilder,
-      maxLength: 1000,
-      maxLines: null,
-      decoration: InputDecoration(
-        border: InputBorder.none,
-        isCollapsed: true,
-        contentPadding: widget.contentPadding,
-        // hide length counter
-        counterText: '',
+    return GlobalKeyboardListener(
+      onKeyEvent: (KeyEvent event) {
+        final logicalKey = event.logicalKey;
+        final mentionUserMenuOverlayEntry = _mentionUserMenuOverlayEntry;
+        if (mentionUserMenuOverlayEntry == null) {
+          return false;
+        }
+        if (logicalKey == LogicalKeyboardKey.escape) {
+          _removeMentionMenu();
+          return true;
+        } else if (widget.controller.selection.baseOffset <=
+            _lastCaretOffset!) {
+          _removeMentionMenu();
+          return true;
+        }
+        return false;
+      },
+      child: TextField(
+        key: _textFieldKey,
+        contextMenuBuilder: contextMenuBuilder,
+        maxLength: 1000,
+        maxLines: null,
+        decoration: InputDecoration(
+          border: InputBorder.none,
+          isCollapsed: true,
+          contentPadding: widget.contentPadding,
+          // hide length counter
+          counterText: '',
+        ),
+        controller: widget.controller,
+        focusNode: widget.focusNode ?? _focusNode!,
+        readOnly: readOnly,
+        enableInteractiveSelection: true,
+        onTapOutside: widget.onTapOutside,
+        autofocus: widget.autofocus,
+        showCursor: !readOnly,
+        style: textStyleBodyMedium,
+        strutStyle: StrutStyle.fromTextStyle(textStyleBodyMedium,
+            forceStrutHeight: true),
+        selectionHeightStyle: BoxHeightStyle.max,
+        onChanged: (_) {
+          final (char, offset) = _getCharacterAtCursor();
+          if (char != _mentionIndicator) {
+            return;
+          }
+          _lastCaretOffset = offset;
+          // FIXME: https://github.com/flutter/flutter/issues/135354
+          // Use a callback as a workaround to get the caret offset.
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            final rect = getCaretRect(_textFieldKey);
+            if (rect != null) {
+              _removeMentionMenu();
+              _mentionUserMenuOverlayEntry = OverlayEntry(
+                  builder: (context) => Positioned.fill(
+                        child: CustomSingleChildLayout(
+                          delegate: MenuLayout(
+                            targetRect: rect,
+                            targetAlignment: Alignment.topRight,
+                            followerAlignment: Alignment.bottomLeft,
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(
+                                  minWidth: 96, maxWidth: 128),
+                              child: TapRegion(
+                                onTapOutside: (event) {
+                                  _removeMentionMenu();
+                                },
+                                child: TMenu(
+                                    dense: true,
+                                    entries: [
+                                      const TMenuEntry(
+                                        label: 'test',
+                                        value: 'test',
+                                      ),
+                                    ],
+                                    onSelected: (entry) {
+                                      debugPrint('selected: ${entry.label}');
+                                    }),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ));
+              _overlayState = Overlay.of(context);
+              _overlayState.insert(_mentionUserMenuOverlayEntry!);
+            }
+          });
+        },
       ),
-      controller: widget.controller,
-      focusNode: widget.focusNode ?? _focusNode!,
-      readOnly: readOnly,
-      enableInteractiveSelection: true,
-      onTapOutside: widget.onTapOutside,
-      autofocus: widget.autofocus,
-      showCursor: !readOnly,
-      style: textStyleBodyMedium,
-      strutStyle:
-          StrutStyle.fromTextStyle(textStyleBodyMedium, forceStrutHeight: true),
-      selectionHeightStyle: BoxHeightStyle.max,
     );
+  }
+
+  void _removeMentionMenu() {
+    _mentionUserMenuOverlayEntry?.remove();
+    _mentionUserMenuOverlayEntry = null;
+  }
+
+  (String, int) _getCharacterAtCursor() {
+    final controller = widget.controller;
+    final text = controller.text;
+    final length = text.length;
+    if (length == 0) {
+      return ('', 0);
+    }
+    final selection = controller.selection;
+    final offset = selection.baseOffset.clamp(0, length - 1);
+    return (text[offset], offset);
   }
 }
 
@@ -113,4 +211,63 @@ TextSpan generateTextSpan(
     return '';
   });
   return TextSpan(children: spans);
+}
+
+class MenuLayout extends SingleChildLayoutDelegate {
+  const MenuLayout(
+      {super.relayout,
+      required this.targetRect,
+      required this.targetAlignment,
+      required this.followerAlignment});
+
+  final Rect targetRect;
+  final Alignment targetAlignment;
+  final Alignment followerAlignment;
+
+  @override
+  bool shouldRelayout(MenuLayout oldDelegate) =>
+      targetRect != oldDelegate.targetRect ||
+      targetAlignment != oldDelegate.targetAlignment ||
+      followerAlignment != oldDelegate.followerAlignment;
+
+  @override
+  BoxConstraints getConstraintsForChild(BoxConstraints constraints) =>
+      constraints.loosen();
+
+  @override
+  Offset getPositionForChild(Size size, Size childSize) =>
+      getPosition(size, childSize);
+
+  Offset getPosition(Size containerSize, Size childSize) {
+    final preferredTargetTopLeft = targetRect.topLeft +
+        targetAlignment.alongSize(targetRect.size) -
+        followerAlignment.alongSize(childSize);
+    if (preferredTargetTopLeft.dx < 0 ||
+        preferredTargetTopLeft.dx + childSize.width > containerSize.width) {
+      if (preferredTargetTopLeft.dy < 0 ||
+          preferredTargetTopLeft.dy + childSize.height > containerSize.height) {
+        return targetRect.topLeft +
+            targetAlignment.alongSize(targetRect.size) -
+            followerAlignment.flipped().alongSize(childSize);
+      } else {
+        return targetRect.topLeft +
+            targetAlignment.alongSize(targetRect.size) -
+            followerAlignment.flippedX().alongSize(childSize);
+      }
+    } else if (preferredTargetTopLeft.dy < 0 ||
+        preferredTargetTopLeft.dy + childSize.height > containerSize.height) {
+      return targetRect.topLeft +
+          targetAlignment.alongSize(targetRect.size) -
+          followerAlignment.flippedY().alongSize(childSize);
+    }
+    return preferredTargetTopLeft;
+  }
+}
+
+extension on Alignment {
+  Alignment flipped() => Alignment(-x, -y);
+
+  Alignment flippedX() => Alignment(-x, y);
+
+  Alignment flippedY() => Alignment(x, -y);
 }

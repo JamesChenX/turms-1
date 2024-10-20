@@ -38,8 +38,7 @@ class _SubNavigationRailState extends ConsumerState<SubNavigationRail> {
               child: Text(
                   textAlign: TextAlign.start,
                   appLocalizations.settings,
-                  style: appThemeExtension
-                      .settingsPageSubNavigationRailTitleTextStyle),
+                  style: appThemeExtension.dialogTitleTextStyle),
             ),
             // Note that we don't change the tab color when the tab is selected
             // because we have only a few settings, and the UI will be weired

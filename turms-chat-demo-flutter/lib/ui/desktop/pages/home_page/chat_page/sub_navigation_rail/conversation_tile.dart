@@ -12,7 +12,6 @@ import '../../../../../themes/index.dart';
 import '../../../../components/index.dart';
 import '../chat_session_pane/message.dart';
 
-const diameter = 12.0;
 const _messageIconSize = 16.0;
 
 class ConversationTile extends ConsumerStatefulWidget {
@@ -79,35 +78,13 @@ class _ConversationTileState extends ConsumerState<ConversationTile> {
       TAvatar(
         name: conversation.name,
         image: conversation.image,
+        // TODO: check presence
+        presence: TAvatarUserPresence.values[1 +
+            (conversation.contact.hashCode %
+                (TAvatarUserPresence.values.length - 1))],
       ),
-      _buildPresence()
     ]);
   }
-
-  // TODO: check presence
-  Positioned _buildPresence() => const Positioned(
-        child: SizedBox(
-          width: diameter + 2,
-          height: diameter + 2,
-          child: DecoratedBox(
-            decoration:
-                BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-            child: Center(
-              child: SizedBox(
-                width: diameter,
-                height: diameter,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 107, 183, 0),
-                      shape: BoxShape.circle),
-                ),
-              ),
-            ),
-          ),
-        ),
-        right: 0,
-        bottom: 0,
-      );
 
   Column _buildConversation(AppThemeExtension appThemeExtension,
       AppLocalizations localizations, BuildContext context) {

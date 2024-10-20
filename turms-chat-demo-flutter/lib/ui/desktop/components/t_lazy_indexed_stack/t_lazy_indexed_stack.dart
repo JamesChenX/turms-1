@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../themes/sizes.dart';
+
 class TLazyIndexedStack extends StatefulWidget {
   const TLazyIndexedStack({
     super.key,
@@ -21,30 +23,31 @@ class TLazyIndexedStack extends StatefulWidget {
 }
 
 class TLazyIndexedStackState extends State<TLazyIndexedStack> {
-  late List<bool> _activated = _initializeActivatedList();
+  late List<bool> _indexToActiveState = _initIndexToActiveStateList();
 
-  List<bool> _initializeActivatedList() =>
+  List<bool> _initIndexToActiveStateList() =>
       List<bool>.generate(widget.children.length, (i) => i == widget.index);
 
   @override
   void didUpdateWidget(TLazyIndexedStack oldWidget) {
-    if (oldWidget.children.length != widget.children.length) {
-      _activated = _initializeActivatedList();
-    }
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.children.length != widget.children.length) {
+      _indexToActiveState = _initIndexToActiveStateList();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Mark current index as active
-    _activated[widget.index] = true;
-    final children = List.generate(_activated.length,
-        (i) => _activated[i] ? widget.children[i] : const SizedBox.shrink());
+    final indexToActiveState = _indexToActiveState;
+    final index = widget.index;
+    indexToActiveState[index] = true;
+    final children = List.generate(indexToActiveState.length,
+        (i) => indexToActiveState[i] ? widget.children[i] : Sizes.sizedBox0);
     return IndexedStack(
       alignment: widget.alignment,
       sizing: widget.sizing,
       textDirection: widget.textDirection,
-      index: widget.index,
+      index: index,
       children: children,
     );
   }

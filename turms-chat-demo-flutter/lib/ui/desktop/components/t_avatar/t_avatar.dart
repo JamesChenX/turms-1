@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
+import '../../../../infra/math/math_utils.dart';
 import '../../../themes/index.dart';
 
 part 't_avatar_size.dart';
@@ -28,6 +29,8 @@ const List<Color> _colors = [
 
 final _colorCount = _colors.length;
 
+const presenceBoxDiameter = 14.0;
+
 class TAvatar extends StatelessWidget {
   TAvatar(
       {super.key,
@@ -35,7 +38,8 @@ class TAvatar extends StatelessWidget {
       this.image,
       this.icon,
       this.size = TAvatarSize.medium,
-      this.textSize})
+      this.textSize,
+      this.presence = TAvatarUserPresence.none})
       : firstChar = name.isEmpty ? '' : name.substring(0, 1);
 
   final String name;
@@ -44,25 +48,39 @@ class TAvatar extends StatelessWidget {
   final IconData? icon;
   final TAvatarSize size;
   final double? textSize;
+  final TAvatarUserPresence presence;
 
   /// Use oval instead of rounded rect so that
   /// the user presence indicator can display nicely with the avatar.
   @override
-  Widget build(BuildContext context) => ClipRRect(
-        borderRadius: Sizes.borderRadiusCircular4,
-        child: _buildAvatar(context.theme),
-      );
+  Widget build(BuildContext context) {
+    final avatar = ClipRRect(
+      borderRadius: Sizes.borderRadiusCircular4,
+      child: _buildAvatar(context.theme),
+    );
+    if (presence == TAvatarUserPresence.none) {
+      return avatar;
+    }
+    return Stack(clipBehavior: Clip.none, children: [avatar, _buildPresence()]);
+  }
 
   Widget _buildAvatar(ThemeData theme) {
-    final appThemeExtension = theme.appThemeExtension;
-    final img = image;
     final containerSize = size.containerSize;
-    Widget child;
+    return SizedBox(
+      width: containerSize,
+      height: containerSize,
+      child: _buildContent(image, theme, theme.appThemeExtension),
+    );
+  }
+
+  Widget _buildContent(ImageProvider<Object>? img, ThemeData theme,
+      AppThemeExtension appThemeExtension) {
     if (null != img) {
       // FittedBox is used as a fallback in case the image is not fitted.
-      child = FittedBox(child: Image(image: img));
-    } else if (null != icon) {
-      child = ColoredBox(
+      return FittedBox(child: Image(image: img));
+    }
+    if (null != icon) {
+      return ColoredBox(
           color: theme.primaryColor,
           child: Icon(
             icon,
@@ -70,8 +88,9 @@ class TAvatar extends StatelessWidget {
             color: Colors.white,
             size: size.iconSize,
           ));
-    } else if (name.isEmpty) {
-      child = ColoredBox(
+    }
+    if (name.isEmpty) {
+      return ColoredBox(
         color: appThemeExtension.avatarBackgroundColor,
         child: Icon(Symbols.person_rounded,
             fill: 1,
@@ -80,23 +99,17 @@ class TAvatar extends StatelessWidget {
             // so we need to enlarge it.
             size: size.iconSize * 1.25),
       );
-    } else {
-      child = ColoredBox(
-        color: _pickColor(name),
-        child: Center(
-          child: Text(
-            firstChar,
-            textScaler: TextScaler.noScaling,
-            style: TextStyle(
-                fontSize: textSize ?? size.textSize, color: Colors.white),
-          ),
-        ),
-      );
     }
-    return SizedBox(
-      width: containerSize,
-      height: containerSize,
-      child: child,
+    return ColoredBox(
+      color: _pickColor(name),
+      child: Center(
+        child: Text(
+          firstChar,
+          textScaler: TextScaler.noScaling,
+          style: TextStyle(
+              fontSize: textSize ?? size.textSize, color: Colors.white),
+        ),
+      ),
     );
   }
 
@@ -107,4 +120,115 @@ class TAvatar extends StatelessWidget {
     }
     return _colors[result % _colorCount];
   }
+
+  Positioned _buildPresence() => Positioned(
+        child: SizedBox(
+          width: presenceBoxDiameter,
+          height: presenceBoxDiameter,
+          child: CustomPaint(
+            painter: TAvatarUserPresencePainter(presence),
+          ),
+        ),
+        right: 0,
+        bottom: 0,
+      );
+}
+
+enum TAvatarUserPresence { none, available, away, busy, doNotDisturb, offline }
+
+const _padding = 1.0;
+const _clockPointDistanceFromEdge = 3.0;
+final _clockPoint = MathUtils.calculatePoint(
+    presenceBoxDiameter / 2,
+    presenceBoxDiameter / 2,
+    presenceBoxDiameter / 2,
+    _clockPointDistanceFromEdge,
+    45);
+
+class TAvatarUserPresencePainter extends CustomPainter {
+  const TAvatarUserPresencePainter(this.presence);
+
+  final TAvatarUserPresence presence;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint();
+
+    canvas.drawCircle(
+        Offset(size.width / 2, size.height / 2),
+        size.width / 2,
+        paint
+          ..color = Colors.white
+          ..style = PaintingStyle.fill);
+    switch (presence) {
+      case TAvatarUserPresence.available:
+        canvas.drawCircle(
+            Offset(size.width / 2, size.height / 2),
+            size.width / 2 - _padding,
+            paint
+              ..color = Colors.green
+              ..style = PaintingStyle.fill);
+        break;
+      case TAvatarUserPresence.away:
+        canvas
+          ..drawCircle(Offset(size.width / 2, size.height / 2),
+              size.width / 2 - _padding, paint..color = Colors.orangeAccent)
+          ..drawPath(
+              Path()
+                ..moveTo(size.width / 2, _clockPointDistanceFromEdge)
+                ..lineTo(size.width / 2, size.height / 2)
+                ..lineTo(_clockPoint.x, _clockPoint.y),
+              paint
+                ..color = Colors.white
+                ..style = PaintingStyle.stroke
+                ..strokeWidth = 1);
+        break;
+      case TAvatarUserPresence.busy:
+        canvas.drawCircle(Offset(size.width / 2, size.height / 2),
+            size.width / 2 - _padding, paint..color = Colors.red);
+        break;
+      case TAvatarUserPresence.doNotDisturb:
+        final padding = size.width / 3.5;
+        canvas
+          ..drawCircle(Offset(size.width / 2, size.height / 2),
+              size.width / 2 - _padding, paint..color = Colors.red)
+          ..drawPath(
+              Path()
+                ..moveTo(padding, size.height / 2)
+                ..lineTo(size.width - padding, size.height / 2),
+              paint
+                ..color = Colors.white
+                ..style = PaintingStyle.stroke
+                ..strokeWidth = 1);
+        break;
+      case TAvatarUserPresence.offline:
+        final padding = size.width / 6;
+        canvas
+          ..drawCircle(
+              Offset(size.width / 2, size.height / 2),
+              size.width / 2 - _padding,
+              paint
+                ..color = Colors.grey.shade600
+                ..style = PaintingStyle.fill)
+          ..drawCircle(Offset(size.width / 2, size.height / 2),
+              size.width / 2 - _padding * 2, paint..color = Colors.white)
+          ..drawPath(
+              Path()
+                ..moveTo(size.width / 2 - padding, size.height / 2 - padding)
+                ..lineTo(size.width / 2 + padding, size.height / 2 + padding)
+                ..moveTo(size.width / 2 - padding, size.height / 2 + padding)
+                ..lineTo(size.width / 2 + padding, size.height / 2 - padding),
+              paint
+                ..color = Colors.grey.shade600
+                ..style = PaintingStyle.stroke
+                ..strokeWidth = 1);
+        break;
+      case TAvatarUserPresence.none:
+        throw ArgumentError('presence must be set');
+    }
+  }
+
+  @override
+  bool shouldRepaint(TAvatarUserPresencePainter oldDelegate) =>
+      oldDelegate.presence != presence;
 }

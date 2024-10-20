@@ -50,7 +50,7 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
     required this.fileTableTitleTextStyle,
     required this.fileTableCellTextStyle,
     required this.settingPageSubNavigationRailDividerColor,
-    required this.settingsPageSubNavigationRailTitleTextStyle,
+    required this.dialogTitleTextStyle,
     required this.descriptionTextStyle,
     required this.linkTextStyle,
     required this.linkHoveredTextStyle,
@@ -132,8 +132,8 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
           const TextStyle(color: Color.fromARGB(255, 102, 102, 102)),
       settingPageSubNavigationRailDividerColor:
           const Color.fromARGB(255, 240, 240, 240),
-      settingsPageSubNavigationRailTitleTextStyle:
-          const TextStyle(fontSize: 16, color: Colors.grey),
+      dialogTitleTextStyle:
+          TextStyle(fontSize: 16, color: Colors.grey.shade600),
       descriptionTextStyle: const TextStyle(
         // TODO: Or Color(0xA6000000)?
         color: Colors.grey,
@@ -220,8 +220,8 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
           const TextStyle(color: Color.fromARGB(255, 102, 102, 102)),
       settingPageSubNavigationRailDividerColor:
           const Color.fromARGB(255, 240, 240, 240),
-      settingsPageSubNavigationRailTitleTextStyle:
-          const TextStyle(fontSize: 16, color: Colors.grey),
+      dialogTitleTextStyle:
+          TextStyle(fontSize: 16, color: Colors.grey.shade600),
       descriptionTextStyle: const TextStyle(
         color: Colors.grey,
       ),
@@ -293,7 +293,7 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
   final TextStyle fileTableCellTextStyle;
 
   final Color settingPageSubNavigationRailDividerColor;
-  final TextStyle settingsPageSubNavigationRailTitleTextStyle;
+  final TextStyle dialogTitleTextStyle;
 
   // Text styles
   final TextStyle descriptionTextStyle;
@@ -343,7 +343,7 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
     TextStyle? fileTableTitleTextStyle,
     TextStyle? fileTableCellTextStyle,
     Color? settingPageSubNavigationRailDividerColor,
-    TextStyle? settingsPageSubNavigationRailTitleTextStyle,
+    TextStyle? dialogTitleTextStyle,
     TextStyle? descriptionTextStyle,
     TextStyle? linkTextStyle,
     TextStyle? linkHoveredTextStyle,
@@ -422,9 +422,7 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
         settingPageSubNavigationRailDividerColor:
             settingPageSubNavigationRailDividerColor ??
                 this.settingPageSubNavigationRailDividerColor,
-        settingsPageSubNavigationRailTitleTextStyle:
-            settingsPageSubNavigationRailTitleTextStyle ??
-                this.settingsPageSubNavigationRailTitleTextStyle,
+        dialogTitleTextStyle: dialogTitleTextStyle ?? this.dialogTitleTextStyle,
         descriptionTextStyle: descriptionTextStyle ?? this.descriptionTextStyle,
         linkTextStyle: linkTextStyle ?? this.linkTextStyle,
         linkHoveredTextStyle: linkHoveredTextStyle ?? this.linkHoveredTextStyle,
@@ -529,10 +527,8 @@ class AppThemeExtension extends ThemeExtension<AppThemeExtension> {
           settingPageSubNavigationRailDividerColor,
           other.settingPageSubNavigationRailDividerColor,
           t)!,
-      settingsPageSubNavigationRailTitleTextStyle: TextStyle.lerp(
-          settingsPageSubNavigationRailTitleTextStyle,
-          other.settingsPageSubNavigationRailTitleTextStyle,
-          t)!,
+      dialogTitleTextStyle:
+          TextStyle.lerp(dialogTitleTextStyle, other.dialogTitleTextStyle, t)!,
       descriptionTextStyle:
           TextStyle.lerp(descriptionTextStyle, other.descriptionTextStyle, t)!,
       linkTextStyle: TextStyle.lerp(linkTextStyle, other.linkTextStyle, t)!,

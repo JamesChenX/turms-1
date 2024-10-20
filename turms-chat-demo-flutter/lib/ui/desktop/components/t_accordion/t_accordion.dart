@@ -112,7 +112,8 @@ class _TAccordionState extends State<TAccordion>
                   children: <Widget>[
                     RotationTransition(
                         turns: _turnsAnimation,
-                        child: const Icon(Symbols.keyboard_arrow_right)),
+                        child:
+                            const Icon(Symbols.keyboard_arrow_right_rounded)),
                     Expanded(
                       child: widget.titleChild,
                     )

@@ -10,6 +10,7 @@ import '../../../../../../themes/index.dart';
 import '../../../../../components/giphy/client/models/gif.dart';
 import '../../../../../components/index.dart';
 import '../attachment.dart';
+import '../chat_history_page/chat_history_page.dart';
 import '../sticker_picker/sticker_picker.dart';
 import 'chat_session_pane_footer_controller.dart';
 import 'message_editor.dart';
@@ -137,7 +138,9 @@ class ChatSessionPaneFooterView extends StatelessWidget {
                   iconColorPressed: theme.primaryColor,
                   tooltip: appLocalizations.chatHistory,
                   onTap: () async {
-                    final file = await chatPageFooterController.pickFile();
+                    final messages =
+                        chatPageFooterController.conversation?.messages ?? [];
+                    await showChatHistoryDialog(context, messages);
                   },
                 )
               ],

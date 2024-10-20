@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../../../../l10n/app_localizations.dart';
 import '../../../../../../themes/index.dart';
-
 import '../../../../../components/index.dart';
 import 'chat_history_page_controller.dart';
 
@@ -57,26 +55,26 @@ class ChatHistoryPageView extends StatelessWidget {
               Column(
                 spacing: 8,
                 children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: TabBar(
-                      isScrollable: true,
-                      tabAlignment: TabAlignment.start,
-                      padding: Sizes.paddingH8,
-                      dividerHeight: 0,
-                      controller: chatHistoryController.tabController,
-                      tabs: [
-                        Tab(
-                          text: appLocalizations.addContact,
-                          height: 40,
-                        ),
-                        Tab(
-                          text: appLocalizations.joinGroup,
-                          height: 40,
-                        )
-                      ],
-                    ),
-                  ),
+                  // Align(
+                  //   alignment: Alignment.centerLeft,
+                  //   child: TabBar(
+                  //     isScrollable: true,
+                  //     tabAlignment: TabAlignment.start,
+                  //     padding: Sizes.paddingH8,
+                  //     dividerHeight: 0,
+                  //     controller: chatHistoryController.tabController,
+                  //     tabs: [
+                  //       Tab(
+                  //         text: appLocalizations.addContact,
+                  //         height: 40,
+                  //       ),
+                  //       Tab(
+                  //         text: appLocalizations.joinGroup,
+                  //         height: 40,
+                  //       )
+                  //     ],
+                  //   ),
+                  // ),
                   Expanded(child: _buildSearchResultTabView())
                 ],
               ),
@@ -86,27 +84,23 @@ class ChatHistoryPageView extends StatelessWidget {
       ]);
 
   Widget _buildSearchResultTabView() {
-    final contacts = chatHistoryController.contacts;
-    return TabBarView(
-        controller: chatHistoryController.tabController,
-        // TODO: Add search for groups
-        children: List.generate(
-            2,
-            (index) => contacts.isEmpty
-                ? chatHistoryController.isSearchResultEmpty
-                    ? const TEmptyResult(
-                        icon: Symbols.person_rounded,
-                      )
-                    : const TEmpty()
-                : ListView(
-                    children: contacts
-                        .map<Widget>((contact) => RelationshipInfoTile(
-                              isGroup: index == 1,
-                              contact: contact,
-                              onTap: () => chatHistoryController
-                                  .openFriendRequestDialog(contact),
-                            ))
-                        .toList(),
-                  )));
+    return const Placeholder();
+    // final contacts = chatHistoryController.contacts;
+    // return contacts.isEmpty
+    //     ? chatHistoryController.isSearchResultEmpty
+    //         ? const TEmptyResult(
+    //             icon: Symbols.person_rounded,
+    //           )
+    //         : const TEmpty()
+    //     : ListView(
+    //         children: contacts
+    //             .map<Widget>((contact) => RelationshipInfoTile(
+    //                   isGroup: index == 1,
+    //                   contact: contact,
+    //                   onTap: () => chatHistoryController
+    //                       .openFriendRequestDialog(contact),
+    //                 ))
+    //             .toList(),
+    //       );
   }
 }

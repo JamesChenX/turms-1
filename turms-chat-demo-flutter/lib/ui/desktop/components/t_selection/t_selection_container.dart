@@ -18,13 +18,19 @@ class _TSelectionContainerState extends State<TSelectionContainer> {
   Widget build(BuildContext context) {
     if (widget.visible) {
       final scope = context
-          .dependOnInheritedWidgetOfExactType<TSelectionRegistrarScope>()!;
+          .dependOnInheritedWidgetOfExactType<TSelectionRegistrarScope>();
+      if (scope == null) {
+        return widget.child;
+      }
       return SelectionRegistrarScope(
           registrar: scope.registrar, child: widget.child);
     }
-    final scope =
-        context.dependOnInheritedWidgetOfExactType<SelectionRegistrarScope>()!;
-    final _registrar = scope.registrar!;
+    final _registrar = context
+        .dependOnInheritedWidgetOfExactType<SelectionRegistrarScope>()
+        ?.registrar;
+    if (_registrar == null) {
+      return SelectionContainer.disabled(child: widget.child);
+    }
     registrar = _registrar;
     return TSelectionRegistrarScope(
         registrar: _registrar,

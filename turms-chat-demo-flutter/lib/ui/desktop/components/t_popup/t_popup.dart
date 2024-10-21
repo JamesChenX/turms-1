@@ -106,7 +106,7 @@ class _TPopupState extends State<TPopup> {
     if (!_visible) {
       return;
     }
-    _followerController.hide!.call();
+    _followerController.hide?.call();
     _visible = false;
   }
 
@@ -118,44 +118,17 @@ class _TPopupState extends State<TPopup> {
     _visible = false;
   }
 
-  OverlayEntry _createOverlayEntry() =>
-      OverlayEntry(builder: (BuildContext context) {
-        final size = MediaQuery.sizeOf(context);
-        return UnconstrainedBox(
-            child: SizedBox(
-                width: size.width,
-                height: size.height,
-                child: Stack(
-                  children: [
-                    _buildMask(size),
-                    widget.followTargetMove
-                        ? _buildTrackingFollower()
-                        : _buildFixedFollower(),
-                  ],
-                )));
-      });
+  OverlayEntry _createOverlayEntry() => OverlayEntry(
+      builder: (BuildContext context) => widget.followTargetMove
+          ? _buildTrackingFollower()
+          : _buildFixedFollower());
 
-  Widget _buildTrackingFollower() => Positioned(
-        child: CompositedTransformFollower(
-          link: _layerLink,
-          followerAnchor: widget.followerAnchor,
-          targetAnchor: widget.targetAnchor,
-          offset: widget.offset,
-          child: TPopupFollower(
-            child: widget.constrainFollowerWithTargetWidth
-                ? SizedBox(
-                    width: _layerLink.leaderSize?.width,
-                    child: widget.follower,
-                  )
-                : widget.follower,
-            onDismissed: () {
-              _removeOverlayEntry();
-              widget.onDismissed?.call();
-            },
-            controller: _followerController,
-          ),
-        ),
-      );
+  Widget _buildTrackingFollower() => CompositedTransformFollower(
+      link: _layerLink,
+      followerAnchor: widget.followerAnchor,
+      targetAnchor: widget.targetAnchor,
+      offset: widget.offset,
+      child: _buildFollower());
 
   Widget _buildFixedFollower() {
     final renderBox =
@@ -218,44 +191,26 @@ class _TPopupState extends State<TPopup> {
             Alignment.bottomRight => const Offset(-1, -1),
             _ => throw UnimplementedError(),
           },
-          child: TPopupFollower(
-            child: widget.constrainFollowerWithTargetWidth
-                ? SizedBox(
-                    width: _layerLink.leaderSize?.width,
-                    child: widget.follower,
-                  )
-                : widget.follower,
-            onDismissed: () {
-              _removeOverlayEntry();
-              widget.onDismissed?.call();
-            },
-            controller: _followerController,
-          ),
+          child: _buildFollower(),
         ));
   }
 
-  Widget _buildMask(Size size) => GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onPanDown: (details) {
-          final targetRenderBox =
-              _targetKey.currentContext?.findRenderObject() as RenderBox;
-          final hitTest = BoxHitTestResult();
-          final position =
-              targetRenderBox.globalToLocal(details.globalPosition);
-          // If hit the target, we don't hide overlay here,
-          // let the target wrapper handle the event.
-          if (!targetRenderBox.hitTest(hitTest, position: position)) {
-            _hideOverlay();
-          }
+  TapRegion _buildFollower() => TapRegion(
+        onTapOutside: (event) {
+          _hideOverlay();
         },
-        child: IgnorePointer(
-          child: SizedBox(
-            width: size.width,
-            height: size.height,
-            child: const ColoredBox(
-              color: Colors.transparent,
-            ),
-          ),
+        child: TPopupFollower(
+          child: widget.constrainFollowerWithTargetWidth
+              ? SizedBox(
+                  width: _layerLink.leaderSize?.width,
+                  child: widget.follower,
+                )
+              : widget.follower,
+          onDismissed: () {
+            _removeOverlayEntry();
+            widget.onDismissed?.call();
+          },
+          controller: _followerController,
         ),
       );
 }

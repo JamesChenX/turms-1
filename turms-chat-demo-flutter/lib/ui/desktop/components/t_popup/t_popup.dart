@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+import 't_floating_popup.dart';
 import 't_popup_follower.dart';
 
 class TPopup extends StatefulWidget {
@@ -73,12 +74,18 @@ class _TPopupState extends State<TPopup> {
   @override
   void didUpdateWidget(TPopup oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget._controller != widget._controller) {
-      oldWidget._controller?.showPopover = null;
-      oldWidget._controller?.hidePopover = null;
+    final oldController = oldWidget._controller;
+    final controller = widget._controller;
+    if (oldController != null && oldController != controller) {
+      oldController
+        ..showPopover = null
+        ..hidePopover = null;
     }
-    widget._controller?.showPopover = _showOverlay;
-    widget._controller?.hidePopover = _hideOverlay;
+    if (controller != null) {
+      controller
+        ..showPopover = _showOverlay
+        ..hidePopover = _hideOverlay;
+    }
   }
 
   void _toggleOverlay() {
@@ -130,70 +137,15 @@ class _TPopupState extends State<TPopup> {
       offset: widget.offset,
       child: _buildFollower());
 
-  Widget _buildFixedFollower() {
-    final renderBox =
-        _targetKey.currentContext!.findRenderObject()! as RenderBox;
-    final offset = renderBox.localToGlobal(Offset.zero);
-    final targetBounds = Rect.fromLTWH(
-        offset.dx, offset.dy, renderBox.size.width, renderBox.size.height);
-    final (left, top) = switch (widget.targetAnchor) {
-      Alignment.topLeft => (
-          targetBounds.left + widget.offset.dx,
-          targetBounds.top + widget.offset.dy
+  Widget _buildFixedFollower() => Positioned.fill(
+          child: CustomSingleChildLayout(
+        delegate: TPopupLayout(
+          targetRect: _getTargetRect(),
+          targetAnchor: widget.targetAnchor,
+          followerAnchor: widget.followerAnchor,
         ),
-      Alignment.topCenter => (
-          targetBounds.center.dx + widget.offset.dx,
-          targetBounds.top + widget.offset.dy
-        ),
-      Alignment.topRight => (
-          targetBounds.right + widget.offset.dx,
-          targetBounds.top + widget.offset.dy
-        ),
-      Alignment.centerLeft => (
-          targetBounds.left + widget.offset.dx,
-          targetBounds.center.dy + widget.offset.dy
-        ),
-      Alignment.center => (
-          targetBounds.center.dx + widget.offset.dx,
-          targetBounds.center.dy + widget.offset.dy
-        ),
-      Alignment.centerRight => (
-          targetBounds.right + widget.offset.dx,
-          targetBounds.center.dy + widget.offset.dy
-        ),
-      Alignment.bottomLeft => (
-          targetBounds.left + widget.offset.dx,
-          targetBounds.bottom + widget.offset.dy
-        ),
-      Alignment.bottomCenter => (
-          targetBounds.center.dx + widget.offset.dx,
-          targetBounds.bottom + widget.offset.dy
-        ),
-      Alignment.bottomRight => (
-          targetBounds.right + widget.offset.dx,
-          targetBounds.bottom + widget.offset.dy
-        ),
-      _ => throw UnimplementedError(),
-    };
-    return Positioned(
-        left: left,
-        top: top,
-        child: FractionalTranslation(
-          translation: switch (widget.followerAnchor) {
-            Alignment.topLeft => Offset.zero,
-            Alignment.topCenter => const Offset(-0.5, 0),
-            Alignment.topRight => const Offset(-1, 0),
-            Alignment.centerLeft => const Offset(0, -0.5),
-            Alignment.center => const Offset(-0.5, -0.5),
-            Alignment.centerRight => const Offset(-1, -0.5),
-            Alignment.bottomLeft => const Offset(0, -1),
-            Alignment.bottomCenter => const Offset(-0.5, -1),
-            Alignment.bottomRight => const Offset(-1, -1),
-            _ => throw UnimplementedError(),
-          },
-          child: _buildFollower(),
-        ));
-  }
+        child: _buildFollower(),
+      ));
 
   TapRegion _buildFollower() => TapRegion(
         onTapOutside: (event) {
@@ -213,6 +165,15 @@ class _TPopupState extends State<TPopup> {
           controller: _followerController,
         ),
       );
+
+  Rect _getTargetRect() {
+    final renderBox =
+        _targetKey.currentContext!.findRenderObject()! as RenderBox;
+    final topLeftOffset = renderBox.localToGlobal(Offset.zero);
+    final size = renderBox.size;
+    return Rect.fromLTWH(
+        topLeftOffset.dx, topLeftOffset.dy, size.width, size.height);
+  }
 }
 
 class TPopupController {

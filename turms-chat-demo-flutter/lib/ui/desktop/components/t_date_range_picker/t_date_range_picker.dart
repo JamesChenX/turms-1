@@ -29,7 +29,7 @@ class TDateRangePicker extends StatefulWidget {
   State<TDateRangePicker> createState() => _TDateRangePickerState();
 }
 
-const groupId = 'dateRangePicker';
+const _dateRangePickerGroupId = 'dateRangePicker';
 
 class _TDateRangePickerState extends State<TDateRangePicker> {
   late FocusNode startDateFocusNode;
@@ -64,7 +64,7 @@ class _TDateRangePickerState extends State<TDateRangePicker> {
         followerAnchor: Alignment.topCenter,
         offset: const Offset(0, 4),
         target: TapRegion(
-          groupId: groupId,
+          groupId: _dateRangePickerGroupId,
           child: _TDateRangeInput(
             startDate: selectedStartDate,
             startDateFocusNode: startDateFocusNode,
@@ -75,7 +75,7 @@ class _TDateRangePickerState extends State<TDateRangePicker> {
           ),
         ),
         follower: TapRegion(
-          groupId: groupId,
+          groupId: _dateRangePickerGroupId,
           child: _TDateRangePickerPanel(
             availableStartDate: widget.firstDate,
             availableEndDate: widget.lastDate,

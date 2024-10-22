@@ -5,58 +5,66 @@ import '../../../../infra/animation/animation_extensions.dart';
 import '../../../../infra/io/global_keyboard_listener.dart';
 
 class TPopupFollowerController {
+  bool visible = false;
+
   void Function()? show;
   void Function()? hide;
 }
 
 class TPopupFollower extends StatefulWidget {
-  const TPopupFollower(
-      {Key? key,
-      required this.child,
-      required this.onDismissed,
-      required this.controller})
-      : super(key: key);
+  const TPopupFollower({
+    Key? key,
+    this.animate = true,
+    this.controller,
+    required this.onDismissed,
+    required this.child,
+  }) : super(key: key);
 
-  final Widget child;
+  final bool animate;
+  final TPopupFollowerController? controller;
   final void Function() onDismissed;
-  final TPopupFollowerController controller;
+  final Widget child;
 
   @override
-  State<TPopupFollower> createState() => _TPopupFollowerState(controller);
+  State<TPopupFollower> createState() => _TPopupFollowerState();
 }
 
 class _TPopupFollowerState extends State<TPopupFollower>
     with SingleTickerProviderStateMixin {
-  _TPopupFollowerState(TPopupFollowerController controller) {
-    controller
-      ..show = show
-      ..hide = hide;
-  }
+  AnimationController? _animationController;
 
-  late AnimationController _animationController;
-
-  late Animation<double> animation;
+  Animation<double>? animation;
   AnimationStatus _animationStatus = AnimationStatus.dismissed;
 
   @override
   void initState() {
     super.initState();
 
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 150),
-      reverseDuration: const Duration(milliseconds: 150),
-    )..addStatusListener(_handleStatusChanged);
+    if (widget.animate) {
+      final animationController = AnimationController(
+        vsync: this,
+        duration: const Duration(milliseconds: 150),
+        reverseDuration: const Duration(milliseconds: 150),
+      )..addStatusListener(_handleStatusChanged);
+      _animationController = animationController;
+      animation = CurvedAnimation(
+          parent: animationController, curve: Curves.fastOutSlowIn);
+    }
 
-    animation = CurvedAnimation(
-        parent: _animationController, curve: Curves.fastOutSlowIn);
+    final controller = widget.controller;
+    if (controller != null) {
+      controller
+        ..show = show
+        ..hide = hide;
+    }
 
     show();
   }
 
   void _handleStatusChanged(AnimationStatus status) {
     assert(mounted);
-    switch ((_isTooltipVisible(_animationStatus), _isTooltipVisible(status))) {
+    final isVisible = _isTooltipVisible(status);
+    switch ((_isTooltipVisible(_animationStatus), isVisible)) {
       case (true, false):
         widget.onDismissed();
       case (false, true):
@@ -65,53 +73,81 @@ class _TPopupFollowerState extends State<TPopupFollower>
         break;
     }
     _animationStatus = status;
+    widget.controller?.visible = isVisible;
   }
 
   static bool _isTooltipVisible(AnimationStatus status) =>
       status.isNotDismissed;
 
   @override
-  Widget build(BuildContext context) => GlobalKeyboardListener(
-        onKeyEvent: (KeyEvent event) {
-          if (event is KeyDownEvent &&
-              event.logicalKey == LogicalKeyboardKey.escape) {
-            if (_animationController.isCompleted) {
-              hide();
-              return true;
-            }
+  Widget build(BuildContext context) {
+    final _animation = animation;
+    final child = SingleChildScrollView(
+      child: widget.child,
+    );
+    return GlobalKeyboardListener(
+      onKeyEvent: (KeyEvent event) {
+        if (event is KeyDownEvent &&
+            event.logicalKey == LogicalKeyboardKey.escape) {
+          final controller = _animationController;
+          if (controller == null || controller.isCompleted) {
+            hide();
+            return true;
           }
-          return false;
-        },
-        child: FadeTransition(
-          opacity: animation,
-          child: SingleChildScrollView(
-            child: widget.child,
-          ),
-        ),
-      );
+        }
+        return false;
+      },
+      child: _animation == null
+          ? child
+          : FadeTransition(
+              opacity: _animation,
+              child: child,
+            ),
+    );
+  }
 
   @override
   void dispose() {
-    _animationController.dispose();
+    _animationController?.dispose();
     super.dispose();
   }
 
   @override
   void didUpdateWidget(TPopupFollower oldWidget) {
     super.didUpdateWidget(oldWidget);
-    widget.controller.show = show;
-    widget.controller.hide = hide;
+    // TODO: handle the change of animate
+    final oldController = oldWidget.controller;
+    final currentController = widget.controller;
+    if (currentController == oldController) {
+      return;
+    }
+    if (oldController != null) {
+      oldController
+        ..show = null
+        ..hide = null;
+    }
+    if (currentController != null) {
+      currentController
+        ..show = show
+        ..hide = hide;
+    }
   }
 
   Future<void> show() async {
     if (mounted) {
-      await _animationController.forward();
+      await _animationController?.forward();
     }
   }
 
   Future<void> hide() async {
-    if (mounted) {
-      await _animationController.reverse();
+    if (!mounted) {
+      return;
+    }
+    final controller = _animationController;
+    if (controller == null) {
+      widget.onDismissed();
+    } else {
+      await controller.reverse();
     }
   }
 }

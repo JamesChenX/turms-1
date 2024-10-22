@@ -16,7 +16,7 @@ class TListTile extends StatefulWidget {
       this.backgroundHoveredColor,
       this.mouseCursor = SystemMouseCursors.basic,
       this.onTap,
-      this.onSecondaryTap,
+      this.onSecondaryTapUp,
       required this.child})
       : super(key: key);
 
@@ -28,7 +28,7 @@ class TListTile extends StatefulWidget {
   final Color? backgroundHoveredColor;
   final MouseCursor mouseCursor;
   final GestureTapCallback? onTap;
-  final GestureTapCallback? onSecondaryTap;
+  final GestureTapUpCallback? onSecondaryTapUp;
   final Widget child;
 
   @override
@@ -47,7 +47,7 @@ class _TListTileState extends State<TListTile> {
         onExit: (_) => setState(() => isHovered = false),
         child: GestureDetector(
             onTap: widget.onTap,
-            onSecondaryTap: widget.onSecondaryTap,
+            onSecondaryTapUp: widget.onSecondaryTapUp,
             child: AnimatedContainer(
                 height: widget.height,
                 alignment: Alignment.center,

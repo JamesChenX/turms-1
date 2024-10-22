@@ -35,7 +35,9 @@ Future<void> showCustomTDialog(
                         color: Colors.white,
                         borderRadius: borderRadius,
                         boxShadow: Styles.boxShadow),
-                    child: RepaintBoundary(child: child)),
+                    child: ClipRRect(
+                        borderRadius: borderRadius,
+                        child: RepaintBoundary(child: child))),
               ),
             ));
 

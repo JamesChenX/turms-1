@@ -55,6 +55,18 @@ class _ConversationTileState extends ConsumerState<ConversationTile> {
         !widget.isSearchMode && widget.conversation.unreadMessageCount > 0;
     return TListTile(
       onTap: widget.onTap,
+      onSecondaryTapUp: (details) {
+        final globalPosition = details.globalPosition;
+        showPopup(
+          context: context,
+          targetGlobalRect:
+              Rect.fromLTWH(globalPosition.dx, globalPosition.dy, 0, 0),
+          targetAnchor: Alignment.topLeft,
+          followerAnchor: Alignment.topLeft,
+          follower:
+              const SizedBox(width: 100, height: 100, child: Placeholder()),
+        );
+      },
       focused: widget.selected,
       backgroundColor: widget.highlighted
           ? appThemeExtension.conversationBackgroundHighlightedColor

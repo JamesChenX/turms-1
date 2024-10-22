@@ -154,29 +154,31 @@ class TAvatarUserPresencePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final paint = Paint();
 
+    final centerX = size.width / 2;
+    final centerY = size.height / 2;
     canvas.drawCircle(
-        Offset(size.width / 2, size.height / 2),
-        size.width / 2,
+        Offset(centerX, centerY),
+        centerX,
         paint
           ..color = Colors.white
           ..style = PaintingStyle.fill);
     switch (presence) {
       case TAvatarUserPresence.available:
         canvas.drawCircle(
-            Offset(size.width / 2, size.height / 2),
-            size.width / 2 - _padding,
+            Offset(centerX, centerY),
+            centerX - _padding,
             paint
               ..color = Colors.green
               ..style = PaintingStyle.fill);
         break;
       case TAvatarUserPresence.away:
         canvas
-          ..drawCircle(Offset(size.width / 2, size.height / 2),
-              size.width / 2 - _padding, paint..color = Colors.orangeAccent)
+          ..drawCircle(Offset(centerX, centerY), centerX - _padding,
+              paint..color = Colors.orangeAccent)
           ..drawPath(
               Path()
-                ..moveTo(size.width / 2, _clockPointDistanceFromEdge)
-                ..lineTo(size.width / 2, size.height / 2)
+                ..moveTo(centerX, _clockPointDistanceFromEdge)
+                ..lineTo(centerX, centerY)
                 ..lineTo(_clockPoint.x, _clockPoint.y),
               paint
                 ..color = Colors.white
@@ -184,18 +186,18 @@ class TAvatarUserPresencePainter extends CustomPainter {
                 ..strokeWidth = 1);
         break;
       case TAvatarUserPresence.busy:
-        canvas.drawCircle(Offset(size.width / 2, size.height / 2),
-            size.width / 2 - _padding, paint..color = Colors.red);
+        canvas.drawCircle(Offset(centerX, centerY), centerX - _padding,
+            paint..color = Colors.red);
         break;
       case TAvatarUserPresence.doNotDisturb:
         final padding = size.width / 3.5;
         canvas
-          ..drawCircle(Offset(size.width / 2, size.height / 2),
-              size.width / 2 - _padding, paint..color = Colors.red)
+          ..drawCircle(Offset(centerX, centerY), centerX - _padding,
+              paint..color = Colors.red)
           ..drawPath(
               Path()
-                ..moveTo(padding, size.height / 2)
-                ..lineTo(size.width - padding, size.height / 2),
+                ..moveTo(padding, centerY)
+                ..lineTo(size.width - padding, centerY),
               paint
                 ..color = Colors.white
                 ..style = PaintingStyle.stroke
@@ -205,19 +207,19 @@ class TAvatarUserPresencePainter extends CustomPainter {
         final padding = size.width / 6;
         canvas
           ..drawCircle(
-              Offset(size.width / 2, size.height / 2),
-              size.width / 2 - _padding,
+              Offset(centerX, centerY),
+              centerX - _padding,
               paint
                 ..color = Colors.grey.shade600
                 ..style = PaintingStyle.fill)
-          ..drawCircle(Offset(size.width / 2, size.height / 2),
-              size.width / 2 - _padding * 2, paint..color = Colors.white)
+          ..drawCircle(Offset(centerX, centerY), centerX - _padding * 2,
+              paint..color = Colors.white)
           ..drawPath(
               Path()
-                ..moveTo(size.width / 2 - padding, size.height / 2 - padding)
-                ..lineTo(size.width / 2 + padding, size.height / 2 + padding)
-                ..moveTo(size.width / 2 - padding, size.height / 2 + padding)
-                ..lineTo(size.width / 2 + padding, size.height / 2 - padding),
+                ..moveTo(centerX - padding, centerY - padding)
+                ..lineTo(centerX + padding, centerY + padding)
+                ..moveTo(centerX - padding, centerY + padding)
+                ..lineTo(centerX + padding, centerY - padding),
               paint
                 ..color = Colors.grey.shade600
                 ..style = PaintingStyle.stroke

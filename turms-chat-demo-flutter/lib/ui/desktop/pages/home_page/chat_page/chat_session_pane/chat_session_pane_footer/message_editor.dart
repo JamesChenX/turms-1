@@ -35,9 +35,8 @@ class MessageEditor extends StatefulWidget {
 
 class TMessageEditorState extends State<MessageEditor> {
   late GlobalKey _textFieldKey;
-  late OverlayState _overlayState;
-  OverlayEntry? _mentionUserMenuOverlayEntry;
   FocusNode? _focusNode;
+  TPopupFollowerController? _mentionUserMenuController;
 
   int? _lastCaretOffset;
 
@@ -53,8 +52,12 @@ class TMessageEditorState extends State<MessageEditor> {
   @override
   void dispose() {
     _focusNode?.dispose();
-    _removeMentionMenu();
+    _tryHideMentionUserMenu();
     super.dispose();
+  }
+
+  void _tryHideMentionUserMenu() {
+    _mentionUserMenuController?.hide?.call();
   }
 
   @override
@@ -64,16 +67,16 @@ class TMessageEditorState extends State<MessageEditor> {
     return GlobalKeyboardListener(
       onKeyEvent: (KeyEvent event) {
         final logicalKey = event.logicalKey;
-        final mentionUserMenuOverlayEntry = _mentionUserMenuOverlayEntry;
-        if (mentionUserMenuOverlayEntry == null) {
+        final controller = _mentionUserMenuController;
+        if (controller == null || !controller.visible) {
           return false;
         }
         if (logicalKey == LogicalKeyboardKey.escape) {
-          _removeMentionMenu();
+          _tryHideMentionUserMenu();
           return true;
         } else if (widget.controller.selection.baseOffset <=
             _lastCaretOffset!) {
-          _removeMentionMenu();
+          _tryHideMentionUserMenu();
           return true;
         }
         return false;
@@ -110,54 +113,37 @@ class TMessageEditorState extends State<MessageEditor> {
           // FIXME: https://github.com/flutter/flutter/issues/135354
           // Use a callback as a workaround to get the caret offset.
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            final rect = getCaretRect(_textFieldKey);
-            if (rect != null) {
-              _removeMentionMenu();
-              _mentionUserMenuOverlayEntry = OverlayEntry(
-                  builder: (context) => Positioned.fill(
-                        child: CustomSingleChildLayout(
-                          delegate: MenuLayout(
-                            targetRect: rect,
-                            targetAlignment: Alignment.topRight,
-                            followerAlignment: Alignment.bottomLeft,
-                          ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: ConstrainedBox(
-                              constraints: const BoxConstraints(
-                                  minWidth: 96, maxWidth: 128),
-                              child: TapRegion(
-                                onTapOutside: (event) {
-                                  _removeMentionMenu();
-                                },
-                                child: TMenu(
-                                    dense: true,
-                                    entries: [
-                                      const TMenuEntry(
-                                        label: 'test',
-                                        value: 'test',
-                                      ),
-                                    ],
-                                    onSelected: (entry) {
-                                      debugPrint('selected: ${entry.label}');
-                                    }),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ));
-              _overlayState = Overlay.of(context);
-              _overlayState.insert(_mentionUserMenuOverlayEntry!);
+            final targetGlobalRect = getCaretRect(_textFieldKey);
+            if (targetGlobalRect == null) {
+              return;
             }
+            _tryHideMentionUserMenu();
+            showPopup(
+              context: context,
+              targetGlobalRect: targetGlobalRect,
+              targetAnchor: Alignment.topRight,
+              followerAnchor: Alignment.bottomLeft,
+              animate: false,
+              follower: ConstrainedBox(
+                constraints: const BoxConstraints(minWidth: 96, maxWidth: 128),
+                child: TMenu(
+                    dense: true,
+                    entries: [
+                      // TODO
+                      const TMenuEntry(
+                        label: 'test',
+                        value: 'test',
+                      ),
+                    ],
+                    onSelected: (entry) {
+                      debugPrint('selected: ${entry.label}');
+                    }),
+              ),
+            );
           });
         },
       ),
     );
-  }
-
-  void _removeMentionMenu() {
-    _mentionUserMenuOverlayEntry?.remove();
-    _mentionUserMenuOverlayEntry = null;
   }
 
   (String, int) _getCharacterAtCursor() {
@@ -211,63 +197,4 @@ TextSpan generateTextSpan(
     return '';
   });
   return TextSpan(children: spans);
-}
-
-class MenuLayout extends SingleChildLayoutDelegate {
-  const MenuLayout(
-      {super.relayout,
-      required this.targetRect,
-      required this.targetAlignment,
-      required this.followerAlignment});
-
-  final Rect targetRect;
-  final Alignment targetAlignment;
-  final Alignment followerAlignment;
-
-  @override
-  bool shouldRelayout(MenuLayout oldDelegate) =>
-      targetRect != oldDelegate.targetRect ||
-      targetAlignment != oldDelegate.targetAlignment ||
-      followerAlignment != oldDelegate.followerAlignment;
-
-  @override
-  BoxConstraints getConstraintsForChild(BoxConstraints constraints) =>
-      constraints.loosen();
-
-  @override
-  Offset getPositionForChild(Size size, Size childSize) =>
-      getPosition(size, childSize);
-
-  Offset getPosition(Size containerSize, Size childSize) {
-    final preferredTargetTopLeft = targetRect.topLeft +
-        targetAlignment.alongSize(targetRect.size) -
-        followerAlignment.alongSize(childSize);
-    if (preferredTargetTopLeft.dx < 0 ||
-        preferredTargetTopLeft.dx + childSize.width > containerSize.width) {
-      if (preferredTargetTopLeft.dy < 0 ||
-          preferredTargetTopLeft.dy + childSize.height > containerSize.height) {
-        return targetRect.topLeft +
-            targetAlignment.alongSize(targetRect.size) -
-            followerAlignment.flipped().alongSize(childSize);
-      } else {
-        return targetRect.topLeft +
-            targetAlignment.alongSize(targetRect.size) -
-            followerAlignment.flippedX().alongSize(childSize);
-      }
-    } else if (preferredTargetTopLeft.dy < 0 ||
-        preferredTargetTopLeft.dy + childSize.height > containerSize.height) {
-      return targetRect.topLeft +
-          targetAlignment.alongSize(targetRect.size) -
-          followerAlignment.flippedY().alongSize(childSize);
-    }
-    return preferredTargetTopLeft;
-  }
-}
-
-extension on Alignment {
-  Alignment flipped() => Alignment(-x, -y);
-
-  Alignment flippedX() => Alignment(-x, y);
-
-  Alignment flippedY() => Alignment(x, -y);
 }

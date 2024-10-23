@@ -65,14 +65,18 @@ class NewRelationshipPageView extends StatelessWidget {
           padding:
               const EdgeInsets.symmetric(horizontal: safeAreaPaddingHorizontal),
           child: TSearchBar(
+            textEditingController:
+                newRelationshipPageController.searchTextController,
             hintText: appLocalizations.search,
             autofocus: true,
+            onChanged: newRelationshipPageController.updateSearchText,
             onSubmitted: (value) {
               if (newRelationshipPageController.searchType == SearchType.user) {
                 newRelationshipPageController.searchUser(value);
               } else {
                 newRelationshipPageController.searchGroup(value);
               }
+              newRelationshipPageController.updateSearchText(value);
             },
           ),
         ),

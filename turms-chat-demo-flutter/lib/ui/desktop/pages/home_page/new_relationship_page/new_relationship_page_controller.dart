@@ -17,35 +17,45 @@ import 'search_type.dart';
 class NewRelationshipPageController extends ConsumerState<NewRelationshipPage>
     with SingleTickerProviderStateMixin {
   late AppLocalizations appLocalizations;
+  late TextEditingController searchTextController;
   late TabController tabController;
 
   TAsyncData<List<Contact>> userContacts = TAsyncData();
   TAsyncData<List<Contact>> groupContacts = TAsyncData();
+  String userContactSearchText = '';
+  String groupContactSearchText = '';
 
   late SearchType searchType;
 
   @override
   void initState() {
     super.initState();
+    searchTextController = TextEditingController();
     tabController = TabController(length: 2, vsync: this)
       ..addListener(
         () {
           if (tabController.index == 0) {
             searchType = SearchType.user;
+            searchTextController.text = userContactSearchText;
           } else {
             searchType = SearchType.group;
+            searchTextController.text = groupContactSearchText;
           }
+          setState(() {});
         },
       );
     if (widget.showAddContactPage) {
+      searchType = SearchType.user;
       tabController.index = 0;
     } else {
+      searchType = SearchType.group;
       tabController.index = 1;
     }
   }
 
   @override
   void dispose() {
+    searchTextController.dispose();
     tabController.dispose();
     super.dispose();
   }
@@ -96,5 +106,13 @@ class NewRelationshipPageController extends ConsumerState<NewRelationshipPage>
   void openGroupJoinRequestDialog(Contact contact) {
     // TODO
     showFriendRequestDialog(context, contact);
+  }
+
+  void updateSearchText(String value) {
+    if (searchType == SearchType.user) {
+      userContactSearchText = value;
+    } else {
+      groupContactSearchText = value;
+    }
   }
 }

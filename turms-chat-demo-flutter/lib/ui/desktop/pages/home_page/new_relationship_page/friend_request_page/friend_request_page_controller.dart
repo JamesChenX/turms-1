@@ -32,6 +32,8 @@ class FriendRequestPageController extends ConsumerState<FriendRequestPage> {
 
   @override
   Widget build(BuildContext context) {
+    theme = context.theme;
+    appThemeExtension = theme.appThemeExtension;
     appLocalizations = ref.watch(appLocalizationsViewModel);
     return FriendRequestPageView(this);
   }

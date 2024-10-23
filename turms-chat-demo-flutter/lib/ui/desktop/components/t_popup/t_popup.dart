@@ -161,6 +161,9 @@ class _TPopupState extends State<TPopup> {
       child: widget.follower,
       targetAnchor: widget.targetAnchor,
       followerAnchor: widget.followerAnchor,
+      followerWidth: widget.constrainFollowerWithTargetWidth
+          ? _layerLink.leaderSize?.width
+          : null,
       onTapOutside: (event) => _hidePopup(),
       onDismissed: () {
         _removeOverlayEntry();

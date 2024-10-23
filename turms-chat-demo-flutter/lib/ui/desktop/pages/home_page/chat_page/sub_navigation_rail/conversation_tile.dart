@@ -63,8 +63,23 @@ class _ConversationTileState extends ConsumerState<ConversationTile> {
               Rect.fromLTWH(globalPosition.dx, globalPosition.dy, 0, 0),
           targetAnchor: Alignment.topLeft,
           followerAnchor: Alignment.topLeft,
-          follower:
-              const SizedBox(width: 100, height: 100, child: Placeholder()),
+          follower: TMenu(
+            dense: true,
+            padding: Sizes.paddingV8H16,
+            entries: [
+              // TODO: add pin/unpin
+              TMenuEntry(value: 'pin', label: appLocalizations.pin),
+              TMenuEntry(
+                  value: 'enableNewMessageNotification',
+                  label: appLocalizations.enableNewMessageNotification),
+              TMenuEntry.separator,
+              TMenuEntry(
+                  value: 'deleteChat', label: appLocalizations.deleteChat),
+            ],
+            onSelected: (item) {
+              debugPrint('Selected: $item');
+            },
+          ),
         );
       },
       focused: widget.selected,

@@ -17,7 +17,7 @@ class ChatSessionDetailsGroupConversation extends ConsumerStatefulWidget {
 class _ChatSessionDetailsGroupConversationState
     extends ConsumerState<ChatSessionDetailsGroupConversation> {
   bool _muteNotifications = false;
-  bool _stickOnTop = false;
+  bool _pinned = false;
 
   @override
   Widget build(BuildContext context) {
@@ -77,11 +77,11 @@ class _ChatSessionDetailsGroupConversationState
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(appLocalizations.stickOnTop),
+            Text(appLocalizations.pin),
             TSwitch(
-              value: _stickOnTop,
+              value: _pinned,
               onChanged: (value) {
-                _stickOnTop = value;
+                _pinned = value;
                 setState(() {});
               },
             ),

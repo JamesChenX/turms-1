@@ -85,6 +85,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get darkTheme => '暗主题';
 
   @override
+  String get deleteChat => '删除聊天记录';
+
+  @override
+  String get disableNewMessageNotification => '禁用新消息通知';
+
+  @override
   String get downloadCancel => '取消下载';
 
   @override
@@ -104,6 +110,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get editProfileImage => '编辑头像';
+
+  @override
+  String get enableNewMessageNotification => '启用新消息通知';
 
   @override
   String get error => '错误';
@@ -262,6 +271,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get openSettingsDialog => '打开设置对话框';
 
   @override
+  String get pin => '置顶';
+
+  @override
   String get pleaseEnterPassword => '请输入密码';
 
   @override
@@ -324,9 +336,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get shortcuts => '快捷键';
 
   @override
-  String get stickOnTop => '置顶';
-
-  @override
   String get sticker => '表情';
 
   @override
@@ -340,6 +349,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get today => '今天';
+
+  @override
+  String get unpin => '取消置顶';
 
   @override
   String get update => '更新';

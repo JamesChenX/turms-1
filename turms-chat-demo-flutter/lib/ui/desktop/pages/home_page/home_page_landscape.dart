@@ -18,7 +18,6 @@ import '../../../l10n/view_models/app_localizations_view_model.dart';
 import '../../../themes/index.dart';
 
 import '../../components/index.dart';
-import 'about_page/about_page.dart';
 import 'action_to_shortcut_view_model.dart';
 import 'chat_page/chat_page.dart';
 import 'contacts_page/contacts_page.dart';
@@ -26,7 +25,6 @@ import 'files_page/files_page.dart';
 import 'home_page_action.dart';
 import 'home_page_tab.dart';
 import 'main_navigation_rail/main_navigation_rail.dart';
-import 'settings_page/settings_page.dart';
 import 'shared_view_models/home_page_tab_view_model.dart';
 
 const _taskIdCheckDiskSpace = 'checkDiskSpace';
@@ -47,33 +45,14 @@ class _HomePageLandscapeState extends ConsumerState<HomePageLandscape> {
     final tab = ref.watch(homePageTabViewModel);
     final actionToShortcut = ref.watch(actionToShortcutViewModel);
     final bindings = <ShortcutActivator, VoidCallback>{};
-    final shortcutShowChatPage =
-        actionToShortcut[HomePageAction.showChatPage]?.shortcutActivator;
-    final shortcutShowContactsPage =
-        actionToShortcut[HomePageAction.showContactsPage]?.shortcutActivator;
-    final shortcutShowFilesPage =
-        actionToShortcut[HomePageAction.showFilesPage]?.shortcutActivator;
-    final shortcutShowSettingsDialog =
-        actionToShortcut[HomePageAction.showSettingsDialog]?.shortcutActivator;
-    final shortcutShowAboutDialog =
-        actionToShortcut[HomePageAction.showAboutDialog]?.shortcutActivator;
-    if (shortcutShowChatPage != null) {
-      bindings[shortcutShowChatPage] = () =>
-          ref.read(homePageTabViewModel.notifier).state = HomePageTab.chat;
-    }
-    if (shortcutShowContactsPage != null) {
-      bindings[shortcutShowContactsPage] = () =>
-          ref.read(homePageTabViewModel.notifier).state = HomePageTab.contacts;
-    }
-    if (shortcutShowFilesPage != null) {
-      bindings[shortcutShowFilesPage] = () =>
-          ref.read(homePageTabViewModel.notifier).state = HomePageTab.files;
-    }
-    if (shortcutShowSettingsDialog != null) {
-      bindings[shortcutShowSettingsDialog] = () => showSettingsDialog(context);
-    }
-    if (shortcutShowAboutDialog != null) {
-      bindings[shortcutShowAboutDialog] = () => showAppAboutDialog(context);
+    for (final action in HomePageAction.values) {
+      final shortcut = actionToShortcut[action]?.shortcutActivator;
+      if (shortcut != null) {
+        bindings[shortcut] = () {
+          hideAllPopups();
+          action.trigger(context: context, ref: ref);
+        };
+      }
     }
     final child = CallbackShortcuts(
       bindings: bindings,
@@ -85,7 +64,7 @@ class _HomePageLandscapeState extends ConsumerState<HomePageLandscape> {
             Row(
               children: [
                 const SizedBox(
-                  width: 56,
+                  width: Sizes.mainNavigationRailWidth,
                   child: MainNavigationRail(),
                 ),
                 Expanded(

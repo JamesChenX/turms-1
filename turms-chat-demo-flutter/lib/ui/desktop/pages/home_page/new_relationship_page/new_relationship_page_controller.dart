@@ -6,6 +6,7 @@ import '../../../../../domain/group/services/group_service.dart';
 import '../../../../../domain/user/models/contact.dart';
 import '../../../../../domain/user/models/index.dart';
 import '../../../../../domain/user/services/user_service.dart';
+import '../../../../../infra/data/t_async_data.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../l10n/view_models/app_localizations_view_model.dart';
 import 'friend_request_page/friend_request_page.dart';
@@ -18,21 +19,27 @@ class NewRelationshipPageController extends ConsumerState<NewRelationshipPage>
   late AppLocalizations appLocalizations;
   late TabController tabController;
 
-  List<Contact> contacts = [];
+  TAsyncData<List<Contact>> userContacts = TAsyncData();
+  TAsyncData<List<Contact>> groupContacts = TAsyncData();
 
-  bool isSearching = false;
-  bool isSearchResultEmpty = false;
   late SearchType searchType;
 
   @override
   void initState() {
     super.initState();
-    tabController = TabController(length: 2, vsync: this);
+    tabController = TabController(length: 2, vsync: this)
+      ..addListener(
+        () {
+          if (tabController.index == 0) {
+            searchType = SearchType.user;
+          } else {
+            searchType = SearchType.group;
+          }
+        },
+      );
     if (widget.showAddContactPage) {
-      searchType = SearchType.user;
       tabController.index = 0;
     } else {
-      searchType = SearchType.group;
       tabController.index = 1;
     }
   }
@@ -49,35 +56,45 @@ class NewRelationshipPageController extends ConsumerState<NewRelationshipPage>
     return NewRelationshipPageView(this);
   }
 
-  Future<void> _search(SearchType searchType, String value) async {
+  Future<void> _search(SearchType searchType, String value,
+      TAsyncData<List<dynamic>> contactsData) async {
     final num = Int64.tryParseInt(value);
     if (num == null) {
-      contacts = [];
-      isSearchResultEmpty = true;
+      contactsData.lastValue = [];
       setState(() {});
       return;
     }
-    isSearching = true;
+    contactsData.isLoading = true;
     setState(() {});
     switch (searchType) {
       case SearchType.user:
-        contacts = await userService.searchUserContacts(num, value);
+        contactsData.lastValue =
+            await userService.searchUserContacts(num, value);
+        break;
       case SearchType.group:
-        contacts = await groupService.searchGroupContacts(num, value);
+        contactsData.lastValue =
+            await groupService.searchGroupContacts(num, value);
+        break;
     }
-    isSearching = false;
-    isSearchResultEmpty = false;
+    contactsData.isLoading = false;
     if (!mounted) {
       return;
     }
     setState(() {});
   }
 
-  Future<void> searchUser(String value) => _search(SearchType.user, value);
+  Future<void> searchUser(String value) =>
+      _search(SearchType.user, value, userContacts);
 
-  Future<void> searchGroup(String value) => _search(SearchType.group, value);
+  Future<void> searchGroup(String value) =>
+      _search(SearchType.group, value, groupContacts);
 
   void openFriendRequestDialog(Contact contact) {
+    showFriendRequestDialog(context, contact);
+  }
+
+  void openGroupJoinRequestDialog(Contact contact) {
+    // TODO
     showFriendRequestDialog(context, contact);
   }
 }

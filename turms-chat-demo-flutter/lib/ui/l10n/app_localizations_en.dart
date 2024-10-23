@@ -85,6 +85,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get darkTheme => 'Dark';
 
   @override
+  String get deleteChat => 'Delete Chat';
+
+  @override
+  String get disableNewMessageNotification => 'Mute';
+
+  @override
   String get downloadCancel => 'Cancel';
 
   @override
@@ -104,6 +110,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get editProfileImage => 'Edit Profile Image';
+
+  @override
+  String get enableNewMessageNotification => 'Unmute';
 
   @override
   String get error => 'Error';
@@ -262,6 +271,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get openSettingsDialog => 'Open Settings Dialog';
 
   @override
+  String get pin => 'Pin';
+
+  @override
   String get pleaseEnterPassword => 'Please enter password';
 
   @override
@@ -324,9 +336,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shortcuts => 'Shortcuts';
 
   @override
-  String get stickOnTop => 'Stick on Top';
-
-  @override
   String get sticker => 'Sticker';
 
   @override
@@ -340,6 +349,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get today => 'Today';
+
+  @override
+  String get unpin => 'Unpin';
 
   @override
   String get update => 'Update';

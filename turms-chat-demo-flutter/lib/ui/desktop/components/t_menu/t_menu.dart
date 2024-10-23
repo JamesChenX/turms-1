@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../themes/index.dart';
+import '../index.dart';
 
 /// TODO: listen to the keyboard to select the item
 class TMenu<T> extends StatefulWidget {
@@ -10,14 +11,14 @@ class TMenu<T> extends StatefulWidget {
       required this.entries,
       required this.onSelected,
       this.dense = false,
-      this.textAlign,
+      this.textAlign = TextAlign.start,
       this.padding = Sizes.paddingV8H8});
 
   final T? value;
   final List<TMenuEntry<T>> entries;
   final void Function(TMenuEntry<T> item) onSelected;
   final bool dense;
-  final TextAlign? textAlign;
+  final TextAlign textAlign;
   final EdgeInsets padding;
 
   @override
@@ -54,22 +55,24 @@ class _TMenuState<T> extends State<TMenu<T>> {
         decoration: menuDecoration,
         child: Padding(
           padding: menuDecoration.padding,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              for (final entry in widget.entries)
-                _buildItem(context, appThemeExtension, entry, minWidth)
-            ],
+          child: IntrinsicWidth(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (final entry in widget.entries)
+                  _buildItem(context, appThemeExtension, entry, minWidth)
+              ],
+            ),
           ),
         ),
       );
 
-  MouseRegion _buildItem(
-      BuildContext context,
-      AppThemeExtension appThemeExtension,
-      TMenuEntry<T> entry,
-      double? minWidth) {
+  Widget _buildItem(BuildContext context, AppThemeExtension appThemeExtension,
+      TMenuEntry<T> entry, double? minWidth) {
+    if (identical(entry, TMenuEntry.separator)) {
+      return const THorizontalDivider();
+    }
     final text = Padding(
       padding: widget.padding,
       child: Text(
@@ -119,6 +122,9 @@ class TMenuEntry<T> {
     required this.label,
     required this.value,
   });
+
+  static TMenuEntry<dynamic> separator =
+      const TMenuEntry(label: '', value: null);
 
   final String label;
   final T value;

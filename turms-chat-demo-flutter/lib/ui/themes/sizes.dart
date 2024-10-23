@@ -51,6 +51,7 @@ class Sizes {
   static const dateRangePickerHeight = 312.0;
 
   // Application
+  static const mainNavigationRailWidth = 56.0;
   static const subNavigationRailWidth = 248.0;
   static const homePageHeaderHeight = 60.0;
 

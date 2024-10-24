@@ -147,6 +147,7 @@ class ChatSessionPaneFooterView extends StatelessWidget {
             ),
             TIconButton(
                 iconData: Symbols.send_rounded,
+                iconColor: Colors.black54,
                 iconColorHovered: theme.primaryColor,
                 tooltip: appLocalizations.send,
                 onTap: chatPageFooterController.sendMessage)

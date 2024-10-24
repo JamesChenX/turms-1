@@ -7,6 +7,7 @@ import '../../../../../infra/keyboard/shortcut_extensions.dart';
 import '../../../../l10n/view_models/app_localizations_view_model.dart';
 
 import '../../../../themes/index.dart';
+import '../../../components/index.dart';
 import '../../../components/t_button/t_icon_button.dart';
 import '../about_page/about_page.dart';
 import '../action_to_shortcut_view_model.dart';
@@ -23,8 +24,6 @@ class Tabs extends ConsumerStatefulWidget {
 }
 
 class _TabsState extends ConsumerState<Tabs> {
-  final MenuController _menuController = MenuController();
-
   @override
   Widget build(BuildContext context) {
     final theme = context.theme;
@@ -82,44 +81,41 @@ class _TabsState extends ConsumerState<Tabs> {
             iconColor: isFilesTab ? theme.primaryColor : Colors.white54,
             iconColorHovered: isFilesTab ? theme.primaryColor : Colors.white70),
       ]),
-      MenuAnchor(
-        controller: _menuController,
-        consumeOutsideTap: true,
-        alignmentOffset: const Offset(56, 0),
-        menuChildren: <Widget>[
-          MenuItemButton(
-            child: Text(appLocalizations.settings),
-            onPressed: () {
+      TMenuPopup(
+        offset: const Offset(Sizes.mainNavigationRailWidth / 2 + 4, 0),
+        targetAnchor: Alignment.topCenter,
+        followerAnchor: Alignment.bottomLeft,
+        constrainFollowerWithTargetWidth: false,
+        entries: [
+          TMenuEntry(
+            value: 0,
+            label: appLocalizations.settings,
+            onSelected: () {
               showSettingsDialog(context);
             },
           ),
-          MenuItemButton(
-            child: Text(appLocalizations.about),
-            onPressed: () {
+          TMenuEntry(
+            value: 1,
+            label: appLocalizations.about,
+            onSelected: () {
               showAppAboutDialog(context);
             },
           ),
-          MenuItemButton(
-            child: Text(
-              appLocalizations.logOut,
-              style: const TextStyle(color: Colors.red),
-            ),
-            onPressed: () {
+          TMenuEntry.separator,
+          TMenuEntry(
+            value: 2,
+            label: appLocalizations.logOut,
+            onSelected: () {
               // TODO: Reset all states related to the logged-in user.
               ref.read(loggedInUserViewModel.notifier).state = null;
             },
           ),
         ],
-        child: TIconButton(
+        anchor: TIconButton(
             iconData: Symbols.menu_rounded,
-            // iconData: Symbols.settings,
-            // iconFill: isSettingsTab,
             iconSize: 26,
             iconWeight: 300,
             tooltip: appLocalizations.settings,
-            onPanDown: (details) {
-              _menuController.open();
-            },
             iconColor: Colors.white54,
             iconColorHovered: Colors.white70),
       ),

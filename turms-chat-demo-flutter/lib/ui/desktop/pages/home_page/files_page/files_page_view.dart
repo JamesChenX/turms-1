@@ -41,7 +41,7 @@ class FilesPageView extends ConsumerWidget {
           const TWindowControlZone(toggleMaximizeOnDoubleTap: true),
           Center(
             child: Padding(
-              padding: Sizes.paddingV16H8,
+              padding: Sizes.paddingV16H16,
               child: Row(
                 spacing: 16,
                 children: [

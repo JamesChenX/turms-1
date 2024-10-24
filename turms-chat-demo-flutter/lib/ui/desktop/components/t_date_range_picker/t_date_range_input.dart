@@ -61,19 +61,19 @@ class _TDateRangeInputState extends ConsumerState<_TDateRangeInput> {
       endDate = widget.endDate;
     }
 
-    _startDateInputController.text = startDate == null
-        ? ''
-        : ref.read(dateFormatViewModel_yMd).format(startDate);
-    _endDateInputController.text = endDate == null
-        ? ''
-        : ref.read(dateFormatViewModel_yMd).format(endDate);
+    final dateFormat = ref.read(dateFormatViewModel_yMd);
+    _startDateInputController.text =
+        startDate == null ? '' : dateFormat.format(startDate);
+    _endDateInputController.text =
+        endDate == null ? '' : dateFormat.format(endDate);
     final textStyle =
         appThemeExtension.descriptionTextStyle.copyWith(height: 1);
+
     return Row(
       mainAxisSize: MainAxisSize.min,
+      spacing: 4,
       children: [
-        SizedBox(
-          width: 104,
+        IntrinsicWidth(
           child: TTextField(
             textEditingController: _startDateInputController,
             focusNode: widget.startDateFocusNode,
@@ -84,11 +84,8 @@ class _TDateRangeInputState extends ConsumerState<_TDateRangeInput> {
             onTapOutside: onTapOutside,
           ),
         ),
-        const Padding(
-          padding: Sizes.paddingH4,
-          child: Icon(Symbols.arrow_forward_rounded, size: 16),
-        ),
-        Flexible(
+        const Icon(Symbols.arrow_forward_rounded, size: 16),
+        IntrinsicWidth(
           child: TTextField(
             textEditingController: _endDateInputController,
             focusNode: widget.endDateFocusNode,

@@ -31,7 +31,6 @@ import 'sub_navigation_rail.dart';
 import 'sub_navigation_rail_view.dart';
 
 class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
-  late MenuController menuController;
   late TextEditingController searchBarTextEditingController;
   late FocusNode searchBarFocusNode;
   late ScrollController conversationTilesScrollController;
@@ -53,7 +52,6 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
   @override
   void initState() {
     super.initState();
-    menuController = MenuController();
     searchBarTextEditingController = TextEditingController();
     searchBarFocusNode = FocusNode()
       ..addListener(() {
@@ -95,7 +93,6 @@ class SubNavigationRailController extends ConsumerState<SubNavigationRail> {
 
   @override
   void dispose() {
-    menuController.close();
     searchBarTextEditingController.dispose();
     searchBarFocusNode.dispose();
     conversationTilesScrollController.dispose();

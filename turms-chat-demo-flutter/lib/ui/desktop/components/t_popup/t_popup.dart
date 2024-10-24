@@ -164,6 +164,7 @@ class _TPopupState extends State<TPopup> {
       followerWidth: widget.constrainFollowerWithTargetWidth
           ? _layerLink.leaderSize?.width
           : null,
+      offset: widget.offset,
       onTapOutside: (event) => _hidePopup(),
       onDismissed: () {
         _removeOverlayEntry();
@@ -188,6 +189,7 @@ class TPopupFixedFollower extends StatelessWidget {
     required this.targetAnchor,
     required this.followerAnchor,
     this.followerWidth,
+    required this.offset,
     this.animate = true,
     required this.onTapOutside,
     required this.onDismissed,
@@ -199,6 +201,7 @@ class TPopupFixedFollower extends StatelessWidget {
   final Alignment targetAnchor;
   final Alignment followerAnchor;
   final double? followerWidth;
+  final Offset offset;
   final bool animate;
   final TapRegionCallback onTapOutside;
   final VoidCallback onDismissed;
@@ -211,6 +214,7 @@ class TPopupFixedFollower extends StatelessWidget {
           targetRect: targetGlobalRect,
           targetAnchor: targetAnchor,
           followerAnchor: followerAnchor,
+          offset: offset,
         ),
         child: Material(
           color: Colors.transparent,
@@ -271,6 +275,7 @@ void showPopup({
   required Rect targetGlobalRect,
   required Alignment targetAnchor,
   required Alignment followerAnchor,
+  Offset offset = Offset.zero,
   VoidCallback? onDismissed,
   required Widget follower,
 }) {
@@ -299,6 +304,7 @@ void showPopup({
         hideOrRemove();
       },
       onDismissed: removePopup,
+      offset: offset,
       child: follower,
     ),
   );
@@ -324,17 +330,20 @@ class TPopupLayout extends SingleChildLayoutDelegate {
   const TPopupLayout(
       {required this.targetRect,
       required this.targetAnchor,
-      required this.followerAnchor});
+      required this.followerAnchor,
+      required this.offset});
 
   final Rect targetRect;
   final Alignment targetAnchor;
   final Alignment followerAnchor;
+  final Offset offset;
 
   @override
   bool shouldRelayout(TPopupLayout oldDelegate) =>
       targetRect != oldDelegate.targetRect ||
       targetAnchor != oldDelegate.targetAnchor ||
-      followerAnchor != oldDelegate.followerAnchor;
+      followerAnchor != oldDelegate.followerAnchor ||
+      offset != oldDelegate.offset;
 
   @override
   BoxConstraints getConstraintsForChild(BoxConstraints constraints) =>
@@ -347,24 +356,28 @@ class TPopupLayout extends SingleChildLayoutDelegate {
   Offset getPosition(Size containerSize, Size childSize) {
     final preferredTargetTopLeft = targetRect.topLeft +
         targetAnchor.alongSize(targetRect.size) -
-        followerAnchor.alongSize(childSize);
+        followerAnchor.alongSize(childSize) +
+        offset;
     if (preferredTargetTopLeft.dx < 0 ||
         preferredTargetTopLeft.dx + childSize.width > containerSize.width) {
       if (preferredTargetTopLeft.dy < 0 ||
           preferredTargetTopLeft.dy + childSize.height > containerSize.height) {
         return targetRect.topLeft +
             targetAnchor.alongSize(targetRect.size) -
-            followerAnchor.flipped().alongSize(childSize);
+            followerAnchor.flipped().alongSize(childSize) -
+            offset;
       } else {
         return targetRect.topLeft +
             targetAnchor.alongSize(targetRect.size) -
-            followerAnchor.flippedX().alongSize(childSize);
+            followerAnchor.flippedX().alongSize(childSize) +
+            Offset(-offset.dx, offset.dy);
       }
     } else if (preferredTargetTopLeft.dy < 0 ||
         preferredTargetTopLeft.dy + childSize.height > containerSize.height) {
       return targetRect.topLeft +
           targetAnchor.alongSize(targetRect.size) -
-          followerAnchor.flippedY().alongSize(childSize);
+          followerAnchor.flippedY().alongSize(childSize) +
+          Offset(offset.dx, -offset.dy);
     }
     return preferredTargetTopLeft;
   }

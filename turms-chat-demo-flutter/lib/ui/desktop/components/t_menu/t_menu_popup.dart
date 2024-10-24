@@ -11,12 +11,20 @@ class TMenuPopup<T> extends StatelessWidget {
       {super.key,
       this.value,
       required this.entries,
-      required this.onSelected,
+      this.constrainFollowerWithTargetWidth = true,
+      this.targetAnchor = Alignment.bottomCenter,
+      this.followerAnchor = Alignment.topCenter,
+      this.offset = Offset.zero,
+      this.onSelected,
       required this.anchor});
 
   final T? value;
   final List<TMenuEntry<T>> entries;
-  final void Function(TMenuEntry<T> item) onSelected;
+  final bool constrainFollowerWithTargetWidth;
+  final Alignment targetAnchor;
+  final Alignment followerAnchor;
+  final Offset offset;
+  final void Function(TMenuEntry<T> item)? onSelected;
   final Widget anchor;
 
   final TPopupController _popupController = TPopupController();
@@ -24,9 +32,10 @@ class TMenuPopup<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) => TPopup(
       controller: _popupController,
-      constrainFollowerWithTargetWidth: true,
-      targetAnchor: Alignment.bottomCenter,
-      followerAnchor: Alignment.topCenter,
+      constrainFollowerWithTargetWidth: constrainFollowerWithTargetWidth,
+      targetAnchor: targetAnchor,
+      followerAnchor: followerAnchor,
+      offset: offset,
       target: anchor,
       follower: Material(
         borderRadius: context.appThemeExtension.popupDecoration.borderRadius!,
@@ -34,7 +43,7 @@ class TMenuPopup<T> extends StatelessWidget {
           value: value,
           entries: entries,
           onSelected: (item) {
-            onSelected(item);
+            onSelected?.call(item);
             _popupController.hidePopover?.call();
           },
         ),

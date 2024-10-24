@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../../../themes/index.dart';
@@ -85,42 +84,42 @@ class SubNavigationRailView extends StatelessWidget {
                         subNavigationRailController.onSearchSubmitted(),
                   ),
                 ),
-                MenuAnchor(
-                    controller: subNavigationRailController.menuController,
-                    consumeOutsideTap: true,
-                    alignmentOffset: const Offset(0, 8),
-                    menuChildren: <Widget>[
-                      MenuItemButton(
-                        child: Text(appLocalizations.addContact),
-                        onPressed: () {
+                TMenuPopup(
+                    constrainFollowerWithTargetWidth: false,
+                    targetAnchor: Alignment.bottomLeft,
+                    followerAnchor: Alignment.topLeft,
+                    offset: const Offset(0, 8),
+                    entries: [
+                      TMenuEntry(
+                        value: 0,
+                        label: appLocalizations.addContact,
+                        onSelected: () {
                           showNewRelationshipDialog(context, true);
                         },
                       ),
-                      MenuItemButton(
-                        child: Text(appLocalizations.joinGroup),
-                        onPressed: () {
+                      TMenuEntry(
+                        value: 1,
+                        label: appLocalizations.joinGroup,
+                        onSelected: () {
                           showNewRelationshipDialog(context, false);
                         },
                       ),
-                      MenuItemButton(
-                        child: Text(appLocalizations.createGroup),
-                        onPressed: () {
+                      TMenuEntry(
+                        value: 2,
+                        label: appLocalizations.createGroup,
+                        onSelected: () {
                           showCreateGroupDialog(context);
                         },
                       ),
                     ],
-                    child: TIconButton(
-                        iconData: Symbols.add_rounded,
-                        iconSize: 20,
-                        // todo: adapt height
-                        containerSize: const Size(30, 30),
-                        containerColor:
-                            const Color.fromARGB(255, 226, 226, 226),
-                        containerColorHovered:
-                            const Color.fromARGB(255, 209, 209, 209),
-                        onTap: () {
-                          subNavigationRailController.menuController.open();
-                        }))
+                    anchor: const TIconButton(
+                      iconData: Symbols.add_rounded,
+                      iconSize: 20,
+                      // todo: adapt height
+                      containerSize: Size(30, 30),
+                      containerColor: Color.fromARGB(255, 226, 226, 226),
+                      containerColorHovered: Color.fromARGB(255, 209, 209, 209),
+                    ))
               ],
             ),
           ),

@@ -94,6 +94,10 @@ class _TMenuState<T> extends State<TMenu<T>> {
       child: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTap: () {
+          final onSelected = entry.onSelected;
+          if (onSelected != null) {
+            onSelected();
+          }
           widget.onSelected(entry);
         },
         child: ColoredBox(
@@ -121,6 +125,7 @@ class TMenuEntry<T> {
   const TMenuEntry({
     required this.label,
     required this.value,
+    this.onSelected,
   });
 
   static TMenuEntry<dynamic> separator =
@@ -128,4 +133,5 @@ class TMenuEntry<T> {
 
   final String label;
   final T value;
+  final VoidCallback? onSelected;
 }

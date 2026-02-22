@@ -277,7 +277,7 @@ services:
       mongodb-router:
         condition: service_healthy
       mongodb-setup:
-        condition: service_completed_successfully
+        condition: service_started
       redis:
         condition: service_healthy
       # Wait for turms to ensure turms-gateway can fetch data from DB safely after turms has inited collections
@@ -342,7 +342,7 @@ services:
       mongodb-router:
         condition: service_healthy
       mongodb-setup:
-        condition: service_completed_successfully
+        condition: service_started
       redis:
         condition: service_healthy
     environment:
